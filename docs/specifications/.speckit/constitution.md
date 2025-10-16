@@ -1,9 +1,10 @@
-# Project Constitution: EcommerceGo SaaS
+# Project Constitution: StormCom
 
-**Project**: EcommerceGo SaaS Multi-Tenant E-commerce Platform  
-**Tech Stack**: Next.js 15 + TypeScript + Prisma + SQLite/PostgreSQL  
+**Project**: StormCom - Multi-Tenant E-commerce SaaS Platform  
+**Tech Stack**: Next.js 15.5.5 + TypeScript 5.9.3 + Prisma + SQLite/PostgreSQL  
 **Created**: 2025-10-16  
-**Version**: 1.0
+**Updated**: 2025-10-16  
+**Version**: 2.0
 
 ---
 
@@ -48,12 +49,15 @@
 ## 2. Architecture Constraints
 
 ### 2.1 Required Technologies
-- ✅ Next.js 15+ (App Router only)
-- ✅ TypeScript 5.3+
-- ✅ Prisma ORM
+- ✅ Next.js 15.5.5+ (App Router only)
+- ✅ TypeScript 5.9.3+ (strict mode)
+- ✅ Prisma ORM (latest)
 - ✅ SQLite (local) / PostgreSQL (production)
-- ✅ shadcn/ui components
-- ✅ TailwindCSS
+- ✅ Tailwind CSS 4.1.14+
+- ✅ Radix UI + shadcn/ui
+- ✅ Vitest 3.2.4+ (unit/integration testing)
+- ✅ Playwright 1.56.0+ with MCP (E2E testing)
+- ✅ Vercel (deployment)
 
 ### 2.2 Prohibited
 - ❌ No Redux/MobX
