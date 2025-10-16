@@ -2261,8 +2261,49 @@ Notes:
 - Export formats likely CSV/XLS/PDF
 
 ---
+### 4.13 Reports - Sales Category Report
 
-### 4.13 Customer Management Module
+**URL**: `/category-order-sale-reports`
+
+**Main Heading**: "Sales Category Report"
+
+**Purpose**: Show sales aggregated by product category across selectable date ranges.
+
+UI Components & Actions:
+- Quick range buttons (Year, Last month, This month, Last 7 days)
+- Date range picker and Generate button
+- Category filter (select specific category)
+- Summary cards per category showing total sales
+- Category Sales Summary chart (monthly breakdown)
+
+Observed Sample Data (demo):
+- Sales per category: Women Store $3,445.00; Coats $4,284.00; Jackets $4,635.00; Scarf $4,513.00; Hats $3,703.00; Mens Store $3,767.00; Dresses $4,189.00
+
+Notes:
+- Useful for category-level promotions and inventory decisions
+
+---
+
+### 4.14 Reports - Stock Reports
+
+**URL**: `/stock-reports`
+
+**Main Heading**: "Stock Reports"
+
+**Purpose**: Provide administrative visibility into inventory levels across products with tabs for Low In Stock, Out Of Stock, and Most Stocked items.
+
+UI Components & Actions:
+- Tabs: Low In Stock, Out Of Stock, Most Stocked
+- Entries per page selector, search, Reset/Reload controls
+- Table columns: PRODUCT NAME, CATEGORY, STOCK STATUS, STOCK QUANTITY, ACTION
+- No-data states handled gracefully (e.g., "No data available in table")
+
+Notes:
+- Useful for replenishment planning and inventory audits
+
+---
+
+### 4.15 Customer Management Module
 
 **URL**: `/customer`
 
