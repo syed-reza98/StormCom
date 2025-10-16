@@ -3764,3 +3764,475 @@ This SRS document has been comprehensively documented based on extensive explora
 - As a support manager, I want to reply to contacts from admin panel so that I can efficiently handle inquiries
 
 ---
+
+
+### 4.24 Marketing Module - Newsletter Management
+
+**URL**: `/newsletter`
+
+**Page Elements**:
+- **Main Heading**: "Newsletter"
+- **Breadcrumb**: Home > Marketing > Newsletter
+
+**Purpose**: Manage newsletter subscribers and send email campaigns to customers.
+
+**Table Columns**:
+1. **EMAIL** - Subscriber email address
+2. **NAME** - Subscriber name (if provided)
+3. **SUBSCRIPTION DATE** - Date subscribed
+4. **SOURCE** - Subscription source (Website, Checkout, Manual)
+5. **STATUS** - Active/Unsubscribed
+6. **CAMPAIGNS SENT** - Number of campaigns received
+7. **OPEN RATE** - Email open rate percentage
+8. **ACTION** - View, Edit, Delete, Unsubscribe buttons
+
+**Newsletter Features**:
+- Email campaign creation with templates
+- Drag-and-drop email builder
+- Subscriber segmentation
+- A/B testing support
+- Automated drip campaigns
+- Email scheduling
+- Performance analytics (open rate, click rate, conversion)
+- List import/export functionality
+- GDPR compliance tools
+- Unsubscribe management
+
+**Campaign Creation Form**:
+- **Campaign Name** (Text Input) - Internal campaign name
+- **Subject Line** (Text Input) - Email subject
+- **Preview Text** (Text Input) - Email preview snippet
+- **From Name** (Text Input) - Sender name
+- **From Email** (Email Input) - Sender email
+- **Template** (Dropdown) - Email template selection
+- **Content** (Email Builder) - Email content with drag-and-drop
+- **Recipient List** (Multi-select) - Subscriber segments
+- **Schedule** (Date/Time Picker) - Send immediately or schedule
+- **A/B Testing** (Toggle) - Enable split testing
+
+**User Stories**:
+- As a marketing manager, I want to create newsletter campaigns so that I can communicate with customers
+- As a marketing manager, I want to segment subscribers so that I can send targeted campaigns
+- As a store owner, I want to track email performance so that I can measure campaign effectiveness
+- As a customer, I want to unsubscribe easily so that I can control my email preferences
+- As a marketing manager, I want to schedule campaigns so that I can send emails at optimal times
+
+---
+
+### 4.25 Marketing Module - Flash Sale Management
+
+**URL**: `/flash-sale`
+
+**Page Elements**:
+- **Main Heading**: "Flash Sale"
+- **Breadcrumb**: Home > Marketing > Flash Sale
+
+**Purpose**: Create time-limited sales events with countdown timers to drive urgency and increase conversions.
+
+**Table Columns**:
+1. **NAME** - Flash sale name
+2. **START DATE** - Sale start date/time
+3. **END DATE** - Sale end date/time
+4. **PRODUCTS** - Number of products included
+5. **DISCOUNT** - Discount percentage/amount
+6. **STATUS** - Active/Scheduled/Ended
+7. **SALES** - Number of sales generated
+8. **REVENUE** - Revenue generated
+9. **ACTION** - Edit, Delete, View Report buttons
+
+**Flash Sale Creation Form**:
+- **Sale Name** (Text Input) - Flash sale name
+- **Description** (Textarea) - Sale description
+- **Start Date/Time** (DateTime Picker) - Sale start
+- **End Date/Time** (DateTime Picker) - Sale end
+- **Discount Type** (Radio) - Percentage/Fixed Amount
+- **Discount Value** (Number Input) - Discount amount
+- **Product Selection** (Multi-select) - Products included in sale
+- **Show Countdown** (Toggle) - Display countdown timer
+- **Max Quantity Per Customer** (Number Input) - Purchase limit
+- **Banner Image** (File Upload) - Sale banner
+- **Status** (Toggle) - Active/Inactive
+
+**Flash Sale Features**:
+- Real-time countdown timer
+- Automatic price updates
+- Stock tracking during sale
+- Purchase quantity limits
+- Email notifications to subscribers
+- Social sharing for promotion
+- Performance analytics
+- Post-sale reports
+- Automatic reversion after sale ends
+
+**User Stories**:
+- As a marketing manager, I want to create flash sales so that I can create urgency and boost sales
+- As a marketing manager, I want to set countdown timers so that customers see time remaining
+- As a customer, I want to see flash sale prices so that I can take advantage of deals
+- As a store owner, I want to limit purchase quantities so that more customers can participate
+- As a marketing manager, I want to track flash sale performance so that I can measure ROI
+
+---
+
+### 4.26 Marketing Module - Wishlist Management
+
+**URL**: `/wishlist`
+
+**Page Elements**:
+- **Main Heading**: "Wishlist"
+- **Breadcrumb**: Home > Marketing > Wishlist
+
+**Purpose**: Track customer wishlists to understand product interest and enable remarketing campaigns.
+
+**Table Columns**:
+1. **CUSTOMER** - Customer name
+2. **EMAIL** - Customer email
+3. **PRODUCT** - Product name
+4. **ADDED DATE** - Date added to wishlist
+5. **PRICE** - Product price
+6. **IN STOCK** - Stock status
+7. **ACTIONS TAKEN** - Purchased/Still in Wishlist
+8. **ACTION** - View Customer, View Product, Send Reminder buttons
+
+**Wishlist Analytics Dashboard**:
+- **Total Wishlisted Items** - Count of all wishlist items
+- **Most Wishlisted Products** - Top 10 products
+- **Wishlist Conversion Rate** - Percentage converted to purchases
+- **Average Wishlist Size** - Items per customer
+- **Back in Stock Notifications** - Pending notifications
+
+**Wishlist Features**:
+- Customer wishlist tracking
+- Most wishlisted products report
+- Price drop notifications
+- Back in stock alerts
+- Wishlist sharing (email, social media)
+- Wishlist conversion tracking
+- Abandoned wishlist emails
+- Export wishlist data
+
+**Wishlist Remarketing**:
+- **Price Drop Campaign** - Notify when wishlisted item goes on sale
+- **Stock Alert Campaign** - Notify when out-of-stock item is available
+- **Wishlist Reminder** - Periodic reminders about saved items
+- **Similar Product Suggestions** - Recommend alternatives
+
+**User Stories**:
+- As a customer, I want to save products to wishlist so that I can purchase them later
+- As a marketing manager, I want to see most wishlisted products so that I can understand customer preferences
+- As a customer, I want price drop notifications so that I can buy at the best price
+- As a marketing manager, I want to send wishlist reminders so that I can convert interest to sales
+- As a customer, I want to share my wishlist so that others can see my preferences
+
+---
+
+### 4.27 Marketing Module - Abandoned Cart Management
+
+**URL**: `/abandon-carts-handled`
+
+**Page Elements**:
+- **Main Heading**: "Abandon Cart"
+- **Breadcrumb**: Home > Marketing > Abandon Cart
+
+**Purpose**: Track and recover abandoned shopping carts through automated email campaigns.
+
+**Table Columns**:
+1. **CUSTOMER** - Customer name/email
+2. **CART VALUE** - Total cart value
+3. **PRODUCTS** - Number of products in cart
+4. **ABANDONED DATE** - When cart was abandoned
+5. **RECOVERY EMAILS SENT** - Number of recovery emails
+6. **STATUS** - Pending/Recovered/Lost
+7. **ACTION** - View Cart, Send Email, Convert to Order buttons
+
+**Abandoned Cart Analytics**:
+- **Total Abandoned Carts** - Count of abandoned carts
+- **Abandoned Cart Value** - Total value of abandoned carts
+- **Recovery Rate** - Percentage of recovered carts
+- **Average Cart Value** - Average abandoned cart amount
+- **Revenue Recovered** - Total revenue from recovered carts
+- **Top Abandoned Products** - Most frequently abandoned items
+
+**Cart Abandonment Workflow**:
+1. **Detection**: System detects cart inactivity (30 minutes default)
+2. **Classification**: Cart marked as "potentially abandoned"
+3. **First Email**: Sent after 1 hour (customizable)
+4. **Second Email**: Sent after 24 hours with incentive
+5. **Third Email**: Sent after 72 hours (last attempt)
+6. **Tracking**: Monitor opens, clicks, and conversions
+
+**Recovery Email Configuration**:
+- **First Email** (1 hour after abandonment):
+  - Subject: "You left something in your cart"
+  - Content: Cart reminder with product images
+  
+- **Second Email** (24 hours after abandonment):
+  - Subject: "Still interested? Here's 10% off"
+  - Content: Cart reminder + discount code
+  
+- **Third Email** (72 hours after abandonment):
+  - Subject: "Last chance - your cart expires soon"
+  - Content: Urgency message + final incentive
+
+**Abandoned Cart Features**:
+- Automatic cart detection
+- Multi-step email sequence
+- Dynamic discount codes
+- Product image inclusion
+- One-click cart restoration
+- Exit-intent popups
+- SMS recovery campaigns
+- Performance analytics
+- A/B testing for recovery messages
+
+**User Stories**:
+- As a marketing manager, I want to track abandoned carts so that I can recover lost sales
+- As a marketing manager, I want to send automated recovery emails so that customers complete their purchases
+- As a store owner, I want to offer incentives in recovery emails so that I can increase conversion rates
+- As a customer, I want to easily restore my cart so that I can complete my purchase
+- As a marketing manager, I want to analyze abandonment reasons so that I can improve the checkout process
+
+---
+
+### 4.28 Marketing Module - Database Schema Enhancement
+
+#### 4.28.1 newsletter_subscribers
+```sql
+CREATE TABLE newsletter_subscribers (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    store_id BIGINT,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255),
+    source VARCHAR(50) DEFAULT 'website',
+    status VARCHAR(20) DEFAULT 'active',
+    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    unsubscribed_at TIMESTAMP NULL,
+    confirmed BOOLEAN DEFAULT FALSE,
+    confirmation_token VARCHAR(100),
+    metadata JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES stores(id),
+    INDEX idx_email (email),
+    INDEX idx_status (status)
+);
+```
+
+#### 4.28.2 newsletter_campaigns
+```sql
+CREATE TABLE newsletter_campaigns (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    store_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    preview_text VARCHAR(255),
+    from_name VARCHAR(255),
+    from_email VARCHAR(255),
+    template_id BIGINT,
+    content TEXT,
+    recipient_count INT DEFAULT 0,
+    sent_count INT DEFAULT 0,
+    open_count INT DEFAULT 0,
+    click_count INT DEFAULT 0,
+    unsubscribe_count INT DEFAULT 0,
+    status VARCHAR(50) DEFAULT 'draft',
+    scheduled_at TIMESTAMP NULL,
+    sent_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES stores(id),
+    INDEX idx_status (status),
+    INDEX idx_scheduled_at (scheduled_at)
+);
+```
+
+#### 4.28.3 flash_sales (Enhanced)
+```sql
+CREATE TABLE flash_sales (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    store_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    discount_type VARCHAR(20) NOT NULL,
+    discount_value DECIMAL(10,2) NOT NULL,
+    max_quantity_per_customer INT,
+    banner_image VARCHAR(255),
+    show_countdown BOOLEAN DEFAULT TRUE,
+    status VARCHAR(50) DEFAULT 'scheduled',
+    total_sales INT DEFAULT 0,
+    total_revenue DECIMAL(10,2) DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES stores(id),
+    INDEX idx_dates (start_date, end_date),
+    INDEX idx_status (status)
+);
+```
+
+#### 4.28.4 wishlists
+```sql
+CREATE TABLE wishlists (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    customer_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    variant_id BIGINT NULL,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notified_for_price_drop BOOLEAN DEFAULT FALSE,
+    notified_for_stock BOOLEAN DEFAULT FALSE,
+    converted_to_purchase BOOLEAN DEFAULT FALSE,
+    purchased_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_wishlist_item (customer_id, product_id, variant_id),
+    INDEX idx_customer (customer_id),
+    INDEX idx_product (product_id)
+);
+```
+
+#### 4.28.5 abandoned_carts
+```sql
+CREATE TABLE abandoned_carts (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    store_id BIGINT NOT NULL,
+    customer_id BIGINT,
+    session_id VARCHAR(255),
+    customer_email VARCHAR(255),
+    cart_data JSON NOT NULL,
+    cart_value DECIMAL(10,2) NOT NULL,
+    product_count INT NOT NULL,
+    abandoned_at TIMESTAMP NOT NULL,
+    recovery_emails_sent INT DEFAULT 0,
+    last_email_sent_at TIMESTAMP NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    recovered_at TIMESTAMP NULL,
+    recovery_order_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES stores(id),
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    FOREIGN KEY (recovery_order_id) REFERENCES orders(id),
+    INDEX idx_status (status),
+    INDEX idx_abandoned_at (abandoned_at),
+    INDEX idx_customer_email (customer_email)
+);
+```
+
+#### 4.28.6 cart_recovery_emails
+```sql
+CREATE TABLE cart_recovery_emails (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    abandoned_cart_id BIGINT NOT NULL,
+    email_type VARCHAR(50) NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    opened_at TIMESTAMP NULL,
+    clicked_at TIMESTAMP NULL,
+    discount_code VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (abandoned_cart_id) REFERENCES abandoned_carts(id) ON DELETE CASCADE,
+    INDEX idx_abandoned_cart (abandoned_cart_id),
+    INDEX idx_email_type (email_type)
+);
+```
+
+---
+
+### 4.29 Marketing Module - Business Logic
+
+#### 4.29.1 Abandoned Cart Recovery Logic
+
+```
+1. Cart Abandonment Detection:
+   a. Monitor cart activity
+   b. If cart inactive for 30 minutes:
+      - Mark cart as "potentially abandoned"
+      - Start recovery workflow
+   
+2. Recovery Email Sequence:
+   a. First Email (1 hour after abandonment):
+      - Check if customer is registered
+      - Send cart reminder email
+      - Track email open/click
+   
+   b. Second Email (24 hours after abandonment):
+      - Check if cart still not recovered
+      - Generate dynamic discount code (10% off)
+      - Send email with incentive
+      - Track engagement
+   
+   c. Third Email (72 hours after abandonment):
+      - Final recovery attempt
+      - Enhanced discount (15% off)
+      - Urgency messaging
+      - Track final engagement
+   
+3. Cart Recovery:
+   a. If customer clicks email link:
+      - Restore cart session
+      - Apply discount code automatically
+      - Track conversion
+   b. If purchase completed:
+      - Mark cart as "recovered"
+      - Update recovery metrics
+      - Stop email sequence
+   
+4. Analytics & Reporting:
+   a. Calculate recovery rate
+   b. Track revenue recovered
+   c. Identify high-value abandoned carts
+   d. Analyze abandonment patterns
+```
+
+#### 4.29.2 Flash Sale Logic
+
+```
+1. Flash Sale Activation:
+   a. Check current date/time
+   b. If within sale period:
+      - Apply sale prices to products
+      - Update product pricing in real-time
+      - Display countdown timer
+   
+2. Purchase Validation:
+   a. Check sale is active
+   b. Verify product is in sale
+   c. Check quantity limits per customer
+   d. Apply sale discount
+   
+3. Flash Sale End:
+   a. When end_date reached:
+      - Revert products to original prices
+      - Update sale status to "ended"
+      - Generate post-sale report
+      - Calculate ROI
+```
+
+#### 4.29.3 Wishlist Notification Logic
+
+```
+1. Price Drop Detection:
+   a. Monitor product price changes
+   b. For each price reduction:
+      - Query wishlists containing product
+      - If price dropped > 5%:
+        * Send price drop notification
+        * Mark notification as sent
+   
+2. Stock Alert:
+   a. Monitor product stock status
+   b. When out-of-stock product restocked:
+      - Query wishlists containing product
+      - Send back-in-stock notification
+      - Mark notification as sent
+   
+3. Periodic Wishlist Reminders:
+   a. Every 7 days:
+      - Query wishlists older than 7 days
+      - Send reminder email with wishlist items
+      - Track engagement
+```
+
+---
