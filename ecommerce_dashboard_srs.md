@@ -3448,3 +3448,319 @@ This SRS document has been comprehensively documented based on extensive explora
 **END OF COMPREHENSIVE SRS DOCUMENT**
 
 ---
+
+
+### 4.17 CMS Module - Menu Management
+
+**URL**: `/menus`
+
+**Page Elements**:
+- **Main Heading**: "Menu"
+- **Breadcrumb**: Home > Menu
+
+**Purpose**: Manage navigation menus for storefront, including header menu, footer menu, and custom menu locations.
+
+**Table Columns**:
+1. **NAME** - Menu name
+2. **SLUG** - URL-friendly identifier
+3. **LOCATION** - Menu placement (Header, Footer, Sidebar)
+4. **ITEMS COUNT** - Number of menu items
+5. **STATUS** - Active/Inactive
+6. **ACTION** - Edit, Delete, Reorder buttons
+
+**Menu Features**:
+- Hierarchical menu structure (parent-child relationships)
+- Drag-and-drop menu item ordering
+- Multiple menu locations
+- Custom link support
+- Link to pages, products, categories, or external URLs
+- Open in new tab option
+- Menu item visibility control
+
+**Menu Item Types**:
+1. **Custom Links** - External or internal URLs
+2. **Pages** - Link to CMS pages
+3. **Categories** - Link to product categories
+4. **Products** - Link to specific products
+5. **Blog** - Link to blog posts or blog home
+
+**User Stories**:
+- As a store owner, I want to create custom menus so that customers can navigate my store easily
+- As a store owner, I want to organize menu items hierarchically so that I can create nested navigation
+- As a store owner, I want to assign menus to different locations so that I can control header and footer navigation
+- As a content manager, I want to reorder menu items so that I can prioritize important sections
+
+---
+
+### 4.18 CMS Module - Pages Management
+
+**URL**: `/pages`
+
+**Page Elements**:
+- **Main Heading**: "Pages"
+- **Breadcrumb**: Home > Pages
+
+**Table Columns**:
+1. **TITLE** - Page title
+2. **SLUG** - URL slug
+3. **STATUS** - Published/Draft
+4. **VIEWS** - Page view count
+5. **LAST UPDATED** - Last modification date
+6. **ACTION** - Edit, Delete, Preview buttons
+
+**Page Creation Form**:
+- **Title** (Text Input) - Page title
+- **Slug** (Text Input) - Auto-generated from title, editable
+- **Content** (Rich Text Editor) - Page content with formatting
+- **Featured Image** (File Upload) - Optional page banner
+- **Template** (Dropdown) - Page layout template
+- **Meta Title** (Text Input) - SEO title
+- **Meta Description** (Textarea) - SEO description
+- **Meta Keywords** (Text Input) - SEO keywords
+- **Status** (Toggle) - Published/Draft
+- **Visibility** (Radio) - Public/Private/Password Protected
+
+**Page Templates**:
+1. **Default Template** - Standard page layout
+2. **Full Width** - No sidebar
+3. **Landing Page** - Special promotional layout
+4. **Contact Page** - With contact form
+5. **About Us** - Team and company info layout
+
+**User Stories**:
+- As a content manager, I want to create static pages so that I can provide information to customers
+- As a marketing manager, I want to create landing pages so that I can run promotional campaigns
+- As a store owner, I want to set SEO metadata for pages so that they rank well in search engines
+- As a content manager, I want to preview pages before publishing so that I can ensure content quality
+
+---
+
+### 4.19 CMS Module - Blog Management
+
+**URL**: `/blog`
+
+**Page Elements**:
+- **Main Heading**: "Blogs"
+- **Breadcrumb**: Home > Blogs
+
+**Table Columns**:
+1. **FEATURED IMAGE** - Blog post thumbnail
+2. **TITLE** - Blog post title
+3. **CATEGORY** - Blog category
+4. **AUTHOR** - Post author
+5. **TAGS** - Associated tags
+6. **PUBLISH DATE** - Publication date
+7. **VIEWS** - View count
+8. **COMMENTS** - Comment count
+9. **STATUS** - Published/Draft/Scheduled
+10. **ACTION** - Edit, Delete, Preview buttons
+
+**Blog Post Creation Form**:
+- **Title** (Text Input) - Post title
+- **Slug** (Text Input) - URL-friendly identifier
+- **Category** (Dropdown) - Blog category selection
+- **Tags** (Multi-select) - Tag selection
+- **Featured Image** (File Upload) - Post thumbnail
+- **Excerpt** (Textarea) - Short description
+- **Content** (Rich Text Editor) - Full post content
+- **Author** (Dropdown) - Author selection
+- **Publish Date** (Date/Time Picker) - Schedule publication
+- **Allow Comments** (Toggle) - Enable/disable comments
+- **Featured Post** (Checkbox) - Mark as featured
+- **SEO Settings**:
+  - Meta Title
+  - Meta Description
+  - Meta Keywords
+  - Social Media Preview Image
+
+**Blog Features**:
+- Rich text editing with media embedding
+- Code syntax highlighting
+- Image gallery support
+- Video embedding
+- Related posts auto-suggestion
+- Social sharing buttons
+- Comment moderation
+- RSS feed generation
+- Blog search functionality
+- Archive by date/category/tag
+
+**User Stories**:
+- As a content writer, I want to create blog posts so that I can engage customers with valuable content
+- As a content manager, I want to schedule blog posts so that I can maintain consistent publishing
+- As a marketing manager, I want to categorize blog posts so that readers can find relevant content
+- As a content writer, I want to add tags to posts so that content is discoverable
+- As a store owner, I want to moderate comments so that I can maintain content quality
+
+---
+
+### 4.20 CMS Module - Blog Category Management
+
+**URL**: `/blog-category`
+
+**Page Elements**:
+- **Main Heading**: "Blog Category"
+- **Breadcrumb**: Home > Blog Category
+
+**Table Columns**:
+1. **NAME** - Category name
+2. **SLUG** - URL slug
+3. **DESCRIPTION** - Category description
+4. **POST COUNT** - Number of posts in category
+5. **PARENT CATEGORY** - Parent category (if subcategory)
+6. **STATUS** - Active/Inactive
+7. **ACTION** - Edit, Delete buttons
+
+**Category Form**:
+- **Name** (Text Input) - Category name
+- **Slug** (Text Input) - Auto-generated, editable
+- **Description** (Textarea) - Category description
+- **Parent Category** (Dropdown) - Optional parent category
+- **Image** (File Upload) - Category image
+- **Meta Title** (Text Input) - SEO title
+- **Meta Description** (Textarea) - SEO description
+- **Status** (Toggle) - Active/Inactive
+
+**User Stories**:
+- As a content manager, I want to create blog categories so that posts are organized
+- As a content manager, I want to create subcategories so that I can have hierarchical organization
+- As a reader, I want to browse posts by category so that I can find relevant content
+- As a content manager, I want to set category images so that categories are visually appealing
+
+---
+
+### 4.21 CMS Module - FAQs Management
+
+**URL**: `/faqs`
+
+**Page Elements**:
+- **Main Heading**: "FAQs"
+- **Breadcrumb**: Home > FAQs
+
+**Table Columns**:
+1. **QUESTION** - FAQ question
+2. **CATEGORY** - FAQ category
+3. **ORDER** - Display order
+4. **VIEWS** - View count
+5. **STATUS** - Active/Inactive
+6. **ACTION** - Edit, Delete, Reorder buttons
+
+**FAQ Form**:
+- **Question** (Text Input) - The question
+- **Answer** (Rich Text Editor) - Detailed answer
+- **Category** (Dropdown) - FAQ category
+- **Order** (Number Input) - Display order
+- **Related Products** (Multi-select) - Link to relevant products
+- **Status** (Toggle) - Active/Inactive
+
+**FAQ Categories**:
+1. **Shipping & Delivery**
+2. **Payment & Pricing**
+3. **Returns & Refunds**
+4. **Product Information**
+5. **Account & Orders**
+6. **Technical Support**
+
+**FAQ Features**:
+- Accordion-style display
+- Search functionality
+- Category filtering
+- Most viewed FAQs tracking
+- Related product linking
+- Jump to FAQ links
+- Print-friendly format
+
+**User Stories**:
+- As a support manager, I want to create FAQs so that customers can self-serve
+- As a customer, I want to search FAQs so that I can quickly find answers
+- As a support manager, I want to organize FAQs by category so that they are easy to navigate
+- As a content manager, I want to track FAQ views so that I can identify popular questions
+
+---
+
+### 4.22 CMS Module - Tag Management
+
+**URL**: `/tag`
+
+**Page Elements**:
+- **Main Heading**: "Tag"
+- **Breadcrumb**: Home > Tag
+
+**Table Columns**:
+1. **NAME** - Tag name
+2. **SLUG** - URL slug
+3. **USAGE COUNT** - Number of times used
+4. **RELATED TO** - Content types (Blog, Product)
+5. **STATUS** - Active/Inactive
+6. **ACTION** - Edit, Delete, View buttons
+
+**Tag Form**:
+- **Name** (Text Input) - Tag name
+- **Slug** (Text Input) - Auto-generated, editable
+- **Description** (Textarea) - Tag description
+- **Status** (Toggle) - Active/Inactive
+
+**Tag Features**:
+- Auto-suggest during content creation
+- Tag cloud widget
+- Tag-based content filtering
+- Popular tags tracking
+- Related tags suggestion
+- Bulk tag management
+
+**User Stories**:
+- As a content manager, I want to create tags so that content is easily discoverable
+- As a content writer, I want tag auto-suggestions so that I can quickly tag content
+- As a reader, I want to browse content by tag so that I can find related items
+- As a marketing manager, I want to see popular tags so that I can understand trending topics
+
+---
+
+### 4.23 CMS Module - Contact Us Management
+
+**URL**: `/contacts`
+
+**Page Elements**:
+- **Main Heading**: "Contact Us"
+- **Breadcrumb**: Home > Contact Us
+
+**Table Columns**:
+1. **NAME** - Sender name
+2. **EMAIL** - Sender email
+3. **SUBJECT** - Message subject
+4. **DATE** - Submission date
+5. **STATUS** - New/Read/Replied/Archived
+6. **ACTION** - View, Reply, Delete buttons
+
+**Contact Form Fields** (Frontend):
+- **Name** (Text Input) - Sender name
+- **Email** (Email Input) - Sender email
+- **Phone** (Phone Input) - Optional phone number
+- **Subject** (Text Input) - Message subject
+- **Message** (Textarea) - Message content
+- **Attachment** (File Upload) - Optional file attachment
+
+**Contact Details Display**:
+- **Store Information**:
+  - Store Address
+  - Phone Number
+  - Email Address
+  - Business Hours
+- **Map Integration** - Google Maps embed
+- **Social Media Links** - Links to social profiles
+
+**Contact Management Features**:
+- Email notifications for new contacts
+- Reply directly from admin panel
+- Status tracking (New, Read, Replied)
+- Export contacts to CSV
+- Spam filtering
+- Automated response option
+
+**User Stories**:
+- As a customer, I want to contact the store so that I can get help or information
+- As a support agent, I want to receive contact form submissions so that I can respond to inquiries
+- As a store owner, I want to track contact submissions so that I can monitor customer inquiries
+- As a support manager, I want to reply to contacts from admin panel so that I can efficiently handle inquiries
+
+---
