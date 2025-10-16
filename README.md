@@ -1,143 +1,228 @@
-# eCommerceGo SaaS - Complete Documentation
+# eCommerceGo SaaS - Complete Documentation & Implementation
 
 ## Overview
 
-This repository contains comprehensive documentation for the **eCommerceGo SaaS** platform, a multi-tenant e-commerce management system. The documentation was generated through systematic navigation and analysis of the entire application.
+This repository contains comprehensive documentation and implementation specifications for the **eCommerceGo SaaS** platform, a multi-tenant e-commerce management system built with **Next.js 15**, **TypeScript**, **Prisma ORM**, and **SQLite** (local) / **PostgreSQL** (production).
+
+The project follows **Spec-Driven Development** methodology using [GitHub Specs Kit](https://github.com/github/spec-kit), ensuring high-quality software through executable specifications and systematic implementation.
+
+## 🎯 Tech Stack
+
+### Frontend
+- **Framework**: Next.js 15 (App Router) with React 19
+- **Language**: TypeScript 5.3+
+- **UI Components**: shadcn/ui (Radix UI primitives)
+- **Styling**: TailwindCSS
+- **Forms**: React Hook Form + Zod validation
+- **Charts**: Recharts
+
+### Backend
+- **API**: Next.js Route Handlers + Server Actions
+- **Database ORM**: Prisma
+- **Database**: SQLite (local dev), PostgreSQL (production)
+- **Authentication**: NextAuth.js v5
+- **Email**: React Email + Resend
+
+### Development
+- **Testing**: Vitest + Testing Library + Playwright
+- **Code Quality**: ESLint + Prettier + TypeScript strict
+- **Package Manager**: npm
+
+## 📁 Project Structure
+
+```
+ecommercego-saas/
+├── specs/                          # Spec-Driven Development
+│   └── 001-ecommerce-saas-platform/
+│       ├── spec.md                 # Feature specification
+│       ├── plan.md                 # Implementation plan
+│       ├── data-model.md           # Database schema
+│       └── tasks.md                # Task breakdown
+├── src/
+│   ├── app/                        # Next.js App Router
+│   ├── components/                 # React components
+│   ├── lib/                        # Utilities & config
+│   ├── services/                   # Business logic
+│   ├── hooks/                      # Custom React hooks
+│   └── types/                      # TypeScript types
+├── prisma/
+│   ├── schema.prisma               # Prisma schema
+│   └── migrations/                 # Database migrations
+└── tests/
+    ├── unit/                       # Unit tests
+    ├── integration/                # Integration tests
+    └── e2e/                        # End-to-end tests
+```
 
 ## 📄 Documentation Files
 
-### Main SRS Document
-- **`ecommerce_complete_srs.md`** (53KB, 1947 lines)
-  - Complete Software Requirements Specification
-  - 148 pages documented
-  - 338 forms analyzed
-  - 756 form input fields catalogued
-  - 356 actions/buttons documented
-  - 157 data tables mapped
+### Spec-Driven Development (Primary)
+- **`specs/001-ecommerce-saas-platform/spec.md`** - Feature specification with user stories, requirements, and success criteria
+- **`specs/001-ecommerce-saas-platform/plan.md`** - Technical implementation plan for Next.js + SQLite/PostgreSQL stack
 
-### Existing Documentation
+### Legacy Documentation (Reference)
+- **`ecommerce_complete_srs.md`** (53KB) - Original comprehensive SRS from demo site analysis
+- **`NAVIGATION_INDEX.md`** - Complete page index from demo site
+- **`TASK_COMPLETION_SUMMARY.md`** - Original analysis completion report
 - **`ecommerce_dashboard_srs.md`** - Previous dashboard analysis
-- **`ecommerce_dashboard_srs_copilot.md`** - Previous copilot analysis
 - **`docs/EcommerceGo_SRS.md`** - Earlier SRS version
 
-### Data Exports
+### Data Analysis (Reference)
 Located in `export/` directory:
-- `actions.csv` - All actions and buttons
-- `form_inputs.csv` - All form input fields
-- `form_selects.csv` - All dropdown/select fields
-- `form_textareas.csv` - All textarea fields
-- `forms.csv` - All forms
-- `pages.csv` - All pages visited
-- `tables.csv` - All data tables
+- `actions.csv` - 356 actions and buttons from demo site
+- `form_inputs.csv` - 756 form input fields analyzed
+- `forms.csv` - 338 forms documented
+- `pages.csv` - 148 pages crawled
+- `tables.csv` - 157 data tables mapped
 
-## 🌐 Application Access
+## 🌐 Demo Application Reference
 
 - **URL**: https://ecom-demo.workdo.io/
 - **Login Credentials**:
   - Email: admin@example.com
   - Password: 1234
 
-## 📊 Statistics
+*Note: The demo application was analyzed to create comprehensive requirements. The new implementation follows modern best practices with Next.js.*
+
+## 📊 Requirements Analysis
 
 | Metric | Count |
 |--------|-------|
-| Total Pages | 148 |
-| Total Forms | 338 |
-| Form Inputs | 756 |
-| Actions/Buttons | 356 |
-| Data Tables | 157 |
-| Navigation Sections | 17 |
-| User Stories | 90+ |
+| User Stories (Prioritized) | 11 (P1: 3, P2: 3, P3: 5) |
+| Functional Requirements | 60+ |
+| Database Entities | 40+ |
+| API Endpoints | 100+ |
+| Demo Pages Analyzed | 148 |
+| Demo Forms Analyzed | 338 |
+| Demo Actions Catalogued | 356 |
 
-## 🗂️ Navigation Structure
+## 🗂️ Feature Modules
 
-The application is organized into the following main sections:
+The application provides comprehensive e-commerce management through these modules:
 
-1. **Dashboard** - Main dashboard and store analytics
-2. **Add-on Manager** - Module/add-on management
-3. **Theme Customize** - Theme customization options
-4. **Store Setting** - Store configuration
-5. **Staff** - Roles and user management
-6. **Delivery Boy** - Delivery personnel management
-7. **Products** - Product catalog management (brands, labels, categories, products, attributes, testimonials, Q&A)
-8. **Shipping** - Shipping classes and zones
-9. **Orders** - Order management and refunds
-10. **Customers** - Customer management
-11. **Reports** - Comprehensive reporting (sales, customers, inventory)
-12. **Marketing** - Coupons, flash sales, newsletters, wishlist, abandoned carts
-13. **Support Ticket** - Customer support system
-14. **POS** - Point of sale interface
-15. **CMS** - Content management (pages, blogs, menus, FAQs, tags, contact)
-16. **Plan** - Subscription plans
-17. **Settings** - System settings
+### Priority 1 (MVP - Core Functionality)
+1. **Dashboard & Analytics** - Business metrics, sales data, store performance
+2. **Product Management** - Catalog, variants, categories, brands, attributes
+3. **Order Management** - Complete order lifecycle, status tracking, refunds
 
-## 📋 Key Features Documented
+### Priority 2 (Important Features)
+4. **Customer Management** - Profiles, order history, CRM analytics
+5. **Marketing** - Coupons, flash sales, newsletters, abandoned cart recovery
+6. **Reports & Analytics** - Sales, inventory, customer insights
 
-### Product Management
-- Product catalog with variants
-- Categories and subcategories
-- Brand management
-- Product labels (new, sale, featured)
-- Product attributes (size, color, material, etc.)
-- Inventory tracking
-- Product testimonials and Q&A
+### Priority 3 (Nice to Have)
+7. **Content Management (CMS)** - Pages, blogs, menus, FAQs
+8. **Shipping Configuration** - Classes, zones, rates
+9. **Point of Sale (POS)** - In-store sales processing
+10. **Staff & Permissions** - User management, RBAC
+11. **Multi-Store & Themes** - Store management, theme customization
 
-### Order Management
-- Complete order lifecycle
-- Order status tracking (Pending → Confirmed → Shipped → Delivered)
-- Refund request processing
-- Order history and details
-- Invoice and packing slip generation
+## 🚀 Quick Start (Local Development)
 
-### Customer Management
-- Customer profiles
-- Purchase history
-- Wishlist management
-- Customer analytics and reports
-- Support ticket system
+### Prerequisites
+- Node.js 18+ and npm
+- Git
 
-### Marketing Tools
-- Coupon code management
-- Flash sales
-- Newsletter campaigns
-- Abandoned cart recovery
-- Customer segmentation
+### Installation
 
-### Reports & Analytics
-- Sales reports (by product, category, brand, country)
-- Customer reports
-- Inventory/stock reports
-- Top sales reports
-- Order status reports
+```bash
+# Clone the repository
+git clone https://github.com/syed-reza98/StormCom.git
+cd StormCom
 
-### Content Management
-- Custom pages
-- Blog posts and categories
-- Menu management
-- FAQ management
-- Contact form handling
-- Content tagging
+# Install dependencies
+npm install
 
-## 🗄️ Database Schema
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
 
-The SRS document includes a comprehensive inferred database schema with:
+# Initialize database (SQLite for local dev)
+npx prisma db push
+npx prisma db seed
 
-- **40+ core tables** documented
-- Entity relationships mapped
-- Primary and foreign keys identified
-- Field types and constraints specified
-- ERD diagram included
+# Start development server
+npm run dev
+```
+
+Visit `http://localhost:3000` to see the application.
+
+### Development Commands
+
+```bash
+# Development
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run start        # Start production server
+
+# Database
+npm run db:push      # Sync schema to database
+npm run db:studio    # Open Prisma Studio
+npm run db:migrate   # Create migration
+npm run db:seed      # Seed database
+npm run db:reset     # Reset database
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run format       # Run Prettier
+npm run type-check   # TypeScript check
+
+# Testing
+npm run test         # Run unit tests
+npm run test:e2e     # Run E2E tests
+npm run test:coverage # Coverage report
+```
+
+## 📋 Key Features
+
+### Core E-commerce Functionality
+✅ **Product Management** - Full catalog with variants, categories, brands, attributes, images  
+✅ **Inventory Tracking** - Real-time stock levels, low-stock alerts, automatic deduction  
+✅ **Order Processing** - Complete lifecycle (Pending → Confirmed → Shipped → Delivered)  
+✅ **Refund Handling** - Request approval workflow with inventory restoration  
+✅ **Customer Profiles** - Contact info, addresses, order history, analytics  
+
+### Business Operations
+✅ **Dashboard & Analytics** - KPIs, sales metrics, visitor tracking, device analytics  
+✅ **Reporting** - Sales (product/category/brand), inventory, customer insights, country-based  
+✅ **Marketing Tools** - Coupons, flash sales, newsletters, abandoned cart recovery  
+✅ **Shipping Management** - Classes, zones, rates, automatic calculation  
+
+### Content & Administration
+✅ **CMS** - Custom pages, blog posts, navigation menus, FAQs  
+✅ **Staff Management** - Role-based access control (RBAC), granular permissions  
+✅ **Multi-Store** - Tenant isolation, store switching, theme customization  
+✅ **POS** - Point-of-sale for in-store sales  
+✅ **Support System** - Ticket management and tracking
+
+## 🗄️ Database Schema (Prisma)
+
+**ORM**: Prisma  
+**Local**: SQLite (`./prisma/dev.db`)  
+**Production**: PostgreSQL
+
+The database schema includes **40+ tables** with:
+- ✅ Type-safe database access via Prisma Client
+- ✅ Auto-generated migrations
+- ✅ Multi-tenant isolation (storeId in all tenant-scoped tables)
+- ✅ Soft deletes for important entities
+- ✅ Audit timestamps (createdAt, updatedAt)
+- ✅ Full-text search capabilities
+- ✅ Optimized indexes
 
 ### Key Entities
-- Users, Roles, Permissions
-- Customers, Addresses
-- Products, Variants, Categories, Brands
-- Orders, Order Items, Refunds
-- Shipping Classes, Shipping Zones
-- Coupons, Flash Sales, Newsletters
-- Pages, Blogs, Menus, FAQs
-- Support Tickets
-- Settings, Stores, Themes
+**Authentication**: Users, Roles, Sessions  
+**Multi-Tenancy**: Stores (tenant isolation)  
+**E-commerce**: Products, Variants, Categories, Brands, Attributes, Labels  
+**Orders**: Orders, OrderItems, RefundRequests, OrderHistory  
+**Customers**: Customers, Addresses, Wishlists  
+**Shipping**: ShippingClasses, ShippingZones, ShippingRates  
+**Marketing**: Coupons, FlashSales, Newsletters, AbandonedCarts  
+**CMS**: Pages, Blogs, BlogCategories, Menus, FAQs  
+**Support**: SupportTickets, TicketReplies  
+**Configuration**: Themes, Modules, Settings
+
+See `specs/001-ecommerce-saas-platform/plan.md` for detailed Prisma schema.
 
 ## 🔄 Business Logic & Workflows
 
