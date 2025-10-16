@@ -1,0 +1,2 @@
+Final URL after login POST: https://ecom-demo.workdo.io/dashboard
+Dashboard keyword present: True

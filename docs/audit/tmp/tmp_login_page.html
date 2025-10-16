@@ -1,0 +1,554 @@
+﻿<!-- Session Status -->
+
+
+<!DOCTYPE html>
+<html lang="en"
+    dir="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="WorkDo.io" />
+
+    <meta name="title" content="EcommerceGo">
+    <meta name="keywords"
+        content="EcommerceGo, Store with Multi theme and Multi Store">
+    <meta name="description"
+        content="Discover the efficiency of EcommerceGo, a user-friendly web application by Workdo.io.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ecom-demo.workdo.io">
+    <meta property="og:title" content="EcommerceGo">
+    <meta property="og:description"
+        content="Discover the efficiency of EcommerceGo, a user-friendly web application by Workdo.io. ">
+    <meta property="og:image"
+        content="https://ecom-demo.workdo.io/storage/uploads/ecommercego-saas-preview.png?1760626087">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ecom-demo.workdo.io">
+    <meta property="twitter:title"
+        content="EcommerceGo">
+    <meta property="twitter:description"
+        content="Discover the efficiency of EcommerceGo, a user-friendly web application by Workdo.io. ">
+    <meta property="twitter:image"
+        content="https://ecom-demo.workdo.io/storage/uploads/ecommercego-saas-preview.png?1760626087">
+
+    <meta name="csrf-token" content="ehmmc8YpTwKLbz9wh1eBbnuu16tymJj49Nkf17KF">
+
+    <title>EcommerceGo SaaS-    Login
+</title>
+
+    <!-- Favicon icon -->
+    <link rel="icon"
+        href="https://ecom-demo.workdo.io/storage/uploads/logo/favicon.png?timestamp=1760626087"
+        type="image/x-icon" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/fonts/tabler-icons.min.css">
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/fonts/feather.css">
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/fonts/fontawesome.css">
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/fonts/material.css">
+
+    <!-- vendor css -->
+            <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/css/style.css" id="main-style-link">
+        <link rel="stylesheet" href="https://ecom-demo.workdo.io/css/loader.css?v=1760626087">
+        
+
+    <!-- Scripts -->
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/css/customizer.css">
+
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/css/custom.css?v=1760626087">
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/css/custom-color.css">
+
+    <style>
+        :root {
+            --color-customColor: theme-3;
+        }
+    </style>
+    <style>
+        .lnding-menubar {
+            display: flex;
+            align-items: center;
+            color: #000000;
+        }
+
+        .lnding-menubar li {
+            list-style-type: none;
+
+        }
+
+        .lnding-menubar li a {
+            /* color: #000000; */
+            text-transform: capitalize;
+        }
+
+        .lnding-menubar li.has-item>a {
+            padding-right: 20px;
+        }
+
+        .lnding-menubar li.has-item .menu-dropdown {
+            position: absolute;
+            top: 100%;
+            background-color: #ffffff;
+            transform-origin: top;
+            box-shadow: 0px 10px 40px rgb(0 0 0 / 5%);
+            opacity: 0;
+            visibility: hidden;
+            min-width: 220px;
+            z-index: 2;
+            padding: 20px;
+            -moz-transition: all ease-in-out 0.3s;
+            -ms-transition: all ease-in-out 0.3s;
+            -o-transition: all ease-in-out 0.3s;
+            -webkit-transition: all ease-in-out 0.3s;
+            transition: all ease-in-out 0.3s;
+            -moz-transform: scaleY(0);
+            -ms-transform: scaleY(0);
+            -o-transform: scaleY(0);
+            -webkit-transform: scaleY(0);
+            transform: scaleY(0);
+        }
+
+        .lnding-menubar li.has-item:hover .menu-dropdown {
+            opacity: 1;
+            visibility: visible;
+            -webkit-transform: scaleY(1);
+            -moz-transform: scaleY(1);
+            -ms-transform: scaleY(1);
+            -o-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+
+        .lnding-menubar li.has-item .menu-dropdown li.lnk-itm>.dropdown-item {
+            margin-bottom: 7px;
+        }
+
+        .lnding-menubar li.has-item .menu-dropdown li.lnk-itm:not(:last-of-type) {
+            margin-bottom: 15px;
+        }
+
+        .lnding-menubar li.has-item .menu-dropdown li.lnk-itm .lnk-child li:not(:last-of-type) {
+            margin-bottom: 10px;
+        }
+
+        .lnding-menubar li.has-item .menu-dropdown li.lnk-itm .lnk-child li {
+            list-style-type: disc;
+        }
+    </style>
+    </head>
+
+<body class="theme-3">
+    <div class="announcebar main-site-annouce admin-announce">
+        <div class="col-full">
+    
+    
+    
+    
+    <a class="quotes" style="display: none;" href="https://workdo.io/product-category/ecommercego-saas-add-ons/ecommercego-add-ons/?utm_source=demo&utm_medium=ecommercego&utm_campaign=topbar" target="_blank">
+        <p class="text-center text-capitalize text-white hover-effect" style="color: #fff;"> <strong></strong>  Boost your  <b><span style="color:#F4B41A"> e-commerce Business</span></b>  with <span style="color: #6FD943;">Premium Add-Ons</span> </p>
+    </a> 
+     <a class="quotes" style="display: none;" href="https://workdo.io/product/ecommercego-saas-add-ons/ecommercego-saas-seller-apps/?utm_source=demo&utm_medium=ecommercego&utm_campaign=topbar" target="_blank">
+        <p class="text-center text-capitalize text-white hover-effect" style="color: #fff;"> <strong></strong>  Boost your  <b><span style="color:#F4B41A"> e-commerce Business</span></b>  with <span style="color: #6FD943;">eCommerceGo Seller App</span> </p>
+    </a> 
+
+
+    
+    
+
+    
+
+    
+    
+</div>
+<script src="https://ecom-demo.workdo.io/public/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    (function() {
+
+    var quotes = $(".quotes");
+    var quoteIndex = -1;
+
+    function showNextQuote() {
+    
+    ++quoteIndex;
+    quotes.eq(quoteIndex % quotes.length)
+        .fadeIn(2000)
+        .delay(2000)
+        .fadeOut(2000, showNextQuote);
+    
+    }
+
+    showNextQuote();
+
+    })();
+</script>    </div>
+
+    <div class="register-page auth-wrapper auth-v3">
+        <div class="login-back-img">
+            <img src="https://ecom-demo.workdo.io/assets/images/auth/img-bg-1.svg" alt="" class="img-fluid login-bg-1" />
+            <img src="https://ecom-demo.workdo.io/assets/images/auth/img-bg-2.svg" alt="" class="img-fluid login-bg-2" />
+            <img src="https://ecom-demo.workdo.io/assets/images/auth/img-bg-3.svg" alt="" class="img-fluid login-bg-3" />
+            <img src="https://ecom-demo.workdo.io/assets/images/auth/img-bg-4.svg" alt="" class="img-fluid login-bg-4" />
+        </div>
+        <div class="bg-auth-side bg-primary login-page"></div>
+        <div class="auth-content">
+            <nav class="navbar navbar-expand-md navbar-light default">
+                <div class="container-fluid pe-2">
+
+                    <a class="navbar-brand" href="https://ecom-demo.workdo.io">
+                        <img src="https://ecom-demo.workdo.io/storage/uploads/logo/logo-dark.png?timestamp=1760626087"
+                            alt="logo" class="brand_icon" />
+                    </a>
+
+                    <div class="d-flex gap-3">
+                                                    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                                <ul class="lnding-menubar p-0 m-0">
+                                                                            <li class="menu-lnk has-item">
+                                            <a class="dash-head-link" href="#">
+                                                <span>
+                                                    Pages
+                                                </span>
+                                                <i class="ti ti-chevron-down drp-arrow"></i>
+                                            </a>
+                                            <div class="menu-dropdown">
+                                                <ul class="p-0 m-0">
+                                                                                                                                                                        <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/about_us"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>About Us</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                                                                                                <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/terms_and_conditions"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>Terms and Conditions</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                                                                                                <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/privacy_policy"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>Privacy Policy</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                            </ul>
+                                            </div>
+                                        </li>
+                                                                            <li class="menu-lnk has-item">
+                                            <a class="dash-head-link" href="#">
+                                                <span>
+                                                    Custom Page
+                                                </span>
+                                                <i class="ti ti-chevron-down drp-arrow"></i>
+                                            </a>
+                                            <div class="menu-dropdown">
+                                                <ul class="p-0 m-0">
+                                                                                                                                                                        <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/about_us"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>About Us</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                                                                                                <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/terms_and_conditions"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>Terms and Conditions</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                                                                                                <li class="lnk-itm">
+                                                                <a href="https://ecom-demo.workdo.io/landing-pages/privacy_policy"
+                                                                    target=""
+                                                                    class="dropdown-item">
+                                                                    <span>Privacy Policy</span>
+                                                                </a>
+                                                                                                                            </li>
+                                                                                                                                                            </ul>
+                                            </div>
+                                        </li>
+                                                                    </ul>
+                                <button class="navbar-toggler bg-primary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01"
+                                    aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            </div>
+                                                <div class="dropdown dash-h-item drp-language ecom-lang-drp">
+                            <a class="dash-head-link dropdown-toggle arrow-none me-0 bg-primary"
+                                data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
+                                aria-expanded="false">
+                                <i class="ti ti-world nocolor"></i>
+                                <span class="drp-text">EN</span>
+                                <i class="ti ti-chevron-down drp-arrow nocolor"></i>
+                            </a>
+
+                            <div class="dropdown-menu dash-h-dropdown dropdown-menu-end"
+                                onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/ar"
+                                        class="dropdown-item ">
+                                        <span>Arabic</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/da"
+                                        class="dropdown-item ">
+                                        <span>Danish</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/de"
+                                        class="dropdown-item ">
+                                        <span>German</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/en"
+                                        class="dropdown-item text-primary">
+                                        <span>English</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/es"
+                                        class="dropdown-item ">
+                                        <span>Spanish</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/fr"
+                                        class="dropdown-item ">
+                                        <span>French</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/it"
+                                        class="dropdown-item ">
+                                        <span>Italian</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/ja"
+                                        class="dropdown-item ">
+                                        <span>Japanese</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/nl"
+                                        class="dropdown-item ">
+                                        <span>Dutch</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/pl"
+                                        class="dropdown-item ">
+                                        <span>Polish</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/pt"
+                                        class="dropdown-item ">
+                                        <span>Portuguese</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/ru"
+                                        class="dropdown-item ">
+                                        <span>Russian</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/tr"
+                                        class="dropdown-item ">
+                                        <span>Turkish</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/zh"
+                                        class="dropdown-item ">
+                                        <span>Chinese</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/he"
+                                        class="dropdown-item ">
+                                        <span>Hebrew</span>
+                                    </a>
+                                                                    <a href="https://ecom-demo.workdo.io/change-languages/pt-br"
+                                        class="dropdown-item ">
+                                        <span>Portuguese(Brazil)</span>
+                                    </a>
+                                                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="card">
+                <div class="row align-items-center justify-content-center text-start">
+                    <div class="col-xl-12">
+                        <div class="card-body mx-auto my-4 new-login-design">
+                                <div class="">
+        <h2 class="mb-3 f-w-600">Login</h2>
+    </div>
+    <div class="">
+        <!-- Session Status -->
+        
+        <!-- Validation Errors -->
+        
+        <form method="POST" action="https://ecom-demo.workdo.io/login" id="login-form">
+            <input type="hidden" name="_token" value="ehmmc8YpTwKLbz9wh1eBbnuu16tymJj49Nkf17KF" autocomplete="off">            <div class="form-group mb-3">
+                <label class="form-label">Email</label>
+                <input id="email" class="form-control" type="email" name="email" :value="old('email')" placeholder="Enter Email" value="admin@example.com"  required
+                    autofocus />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Password</label>
+                <input id="password" class="form-control" type="password" name="password" required
+                    autocomplete="current-password" placeholder="Enter Password"  value="1234" />
+            </div>
+
+            <div class="my-1">
+                                    <a class="underline text-sm text-primary text-gray-600 hover:text-gray-900" href="https://ecom-demo.workdo.io/forgot-password">
+                        Forgot your password?
+                    </a>
+                            </div>
+
+            
+            <div class="d-grid">
+                
+                <button class="btn btn-primary btn-block mt-2 login-do-btn login_button"> Login </button>
+            </div>
+            <p class="my-4 text-center">Don&#039;t have an account?
+                
+                <a href="https://ecom-demo.workdo.io/register" class="my-4 text-primary">Register</a>
+                
+            </p>
+            <div class="col-12">
+                <div class="row e-comm-row">
+                    <div class="col-md-6 mt-2">
+                        <button href="#" id="admin_login" class="w-100 btn btn-primary btn-block login_button" type="submit"
+                            style="padding: 7px 15px;">Admin</button>
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        <button href="#" id="superadmin_login" class="w-100  btn btn-primary btn-block login_button" type="submit"
+                            style="padding: 7px 15px;">Super Admin</button>
+                    </div>
+                   
+                    <div class="col-md-6 mt-2">
+                        <a href="https://ecom-demo.workdo.io/stylique/home" target="_blank"
+                            class="w-100  btn btn-outline-primary btn-block login_button" 
+                            style="padding: 7px 15px;">Stylique Theme</a>
+                    </div>
+					<div class="col-md-6 mt-2">
+						<a href="https://ecom-demo.workdo.io/greentic/home" target="_blank"
+							class="w-100  btn btn-outline-primary btn-block login_button"
+							style="padding: 7px 15px;">Greentic Theme</a>
+					</div>
+                    <div class="col-md-12 mt-2">
+						<a href="https://ecom-demo.workdo.io/techzonix/home" target="_blank"
+							class="w-100  btn btn-outline-primary btn-block login_button"
+							style="padding: 7px 15px;">Techzonix Theme</a>
+					</div>
+                    <div class="col-md-12 mt-2">
+                        <button href="#" id="admin_login_with_addon" class="w-100 btn btn-outline-primary btn-block login_button"
+                            style="padding: 7px 15px;">Explore With All Add-on</button>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <button href="#" id="admin_free_addon_login" class="w-100 btn btn-outline-primary btn-block login_button"
+                            style="padding: 7px 15px;">Explore With Included Add-on</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <a href="https://workdo.io/product-category/ecommercego-saas-add-ons/ecommercego-add-ons/" target="_blank"
+                            class="w-100  btn btn-outline-primary btn-block login_button"
+                            style="padding: 7px 15px;">Check All Premium Add-Ons</a>
+                    </div>
+					<div class="col-12 mt-2">
+                        <a href="https://workdo.io/product-category/ecommercego-saas-add-ons/ecommercego-mobile-apps/" target="_blank"
+                            class="w-100  btn btn-outline-primary btn-block text-success login_button"
+                            style="padding: 7px 15px;">Check All Premium Mobile Add-Ons</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="auth-footer">
+                <div class="container-fluid text-center">
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="text-black">
+                                
+                                2025
+                                Copyright © eCommerceGo SaaS
+                            </p>
+                        </div>
+                        <div class="col-6 text-end">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader" class="loader-wrapper" style="display: none;">
+        <span class="site-loader"> </span>
+        <h3 class="loader-content"> Loading . . . </h3>
+    </div>
+    <script src="https://ecom-demo.workdo.io/js/jquery-3.6.0.min.js"></script>
+    <script src="https://ecom-demo.workdo.io/assets/js/vendor-all.js"></script>
+    <script src="https://ecom-demo.workdo.io/assets/js/plugins/bootstrap.min.js"></script>
+    <script src="https://ecom-demo.workdo.io/assets/js/plugins/feather.min.js"></script>
+    <script src="https://ecom-demo.workdo.io/js/loader.js"></script>
+        <script>
+    $(document).ready(function () {
+        $("#login-form").submit(function () {
+            $('#loader').fadeIn();
+            $(".login_button").attr("disabled", true);
+            return true;
+        });
+    });
+    $(document).on("click", "#admin_login", function () {
+        $("#email").val('admin@example.com');
+        $("#password").val('1234');
+        $('.login-do-btn').trigger('click');
+    });
+    $(document).on("click", "#superadmin_login", function () {
+        $("#email").val('superadmin@example.com');
+        $("#password").val('1234');
+        $('.login-do-btn').trigger('click');
+    });
+
+    $(document).on("click", "#admin_free_addon_login", function() {
+        $("#admin_free_addon_login").attr("disabled", true);
+
+        $("#email").val('admin@example.com');
+        $("#password").val('1234');
+        SessionSave('free-addon');
+    });
+        $(document).on("click", "#admin_login_with_addon", function(event) {
+        $("#admin_login_with_addon").attr("disabled", true);
+
+        event.preventDefault();
+
+        $("#email").val('admin@example.com');
+        $("#password").val('1234');
+
+        // var val = [];
+        //     $('input[type=checkbox]:checked').each(function(i){
+        //     val[i] = $(this).val();
+        // });
+
+        SessionSave('All');
+    });
+
+    function SessionSave(addon = null) {
+        $(".loader-wrapper").removeClass('d-none');
+
+        $.ajax({
+            url: "https://ecom-demo.workdo.io/add-on/session/save",
+            method: "POST",
+            data: {
+                '_token': 'ehmmc8YpTwKLbz9wh1eBbnuu16tymJj49Nkf17KF',
+                'user_addon': addon,
+            },
+            success: function(data) {
+                $('#loader').fadeIn();
+               $('#login-form').submit();
+            }
+        });
+    }
+</script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var headerHeight = $('.announcebar').outerHeight(); // Get the height of the header
+            $('body').css('padding-top', headerHeight + 'px');
+
+            $('.dash-sidebar').css('top', headerHeight + 'px');
+        });
+    </script>
+        
+</body>
+
+</html>
+
