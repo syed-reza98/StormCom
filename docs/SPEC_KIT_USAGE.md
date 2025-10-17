@@ -10,7 +10,7 @@ The project includes:
 - ✅ `.github/prompts/` - Spec-kit prompt files
 - ✅ `.github/copilot-instructions.md` - GitHub Copilot configuration
 - ✅ `.github/instructions/` - Context-specific instructions
-- ✅ `docs/specifications/001-stormcom-platform/` - Platform specifications
+- ✅ `docs/specifications/stormcom-platform/` - Platform specification templates
 - ✅ Spec-driven workflow documentation
 
 ## What the Spec Kit CLI Provides
@@ -70,13 +70,13 @@ StormCom is already set up! Here's how to work with specifications:
 ### 1. Creating a New Feature Specification
 
 ```bash
-# Create a new specification directory
-mkdir -p docs/specifications/002-new-feature
+# Create a new specification directory (example pattern)
+mkdir -p docs/specifications/new-feature-name
 
 # Add specification files
-cd docs/specifications/002-new-feature
+cd docs/specifications/new-feature-name
 
-# Create spec files (use 001-stormcom-platform as template)
+# Create spec files (use stormcom-platform as template)
 touch spec.md plan.md data-model.md api-contracts.md
 ```
 
@@ -101,9 +101,9 @@ GitHub Copilot is configured with project-specific instructions:
 **Context-specific instructions:**
 - `**/*.test.ts` → `.github/instructions/testing.instructions.md`
 - `**/*.md` → `.github/instructions/documentation.instructions.md`
-- `prisma/**` → `.github/instructions/database.instructions.md`
-- `src/components/**` → `.github/instructions/components.instructions.md`
-- `src/app/api/**` → `.github/instructions/api-routes.instructions.md`
+- `prisma/**` → `.github/instructions/database.instructions.md` (future)
+- `src/components/**` → `.github/instructions/components.instructions.md` (future)
+- `src/app/api/**` → `.github/instructions/api-routes.instructions.md` (future)
 
 ### 4. Working with Specifications
 
@@ -111,10 +111,10 @@ GitHub Copilot is configured with project-specific instructions:
 
 ```bash
 # 1. Create specification directory
-mkdir -p docs/specifications/003-customer-reviews
+mkdir -p docs/specifications/customer-reviews
 
 # 2. Create spec.md
-cat > docs/specifications/003-customer-reviews/spec.md <<EOF
+cat > docs/specifications/customer-reviews/spec.md <<EOF
 # Feature Specification: Customer Reviews
 
 **Status**: Planning
@@ -136,9 +136,9 @@ Enable customers to leave reviews and ratings for products.
 EOF
 
 # 3. Create other specification files
-touch docs/specifications/003-customer-reviews/plan.md
-touch docs/specifications/003-customer-reviews/data-model.md
-touch docs/specifications/003-customer-reviews/api-contracts.md
+touch docs/specifications/customer-reviews/plan.md
+touch docs/specifications/customer-reviews/data-model.md
+touch docs/specifications/customer-reviews/api-contracts.md
 ```
 
 ## When to Run `specify init`
