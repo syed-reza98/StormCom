@@ -95,7 +95,7 @@ uvx --from git+https://github.com/github/spec-kit.git specify init my-project
 
 3. **Review Structure**
    ```bash
-   ls -la docs/specifications/.speckit/
+   ls -la .specify/
    ```
 
 4. **Customize Constitution**
