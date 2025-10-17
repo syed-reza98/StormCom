@@ -6,7 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve our documentation! Please fill out this form as completely as possible.
+        Thanks for helping improve our documentation! Please fill out
+        this form as completely as possible.
 
   - type: dropdown
     id: type
@@ -97,7 +98,9 @@ body:
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our Code of Conduct
+      description: >
+        By submitting this issue, you agree to follow our
+        Code of Conduct
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true

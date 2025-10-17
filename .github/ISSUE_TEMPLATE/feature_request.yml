@@ -6,7 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature! Please fill out this form as completely as possible.
+        Thanks for suggesting a feature! Please fill out this form as
+        completely as possible.
 
   - type: textarea
     id: problem
@@ -46,10 +47,12 @@ body:
       description: Describe how users would interact with this feature
       placeholder: |
         As a [type of user], I want [goal] so that [benefit].
-        
+
         Example:
-        - As a store owner, I want to bulk update product prices so that I can quickly adjust for seasonal sales.
-        - As a customer, I want to save products to a wishlist so that I can purchase them later.
+        - As a store owner, I want to bulk update product prices so
+          that I can quickly adjust for seasonal sales.
+        - As a customer, I want to save products to a wishlist so
+          that I can purchase them later.
 
   - type: dropdown
     id: component
@@ -131,7 +134,9 @@ body:
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our Code of Conduct
+      description: >
+        By submitting this issue, you agree to follow our
+        Code of Conduct
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
