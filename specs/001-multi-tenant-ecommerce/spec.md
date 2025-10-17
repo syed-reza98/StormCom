@@ -11,7 +11,11 @@
 
 - Q: Which SSO standard(s)/provider scope should be supported for enterprise SSO? → A: OIDC + SAML (both)
 - Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with one‑time recovery codes; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
- - Q: External platform sync (scope, direction, frequency)? → Pending — to be decided in next clarification step (options will be proposed).
+- Q: External platform sync (scope, direction, frequency)? → A: Real-time bidirectional sync with webhooks for immediate data consistency in both directions, including conflict resolution strategies.
+- Q: What are the scalability targets per store before performance degradation? → A: Mid-market scale - Up to 10K products, 1M orders/year (≈83K orders/month), 250K customers per store.
+- Q: What uptime SLA should StormCom guarantee? → A: 99.9% uptime (≈43 minutes downtime/month) - standard SaaS reliability target.
+- Q: What data retention policy should be enforced for compliance? → A: Standard retention - 3 years for orders/invoices, 1 year for audit logs, 90 days for backups.
+- Q: What API rate limiting strategy should be enforced? → A: Tiered rate limiting by subscription plan - Free (60 req/min), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
 
 ## User Scenarios & Testing (mandatory)
 
@@ -359,6 +363,12 @@ As a Security Admin, I enforce strong passwords, MFA, account lockouts, RBAC, an
 - Theme previews are isolated; publish is atomic with validation before going live.
 - Custom CSS must be sanitized to prevent XSS; unsafe properties and external URLs blocked.
 
+**API rate limiting**:
+- Rate limit counters reset every minute (sliding window); requests distributed evenly across the window avoid bursts.
+- Authenticated users have per-user rate limits; unauthenticated requests share IP-based limits (100 req/min per IP).
+- Webhook endpoints from trusted external platforms (payment gateways, external e-commerce platforms) are exempt from rate limits; validated by webhook signature.
+- Rate limit exceeded responses include current limit, remaining quota, and reset timestamp in headers for client retry logic.
+
 ## Requirements (mandatory)
 
 ### Functional Requirements
@@ -507,6 +517,11 @@ Security and compliance
 - **FR-095**: The system MUST ensure tenant isolation in all queries, exports, and scheduled jobs; cross‑tenant access is prohibited.
 - **FR-096**: The system MUST sanitize all user inputs to prevent XSS attacks and validate all data before database operations.
 - **FR-097**: The system MUST use HTTPS for all communications and secure session management with HTTP-only cookies.
+- **FR-128**: The system MUST implement API rate limiting per user/store based on subscription plan tier to prevent abuse and ensure fair resource allocation.
+- **FR-129**: The system MUST enforce tiered rate limits: Free plan (60 requests/minute), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
+- **FR-130**: The system MUST return HTTP 429 (Too Many Requests) with Retry-After header when rate limits are exceeded; include clear error messaging.
+- **FR-131**: The system SHOULD implement rate limit monitoring dashboard for Super Admins showing per-store API usage patterns and rate limit violations.
+- **FR-132**: The system SHOULD allow temporary rate limit increases for Enterprise customers during known high-traffic events (e.g., flash sales) with advance request.
 
 Future features (deferred to Phase 2)
 - **FR-098**: The system MAY support multi-currency with configurable exchange rates and customer currency selection.
@@ -518,18 +533,39 @@ Future features (deferred to Phase 2)
 - **FR-09E**: The system MAY support an add-on/module system for platform extensibility.
 
 Integrations
- - **FR-100**: The system SHOULD optionally integrate with external e‑commerce platforms (e.g., WooCommerce/Shopify) to sync catalog/orders/customers using real-time webhooks.
- - **FR-101**: External platform integration MUST support real-time synchronization via webhooks for immediate data consistency (inventory levels, order status updates, product changes).
- - **FR-102**: External platform integration MUST implement webhook handlers with retry logic (exponential backoff, max 5 attempts) and dead-letter queue for failed syncs.
- - **FR-103**: External platform integration MUST provide sync direction configuration per store: inbound only (import from external), outbound only (export to external), or bidirectional.
- - **FR-104**: External platform integration MUST include conflict resolution strategies for bidirectional sync: last-write-wins, manual resolution queue, or configurable priority rules.
- - **FR-105**: External platform integration MUST maintain sync status monitoring dashboard showing last sync time, pending items, failed syncs, and data discrepancies.
- - **FR-106**: External platform integration SHOULD support initial bulk import/export for onboarding existing stores with large catalogs.
+ - **FR-100**: The system MUST support optional integration with external e‑commerce platforms (e.g., WooCommerce/Shopify) using real-time bidirectional synchronization via webhooks for immediate data consistency across platforms.
+ - **FR-101**: External platform integration MUST implement webhook handlers for both inbound (external → StormCom) and outbound (StormCom → external) events including product changes, inventory updates, order status changes, and customer data synchronization.
+ - **FR-102**: External platform integration MUST implement webhook retry logic with exponential backoff (max 5 attempts), dead-letter queue for permanent failures, and manual retry capability for failed syncs.
+ - **FR-103**: External platform integration MUST include configurable conflict resolution strategies for bidirectional sync when the same entity is modified in both systems: last-write-wins (timestamp-based), manual resolution queue (staff review), or configurable priority rules (e.g., always prefer StormCom inventory).
+ - **FR-104**: External platform integration MUST maintain a real-time sync status monitoring dashboard per store showing: last successful sync timestamp, sync health status, pending sync items count, failed sync items with error details, and data discrepancy alerts.
+ - **FR-105**: External platform integration MUST provide entity-level sync direction overrides allowing stores to configure bidirectional sync for products/inventory but inbound-only for orders (or other combinations per business needs).
+ - **FR-106**: External platform integration MUST support initial bulk import/export for onboarding existing stores with large catalogs (1000+ products), including progress tracking and validation reporting.
 
 Defaults and policies
 - **FR-110**: The system MUST allow configuration of thresholds (low stock, KPI highlights) at the store level.
 - **FR-111**: The system MUST provide configurable auto‑cancel window for unpaid orders (default: 60 minutes) and document the default.
 - **FR-112**: The system MUST provide human‑readable error messages for validation failures (e.g., uniqueness, stock).
+
+Scalability and performance
+- **FR-113**: The system MUST maintain responsive performance (per success criteria timing targets) for stores with up to 10K products, 83K orders/month, and 250K customers.
+- **FR-114**: The system SHOULD provide scalability monitoring dashboard for Super Admins showing per-store resource usage (database size, order volume trends, API request rates) to identify stores approaching limits.
+- **FR-115**: The system SHOULD implement query optimization and caching strategies to maintain sub-3-second page loads for product listings with 10K+ products and complex filters.
+
+Reliability and availability
+- **FR-116**: The system MUST achieve 99.9% uptime SLA (≈43 minutes planned + unplanned downtime per month) excluding scheduled maintenance windows.
+- **FR-117**: The system MUST provide scheduled maintenance windows during low-traffic periods (configurable per region) with minimum 48-hour advance notice to affected stores.
+- **FR-118**: The system MUST implement automated health checks and monitoring for critical services (database, payment gateways, email delivery, webhook processing) with alerts on failures.
+- **FR-119**: The system MUST implement automated database backups with point-in-time recovery capability; backups retained for minimum 30 days.
+- **FR-120**: The system SHOULD implement disaster recovery procedures with Recovery Time Objective (RTO) of 4 hours and Recovery Point Objective (RPO) of 1 hour for critical data.
+
+Data retention and compliance
+- **FR-121**: The system MUST retain orders, invoices, and financial transaction records for 3 years to meet tax and accounting compliance requirements.
+- **FR-122**: The system MUST retain security audit logs for 1 year with immutable storage to support security investigations and compliance audits.
+- **FR-123**: The system MUST retain automated backups for 90 days with automated cleanup of older backups to manage storage costs.
+- **FR-124**: The system MUST support GDPR-compliant customer data deletion requests (right to be forgotten) with complete data purge within 30 days, excluding legally required financial records.
+- **FR-125**: The system MUST provide data export functionality for customers (data portability) in machine-readable format (JSON/CSV) including all personal data, orders, and interactions.
+- **FR-126**: The system MUST implement automated data retention policies with scheduled jobs to archive or delete data past retention periods.
+- **FR-127**: The system SHOULD provide configurable retention policies per store for non-regulated data (e.g., marketing data, abandoned carts) to allow customization based on business needs.
 
 ### Key Entities (data overview)
 
@@ -584,7 +620,11 @@ Assumptions
 - Default auto‑cancel window is 60 minutes unless changed by store configuration.
 - Notifications are sent via email by default; additional channels (e.g., SMS/push) may be added later.
 - Theme customization is limited to provided presets and safe configurable options; no arbitrary code injection.
-- Reasonable dataset sizes for interactive queries (typical mid‑market stores); very large datasets may require archiving/BI tooling.
+- **Scalability targets**: System designed for mid-market stores with up to 10K products, 1M orders/year (≈83K orders/month), and 250K customers per store; larger stores may require performance optimization or Enterprise custom infrastructure.
+- **Uptime SLA**: 99.9% uptime target (≈43 minutes downtime/month) excluding scheduled maintenance windows; achieved through standard HA practices (load balancing, database replication, automated failover).
+- **Disaster recovery**: Automated daily backups with 30-day retention; RTO 4 hours, RPO 1 hour for critical data restoration.
+- **Data retention**: Standard retention periods - 3 years for orders/invoices (accounting/tax compliance), 1 year for audit logs (security), 90 days for backups (operational recovery); GDPR-compliant customer data deletion supported.
+- **API rate limiting**: Tiered by subscription plan to prevent abuse and ensure fair resource allocation - Free (60 req/min), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
 - Standard e‑commerce privacy and data retention practices apply unless stricter policies are configured by the store.
 - **Shipping rates**: Manual rate configuration (zones + classes) for Phase 1; carrier API integration (FedEx, UPS, USPS) deferred to Phase 2 as optional enhancement.
 - **Tax calculation**: Manual tax rate configuration for Phase 1; tax service API integration (Avalara, TaxJar) deferred to Phase 2 as optional enhancement.
@@ -600,13 +640,13 @@ Assumptions
 - **Module/add-on system**: Deferred to Phase 3 for platform extensibility.
 - **Mobile apps**: Out of scope for Phase 1; focus is web-based admin and storefront (responsive design).
 - **Storefront architecture**: Full-stack solution with both admin dashboard AND customer-facing storefront UI (complete turnkey platform for mid-market merchants).
-- **External platform sync**: Real-time synchronization via webhooks for immediate data consistency; supports inbound, outbound, or bidirectional sync with configurable conflict resolution.
+- **External platform sync**: Real-time bidirectional synchronization via webhooks for immediate data consistency; supports configurable conflict resolution (last-write-wins, manual queue, or priority rules) and entity-level direction overrides per store.
 - **PCI compliance**: Achieved by NOT storing raw card data; rely on payment gateway tokenization.
 - **Default plan limits** (configurable per deployment):
-  - Free: 10 products, 50 orders/month, 1 staff user, 100MB storage, community support
-  - Basic ($29/mo): 100 products, 500 orders/month, 3 staff users, 1GB storage, email support
-  - Pro ($99/mo): 1000 products, 5000 orders/month, 10 staff users, 10GB storage, priority support
-  - Enterprise (custom): unlimited resources, dedicated support, custom SLA
+  - Free: 10 products, 50 orders/month, 1 staff user, 100MB storage, 60 API req/min, community support
+  - Basic ($29/mo): 100 products, 500 orders/month, 3 staff users, 1GB storage, 120 API req/min, email support
+  - Pro ($99/mo): 1000 products, 5000 orders/month, 10 staff users, 10GB storage, 300 API req/min, priority support
+  - Enterprise (custom): unlimited resources, 1000 API req/min (customizable), dedicated support, custom SLA
 - **Trial period**: Default 14 days for all paid plans; automatically converts or expires.
 - **Grace period after expiration**: Default 7 days read-only access before full suspension.
 
@@ -618,6 +658,8 @@ Dependencies
 - Optional external e-commerce platform APIs (WooCommerce, Shopify) with webhook support for real-time sync.
 - Background job scheduling system for auto-cancel, abandoned-cart recovery, plan expiration checks, and notifications.
 - Secure, immutable audit log storage (append-only with retention policy).
+- Automated backup system with point-in-time recovery and 30-day retention minimum.
+- Health monitoring and alerting system for critical services (uptime monitoring, APM, log aggregation).
 - File storage for product images, digital downloads, invoice PDFs, and backups.
 - Database with transaction support and row-level locking for inventory concurrency control.
 - CDN for storefront asset delivery (images, CSS, JavaScript) for global performance.
@@ -654,5 +696,12 @@ Dependencies
 - **SC-025**: Checkout flow (cart → shipping → payment → confirmation) completes without errors for 99% of attempts; abandoned carts are tracked.
 - **SC-026**: External platform webhook processing completes within 10 seconds for 95% of events; failed webhooks retry successfully within 5 minutes.
 - **SC-027**: Storefront is accessible via keyboard navigation only; WCAG 2.1 Level AA compliance verified for all customer-facing pages.
+- **SC-028**: System maintains all performance targets (page load times, query response times) for stores with 10K products, 250K customers, and 83K orders/month sustained load.
+- **SC-029**: System achieves 99.9% uptime measured monthly over a rolling 12-month period; downtime incidents logged with root cause analysis.
+- **SC-030**: Automated backups complete successfully 99.9% of the time; backup restoration tested quarterly with documented RTO ≤ 4 hours.
+- **SC-031**: Data retention policies execute automatically 100% of the time; orders/invoices retained for 3 years, audit logs for 1 year, backups for 90 days.
+- **SC-032**: GDPR data deletion requests complete within 30 days 100% of the time; data export requests fulfill within 48 hours with complete data in machine-readable format.
+- **SC-033**: API rate limiting enforces plan-specific limits 100% of the time; requests exceeding limits return HTTP 429 with Retry-After header within 100ms.
+- **SC-034**: Rate limit violations are tracked and logged; Super Admin dashboard shows per-store API usage patterns updated in real-time.
 
 
