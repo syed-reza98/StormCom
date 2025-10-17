@@ -140,7 +140,7 @@ touch docs/specifications/002-new-feature/api-contracts.md
 
 All coding standards are defined in:
 ```bash
-cat docs/specifications/.speckit/constitution.md
+cat .specify/memory/constitution.md
 ```
 
 ### 4. Use GitHub Copilot
