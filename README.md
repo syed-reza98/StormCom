@@ -177,11 +177,30 @@ npm run type-check   # TypeScript check
 
 ## 📚 Documentation
 
+### Core Documentation
+- **Spec Kit Setup**: `docs/SPEC_KIT_SETUP.md` - How to install and use GitHub Spec Kit CLI
 - **Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
 - **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
 - **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
 - **Project Standards**: `docs/specifications/.speckit/constitution.md`
 - **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
+
+### Spec-Driven Development
+
+StormCom uses [GitHub Spec Kit](https://github.com/github/spec-kit) for spec-driven development. To get started:
+
+```bash
+# Install uv package manager
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install specify-cli
+uv tool install --from git+https://github.com/github/spec-kit.git specify-cli
+
+# Check installation
+specify --help
+```
+
+For detailed setup instructions, see [Spec Kit Setup Guide](docs/SPEC_KIT_SETUP.md).
 
 ---
 
