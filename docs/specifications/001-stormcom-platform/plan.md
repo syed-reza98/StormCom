@@ -16,38 +16,57 @@ Building a full-stack multi-tenant e-commerce SaaS platform using **Next.js 15.5
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)  
 **Framework**: Next.js 15.5.5 (App Router) with React 19  
 **Primary Dependencies**:
-- **Prisma**: Latest (ORM with SQLite local, PostgreSQL production)
-- **NextAuth.js**: v5 (authentication & session management)
+- **Prisma**: Latest stable (ORM with SQLite local, PostgreSQL production on Vercel Postgres)
+- **NextAuth.js**: v5 (authentication & session management with JWT)
 - **Tailwind CSS**: 4.1.14 (utility-first styling)
 - **Radix UI**: Latest (accessible component primitives)
-- **shadcn/ui**: Latest (pre-built component library on Radix)
-- **Zod**: Latest (runtime validation)
-- **React Hook Form**: Latest (form state management)
-- **Recharts**: Latest (data visualization)
-- **React Email**: Latest (email templates)
-- **Resend**: Latest (email delivery)
+- **shadcn/ui**: Latest (pre-built component library built on Radix UI)
+- **Zod**: Latest (runtime validation for TypeScript)
+- **React Hook Form**: Latest (performant form state management)
+- **Recharts**: Latest (data visualization and charts)
+- **React Email**: Latest (type-safe email templates)
+- **Resend**: Latest (transactional email delivery service)
+- **bcrypt**: Latest (password hashing)
 
-**Storage**: SQLite (./prisma/dev.db for local), PostgreSQL (Vercel Postgres for production), Vercel Blob (file storage)  
-**Testing**: Vitest 3.2.4 + Testing Library (unit/integration), Playwright 1.56.0 with MCP (E2E)  
-**Target Platform**: Web application (responsive: desktop, tablet, mobile)  
+**Storage**: 
+- **Local Dev**: SQLite (`./prisma/dev.db`) - file-based database for easy setup
+- **Production**: PostgreSQL (Vercel Postgres) - managed with connection pooling
+- **File Storage**: Vercel Blob - for product images, documents, exports
+
+**Testing**: 
+- **Unit/Integration**: Vitest 3.2.4 + Testing Library
+- **E2E**: Playwright 1.56.0 with MCP support for advanced browser automation
+- **Coverage**: 80% minimum for business logic
+
+**Target Platform**: Web application (responsive design)
+- Desktop: 1920×1080, 1366×768 (primary)
+- Tablet: iPad (1024×768), Android tablets
+- Mobile: iPhone (390×844), Android phones (360×800)
+
 **Project Type**: Full-stack monorepo with SSR/SSG capabilities  
+
 **Performance Goals**:
-- Page load (LCP) < 2s
-- API response (p95) < 500ms
-- Dashboard TTI < 3s
-- Database query (p95) < 100ms
+- **Page Load (LCP)**: < 2.0 seconds
+- **API Response (p95)**: < 500ms
+- **Dashboard TTI**: < 3.0 seconds
+- **Database Query (p95)**: < 100ms
+- **First Input Delay (FID)**: < 100ms
+- **Cumulative Layout Shift (CLS)**: < 0.1
 
 **Constraints**:
-- Multi-tenant data isolation (storeId in all queries)
+- Multi-tenant data isolation enforced (storeId in all queries via Prisma middleware)
 - GDPR/PCI compliance ready
-- 99.9% uptime target
-- Type-safe (TypeScript strict mode, no `any` types)
+- 99.9% uptime target (3 nines)
+- Type-safe (TypeScript strict mode, NO `any` types allowed)
+- WCAG 2.1 Level AA accessibility compliance
 
 **Scale/Scope**:
 - 10,000+ products per store
-- 100 concurrent admin users
-- 10+ stores per instance
-- 1,000 orders/hour peak
+- 100 concurrent admin users per store
+- 10+ stores per instance (multi-tenant)
+- 1,000 orders/hour peak capacity
+- 1 million customer records total
+- 5MB max file upload size (images, documents)
 
 ---
 
@@ -271,20 +290,73 @@ StormCom/
   { error: { code: string, message: string, details?: any } }
   ```
 
-**Database Layer**:
-- **Prisma ORM**: Type-safe database access, auto-generated client
-- **SQLite**: Local development (file: `./prisma/dev.db`)
-- **PostgreSQL**: Production (Vercel Postgres)
-- **Migrations**: Version-controlled schema changes
-- **Soft Deletes**: Set `deletedAt` for products, orders, customers, content
-- **Audit Timestamps**: `createdAt`, `updatedAt` on all tables
+### Database Layer**:
+- **Prisma ORM**: Type-safe database access, auto-generated TypeScript client
+- **SQLite**: Local development (file: `./prisma/dev.db`) - zero configuration, perfect for rapid development
+- **PostgreSQL**: Production (Vercel Postgres) - managed database with automatic backups and connection pooling
+- **Migrations**: Version-controlled schema changes with `prisma migrate`
+- **Soft Deletes**: Set `deletedAt` timestamp for products, orders, customers, content (never hard delete user data)
+- **Audit Timestamps**: `createdAt`, `updatedAt` on all tables for compliance and debugging
+- **Connection Pooling**: Prisma automatically manages connection pool (5 connections per Vercel Serverless Function)
+- **Query Optimization**: Automatic indexes on foreign keys, compound indexes for common queries
 
 **Multi-Tenancy Strategy**:
-- **Store ID**: Added to all tenant-scoped tables
-- **Prisma Middleware**: Auto-inject `{ where: { storeId } }` filter on all queries
-- **Session**: Includes current `storeId` (switchable in UI for super admin)
-- **API Validation**: All API routes validate store access before operations
-- **Database**: PostgreSQL Row Level Security (RLS) policies for additional layer
+- **Store ID**: `storeId` column added to all tenant-scoped tables (40+ tables)
+- **Prisma Middleware**: Auto-inject `{ where: { storeId } }` filter on all findMany/findFirst/count queries
+- **Session**: JWT token includes current `storeId` (switchable in UI dropdown for super admin users)
+- **API Validation**: All API routes validate user has access to the store before any operations
+- **Database**: PostgreSQL Row Level Security (RLS) policies as additional security layer (optional but recommended)
+- **Data Isolation**: Zero risk of cross-tenant data contamination through middleware enforcement
+
+**Multi-Tenant Middleware Implementation**:
+```typescript
+// lib/db/middleware.ts
+import { Prisma } from '@prisma/client';
+
+const TENANT_SCOPED_MODELS = [
+  'Product', 'Order', 'Customer', 'Category', 'Brand', 
+  'Coupon', 'FlashSale', 'Page', 'Blog', 'Menu', 'FAQ', 
+  // ... all 40+ tenant-scoped models
+];
+
+export function applyTenantMiddleware(prisma: PrismaClient) {
+  prisma.$use(async (params, next) => {
+    const storeId = await getStoreIdFromSession(); // From NextAuth session
+    
+    if (TENANT_SCOPED_MODELS.includes(params.model)) {
+      // Inject storeId filter for queries
+      if (['findMany', 'findFirst', 'count'].includes(params.action)) {
+        params.args.where = { 
+          ...params.args.where, 
+          storeId,
+          deletedAt: null // Soft delete filter
+        };
+      }
+      
+      // Inject storeId for creates
+      if (params.action === 'create') {
+        params.args.data = { ...params.args.data, storeId };
+      }
+      
+      // Validate storeId for updates/deletes
+      if (['update', 'delete', 'updateMany', 'deleteMany'].includes(params.action)) {
+        params.args.where = { ...params.args.where, storeId };
+      }
+    }
+    
+    return next(params);
+  });
+}
+```
+
+**Database Indexes Strategy**:
+- All foreign keys automatically indexed by Prisma
+- Compound indexes for common query patterns:
+  - `@@index([storeId, createdAt])` - Time-series queries per store
+  - `@@index([storeId, slug])` - Product/category lookups by slug
+  - `@@index([storeId, status])` - Order filtering by status
+  - `@@unique([storeId, email])` - Customer email uniqueness per store
+  - `@@unique([storeId, sku])` - Product SKU uniqueness per store
 
 **Authentication & Authorization**:
 - **NextAuth.js v5**: Credentials provider (email + password)
@@ -867,8 +939,9 @@ npm run precommit  # lint + type-check + test
 ### Vercel Deployment (Recommended)
 
 **Prerequisites**:
-- Vercel account
-- GitHub repository connected
+- Vercel account (free tier available)
+- GitHub repository connected to Vercel
+- Node.js 18+ installed locally
 
 **Steps**:
 
@@ -879,33 +952,118 @@ npm run precommit  # lint + type-check + test
    git push origin main
    ```
 
-2. **Configure Vercel**
-   - Go to Vercel dashboard
-   - Import GitHub repository
-   - Configure build settings (auto-detected for Next.js)
-   - Add environment variables from `.env.example`
+2. **Import Project in Vercel**
+   - Go to https://vercel.com/dashboard
+   - Click "Add New" → "Project"
+   - Import your GitHub repository
+   - Framework Preset: Automatically detects "Next.js"
+   - Build settings: Auto-configured (no changes needed)
+   - Click "Deploy"
 
-3. **Environment Variables** (Vercel Dashboard)
+3. **Configure Environment Variables** (Vercel Dashboard → Settings → Environment Variables)
    ```env
-   DATABASE_URL=postgresql://user:pass@host:5432/db  # Vercel Postgres
-   NEXTAUTH_SECRET=your-secret-generate-new
-   NEXTAUTH_URL=https://your-domain.vercel.app
-   RESEND_API_KEY=re_xxxxxxxxxxxx
-   BLOB_READ_WRITE_TOKEN=vercel_blob_xxxxxxxxxxxx
+   # Database
+   DATABASE_URL=postgresql://user:pass@host:5432/stormcom  # From Vercel Postgres
+   
+   # Authentication
+   NEXTAUTH_SECRET=your-secret-generate-with-openssl-rand-base64-32
+   NEXTAUTH_URL=https://your-domain.vercel.app  # Production URL
+   
+   # Email
+   RESEND_API_KEY=re_xxxxxxxxxxxx  # From Resend dashboard
+   RESEND_FROM_EMAIL=noreply@yourdomain.com
+   
+   # File Storage
+   BLOB_READ_WRITE_TOKEN=vercel_blob_xxxxxxxxxxxx  # From Vercel Blob
+   
+   # Optional
+   NODE_ENV=production
    ```
 
-4. **Deploy**
-   - Vercel auto-deploys on push to `main` branch
-   - Preview deployments for pull requests
+4. **Automatic Deployments**
+   - Push to `main` branch → Production deployment
+   - Push to any branch → Preview deployment (with unique URL)
+   - Pull requests → Automatic preview with comments on PR
 
 **Vercel Postgres Setup**:
-1. Create Vercel Postgres database in dashboard
-2. Copy `DATABASE_URL` to environment variables
-3. Run migrations: `npx prisma migrate deploy`
 
-**Vercel Blob Setup**:
-1. Enable Vercel Blob in project settings
-2. Copy `BLOB_READ_WRITE_TOKEN` to environment variables
+1. **Create Database**:
+   - Go to Vercel Dashboard → Storage → Create Database
+   - Select "Postgres" → Choose region (closest to your users)
+   - Database created with connection pooling enabled
+
+2. **Get Connection String**:
+   - Copy `DATABASE_URL` from database settings
+   - Add to environment variables in Vercel Dashboard
+   
+3. **Run Migrations**:
+   ```bash
+   # From local machine (connected to production DB)
+   DATABASE_URL="postgresql://..." npx prisma migrate deploy
+   
+   # Or trigger via Vercel CLI
+   vercel env pull .env.production.local
+   npx prisma migrate deploy
+   ```
+
+**Vercel Blob Setup** (File Storage):
+
+1. **Enable Vercel Blob**:
+   - Go to Project → Storage → Connect Store → Blob
+   - Select region (same as database for best latency)
+   
+2. **Copy Token**:
+   - `BLOB_READ_WRITE_TOKEN` automatically added to environment variables
+   
+3. **Usage in Code**:
+   ```typescript
+   import { put } from '@vercel/blob';
+   
+   const blob = await put('products/image.jpg', file, {
+     access: 'public',
+   });
+   // blob.url → CDN URL for image
+   ```
+
+**CI/CD Pipeline**:
+```
+Developer Push to GitHub
+         ↓
+Vercel Detects Push
+         ↓
+Checkout Code
+         ↓
+Install Dependencies (npm ci)
+         ↓
+Run Prisma Generate
+         ↓
+Build Next.js (npm run build)
+         ↓
+Run Tests (optional)
+         ↓
+Deploy to Vercel Serverless
+         ↓
+Preview URL Available (for PRs)
+         ↓
+Merge to main → Production Deployment
+         ↓
+Custom Domain Updated
+         ↓
+Deployment Complete ✅
+```
+
+**Custom Domain**:
+1. Go to Project → Settings → Domains
+2. Add your domain (e.g., `stormcom.com`)
+3. Configure DNS records (Vercel provides instructions)
+4. SSL certificate auto-provisioned via Let's Encrypt
+5. Domain ready in ~5 minutes
+
+**Monitoring & Analytics**:
+- **Vercel Analytics**: Built-in Web Vitals monitoring (LCP, FID, CLS)
+- **Vercel Speed Insights**: Performance metrics
+- **Function Logs**: Real-time logs in dashboard
+- **Error Tracking**: Automatic error detection
 
 ### Docker Deployment (Alternative)
 

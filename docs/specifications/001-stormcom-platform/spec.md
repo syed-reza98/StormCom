@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-stormcom-platform`  
 **Created**: 2025-10-16  
-**Updated**: 2025-10-16  
+**Updated**: 2025-10-17  
 **Status**: Active Development  
 **Project**: StormCom - Multi-Tenant E-commerce Management System
 
@@ -10,14 +10,248 @@
 
 ## Executive Summary
 
-StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling businesses to manage online stores, process orders, track inventory, analyze customer behavior, and execute marketing campaigns. Built with Next.js 15, TypeScript 5.9, and Prisma ORM following Spec-Driven Development principles.
+StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling businesses to manage online stores, process orders, track inventory, analyze customer behavior, and execute marketing campaigns. Built with **Next.js 15.5.5**, **TypeScript 5.9.3**, and **Prisma ORM** following Spec-Driven Development principles.
 
 ### Platform Overview
-- **Multi-Tenant Architecture**: Secure data isolation per store
-- **148 Pages Analyzed**: Complete feature mapping from demo instance
+- **Multi-Tenant Architecture**: Secure data isolation per store with Prisma middleware
+- **148 Pages Analyzed**: Complete feature mapping from demo instance (https://ecom-demo.workdo.io/)
 - **338 Forms**: Comprehensive data entry capabilities  
 - **356 Actions**: Full CRUD operations across all modules
 - **40+ Database Tables**: Relational schema with referential integrity
+- **100+ API Endpoints**: RESTful APIs via Next.js Route Handlers and Server Actions
+
+### Technology Stack
+- **Framework**: Next.js 15.5.5 (App Router) with React 19 Server Components
+- **Language**: TypeScript 5.9.3 (strict mode)
+- **Database**: Prisma ORM with SQLite (local) / PostgreSQL (production on Vercel)
+- **UI**: Tailwind CSS 4.1.14 + Radix UI + shadcn/ui component library
+- **Authentication**: NextAuth.js v5 with secure session management
+- **Testing**: Vitest 3.2.4 (unit/integration) + Playwright 1.56.0 with MCP (E2E)
+- **Deployment**: Vercel (serverless platform optimized for Next.js)
+
+---
+
+## System Architecture
+
+### High-Level Architecture
+
+StormCom follows a **modern full-stack architecture** built on Next.js 15.5.5 with the App Router pattern:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     Client Layer                        │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   Browser    │  │    Mobile    │  │    Tablet    │ │
+│  │  (Desktop)   │  │    (iOS/     │  │   (iPad/     │ │
+│  │              │  │   Android)   │  │   Android)   │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
+└─────────────────────────────────────────────────────────┘
+                         ↓ HTTPS
+┌─────────────────────────────────────────────────────────┐
+│                 Vercel Edge Network (CDN)               │
+│         Static Assets • Images • Fonts • CSS            │
+└─────────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────┐
+│              Next.js Application (Vercel)               │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │         Next.js 15.5.5 App Router               │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌──────────┐  │   │
+│  │  │   Server   │  │   Client   │  │  Server  │  │   │
+│  │  │ Components │  │ Components │  │  Actions │  │   │
+│  │  └────────────┘  └────────────┘  └──────────┘  │   │
+│  │  ┌────────────────────────────────────────┐    │   │
+│  │  │      API Route Handlers (REST)         │    │   │
+│  │  │  /api/auth/* /api/products/*  etc.     │    │   │
+│  │  └────────────────────────────────────────┘    │   │
+│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │           Authentication Layer                   │   │
+│  │     NextAuth.js v5 • JWT Sessions • RBAC        │   │
+│  └─────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │          Business Logic Layer                    │   │
+│  │    Services • Validators • Middleware            │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────┐
+│                   Data Access Layer                      │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              Prisma ORM Client                   │   │
+│  │  Type-safe DB Access • Query Builder • Migrations │ │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────┐
+│                 Database Layer                          │
+│  ┌─────────────────────┐  ┌──────────────────────┐    │
+│  │  SQLite (Local Dev) │  │  PostgreSQL (Prod)   │    │
+│  │   ./prisma/dev.db   │  │  Vercel Postgres     │    │
+│  └─────────────────────┘  └──────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+                         ↓
+┌─────────────────────────────────────────────────────────┐
+│                External Services                         │
+│  ┌───────────┐  ┌───────────┐  ┌─────────────────┐    │
+│  │  Vercel   │  │  Resend   │  │  Stripe/PayPal  │    │
+│  │   Blob    │  │  (Email)  │  │  (Payments)     │    │
+│  └───────────┘  └───────────┘  └─────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Multi-Tenant Architecture
+
+**Tenant Isolation Strategy:**
+- Every tenant-scoped table includes `storeId` column
+- Prisma middleware automatically filters all queries by current user's `storeId`
+- Session management via NextAuth includes `storeId` in JWT token
+- Super admin users can switch between stores
+
+**Implementation:**
+```typescript
+// Prisma Middleware for Tenant Isolation
+prisma.$use(async (params, next) => {
+  const storeId = await getStoreIdFromSession();
+  
+  if (TENANT_SCOPED_MODELS.includes(params.model)) {
+    if (params.action === 'findMany' || params.action === 'findFirst') {
+      params.args.where = { ...params.args.where, storeId };
+    }
+    if (params.action === 'create') {
+      params.args.data = { ...params.args.data, storeId };
+    }
+  }
+  
+  return next(params);
+});
+```
+
+### Server Components vs Client Components
+
+**Server Components (Default):**
+- All components are Server Components unless explicitly marked with `'use client'`
+- Benefits: Zero JavaScript to client, direct database access, automatic code splitting
+- Use for: Data fetching, layouts, static content, SEO-critical pages
+
+**Client Components:**
+- Only for interactivity: event handlers, browser APIs, React hooks
+- Examples: Modal dialogs, form inputs, interactive charts, dropdowns
+- Keep bundle size minimal by limiting client components
+
+**Server Actions:**
+- Form mutations without API routes
+- Type-safe with TypeScript
+- Built-in CSRF protection
+- Automatic revalidation of cached data
+
+### API Architecture
+
+**REST API via Route Handlers:**
+```
+POST   /api/auth/login           - Authenticate user
+POST   /api/auth/logout          - End session
+GET    /api/products             - List products (paginated)
+POST   /api/products             - Create product
+GET    /api/products/[id]        - Get product details
+PUT    /api/products/[id]        - Update product
+DELETE /api/products/[id]        - Delete product (soft)
+GET    /api/orders               - List orders (filtered)
+POST   /api/orders               - Create order
+PUT    /api/orders/[id]/status   - Update order status
+POST   /api/orders/[id]/refund   - Process refund
+GET    /api/customers            - List customers
+GET    /api/reports/sales        - Sales analytics
+POST   /api/marketing/campaigns  - Create campaign
+```
+
+**API Response Format:**
+```typescript
+// Success Response
+{
+  success: true,
+  data: { ... },
+  meta: { page: 1, total: 100, perPage: 10 }
+}
+
+// Error Response
+{
+  success: false,
+  error: {
+    code: "VALIDATION_ERROR",
+    message: "Invalid input data",
+    details: [ { field: "email", message: "Invalid email format" } ]
+  }
+}
+```
+
+### Performance Optimization
+
+**Frontend Performance:**
+- **Server Components**: Reduce client-side JavaScript by 70%
+- **Image Optimization**: Next.js Image component (WebP, lazy loading, responsive)
+- **Code Splitting**: Automatic route-based splitting + dynamic imports for heavy components
+- **Caching Strategy**: ISR (Incremental Static Regeneration) for product pages
+- **CDN**: Vercel Edge Network for static assets
+
+**Backend Performance:**
+- **Database Indexes**: All foreign keys, frequently queried fields (email, slug, SKU)
+- **Query Optimization**: Prisma select/include for minimal data fetching
+- **Connection Pooling**: Prisma connection pooling for PostgreSQL
+- **Caching**: API response caching for analytics/reports (5-minute TTL)
+
+**Performance Targets:**
+- Largest Contentful Paint (LCP): < 2.0s
+- First Input Delay (FID): < 100ms
+- Cumulative Layout Shift (CLS): < 0.1
+- Time to Interactive (TTI): < 3.0s
+- API Response Time (p95): < 500ms
+- Database Query Time (p95): < 100ms
+
+### Security Architecture
+
+**Authentication & Authorization:**
+- **NextAuth.js v5**: Secure session management with JWT tokens
+- **Password Security**: bcrypt hashing (cost factor: 12)
+- **Session Management**: Secure HTTP-only cookies, 30-day expiration
+- **RBAC**: Role-based access control with granular permissions
+- **Multi-Factor Auth**: Optional 2FA via TOTP (Time-based One-Time Password)
+
+**Data Protection:**
+- **Multi-Tenant Isolation**: Database-level row security + Prisma middleware
+- **Input Validation**: Zod schemas on client and server
+- **XSS Prevention**: React automatic escaping + Content Security Policy
+- **CSRF Protection**: Next.js built-in CSRF tokens
+- **SQL Injection Prevention**: Prisma parameterized queries only
+- **Rate Limiting**: API rate limits (100 req/min per IP)
+- **HTTPS Only**: TLS 1.3 enforced via Vercel
+
+**Compliance:**
+- **GDPR**: Cookie consent, data export/deletion, privacy policy
+- **PCI DSS**: Payment processing via Stripe (PCI Level 1 compliant)
+- **Data Encryption**: At-rest (database) and in-transit (TLS)
+
+### Deployment Architecture
+
+**Vercel Deployment:**
+- **Platform**: Vercel Serverless Functions (AWS Lambda under the hood)
+- **Regions**: Auto-deployed to multiple global regions
+- **Scaling**: Automatic scaling based on traffic (0 to ∞)
+- **Database**: Vercel Postgres (managed PostgreSQL with connection pooling)
+- **Storage**: Vercel Blob for file uploads (images, documents, exports)
+- **Monitoring**: Built-in performance monitoring + error tracking
+
+**CI/CD Pipeline:**
+```
+GitHub Push → Vercel Build → Run Tests → Deploy Preview
+                             ↓
+                        Merge to Main → Production Deploy
+```
+
+**Environment Management:**
+- **Development**: Local SQLite database
+- **Staging**: Vercel preview deployment with test database
+- **Production**: Vercel production with PostgreSQL
 
 ---
 
