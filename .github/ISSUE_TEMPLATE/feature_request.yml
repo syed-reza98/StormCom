@@ -1,0 +1,142 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for StormCom
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out this form as
+        completely as possible.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Describe the problem or need this feature would address
+      placeholder: |
+        Is your feature request related to a problem? Please describe.
+        Example: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: |
+        A clear and concise description of what you want to happen.
+        Include specific details about functionality, UI, and behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or features?
+      placeholder: |
+        Describe any alternative solutions or features you've considered.
+        Why did you choose the proposed solution over these alternatives?
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories
+      description: Describe how users would interact with this feature
+      placeholder: |
+        As a [type of user], I want [goal] so that [benefit].
+
+        Example:
+        - As a store owner, I want to bulk update product prices so
+          that I can quickly adjust for seasonal sales.
+        - As a customer, I want to save products to a wishlist so
+          that I can purchase them later.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component/Area
+      description: Which component or area would this feature affect?
+      options:
+        - Products
+        - Orders
+        - Customers
+        - Analytics
+        - Marketing
+        - CMS
+        - Authentication
+        - Database
+        - API
+        - UI/Design
+        - Performance
+        - Multiple areas
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocks core functionality
+        - High - Important for many users
+        - Medium - Nice to have
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical
+    attributes:
+      label: Technical Considerations
+      description: Any technical details, dependencies, or implementation ideas?
+      placeholder: |
+        - Performance impact
+        - Security considerations
+        - Required dependencies
+        - Database changes
+        - API changes
+        - Breaking changes
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Examples
+      description: Add any mockups, wireframes, or examples
+      placeholder: Drag and drop images or provide links to examples
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What conditions must be met for this feature to be considered complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the feature request here
+      placeholder: |
+        - Related issues or PRs
+        - Similar features in other platforms
+        - User research or feedback
+        - Business impact
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: >
+        By submitting this issue, you agree to follow our
+        Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

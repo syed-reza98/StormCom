@@ -1,0 +1,49 @@
+# Auto-labeling configuration for issues and pull requests
+
+# Documentation changes
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: ['docs/**/*', '*.md', '.github/**/*.md']
+
+# Component areas
+components:
+  - changed-files:
+      - any-glob-to-any-file: 'src/components/**/*'
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: ['src/app/api/**/*', 'src/app/**/actions.ts']
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: ['prisma/**/*', 'src/lib/prisma.ts']
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts',
+           '**/*.spec.tsx', 'tests/**/*']
+
+# Technology areas
+typescript:
+  - changed-files:
+      - any-glob-to-any-file: ['**/*.ts', '**/*.tsx']
+
+react:
+  - changed-files:
+      - any-glob-to-any-file: 'src/components/**/*.tsx'
+
+# CI/CD
+github-actions:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**/*'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          ['package.json', 'package-lock.json', 'pnpm-lock.yaml']
+
+# Configuration
+config:
+  - changed-files:
+      - any-glob-to-any-file: ['*.config.*', '.env.*', 'tsconfig.json']

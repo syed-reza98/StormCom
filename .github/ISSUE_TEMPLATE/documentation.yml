@@ -1,0 +1,106 @@
+name: 📝 Documentation
+description: Report an issue with documentation or suggest improvements
+title: "[Docs]: "
+labels: ["documentation", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Please fill out
+        this form as completely as possible.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What kind of documentation issue is this?
+      options:
+        - Missing documentation
+        - Incorrect/outdated information
+        - Unclear explanation
+        - Typo or formatting issue
+        - Missing code example
+        - Broken link
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Document Location
+      description: Where is the documentation issue?
+      placeholder: |
+        Provide a link or file path:
+        - https://github.com/syed-reza98/StormCom/blob/main/docs/...
+        - docs/specifications/.speckit/constitution.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Documentation
+      description: What does the current documentation say? (if applicable)
+      placeholder: |
+        Quote the current text or describe what's missing
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Suggested Improvement
+      description: What should the documentation say instead?
+      placeholder: |
+        Provide the corrected text or describe what should be added
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Documentation Area
+      description: Which area of documentation is affected?
+      options:
+        - Getting Started / Setup
+        - API Documentation
+        - Database Schema
+        - Component Documentation
+        - Testing Guide
+        - Deployment Guide
+        - Contributing Guide
+        - Project Specifications
+        - Code Examples
+        - README
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples
+      placeholder: |
+        - Screenshots
+        - Code examples
+        - Related documentation
+        - External references
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to contribute this documentation improvement?
+      options:
+        - label: I would like to submit a PR to fix this documentation issue
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: >
+        By submitting this issue, you agree to follow our
+        Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
