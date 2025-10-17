@@ -1,8 +1,22 @@
-﻿# EcommerceGo Admin SRS
-Regenerated: 2025-10-16T21:26:35
+# EcommerceGo Admin SRS (Original Analysis)
+
+**Project**: StormCom - Multi-Tenant E-commerce SaaS Platform  
+**Source**: Demo crawl from https://ecom-demo.workdo.io/  
+**Regenerated**: 2025-10-16T21:26:35  
+**Status**: Reference Document (Historical)
+
+---
+
+> **📌 Note**: This document contains the original analysis from crawling the demo site. For implementation specifications, see:
+> - **Feature Spec**: [docs/specifications/001-stormcom-platform/spec.md](specifications/001-stormcom-platform/spec.md)
+> - **Implementation Plan**: [docs/specifications/001-stormcom-platform/plan.md](specifications/001-stormcom-platform/plan.md)  
+> - **Project Standards**: [docs/specifications/.speckit/constitution.md](specifications/.speckit/constitution.md)
+> - **Comprehensive SRS**: [docs/analysis/ecommerce_complete_srs.md](analysis/ecommerce_complete_srs.md)
+
+---
 
 ## Overview
-This document captures pages, data attributes, and actions discovered by crawling the authenticated dashboard.
+This document captures pages, data attributes, and actions discovered by crawling the authenticated dashboard at https://ecom-demo.workdo.io/ using credentials (admin@example.com / 1234). The platform analyzed is an e-commerce SaaS system with 148 pages, 338 forms, and 356 actions.
 
 ## Sitemap
 - https://ecom-demo.workdo.io/abandon-carts-handled — eCommerceGo SaaS - Abandon Cart

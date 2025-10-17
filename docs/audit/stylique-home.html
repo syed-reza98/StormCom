@@ -1,0 +1,2782 @@
+﻿<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <meta name="author" content="EcommerceGo SaaS">
+  <meta name="base-url" content="https://ecom-demo.workdo.io">
+  <meta name="csrf-token" content="XmGzPlP12c5YeBjx4Pf49taMUugIcfZuE2EcOLt1">
+   
+        <meta name='title' content='EcommerceGo SaaS'>
+        <meta name='description' content='EcommerceGo SaaS'>
+
+        <meta property='og:type' content='website'>
+        <meta property='og:url' content='https://ecom-demo.workdo.io/stylique/home'>
+        <meta property='og:title' content=' EcommerceGo SaaS'>
+        <meta property='og:description' content='EcommerceGo SaaS'>
+        <meta property='og:image' content=' EcommerceGo SaaS'>
+
+        <meta property='twitter:card' content='summary_large_image'>
+        <meta property='twitter:url' content='https://ecom-demo.workdo.io/stylique/home'>
+        <meta property='twitter:title' content=' EcommerceGo SaaS'>
+        <meta property='twitter:description' content=' EcommerceGo SaaS'>
+        <meta property='twitter:image' content=' EcommerceGo SaaS'>
+        
+  <title>    首页
+</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://ecom-demo.workdo.io/themes/stylique/assets/css/all.min.css">
+  <link rel="stylesheet" href="https://ecom-demo.workdo.io/themes/stylique/assets/css/swiper-bundle.min.css" />
+  
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/themes/stylique/assets/css/main-style.css">
+  
+  <script src="https://ecom-demo.workdo.io/themes/stylique/assets/js/tailwind.js"></script>
+ 
+    <meta name="mobile-wep-app-capable" content="yes">
+    <meta name="apple-mobile-wep-app-capable" content="yes">
+    <meta name="msapplication-starturl" content="/">
+    <!-- Favicon icon -->
+    <link rel="icon" href="https://ecom-demo.workdo.io/themes/stylique/assets/images/favicon.png" type="favicon" />
+    <link rel="apple-touch-icon" href="https://ecom-demo.workdo.io/themes/stylique/assets/images/favicon.png">
+            <link rel="manifest"
+            href="https://ecom-demo.workdo.io/storage/uploads/customer_app/store_2/manifest.json" />
+                <style>
+        
+    </style>
+    
+    <script src="https://ecom-demo.workdo.io/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/css/plugins/select2.min.css">
+    <script src="https://ecom-demo.workdo.io/assets/js/plugins/select2.min.js"></script>
+</head>
+
+<body>
+    <div class="overlay" id="filter-overlay"></div>
+   <header class="bg-white sticky-header site-header">
+     <!-- Middle Section -->
+    <div class="py-4 border-b border-gray-200">
+      <div class="md:container mx-auto px-4 w-full">
+        <div class="flex items-center justify-between gap-2">
+                          <!-- Logo -->
+              <div class="logo-col">
+                <h1>
+                    <a href="https://ecom-demo.workdo.io/stylique/home">
+                      <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/logo.png" alt="Logo">
+                    </a>
+                </h1>
+              </div>
+                                      <!-- Search Bar (Hidden on mobile) -->
+              <div class="hidden lg:flex flex-1 max-w-xl mx-4">
+                <form class="w-full flex" id="desktop-search-form">
+                    <div class="relative">
+                            <select class="border border-gray-300 rounded-l-lg rtl:rounded-r-lg rtl:rounded-l-none">
+                                    <option>所有类别</option>
+                                                                    <option>Women Store</option>
+                                                                    <option>Coats</option>
+                                                                    <option>Jackets</option>
+                                                                    <option>Scarf</option>
+                                                                    <option>Hats</option>
+                                                                    <option>Mens Store</option>
+                                                                    <option>Dresses</option>
+                                                            </select>
+                    </div>
+
+                    <div class="flex-grow relative search-input">
+                      <input type="text" id="desktop-search-input" class="w-full border-t border-b border-gray-300 px-4 py-2 outline-none" placeholder="搜索..." aria-label="Search" list="products" name="search_product" id="product">
+                      <datalist id="products">
+                                                        <option value="Summer Floral Dress"></option>
+                                                        <option value="Linen-Blend Apron Jumpsuit"></option>
+                                                        <option value="Short-Sleeve Crochet-Style Polo"></option>
+                                                        <option value="Spykar Women&#039;s  Denim Jacket"></option>
+                                                        <option value="Woven-Textured Shirt"></option>
+                                                        <option value="Linen-Blend Plainfront Short"></option>
+                                                        <option value="Classic Suiting organic cotton coats"></option>
+                                                        <option value="Dakota Cashmere Men&#039;s Scarf"></option>
+                                                        <option value="Classic Unisex Straw Boater cap"></option>
+                                                        <option value="Raffia Wide Brim Hat Cap"></option>
+                                                </datalist>
+                      </div>
+                      <button type="submit" class="btn-primary px-4 py-2 rounded-l-none rtl:rounded-l-lg rtl:rounded-r-none">
+                        <i class="fas fa-search"></i>
+                      </button>
+                </form>
+              </div>
+                      <!-- Icons (Wishlist, Compare, Cart) -->
+
+
+          <div class="flex items-center gap-3">
+
+                          <!-- Search Button for Mobile -->
+              <button id="search-toggle" class="lg:hidden text-gray-700 hover:text-orange-500">
+                  <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.58366 17.5003C13.9559 17.5003 17.5003 13.9559 17.5003 9.58366C17.5003 5.21141 13.9559 1.66699 9.58366 1.66699C5.21141 1.66699 1.66699 5.21141 1.66699 9.58366C1.66699 13.9559 5.21141 17.5003 9.58366 17.5003Z" stroke="#111827" stroke-width="1.23" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path d="M18.3337 18.3337L16.667 16.667" stroke="#111827" stroke-width="1.23" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+              </button>
+            
+
+
+                                                                  <a href="https://ecom-demo.workdo.io/stylique/login" class="relative text-gray-700 hover:text-orange-500">
+                    <svg class="w-5 h-5" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.068 10.8998C12.3847 10.8998 14.2629 9.02167 14.2629 6.70488C14.2629 4.38809 12.3847 2.50996 10.068 2.50996C7.75117 2.50996 5.87305 4.38809 5.87305 6.70488C5.87305 9.02167 7.75117 10.8998 10.068 10.8998Z" stroke="#1A1616" stroke-width="1.23051" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M17.2746 19.2896C17.2746 16.0428 14.0445 13.4167 10.0677 13.4167C6.09092 13.4167 2.86084 16.0428 2.86084 19.2896" stroke="#1A1616" stroke-width="1.23051" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </a>
+                              
+             
+                
+             
+                          <a href="javascript:void(0);" class="cart-header relative text-gray-700 hover:text-orange-500" id="cart-toggle">
+                
+                  <svg class="w-5 h-5" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.03809 7.26663V6.45282C7.03809 4.56511 8.55665 2.71095 10.4444 2.53477C12.6928 2.31663 14.5889 4.08689 14.5889 6.29341V7.45121" stroke="#1A1616" stroke-width="1.2305" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M8.29748 19.2897H13.3314C16.7041 19.2897 17.3082 17.9389 17.4844 16.2945L18.1136 11.2606C18.3401 9.21348 17.7528 7.5439 14.1704 7.5439H7.4585C3.87604 7.5439 3.28875 9.21348 3.51528 11.2606L4.14452 16.2945C4.3207 17.9389 4.92477 19.2897 8.29748 19.2897Z" stroke="#1A1616" stroke-width="1.2305" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M13.7459 10.8998H13.7535" stroke="#1A1616" stroke-width="1.78982" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M7.87289 10.8998H7.88043" stroke="#1A1616" stroke-width="1.78982" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                <span id="cart-count"
+              class="cart-count cart-badge absolute -top-1 -right-1 bg-accent-dark text-white text-xs rounded-full w-4 h-4 flex items-center justify-center bg-secondary">0</span>
+              </a>
+                         
+            <!-- Mobile Menu Button (Hidden on desktop) -->
+            <div class="lg:hidden flex">
+              <button id="mobile-menu-toggle">
+                <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 4H18" stroke="#111827" stroke-width="1.25" stroke-linecap="round"/>
+                  <path d="M2 10H18" stroke="#111827" stroke-width="1.25" stroke-linecap="round"/>
+                  <path d="M2 16H18" stroke="#111827" stroke-width="1.25" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Desktop Navigation -->
+    <nav class="bg-white hidden lg:block">
+              <div class="md:container mx-auto px-4 w-full">
+          <div class="flex justify-between items-center">
+            <div class="flex">
+
+              <!-- Categories Dropdown -->
+              <div class="relative categories-wrap me-6">
+                <button class="btn btn-primary px-6 py-3 rounded-none flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" viewBox="0 0 14 10" fill="none" class="ltr:mr-2 rtl:ml-2">
+                    <path d="M9.66667 1.5H1C0.867392 1.5 0.740215 1.44732 0.646447 1.35355C0.552678 1.25979 0.5 1.13261 0.5 1C0.5 0.867392 0.552678 0.740215 0.646447 0.646447C0.740215 0.552678 0.867392 0.5 1 0.5H9.66667C9.79928 0.5 9.92645 0.552678 10.0202 0.646447C10.114 0.740215 10.1667 0.867392 10.1667 1C10.1667 1.13261 10.114 1.25979 10.0202 1.35355C9.92645 1.44732 9.79928 1.5 9.66667 1.5ZM13.5 5C13.5 4.86739 13.4473 4.74022 13.3536 4.64645C13.2598 4.55268 13.1326 4.5 13 4.5H1C0.867392 4.5 0.740215 4.55268 0.646447 4.64645C0.552678 4.74022 0.5 4.86739 0.5 5C0.5 5.13261 0.552678 5.25979 0.646447 5.35355C0.740215 5.44732 0.867392 5.5 1 5.5H13C13.1326 5.5 13.2598 5.44732 13.3536 5.35355C13.4473 5.25979 13.5 5.13261 13.5 5ZM7.5 9C7.5 8.86739 7.44732 8.74021 7.35355 8.64645C7.25979 8.55268 7.13261 8.5 7 8.5H1C0.867392 8.5 0.740215 8.55268 0.646447 8.64645C0.552678 8.74021 0.5 8.86739 0.5 9C0.5 9.13261 0.552678 9.25979 0.646447 9.35355C0.740215 9.44732 0.867392 9.5 1 9.5H7C7.13261 9.5 7.25979 9.44732 7.35355 9.35355C7.44732 9.25979 7.5 9.13261 7.5 9Z" fill="white" />
+                  </svg>
+                  <span class="font-medium">浏览所有类别</span>
+                  <i class="fas fa-chevron-down ltr:ml-2 rtl:mr-2 text-sm"></i>
+                </button>
+                <ul class="category-dropdown">
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=9" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/35_1749015528_women--store.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Women Store
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=10" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/66_1749015646_coats.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Coats
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=11" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/57_1749015719_jackats.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Jackets
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=12" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/23_1749016053_scarf.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Scarf
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=13" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/47_1749016153_hats.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Hats
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=14" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/73_1749016213_mens.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Mens Store
+                      </a>
+                    </li>
+                                      <li class="relative">
+                      <a href="https://ecom-demo.workdo.io/stylique/product-list?main_category=15" class="flex no-wrap" id="MainCategory_preview" tabindex="0">
+                        <img src="https://ecom-demo.workdo.io/uploads/2/82_1749016263_Group-1707487981.png" width="18" height="18" alt="category-img" loading="lazy" />
+                        Dresses
+                      </a>
+                    </li>
+                                  </ul>
+              </div>
+
+              <!-- Main Navigation -->
+              <ul class="main-nav flex gap-6">
+                                  <!-- Desktop Navigation -->
+                                                                  <ul class="main-nav flex gap-6">
+                                                <li class="">
+    <a href="https://ecom-demo.workdo.io/stylique/collections/coats" target="_self" class="relative font-medium text-gray-700 hover:text-orange-500 py-3 block">
+        Coats
+    </a>
+
+    </li>
+                                                <li class="">
+    <a href="https://ecom-demo.workdo.io/stylique/collections/jackets" target="_self" class="relative font-medium text-gray-700 hover:text-orange-500 py-3 block">
+        Jackets
+    </a>
+
+    </li>
+                                                <li class="">
+    <a href="https://ecom-demo.workdo.io/stylique/collections/scarf" target="_self" class="relative font-medium text-gray-700 hover:text-orange-500 py-3 block">
+        Scarf
+    </a>
+
+    </li>
+                                                <li class="">
+    <a href="https://ecom-demo.workdo.io/stylique/collections/mens-store" target="_self" class="relative font-medium text-gray-700 hover:text-orange-500 py-3 block">
+        Mens Store
+    </a>
+
+    </li>
+                                        </ul>
+
+                              
+                              </ul>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div class="relative inline-block text-left text-sm">
+                  <button data-dropdown-toggle="language" type="button" class="flex items-center gap-2 py-2 outline-none">
+                      <span>Chinese</span>
+                      <i class="fas fa-chevron-down text-sm"></i>
+                  </button>
+                  <div data-dropdown-menu="language" class="absolute right-0 py-2 min-w-28 bg-white border border-gray-200 rounded-lg shadow-lg hidden max-h-[200px] overflow-y-auto">
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/ar"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Arabic
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/da"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Danish
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/de"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            German
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/en"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            English
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/es"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Spanish
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/fr"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            French
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/it"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Italian
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/ja"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Japanese
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/nl"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Dutch
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/pl"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Polish
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/pt"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Portuguese
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/ru"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Russian
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/tr"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Turkish
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/zh"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Chinese
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/he"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Hebrew
+                          </a>
+                                                <a href="https://ecom-demo.workdo.io/change-language-store/pt-br"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">
+                            Portuguese(Brazil)
+                          </a>
+                                        </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+          </nav>
+
+</header>    
+        <main>
+        <!-- Hero Slider Section -->
+                    <section class="section-spacing pb-0">
+                <div class="md:container mx-auto px-4 w-full">
+                    <div class="flex flex-wrap gap-4 banner-wrp">
+                        <div class="swiper hero-slider lg:flex-1 rounded-lg overflow-hidden">
+                            <div class="swiper-wrapper">
+                                                                            <div class="swiper-slide h-auto relative">
+                                            <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/banner-image3.png"
+                                                width="500"
+                                                height="500"
+                                                alt="Accessorize with Elegance"
+                                                loading="lazy"
+                                                class="w-full h-full object-cover object-left absolute rounded-lg" />
+
+                                            <div class="relative z-10 flex items-center md:py-[130px] py-[60px]">
+                                                <div class="text-white px-4 md:px-6 max-w-[500px]">
+                                                    <h2 class="text-3xl md:text-5xl text-black font-bold mb-4">
+                                                        Accessorize with Elegance
+                                                    </h2>
+                                                    <p class="md:mb-8 mb-4 text-black max-w-sm">
+                                                        Accessorize with elegance and let your style speak volumes through timeless, refined pieces.
+                                                    </p>
+                                                    <a href="https://ecom-demo.workdo.io/stylique/product-list" class="btn-primary">
+                                                        Shop Now
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                                                            <div class="swiper-slide h-auto relative">
+                                            <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/banner-image1.png"
+                                                width="500"
+                                                height="500"
+                                                alt="Discover the New Summer Collection"
+                                                loading="lazy"
+                                                class="w-full h-full object-cover object-left absolute rounded-lg" />
+
+                                            <div class="relative z-10 flex items-center md:py-[130px] py-[60px]">
+                                                <div class="text-white px-4 md:px-6 max-w-[500px]">
+                                                    <h2 class="text-3xl md:text-5xl text-black font-bold mb-4">
+                                                        Discover the New Summer Collection
+                                                    </h2>
+                                                    <p class="md:mb-8 mb-4 text-black max-w-sm">
+                                                        Refresh your style with the latest arrivals in fashion. Shop vibrant looks for every moment.
+                                                    </p>
+                                                    <a href="https://ecom-demo.workdo.io/stylique/product-list" class="btn-primary">
+                                                        Shop Now
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                                                </div>
+
+                            <!-- Pagination -->
+                            <div class="swiper-pagination text-start"></div>
+                        </div>
+                                                    <div class="lg:h-auto h-96 w-full offer-banner overflow-hidden">
+                                <a href="https://ecom-demo.workdo.io/stylique/product-list" tabindex="0">
+                                    <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/offer-banner.png" width="300" height="400" alt="offer-image"
+                                        class="w-full h-full object-cover object-top rounded-lg" loading="lazy">
+                                </a>
+                            </div>
+                        
+                    </div>
+                </div>
+            </section>
+        
+        <!-- logo Section -->
+                <section class="section-spacing">
+            <div class="md:container mx-auto px-4 w-full">
+                <!-- Swiper container -->
+                <div class="swiper partnerSwiper pb-0 relative">
+                    <div class="swiper-wrapper">
+                                                                                <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo1.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo2.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo3.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo4.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo5.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo2.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                
+                                    <div class="partner-logo flex items-center justify-center bg-white rounded-xl h-full">
+                                        <img
+                                            src="https://ecom-demo.workdo.io/themes/stylique/assets/images/partner-logo4.png"
+                                            width="150"
+                                            height="150"
+                                            alt="Partner Logo"
+                                            class="h-12 object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                                                        </div>
+
+                    <div class="arrow-wrapper">
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Feature Collections Banner -->
+                    <section class="section-spacing bg-gray-50">
+                <div class="md:container mx-auto px-4 w-full">
+                    <div class="grid md:grid-cols-2 gap-6">
+                                                    <div class="relative rounded-lg overflow-hidden group">
+                                    <img src="https://ecom-demo.workdo.io/uploads/2/87_1749204252_Dresses.png"
+                                        alt="Dresses"
+                                        loading="lazy" width="200" height="200"
+                                        class="w-full md:h-96 h-64 object-cover transition-transform duration-500 group-hover:scale-105 rtl:scale-x-[-1] rtl:group-hover:[--tw-scale-x:-1.05]"
+                                    />
+                                    <div
+                                        class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"
+                                    ></div>
+                                    <div class="absolute inset-0 flex items-end md:p-6 p-4">
+                                        <div>
+                                            <h3 class="text-white md:text-3xl text-2xl font-bold mb-2">
+                                                Dresses
+                                            </h3>
+                                            <p class="text-white mb-4 max-w-[200px] sm:max-w-[300px]">
+                                                <!-- Optional description, if available -->
+                                                Explore our latest Dresses collection.
+                                            </p>
+                                            <a href="https://ecom-demo.workdo.io/stylique/product-list" class="btn-primary inline-block">
+                                                商店收藏
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                                        <div class="relative rounded-lg overflow-hidden group">
+                                    <img src="https://ecom-demo.workdo.io/uploads/2/54_1749192230_Men.png"
+                                        alt="Mens Store"
+                                        loading="lazy" width="200" height="200"
+                                        class="w-full md:h-96 h-64 object-cover transition-transform duration-500 group-hover:scale-105 rtl:scale-x-[-1] rtl:group-hover:[--tw-scale-x:-1.05]"
+                                    />
+                                    <div
+                                        class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"
+                                    ></div>
+                                    <div class="absolute inset-0 flex items-end md:p-6 p-4">
+                                        <div>
+                                            <h3 class="text-white md:text-3xl text-2xl font-bold mb-2">
+                                                Mens Store
+                                            </h3>
+                                            <p class="text-white mb-4 max-w-[200px] sm:max-w-[300px]">
+                                                <!-- Optional description, if available -->
+                                                Explore our latest Mens Store collection.
+                                            </p>
+                                            <a href="https://ecom-demo.workdo.io/stylique/product-list" class="btn-primary inline-block">
+                                                商店收藏
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                            </div>
+                </div>
+            </section>
+        
+        <!-- Products Section -->
+                    <section class="section-spacing">
+                <div class="md:container mx-auto px-4 w-full">
+                <div class="text-center md:mb-10 mb-6">
+                    <h2 class="md:text-4xl text-3xl font-bold mb-4">Featured Products</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">
+                    Discover our curated selection of top-rated products that are sure to impress.
+                    </p>
+                </div>
+                <div class="swiper featured-products">
+                    <div class="swiper-wrapper">
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/spykar-womens-washed-cotton-crop-denim-jacket">
+                <img src="https://ecom-demo.workdo.io/uploads/2/47_1749020431_32.png"
+                width="400" height="400"
+                alt="Spykar Women&#039;s  Denim Jacket"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="4"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/spykar-womens-washed-cotton-crop-denim-jacket">Spykar Women&#039;s  Denim Jacket</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Turn heads wherever you go with the Spykar Women&#039;s Washed Cotton Crop Denim Jacket — a must-have for...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 96.0 </span>
+            <span class="product_orignal_price"> $ 100.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="4"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">
+                <img src="https://ecom-demo.workdo.io/uploads/2/23_1749021926_2.png"
+                width="400" height="400"
+                alt="Dakota Cashmere Men&#039;s Scarf"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="8"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">Dakota Cashmere Men&#039;s Scarf</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Wrap yourself in unparalleled luxury with the Dakota Cashmere Men&#039;s Scarf — a timeless accessory cra...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="8"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">
+                <img src="https://ecom-demo.workdo.io/uploads/2/75_1749021436_1-1.png"
+                width="400" height="400"
+                alt="Linen-Blend Plainfront Short"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="6"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">Linen-Blend Plainfront Short</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Stay cool, stylish, and effortless with the Linen-Blend Plainfront Short — your ultimate warm-weathe...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 33.0 </span>
+            <span class="product_orignal_price"> $ 35.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="6"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/12_1749031192_3.png"
+                width="400" height="400"
+                alt="Raffia Wide Brim Hat Cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="10"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">Raffia Wide Brim Hat Cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Make a bold, breezy statement with the Raffia Wide Brim Hat Cap — a must-have for sunny escapes and...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="10"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/62_1749022339_2.png"
+                width="400" height="400"
+                alt="Classic Unisex Straw Boater cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="9"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">Classic Unisex Straw Boater cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Step into timeless summer style with the Classic Unisex Straw Boater Cap — a chic accessory that bri...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 55.0 </span>
+            <span class="product_orignal_price"> $ 59.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="9"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">
+                <img src="https://ecom-demo.workdo.io/uploads/2/19_1749019041_1.png"
+                width="400" height="400"
+                alt="Summer Floral Dress"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="1"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">Summer Floral Dress</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                A stunning floral dress perfect for summer occasions. This elegant piece features a beautiful floral...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 59.0 </span>
+            <span class="product_orignal_price"> $ 60.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="1"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">
+                <img src="https://ecom-demo.workdo.io/uploads/2/21_1749021279_1-5.png"
+                width="400" height="400"
+                alt="Woven-Textured Shirt"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="5"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">Woven-Textured Shirt</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Elevate your wardrobe with timeless texture—introducing the Woven-Textured Shirt, a refined staple d...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="5"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-apron-jumpsuit">
+                <img src="https://ecom-demo.workdo.io/uploads/2/18_1749019474_5.png"
+                width="400" height="400"
+                alt="Linen-Blend Apron Jumpsuit"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="2"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-apron-jumpsuit">Linen-Blend Apron Jumpsuit</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Effortlessly stylish and endlessly comfortable, our Linen-Blend Apron Jumpsuit is your go-to choice...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 62.0 </span>
+            <span class="product_orignal_price"> $ 65.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="2"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/classic-suiting-organic-cotton-coats">
+                <img src="https://ecom-demo.workdo.io/uploads/2/26_1749201062_67_1749021664_4.png"
+                width="400" height="400"
+                alt="Classic Suiting organic cotton coats"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="7"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/classic-suiting-organic-cotton-coats">Classic Suiting organic cotton coats</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Refined elegance meets sustainable craftsmanship in the Classic Suiting Organic Cotton Coat. Tailore...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="7"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                                    <div class="swiper-slide">
+                                <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/short-sleeve-crochet-style-polo">
+                <img src="https://ecom-demo.workdo.io/uploads/2/14_1749019781_3.png"
+                width="400" height="400"
+                alt="Short-Sleeve Crochet-Style Polo"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="3"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/short-sleeve-crochet-style-polo">Short-Sleeve Crochet-Style Polo</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Meet your new go-to for effortless cool: the Short-Sleeve Crochet-Style Polo blends timeless tailori...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 70.0 </span>
+            <span class="product_orignal_price"> $ 75.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="3"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                            </div>
+                                            </div>
+                    <div class="arrow-wrapper">
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </section>
+        
+        <!-- Category Section -->
+                    <section class="section-spacing bg-gray-50">
+                <div class="md:container mx-auto px-4 w-full">
+                    <div class="text-center md:mb-10 mb-6">
+                        <h2 class="md:text-4xl text-3xl font-bold mb-4">
+                        Shop by Category    </h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto">
+                            Explore our diverse range of categories to find exactly what you need.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 md:gap-6">
+                                                    <div class="group relative rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                                <img
+                                    src="https://ecom-demo.workdo.io/uploads/2/76_1749204207_Dresses-1.png"
+                                    alt="Women Store"
+                                    width="400" height="400"
+                                    loading="lazy"
+                                    class="w-full h-64 object-cover object-top rtl:scale-x-[-1]"
+                                />
+                                <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute inset-0 flex items-end md:p-6 p-4">
+                                    <div>
+                                        <h3 class="text-white text-2xl font-bold mb-3">Women Store</h3>
+                                        <a href="https://ecom-demo.workdo.io/stylique/product-list?category=collections%2Fwomen-store"
+                                        class="btn-primary px-4 py-2 text-sm">
+                                           现在购买
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="group relative rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                                <img
+                                    src="https://ecom-demo.workdo.io/uploads/2/23_1749204067_Coat.png"
+                                    alt="Coats"
+                                    width="400" height="400"
+                                    loading="lazy"
+                                    class="w-full h-64 object-cover object-top rtl:scale-x-[-1]"
+                                />
+                                <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute inset-0 flex items-end md:p-6 p-4">
+                                    <div>
+                                        <h3 class="text-white text-2xl font-bold mb-3">Coats</h3>
+                                        <a href="https://ecom-demo.workdo.io/stylique/product-list?category=collections%2Fcoats"
+                                        class="btn-primary px-4 py-2 text-sm">
+                                           现在购买
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                                                    <div class="group relative rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+                                <img
+                                    src="https://ecom-demo.workdo.io/uploads/2/76_1749204033_Jacket.png"
+                                    alt="Jackets"
+                                    width="400" height="400"
+                                    loading="lazy"
+                                    class="w-full h-64 object-cover object-top rtl:scale-x-[-1]"
+                                />
+                                <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute inset-0 flex items-end md:p-6 p-4">
+                                    <div>
+                                        <h3 class="text-white text-2xl font-bold mb-3">Jackets</h3>
+                                        <a href="https://ecom-demo.workdo.io/stylique/product-list?category=collections%2Fjackets"
+                                        class="btn-primary px-4 py-2 text-sm">
+                                           现在购买
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                                            </div>
+                </div>
+            </section>
+        
+        
+                    <section class="section-spacing collection-sec">
+                <div class="md:container mx-auto px-4 w-full">
+                    <div class="text-center items-center md:mb-10 mb-6 flex flex-wrap gap-3 justify-center lg:justify-between">
+                    <h2 class="md:text-4xl text-3xl font-bold">
+                        Best Sellers
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <ul class="flex mx-auto w-fit border-b">
+                        <li class="mr-2 whitespace-nowrap">
+                            <button class="tab-btn active py-2 px-4 font-medium text-center sm:border-b-2 border-[var(--primary-color)]" data-tab="all">
+                        所有产品
+                            </button>
+                        </li>
+                                                    <li class="mr-2 whitespace-nowrap">
+                            <button class="tab-btn py-2 px-4 font-medium text-center sm:border-b-2 border-transparent" data-tab="collections/dresses">
+                                Dresses
+                            </button>
+                            </li>
+                                                    <li class="mr-2 whitespace-nowrap">
+                            <button class="tab-btn py-2 px-4 font-medium text-center sm:border-b-2 border-transparent" data-tab="collections/mens-store">
+                                Mens Store
+                            </button>
+                            </li>
+                                                    <li class="mr-2 whitespace-nowrap">
+                            <button class="tab-btn py-2 px-4 font-medium text-center sm:border-b-2 border-transparent" data-tab="collections/hats">
+                                Hats
+                            </button>
+                            </li>
+                                                    <li class="mr-2 whitespace-nowrap">
+                            <button class="tab-btn py-2 px-4 font-medium text-center sm:border-b-2 border-transparent" data-tab="collections/scarf">
+                                Scarf
+                            </button>
+                            </li>
+                                                </ul>
+                    </div>
+                    </div>
+
+                    
+                    <div class="tab-content-wrapper">
+                        
+                        <div class="tab-content active" id="all-tab">
+                            <div class="swiper featured-products">
+                                <div class="swiper-wrapper">
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/spykar-womens-washed-cotton-crop-denim-jacket">
+                <img src="https://ecom-demo.workdo.io/uploads/2/47_1749020431_32.png"
+                width="400" height="400"
+                alt="Spykar Women&#039;s  Denim Jacket"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="4"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/spykar-womens-washed-cotton-crop-denim-jacket">Spykar Women&#039;s  Denim Jacket</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Turn heads wherever you go with the Spykar Women&#039;s Washed Cotton Crop Denim Jacket — a must-have for...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 96.0 </span>
+            <span class="product_orignal_price"> $ 100.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="4"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">
+                <img src="https://ecom-demo.workdo.io/uploads/2/23_1749021926_2.png"
+                width="400" height="400"
+                alt="Dakota Cashmere Men&#039;s Scarf"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="8"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">Dakota Cashmere Men&#039;s Scarf</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Wrap yourself in unparalleled luxury with the Dakota Cashmere Men&#039;s Scarf — a timeless accessory cra...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="8"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">
+                <img src="https://ecom-demo.workdo.io/uploads/2/75_1749021436_1-1.png"
+                width="400" height="400"
+                alt="Linen-Blend Plainfront Short"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="6"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">Linen-Blend Plainfront Short</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Stay cool, stylish, and effortless with the Linen-Blend Plainfront Short — your ultimate warm-weathe...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 33.0 </span>
+            <span class="product_orignal_price"> $ 35.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="6"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/12_1749031192_3.png"
+                width="400" height="400"
+                alt="Raffia Wide Brim Hat Cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="10"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">Raffia Wide Brim Hat Cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Make a bold, breezy statement with the Raffia Wide Brim Hat Cap — a must-have for sunny escapes and...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="10"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/62_1749022339_2.png"
+                width="400" height="400"
+                alt="Classic Unisex Straw Boater cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="9"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">Classic Unisex Straw Boater cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Step into timeless summer style with the Classic Unisex Straw Boater Cap — a chic accessory that bri...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 55.0 </span>
+            <span class="product_orignal_price"> $ 59.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="9"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">
+                <img src="https://ecom-demo.workdo.io/uploads/2/19_1749019041_1.png"
+                width="400" height="400"
+                alt="Summer Floral Dress"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="1"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">Summer Floral Dress</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                A stunning floral dress perfect for summer occasions. This elegant piece features a beautiful floral...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 59.0 </span>
+            <span class="product_orignal_price"> $ 60.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="1"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">
+                <img src="https://ecom-demo.workdo.io/uploads/2/21_1749021279_1-5.png"
+                width="400" height="400"
+                alt="Woven-Textured Shirt"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="5"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">Woven-Textured Shirt</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Elevate your wardrobe with timeless texture—introducing the Woven-Textured Shirt, a refined staple d...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="5"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-apron-jumpsuit">
+                <img src="https://ecom-demo.workdo.io/uploads/2/18_1749019474_5.png"
+                width="400" height="400"
+                alt="Linen-Blend Apron Jumpsuit"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="2"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-apron-jumpsuit">Linen-Blend Apron Jumpsuit</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Effortlessly stylish and endlessly comfortable, our Linen-Blend Apron Jumpsuit is your go-to choice...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 62.0 </span>
+            <span class="product_orignal_price"> $ 65.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="2"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/classic-suiting-organic-cotton-coats">
+                <img src="https://ecom-demo.workdo.io/uploads/2/26_1749201062_67_1749021664_4.png"
+                width="400" height="400"
+                alt="Classic Suiting organic cotton coats"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="7"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/classic-suiting-organic-cotton-coats">Classic Suiting organic cotton coats</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Refined elegance meets sustainable craftsmanship in the Classic Suiting Organic Cotton Coat. Tailore...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="7"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                            <div class="swiper-slide">
+                                            <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/short-sleeve-crochet-style-polo">
+                <img src="https://ecom-demo.workdo.io/uploads/2/14_1749019781_3.png"
+                width="400" height="400"
+                alt="Short-Sleeve Crochet-Style Polo"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="3"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/short-sleeve-crochet-style-polo">Short-Sleeve Crochet-Style Polo</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Meet your new go-to for effortless cool: the Short-Sleeve Crochet-Style Polo blends timeless tailori...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 70.0 </span>
+            <span class="product_orignal_price"> $ 75.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="3"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                        </div>
+                                                                    </div>
+                                <div class="arrow-wrapper">
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                                                    <div class="tab-content hidden" id="collections/dresses-tab">
+                            <div class="swiper featured-products">
+                                <div class="swiper-wrapper">
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">
+                <img src="https://ecom-demo.workdo.io/uploads/2/19_1749019041_1.png"
+                width="400" height="400"
+                alt="Summer Floral Dress"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="1"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/summer-floral-dress">Summer Floral Dress</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                A stunning floral dress perfect for summer occasions. This elegant piece features a beautiful floral...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 59.0 </span>
+            <span class="product_orignal_price"> $ 60.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="1"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                </div>
+                                <div class="arrow-wrapper">
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            </div>
+                                                    <div class="tab-content hidden" id="collections/mens-store-tab">
+                            <div class="swiper featured-products">
+                                <div class="swiper-wrapper">
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">
+                <img src="https://ecom-demo.workdo.io/uploads/2/21_1749021279_1-5.png"
+                width="400" height="400"
+                alt="Woven-Textured Shirt"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="5"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/woven-textured-shirt">Woven-Textured Shirt</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Elevate your wardrobe with timeless texture—introducing the Woven-Textured Shirt, a refined staple d...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="5"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">
+                <img src="https://ecom-demo.workdo.io/uploads/2/75_1749021436_1-1.png"
+                width="400" height="400"
+                alt="Linen-Blend Plainfront Short"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="6"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/linen-blend-plainfront-short">Linen-Blend Plainfront Short</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Stay cool, stylish, and effortless with the Linen-Blend Plainfront Short — your ultimate warm-weathe...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 33.0 </span>
+            <span class="product_orignal_price"> $ 35.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="6"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                </div>
+                                <div class="arrow-wrapper">
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            </div>
+                                                    <div class="tab-content hidden" id="collections/hats-tab">
+                            <div class="swiper featured-products">
+                                <div class="swiper-wrapper">
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/62_1749022339_2.png"
+                width="400" height="400"
+                alt="Classic Unisex Straw Boater cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="9"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/classic-unisex-straw-boater-cap">Classic Unisex Straw Boater cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Step into timeless summer style with the Classic Unisex Straw Boater Cap — a chic accessory that bri...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <div>
+                    <span class="font-bold text-lg">
+                    <span class="product_final_price"> $ 55.0 </span>
+            <span class="product_orignal_price"> $ 59.0 </span>
+            
+                    </span>
+                </div>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="9"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">
+                <img src="https://ecom-demo.workdo.io/uploads/2/12_1749031192_3.png"
+                width="400" height="400"
+                alt="Raffia Wide Brim Hat Cap"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="10"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/raffia-wide-brim-hat-cap">Raffia Wide Brim Hat Cap</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Make a bold, breezy statement with the Raffia Wide Brim Hat Cap — a must-have for sunny escapes and...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="10"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                </div>
+                                <div class="arrow-wrapper">
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            </div>
+                                                    <div class="tab-content hidden" id="collections/scarf-tab">
+                            <div class="swiper featured-products">
+                                <div class="swiper-wrapper">
+                                                                    <div class="swiper-slide">
+                                    <div class="flex product-card flex-col h-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+            <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">
+                <img src="https://ecom-demo.workdo.io/uploads/2/23_1749021926_2.png"
+                width="400" height="400"
+                alt="Dakota Cashmere Men&#039;s Scarf"
+                loading="lazy"
+                class="w-full h-80 object-cover object-top product-image" />
+            </a>
+
+            <div class="absolute top-4 right-4">
+                <button class="wishlist-btn wishbtn-globaly  relative flex bg-white rounded p-2 border" 
+                        product_id="8"
+                        in_wishlist="add">
+                        <i class="far fa-heart text-gray-600"></i>
+                    </button>
+            </div>
+        </div>
+        <div class="h-full flex flex-col">
+            <div class="p-4 pb-0 flex-1">
+                <h3 class="font-medium mb-1 text-lg">
+                <a href="https://ecom-demo.workdo.io/stylique/product/dakota-cashmere-mens-scarf">Dakota Cashmere Men&#039;s Scarf</a>
+                </h3>
+                <p class="text-gray-500 text-sm mb-2 line-clamp-2">
+                Wrap yourself in unparalleled luxury with the Dakota Cashmere Men&#039;s Scarf — a timeless accessory cra...
+                </p>
+            </div>
+                <div class="p-4 pt-0 flex justify-between items-center">
+                                <span class="font-bold text-lg">
+                    <ins>在变种中</ins>
+                </span>
+                                <button class="addtocart-btn btn addcart-btn-globaly bg-[var(--primary-color)] text-white px-3 py-1 rounded hover:bg-opacity-90 transition-colors duration-300"
+                tabindex="0"
+                product_id="8"
+                variant_id="0"
+                qty="1">
+                <span>添加到购物车</span>
+                </button>
+            </div>
+        </div>
+</div>                                    </div>
+                                                                </div>
+                                <div class="arrow-wrapper">
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                </div>
+                            </div>
+                            </div>
+                                            </div>
+                </div>
+            </section>
+        
+        <!-- Testimonials Section -->
+                    <section class="section-spacing bg-gray-50">
+                <div class="md:container mx-auto px-4 w-full">
+                    <!-- Section Title -->
+                    <div class="text-center md:mb-10 mb-6">
+                        <h2 class="md:text-4xl text-3xl font-bold mb-4">
+                            What Our Customers Say
+                        </h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto">
+                            Real feedback from our valued customers.
+                        </p>
+                    </div>
+                    <!-- Testimonials Slider -->
+                    <div class="swiper testimonials-slider">
+                        <div class="swiper-wrapper">
+                                                            <div class="swiper-slide">
+                                    <div class="bg-white md:p-6 p-4 rounded-lg shadow-md h-full flex flex-col">
+                                        <!-- Star Rating & Review -->
+                                        <div class="flex-1">
+                                            <div class="text-yellow-400 mb-4">
+                                                                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                            </div>
+                                            <p class="text-gray-600 mb-6">
+                                                I was looking for a coat that’s both cozy and fashionable, and I found it here. The fabric is warm, and the design is just perfect for winter outings.
+                                            </p>
+                                        </div>
+
+                                        <!-- Reviewer Info -->
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                            src="https://ecom-demo.workdo.io/uploads/2/testimonial/27_1749028618_aiony-haust-3TLl_97HNJo-unsplash.jpg"
+                                                alt="Customer"
+                                                class="w-12 h-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h4 class="font-medium">
+                                                    Riya S.
+                                                </h4>
+                                                <p class="text-gray-500 text-sm">
+                                                    Classic Suiting organic cotton coats
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                    <div class="bg-white md:p-6 p-4 rounded-lg shadow-md h-full flex flex-col">
+                                        <!-- Star Rating & Review -->
+                                        <div class="flex-1">
+                                            <div class="text-yellow-400 mb-4">
+                                                                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                            </div>
+                                            <p class="text-gray-600 mb-6">
+                                                Shopping for men’s clothes has never been this easy. The materials are top-quality, and everything fits just right — from casual tees to formal shirts. I’m a loyal customer now!”
+                                            </p>
+                                        </div>
+
+                                        <!-- Reviewer Info -->
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                            src="https://ecom-demo.workdo.io/uploads/2/testimonial/28_1749028726_nicolas-horn-MTZTGvDsHFY-unsplash.jpg"
+                                                alt="Customer"
+                                                class="w-12 h-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h4 class="font-medium">
+                                                    Aarav M.
+                                                </h4>
+                                                <p class="text-gray-500 text-sm">
+                                                    Linen-Blend Plainfront Short
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                    <div class="bg-white md:p-6 p-4 rounded-lg shadow-md h-full flex flex-col">
+                                        <!-- Star Rating & Review -->
+                                        <div class="flex-1">
+                                            <div class="text-yellow-400 mb-4">
+                                                                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                            </div>
+                                            <p class="text-gray-600 mb-6">
+                                                This store has become my go-to for trendy outfits. I love how affordable everything is without compromising on quality. Each piece adds charm to my wardrobe!”
+                                            </p>
+                                        </div>
+
+                                        <!-- Reviewer Info -->
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                            src="https://ecom-demo.workdo.io/uploads/2/testimonial/93_1749029014_brooke-cagle-pJqfhKUpCh8-unsplash.jpg"
+                                                alt="Customer"
+                                                class="w-12 h-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h4 class="font-medium">
+                                                    Ananya D.
+                                                </h4>
+                                                <p class="text-gray-500 text-sm">
+                                                    Linen-Blend Apron Jumpsuit
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                    <div class="bg-white md:p-6 p-4 rounded-lg shadow-md h-full flex flex-col">
+                                        <!-- Star Rating & Review -->
+                                        <div class="flex-1">
+                                            <div class="text-yellow-400 mb-4">
+                                                                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                            </div>
+                                            <p class="text-gray-600 mb-6">
+                                                This jacket is lightweight, stylish, and surprisingly warm. I’ve taken it on hikes and road trips — it’s comfortable and looks great in photos too!
+                                            </p>
+                                        </div>
+
+                                        <!-- Reviewer Info -->
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                            src="https://ecom-demo.workdo.io/uploads/2/testimonial/80_1749029287_jake-nackos-IF9TK5Uy-KI-unsplash.jpg"
+                                                alt="Customer"
+                                                class="w-12 h-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h4 class="font-medium">
+                                                    Kiran B.
+                                                </h4>
+                                                <p class="text-gray-500 text-sm">
+                                                    Spykar Women&#039;s  Denim Jacket
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="swiper-slide">
+                                    <div class="bg-white md:p-6 p-4 rounded-lg shadow-md h-full flex flex-col">
+                                        <!-- Star Rating & Review -->
+                                        <div class="flex-1">
+                                            <div class="text-yellow-400 mb-4">
+                                                                                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                            </div>
+                                            <p class="text-gray-600 mb-6">
+                                                wore one of your dresses to a friend’s wedding, and everyone asked where I got it from! The design was unique and the stitching top-notch.
+                                            </p>
+                                        </div>
+
+                                        <!-- Reviewer Info -->
+                                        <div class="flex items-center gap-4">
+                                            <img
+                                            src="https://ecom-demo.workdo.io/uploads/2/testimonial/36_1749029493_sigmund-jzz_3jWMzHA-unsplash.jpg"
+                                                alt="Customer"
+                                                class="w-12 h-12 rounded-full object-cover"
+                                            />
+                                            <div>
+                                                <h4 class="font-medium">
+                                                    Sneha P.
+                                                </h4>
+                                                <p class="text-gray-500 text-sm">
+                                                    Summer Floral Dress
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                    </div>
+
+                        <!-- Swiper Navigation -->
+                        <div class="arrow-wrapper">
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        
+        <!-- Blog Section -->
+                    <section class="section-spacing">
+            <div class="md:container mx-auto px-4 w-full">
+                <div class="text-center md:mb-10 mb-6">
+                    <h2 class="md:text-4xl text-3xl font-bold mb-4">Latest News</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">
+                        Stay updated with our latest news and trends.
+                    </p>
+                </div>
+                <div class="blog-slider swiper">
+                <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                     <div class="h-full flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="relative">
+        <a href="https://ecom-demo.workdo.io/stylique/article/summer-2025-fashion">
+            <img src="https://ecom-demo.workdo.io/uploads/2/61_1749033450_blog-image1.png"
+            width="400" height="400" alt="Blog post image" class="w-full h-60 object-cover object-top"/>
+        </a>
+    </div>
+    <div class="h-full flex flex-col">
+    <div class="p-4 pb-0 flex-1">
+        <div class="flex items-center text-gray-500 text-sm mb-2">
+        <i class="far fa-calendar-alt ltr:mr-2 rtl:ml-2"></i>
+        <span>Jun 04, 2025</span>
+        <span class="mx-2">•</span>
+        <span>Lifestyle &amp; Inspiration</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Summer 2025 Fashion</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+        Discover the hottest fashion trends for Summer 2025. vibrant colors to sustainable fashion, we&#039;ve got you covered
+        </p>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="https://ecom-demo.workdo.io/stylique/article/summer-2025-fashion" class="text-primary font-medium hover:underline">
+    阅读更多
+        </a>
+    </div>
+    </div>
+</div>                    </div>
+                                        <div class="swiper-slide">
+                     <div class="h-full flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="relative">
+        <a href="https://ecom-demo.workdo.io/stylique/article/10-must-have-accessories">
+            <img src="https://ecom-demo.workdo.io/uploads/2/34_1749034042_category-image3.png"
+            width="400" height="400" alt="Blog post image" class="w-full h-60 object-cover object-top"/>
+        </a>
+    </div>
+    <div class="h-full flex flex-col">
+    <div class="p-4 pb-0 flex-1">
+        <div class="flex items-center text-gray-500 text-sm mb-2">
+        <i class="far fa-calendar-alt ltr:mr-2 rtl:ml-2"></i>
+        <span>Jun 04, 2025</span>
+        <span class="mx-2">•</span>
+        <span>Seasonal Fashion</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2">10 Must-Have Accessories</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+        Complete your outfit with these essential accessories. From statement earrings to versatile bags, these pieces will elevate any look
+        </p>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="https://ecom-demo.workdo.io/stylique/article/10-must-have-accessories" class="text-primary font-medium hover:underline">
+    阅读更多
+        </a>
+    </div>
+    </div>
+</div>                    </div>
+                                        <div class="swiper-slide">
+                     <div class="h-full flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="relative">
+        <a href="https://ecom-demo.workdo.io/stylique/article/sustainable-fashion-guide">
+            <img src="https://ecom-demo.workdo.io/uploads/2/21_1749034475_blog-image3.png"
+            width="400" height="400" alt="Blog post image" class="w-full h-60 object-cover object-top"/>
+        </a>
+    </div>
+    <div class="h-full flex flex-col">
+    <div class="p-4 pb-0 flex-1">
+        <div class="flex items-center text-gray-500 text-sm mb-2">
+        <i class="far fa-calendar-alt ltr:mr-2 rtl:ml-2"></i>
+        <span>Jun 04, 2025</span>
+        <span class="mx-2">•</span>
+        <span>Style Guides</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Sustainable Fashion Guide</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+        Learn how to make more eco-friendly fashion choices. Discover brands committed to sustainability and tips for building ethical wardrobe.
+        </p>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="https://ecom-demo.workdo.io/stylique/article/sustainable-fashion-guide" class="text-primary font-medium hover:underline">
+    阅读更多
+        </a>
+    </div>
+    </div>
+</div>                    </div>
+                                        <div class="swiper-slide">
+                     <div class="h-full flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="relative">
+        <a href="https://ecom-demo.workdo.io/stylique/article/wash-clothes-the-right-way">
+            <img src="https://ecom-demo.workdo.io/uploads/2/58_1749035143_article-1.png"
+            width="400" height="400" alt="Blog post image" class="w-full h-60 object-cover object-top"/>
+        </a>
+    </div>
+    <div class="h-full flex flex-col">
+    <div class="p-4 pb-0 flex-1">
+        <div class="flex items-center text-gray-500 text-sm mb-2">
+        <i class="far fa-calendar-alt ltr:mr-2 rtl:ml-2"></i>
+        <span>Jun 04, 2025</span>
+        <span class="mx-2">•</span>
+        <span>Style Guides</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Wash Clothes the Right Way</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+        How to Wash Clothes the Right Way: A Step-by-Step Guide for Lasting Fabrics
+        </p>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="https://ecom-demo.workdo.io/stylique/article/wash-clothes-the-right-way" class="text-primary font-medium hover:underline">
+    阅读更多
+        </a>
+    </div>
+    </div>
+</div>                    </div>
+                                        <div class="swiper-slide">
+                     <div class="h-full flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="relative">
+        <a href="https://ecom-demo.workdo.io/stylique/article/summer-accessories">
+            <img src="https://ecom-demo.workdo.io/uploads/2/29_1749035248_collection-page5.png"
+            width="400" height="400" alt="Blog post image" class="w-full h-60 object-cover object-top"/>
+        </a>
+    </div>
+    <div class="h-full flex flex-col">
+    <div class="p-4 pb-0 flex-1">
+        <div class="flex items-center text-gray-500 text-sm mb-2">
+        <i class="far fa-calendar-alt ltr:mr-2 rtl:ml-2"></i>
+        <span>Jun 04, 2025</span>
+        <span class="mx-2">•</span>
+        <span>Seasonal Fashion</span>
+        </div>
+        <h3 class="font-bold text-xl mb-2">Summer Accessories</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+        5 Must-Have Summer Accessories to Elevate Your Style
+        </p>
+    </div>
+    <div class="p-4 pt-0">
+        <a href="https://ecom-demo.workdo.io/stylique/article/summer-accessories" class="text-primary font-medium hover:underline">
+    阅读更多
+        </a>
+    </div>
+    </div>
+</div>                    </div>
+                                    </div>
+                <div class="arrow-wrapper">
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+                </div>
+            </div>
+            </section>
+        
+        <!-- Service Section -->
+                    <section class="section-spacing pt-0">
+                <div class="md:container mx-auto px-4 w-full">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-6 gap-4">  
+                                                    <div class="service-card bg-white rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+                                <div class="service-icon text-orange-500 floating">
+                                    <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/service.png" alt="Exchange Offer" class="w-12 h-12 object-contain" loading="lazy">
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Exchange Offer</h3>
+                                    <p class="text-gray-600">Easy To Exchange</p>
+                                </div>
+                            </div>
+                                                    <div class="service-card bg-white rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+                                <div class="service-icon text-orange-500 floating">
+                                    <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/service2.png" alt="Big Savings" class="w-12 h-12 object-contain" loading="lazy">
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Big Savings</h3>
+                                    <p class="text-gray-600">At Lowest Price</p>
+                                </div>
+                            </div>
+                                                    <div class="service-card bg-white rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+                                <div class="service-icon text-orange-500 floating">
+                                    <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/service3.png" alt="24/7 Support" class="w-12 h-12 object-contain" loading="lazy">
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">24/7 Support</h3>
+                                    <p class="text-gray-600">In Safe Hands</p>
+                                </div>
+                            </div>
+                                                    <div class="service-card bg-white rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+                                <div class="service-icon text-orange-500 floating">
+                                    <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/service4.png" alt="Free Shipping" class="w-12 h-12 object-contain" loading="lazy">
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Free Shipping</h3>
+                                    <p class="text-gray-600">Delever To Door</p>
+                                </div>
+                            </div>
+                                            </div>
+                </div>
+            </section>
+            </main>
+    <!-- Footer -->
+      <footer class="bg-gray-900 text-white pt-12 pb-8 site-footer">
+      <div class="md:container mx-auto px-4 w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-8 gap-4">
+          <!-- About Column -->
+          <div>
+            <div class="mb-4 footer-logo">
+              <a href="https://ecom-demo.workdo.io/stylique/home">
+                  <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/footer-logo.png" alt="Logo" width="150" height="150" loading="lazy">
+              </a>
+            </div>
+                              <p class="text-gray-400 mb-4" id="We bring you the latest trends in fashion at affordable prices. Quality clothing for everyone._preview">
+                      We bring you the latest trends in fashion at affordable prices. Quality clothing for everyone.
+                  </p>
+                          <div class="flex gap-4 mt-4">
+                              <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white" aria-label="SocialLink">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                              <a href="https://x.com/" class="text-gray-400 hover:text-white" aria-label="SocialLink">
+                  <i class="fab fa-x-twitter"></i>
+                </a>
+                              <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white" aria-label="SocialLink">
+                  <i class="fab fa-instagram"></i>
+                </a>
+                              <a href="https://in.pinterest.com/" class="text-gray-400 hover:text-white" aria-label="SocialLink">
+                  <i class="fab fa-pinterest"></i>
+                </a>
+                          </div>
+          </div>
+
+                                  <div>
+              <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+              <ul class="space-y-2 text-gray-400">
+                                                                    <li><a href="https://ecom-demo.workdo.io/stylique/blog"  class="hover:text-white">Blog</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/about"  class="hover:text-white">About Us</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/privacy-policy"  class="hover:text-white">Privacy Policy</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/page/refund-policy"  class="hover:text-white">Refund Policy</a></li>
+                                                </ul>
+            </div>
+                        <div>
+              <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+              <ul class="space-y-2 text-gray-400">
+                                                                    <li><a href="https://ecom-demo.workdo.io/stylique/track-order"  class="hover:text-white">Order Tracking</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/product-list"  class="hover:text-white">Product List Page</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/collections"  class="hover:text-white">Category Collection</a></li>
+                                    <li><a href="https://ecom-demo.workdo.io/stylique/contact-us"  class="hover:text-white">Contact Us</a></li>
+                                                </ul>
+            </div>
+                      
+                        <!-- Newsletter Column -->
+              <div>
+              <h3 class="text-lg font-semibold mb-4">Join Our Newsletter</h3>
+              <p class="text-gray-400 mb-4">
+                  Subscribe to our newsletter for the latest updates and offers.
+              </p>
+              <form action="https://ecom-demo.workdo.io/newsletter?stylique" method="post" class="mt-4">
+                  <input type="hidden" name="_token" value="XmGzPlP12c5YeBjx4Pf49taMUugIcfZuE2EcOLt1" autocomplete="off">                  <div class="flex">
+                  <input type="email" placeholder="Your email address"
+                      class="px-4 py-2 w-full rounded-l-lg rtl:rounded-r-lg rtl:rounded-l-none outline-none text-gray-900" />
+                  <button type="submit" class="bg-[var(--primary-color)] px-4 py-2 rounded-r-lg rtl:rounded-l-lg rtl:rounded-r-none hover:bg-opacity-90">
+                      <i class="fas fa-paper-plane rtl:scale-x-[-1]"></i>
+                  </button>
+                  </div>
+              </form>
+              </div>
+          
+        </div>
+
+                  <div
+              class="md:mt-10 mt-6 pt-6 border-t border-gray-800 text-center text-gray-400 text-sm flex flex-wrap gap-4 sm:justify-between justify-center">
+              <p>© 2025, eCommerce Theme Powered by: workdo.io</p>
+              <div class="flex justify-center gap-2">
+              <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/ApplePay.png" alt="Visa" class="h-6 object-cover" />
+              <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/Paypal.png" alt="Mastercard" class="h-6 object-cover" />
+              
+              </div>
+          </div>
+              </div>
+    </footer>
+  
+    <link rel="stylesheet" href="https://ecom-demo.workdo.io/css/loader.css?v=1760627289" >
+     <link rel="stylesheet" href="https://ecom-demo.workdo.io/assets/css/plugins/notifier.css?v=1760627289" >
+
+                <div id="loader" class="loader-wrapper" style="display: none;">
+        <span class="site-loader"> </span>
+        <h3 class="loader-content"> 进行加载... </h3>
+        </div>
+        
+         <!-- Cart Overlay and Panel -->
+        <div id="cart-overlay" class="cart-overlay">
+            <div id="cart-panel" class="cart-panel">
+            </div>
+        </div>
+                <div id="mobile-menu" class="mobile-menu fixed inset-y-0 right-0 z-50 bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+            <div class="flex justify-between items-center p-4 border-b">
+            <a href="https://ecom-demo.workdo.io/stylique/home" class="block max-w-[110px] w-full">
+                <img src="https://ecom-demo.workdo.io/themes/stylique/assets/images/logo.png" alt="logo" class="logo-img">
+            </a>
+            <button id="close-mobile-menu" class="text-gray-500 hover:text-green-800 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            </div>
+            <!-- Language and Currency Dropdowns -->
+            <div class="language-currency-settings p-4 flex items-center justify-between gap-4 border-b">
+            <!-- Language Select -->
+            <div class="flex-1 relative inline-block text-left text-sm">
+                <button data-dropdown-toggle="mob-language" type="button"
+                class="flex items-center justify-between gap-2 px-4 py-2 border rounded-md w-full">
+                <span>Chinese</span>
+                <i class="fas fa-chevron-down text-sm"></i>
+                </button>
+                <div data-dropdown-menu="mob-language"
+                class="absolute right-0 mt-2 py-2 min-w-28 bg-white border border-gray-200 rounded-lg shadow-lg hidden w-full max-h-[200px] overflow-y-auto">
+                                <a href="https://ecom-demo.workdo.io/change-language-store/ar" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Arabic</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/da" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Danish</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/de" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">German</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/en" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">English</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/es" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Spanish</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/fr" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">French</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/it" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Italian</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/ja" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Japanese</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/nl" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Dutch</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/pl" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Polish</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/pt" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Portuguese</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/ru" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Russian</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/tr" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Turkish</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/zh" class="block px-4 py-2 text-gray-700 hover:bg-gray-100  text-primary ">Chinese</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/he" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Hebrew</a>
+                                <a href="https://ecom-demo.workdo.io/change-language-store/pt-br" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Portuguese(Brazil)</a>
+                                </div>
+            </div>
+            </div>
+            <nav class="p-4">
+            <ul class="space-y-1">
+                                                                            <li>
+        <a href="https://ecom-demo.workdo.io/stylique/collections/coats" class="block py-3 px-4 rounded-lg transition-colors text-green-800 font-medium bg-green-100 transition-colors">
+            <i class="fas fa-link mr-3"></i>Coats
+        </a>
+    </li>
+                                            <li>
+        <a href="https://ecom-demo.workdo.io/stylique/collections/jackets" class="block py-3 px-4 rounded-lg transition-colors text-gray-700 font-medium hover:bg-gray-100">
+            <i class="fas fa-link mr-3"></i>Jackets
+        </a>
+    </li>
+                                            <li>
+        <a href="https://ecom-demo.workdo.io/stylique/collections/scarf" class="block py-3 px-4 rounded-lg transition-colors text-gray-700 font-medium hover:bg-gray-100">
+            <i class="fas fa-link mr-3"></i>Scarf
+        </a>
+    </li>
+                                            <li>
+        <a href="https://ecom-demo.workdo.io/stylique/collections/mens-store" class="block py-3 px-4 rounded-lg transition-colors text-gray-700 font-medium hover:bg-gray-100">
+            <i class="fas fa-link mr-3"></i>Mens Store
+        </a>
+    </li>
+                                                </ul>
+            </nav>
+        </div>
+          <!-- Search Popup -->
+  <div id="search-popup-container" class="fixed flex items-center justify-center inset-0 z-20 hidden">
+    <div class="search-popup relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 md:p-6 p-4">
+        <form id="mobile-search-form">
+    <div class="flex justify-between items-center md:mb-5 mb-4">
+        <h3 class="text-xl font-bold text-gray-800">搜索产品</h3>
+        <button type="button" id="close-search" class="text-gray-500 hover:text-primary transition-colors">
+        <i class="fas fa-times text-xl"></i>
+        </button>
+    </div>
+
+    <div class="relative mb-6">
+        <input type="text" id="search-input" placeholder="What are you looking for?" class="w-full form-input pe-10" />
+        <button type="button" class="absolute ltr:right-4 rtl:left-4  top-3 flex">
+        <i class="fas fa-search text-gray-400"></i>
+        </button>
+    </div>
+    <button class="w-full btn-primary">现在搜索</button>
+</form>
+    </div>
+</div>
+
+
+  <!-- Modal -->
+  <div id="commonModal" class="fixed inset-0 z-50 hidden sm:ml-4 sm:mr-2" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+      <!-- Modal panel -->
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full modal-content">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[90vh] overflow-y-auto">
+          <div class="sm:flex sm:items-start">
+            <div class="sm:mt-0 sm:text-left w-full">
+                <div class="flex gap-3 justify-between">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title"></h3>
+                    
+                        <button type="button" class="close-modal text-lg font-medium text-gray-700 hover:bg-gray-50  sm:w-auto">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    
+                </div>
+              <div class="mt-2" id="modal-body">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+        <div class="overlay wish-overlay"></div>
+        <div class="wishajaxDrawer"></div>
+
+    <!-- [ Main Content ] end -->
+   <!--  jQuery Validation  -->
+   <script src="https://ecom-demo.workdo.io/assets/js/jquery.validate.min.js"></script>
+   <script src="https://ecom-demo.workdo.io/js/jquery-cookie.min.js"></script>
+   <script src="https://ecom-demo.workdo.io/js/loader.js"></script>
+
+<!--scripts end here-->
+<!--scripts start here-->
+<script>
+    var guest = '';
+    var filterBlog = "https://ecom-demo.workdo.io/stylique/blogs/filter/view";
+    var cartlistSidebar = "https://ecom-demo.workdo.io/stylique/cart-list-sidebar";
+    var ProductCart = "https://ecom-demo.workdo.io/stylique/product_cart";
+    var addressbook_data = "#";
+    var shippings_data = "#";
+    var get_shippings_data = "https://ecom-demo.workdo.io/stylique/get-shipping-data";
+    var shippings_methods = "https://ecom-demo.workdo.io/stylique/shipping-method";
+    var apply_coupon = "https://ecom-demo.workdo.io/stylique/applycoupon";
+    var paymentlist = "https://ecom-demo.workdo.io/stylique/paymentlist";
+    var additionalnote = "https://ecom-demo.workdo.io/stylique/additionalnote";
+    var state_list = "https://ecom-demo.workdo.io/stylique/states-list";
+    var city_list = "https://ecom-demo.workdo.io/stylique/city-list";
+    var changeCart = "https://ecom-demo.workdo.io/stylique/change-cart";
+    var wishListCount = "https://ecom-demo.workdo.io/stylique/wish-list-count";
+    var removeWishlist = "https://ecom-demo.workdo.io/stylique/delete-wishlist";
+    var addProductWishlist = "https://ecom-demo.workdo.io/stylique/product-wishlist";
+    var isAuthenticated = "false";
+    var removeCart = "https://ecom-demo.workdo.io/stylique/cart-remove";
+    var clearCart = "https://ecom-demo.workdo.io/stylique/cart-clear";
+    var productPrice = "https://ecom-demo.workdo.io/stylique/product_price";
+    var wishList = "https://ecom-demo.workdo.io/stylique/wish-list";
+    var whatsappNumber = "";
+    var taxes_data = "https://ecom-demo.workdo.io/stylique/get-tax-data";
+    var searchProductGlobaly = "https://ecom-demo.workdo.io/stylique/search-product";
+    var loginUrl = "https://ecom-demo.workdo.io/stylique/login";
+    var payfast_payment = "https://ecom-demo.workdo.io/stylique/process-order";
+    var site_url = $('meta[name="base-url"]').attr('content');
+    var size_module_active = false;
+    var site_url = $('meta[name="base-url"]').attr('content');
+    var theme404Page = "https://ecom-demo.workdo.io/stylique/error";
+</script>
+<script src="https://ecom-demo.workdo.io/assets/js/floating-wpp.min.js"></script>
+<script src="https://ecom-demo.workdo.io/assets/js/plugins/notifier.js"></script>
+
+<script src="https://ecom-demo.workdo.io/public/js/flipdown.js"></script>
+<script src="https://ecom-demo.workdo.io/assets/js/front-theme.js" defer="defer"></script>
+            <script type="text/javascript">
+            const container = document.querySelector("body")
+
+            const coffees = [];
+
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", function() {
+                    navigator.serviceWorker
+                        .register("https://ecom-demo.workdo.io/serviceWorker.js")
+                        .then(res => console.log("service worker registered"))
+                        .catch(err => console.log("service worker not registered", err))
+
+                })
+            }
+        </script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id="></script>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', '');
+        $(document).on("click", "#cart-close",function(e) {
+            $("#cart-panel").removeClass("open");
+            $("#cart-overlay").removeClass("open");
+            $("body").css("overflow", "");
+        });
+
+        $(document).on('click', '.quantity-increment', function () {
+            const $input = $(this).siblings('.quantity');
+            let quantity = parseInt($input.val()) || 0;
+            $input.val(quantity + 1);
+        });
+
+        $(document).on('click', '.quantity-decrement', function () {
+            const $input = $(this).siblings('.quantity');
+            let quantity = parseInt($input.val()) || 0;
+            if (quantity > 1) {
+                $input.val(quantity - 1);
+            }
+        });
+
+        if ($('.select2').length > 0) {
+            $('.select2').each(function () {
+                var $this = $(this);
+
+                $this.select2({
+                    width: '100%',
+                    tags: true,  // Enable tagging feature
+                    createTag: function (params) {
+                        var term = $.trim(params.term);
+                        if (term === '') {
+                            return null;
+                        }
+                        return {
+                            id: term,
+                            text: term,
+                            newTag: true
+                        };
+                    }
+                });
+            });
+        }
+    </script>
+
+
+    <script>
+        ! function(f, b, e, v, n, t, s) {
+            if (f.fbq) return;
+            n = f.fbq = function() {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = '2.0';
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=0000&ev=PageView&noscript=" /></noscript>
+
+
+  <!-- Swiper JS -->
+
+  <script src="https://ecom-demo.workdo.io/themes/stylique/assets/js/swiper-bundle.min.js"></script>
+
+  <script src="https://ecom-demo.workdo.io/themes/stylique/assets/js/custom.js"></script>
+
+   <!--Theme Routes Script-->
+    
+    <!--scripts end here-->
+   
+        <script>
+$(document).ready(function() {
+    function handleSearch(formId, inputId) {
+        $(formId).on('submit', function(e) {
+            e.preventDefault();
+            
+            const searchTerm = $(inputId).val().trim();
+            if (!searchTerm) return;
+            
+            $.ajax({
+                url: 'https://ecom-demo.workdo.io/stylique/search-product',
+                type: 'GET',
+                data: { product: searchTerm },
+                success: function(response) {
+                    if (response && response.length > 0) {
+                        // If we get a URL, redirect to the product page
+                        window.location.href = response[0].url;
+                    } else {
+                        // If no results, redirect to product list with search term
+                        window.location.href = 'https://ecom-demo.workdo.io/stylique/error?search=' + searchTerm;
+                    }
+                },
+                error: function() {
+                    // On error, redirect to product list with search term
+                    window.location.href = 'https://ecom-demo.workdo.io/stylique/error?search=' + searchTerm;
+                }
+            });
+        });
+    }
+
+    handleSearch('#desktop-search-form', '#desktop-search-input');
+    handleSearch('#mobile-search-form', '#search-input');
+});
+</script>
+
+<script>
+    $(document).on('click', 'a[data-ajax-popup="true"], button[data-ajax-popup="true"], div[data-ajax-popup="true"]', function (e) {
+        e.preventDefault();
+        var url = $(this).data('url');
+        var title = $(this).data('title');
+        var size = $(this).data('size');
+        
+        // Show modal with form
+        showModal(url, title, size);
+    });
+    // Function to show modal
+    function showModal(url, title, size) {
+        // Set modal size based on data-size attribute
+        var modalContent = $('#commonModal .modal-content');
+        modalContent.removeClass('sm:max-w-lg sm:max-w-xl sm:max-w-2xl sm:max-w-3xl sm:max-w-4xl sm:max-w-5xl sm:max-w-6xl sm:max-w-7xl');
+        
+        switch(size) {
+            case 'sm':
+                modalContent.addClass('sm:max-w-lg');
+                break;
+            case 'md':
+                modalContent.addClass('sm:max-w-2xl');
+                break;
+            case 'lg':
+                modalContent.addClass('sm:max-w-4xl');
+                break;
+            case 'xl':
+                modalContent.addClass('sm:max-w-6xl');
+                break;
+            default:
+                modalContent.addClass('sm:max-w-lg');
+        }
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#commonModal #modal-title').html(title);
+                $('#commonModal #modal-body').html(response.html);
+                $('#commonModal').removeClass('hidden');
+            },
+            error: function(error) {
+                console.error('Error loading address form:', error);
+            }
+        });
+    }
+
+    // Close modal when clicking the close button
+    $(document).on('click', '.close-modal', function(e) {
+        e.preventDefault();
+        $('#commonModal').addClass('hidden');
+    });
+
+    // Close modal when clicking outside
+    $(document).on('click', '#commonModal .bg-gray-500', function(e) {
+        if (e.target === this) {
+            $('#commonModal').addClass('hidden');
+        }
+    });
+</script>
+
+<script>
+    function wcqib_refresh_quantity_increments() {
+    jQuery("div.quantity:not(.buttons_added), td.quantity:not(.buttons_added)").each(function (a, b) {
+        var c = jQuery(b);
+        c.addClass("buttons_added"),
+            c.children().first().before('<input type="button" value="-" class="minus" />'),
+            c.children().last().after('<input type="button" value="+" class="plus" />')
+    })
+}
+
+String.prototype.getDecimals || (String.prototype.getDecimals = function () {
+    var a = this,
+        b = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    return b ? Math.max(0, (b[1] ? b[1].length : 0) - (b[2] ? +b[2] : 0)) : 0
+}), jQuery(document).ready(function () {
+    wcqib_refresh_quantity_increments()
+}), jQuery(document).on("updated_wc_div", function () {
+    wcqib_refresh_quantity_increments()
+}), jQuery(document).on("click", ".plus, .minus", function () {
+    var a = jQuery(this).closest(".quantity").find('input[name="quantity"], input[name="quantity[]"]'),
+        b = parseFloat(a.val()),
+        c = parseFloat(a.attr("max")),
+        d = parseFloat(a.attr("min")),
+        e = a.attr("step");
+    b && "" !== b && "NaN" !== b || (b = 0), "" !== c && "NaN" !== c || (c = ""), "" !== d && "NaN" !== d || (d = 0), "any" !== e && "" !== e && void 0 !== e && "NaN" !== parseFloat(e) || (e = 1), jQuery(this).is(".plus") ? c && b >= c ? a.val(c) : a.val((b + parseFloat(e)).toFixed(e.getDecimals())) : d && b <= d ? a.val(d) : b > 0 && a.val((b - parseFloat(e)).toFixed(e.getDecimals())), a.trigger("change")
+});
+</script>
+    <script>
+
+        function show_toastr(title, message, type) {
+            var o, i;
+            var icon = '';
+            var cls = '';
+            if (type == 'success') {
+                cls = 'primary';
+                notifier.show('Success', message, 'success', site_url + '/public/assets/images/notification/ok-48.png', 4000);
+            } else {
+                cls = 'danger';
+                notifier.show('Error', message, 'danger', site_url + '/public/assets/images/notification/high_priority-48.png', 4000);
+            }
+        }
+    </script>
+</body>
+</html>
+
