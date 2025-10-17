@@ -14,13 +14,12 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
-    ignore:
-      # Ignore patch and minor updates for now
-      # Uncomment to enable:
-      # - dependency-name: "*"
-      #   update-types:
-      #     ["version-update:semver-patch",
-      #      "version-update:semver-minor"]
+    # To ignore specific updates, uncomment and configure:
+    # ignore:
+    #   - dependency-name: "*"
+    #     update-types:
+    #       - "version-update:semver-patch"
+    #       - "version-update:semver-minor"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
