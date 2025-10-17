@@ -1,6 +1,8 @@
 # Implementation Plan: StormCom E-commerce SaaS Platform
 
-**Branch**: `001-stormcom-platform` | **Date**: 2025-10-16 | **Spec**: [spec.md](./spec.md)  
+> **📋 Note**: This is a **comprehensive implementation plan template** for the StormCom platform. It serves as an example of how to write detailed implementation plans following Spec-Driven Development principles. When creating new implementation plans, use this as a reference template.
+
+**Branch**: `stormcom-platform` | **Date**: 2025-10-16 | **Spec**: [example_spec.md](./example_spec.md)  
 **Project**: StormCom - Multi-Tenant E-commerce Management System
 
 ---
