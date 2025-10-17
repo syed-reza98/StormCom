@@ -89,7 +89,7 @@ This SRS was generated through:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend Layer                            │
+│                    Frontend Layer                           │
 │  - Web UI (Responsive Design)                               │
 │  - Admin Dashboard                                          │
 │  - Customer Storefront (Multiple Themes)                    │
@@ -97,22 +97,22 @@ This SRS was generated through:
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
-│               Application Layer                              │
-│  - Next.js 15 App Router (React Server Components)         │
+│               Application Layer                             │
+│  - Next.js 15 App Router (React Server Components)          │
 │  - Authentication & Authorization (NextAuth.js v5)          │
-│  - Business Logic (Server Actions & Route Handlers)        │
-│  - RESTful API (Next.js API Routes)                        │
-│  - TypeScript 5.9.3 (Strict Mode)                          │
+│  - Business Logic (Server Actions & Route Handlers)         │
+│  - RESTful API (Next.js API Routes)                         │
+│  - TypeScript 5.9.3 (Strict Mode)                           │
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
-│                 Data Layer                                   │
+│                 Data Layer                                  │
 │  - PostgreSQL (Vercel Postgres Production)                  │
 │  - SQLite (Local Development)                               │
-│  - Prisma ORM (Type-Safe Database Access)                  │
+│  - Prisma ORM (Type-Safe Database Access)                   │
 │  - File Storage (Vercel Blob Storage)                       │
 │  - Session Management (NextAuth.js)                         │
-│  - Cache Layer (Next.js Built-in Caching)                  │
+│  - Cache Layer (Next.js Built-in Caching)                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
