@@ -1,8 +1,12 @@
-# eCommerceGo SaaS - Complete Page Navigation Index
+# StormCom SaaS Platform - Complete Page Navigation Index
+
+> **Note**: This document is part of the original analysis of the demo application at https://ecom-demo.workdo.io/. 
+> The StormCom platform implementation uses **Next.js 15.5.5**, **TypeScript 5.9.3**, and **Prisma ORM**. 
+> For implementation specifications, see `docs/specifications/001-stormcom-platform/`.
 
 ## Total Pages Discovered: 73
 
-This document lists all unique pages discovered during the comprehensive site crawl.
+This document lists all unique pages discovered during the comprehensive site crawl of the demo application. These pages serve as the basis for the StormCom platform implementation.
 
 ---
 

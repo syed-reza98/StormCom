@@ -1634,22 +1634,27 @@ CREATE TABLE add_ons (
 ## 10. Technical Requirements
 
 ### 10.1 Frontend
-- HTML5, CSS3, JavaScript
-- Responsive design (Bootstrap/Tailwind)
-- AJAX for dynamic content
-- Chart.js for analytics visualization
+- React 19.x (Server Components)
+- TypeScript 5.9.3 (Strict Mode)
+- Tailwind CSS 4.1.14 (Utility-first styling)
+- Radix UI (Accessible component primitives)
+- shadcn/ui (Pre-built component library)
+- Recharts for analytics visualization
 
 ### 10.2 Backend
-- PHP/Laravel or Node.js
-- RESTful API architecture
-- JWT authentication
-- Database: MySQL/PostgreSQL
+- Next.js 15.5.5 (App Router with Server Components)
+- TypeScript 5.9.3 (Strict Mode)
+- RESTful API architecture (Route Handlers)
+- NextAuth.js v5 authentication
+- Database: PostgreSQL (production) / SQLite (local dev) with Prisma ORM
 
 ### 10.3 Infrastructure
-- Multi-tenant architecture
-- Cloud hosting (AWS/DigitalOcean/Azure)
-- CDN for static assets
-- SSL certificate
+- Multi-tenant architecture (Prisma middleware)
+- Cloud hosting (Vercel Platform)
+- CDN for static assets (Vercel Edge Network)
+- SSL certificate (Automatic via Vercel)
+- Database: PostgreSQL (Vercel Postgres)
+- File Storage: Vercel Blob Storage
 
 ### 10.4 Third-Party Integrations
 - Payment gateways (Stripe, PayPal, Razorpay)

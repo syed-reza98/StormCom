@@ -98,18 +98,21 @@ This SRS was generated through:
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
 │               Application Layer                              │
-│  - Laravel PHP Framework                                    │
-│  - Authentication & Authorization (RBAC)                    │
-│  - Business Logic                                           │
-│  - RESTful API                                              │
+│  - Next.js 15 App Router (React Server Components)         │
+│  - Authentication & Authorization (NextAuth.js v5)          │
+│  - Business Logic (Server Actions & Route Handlers)        │
+│  - RESTful API (Next.js API Routes)                        │
+│  - TypeScript 5.9.3 (Strict Mode)                          │
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
 │                 Data Layer                                   │
-│  - MySQL/PostgreSQL Database                                │
-│  - File Storage (Product Images, Documents)                 │
-│  - Session Management                                       │
-│  - Cache Layer (Redis/Memcached)                            │
+│  - PostgreSQL (Vercel Postgres Production)                  │
+│  - SQLite (Local Development)                               │
+│  - Prisma ORM (Type-Safe Database Access)                  │
+│  - File Storage (Vercel Blob Storage)                       │
+│  - Session Management (NextAuth.js)                         │
+│  - Cache Layer (Next.js Built-in Caching)                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -151,14 +154,17 @@ The system supports multiple user roles with hierarchical permissions:
    - Track orders
    - Submit support tickets
 
-### 2.3 Technology Stack (Inferred)
+### 2.3 Technology Stack (StormCom Implementation)
 
-- **Backend**: Laravel (PHP Framework)
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap
-- **Database**: MySQL/PostgreSQL
-- **Session**: Server-side session management
-- **Authentication**: Laravel Auth with CSRF protection
-- **File Storage**: Local/Cloud storage for images and documents
+- **Framework**: Next.js 15.5.5 (App Router with React Server Components)
+- **Language**: TypeScript 5.9.3 (Strict Mode)
+- **Styling**: Tailwind CSS 4.1.14 with Radix UI components
+- **Database**: Prisma ORM with PostgreSQL (production) / SQLite (local dev)
+- **Authentication**: NextAuth.js v5 with RBAC
+- **Session**: Server-side session management (NextAuth.js)
+- **File Storage**: Vercel Blob Storage (production) / Local (development)
+- **Testing**: Vitest 3.2.4 + Playwright 1.56.0 (MCP)
+- **Deployment**: Vercel Platform with CI/CD
 
 ---
 
@@ -1548,12 +1554,12 @@ erDiagram
 
 ### 12.6 Maintainability Requirements
 
-- **Code Quality**: Follow PSR standards for PHP
+- **Code Quality**: Follow TypeScript strict mode and ESLint standards
 - **Documentation**: Comprehensive code and API documentation
-- **Version Control**: Git-based version control
-- **Testing**: Unit tests, integration tests, end-to-end tests
-- **CI/CD**: Automated build, test, and deployment pipeline
-- **Monitoring**: Application performance monitoring (APM)
+- **Version Control**: Git-based version control with conventional commits
+- **Testing**: Unit tests (Vitest), integration tests, end-to-end tests (Playwright)
+- **CI/CD**: Automated build, test, and deployment pipeline (Vercel)
+- **Monitoring**: Application performance monitoring via Vercel Analytics
 - **Error Tracking**: Centralized error logging and tracking
 
 ### 12.7 Compatibility Requirements
@@ -1833,9 +1839,9 @@ GET    /plan/current             - Get current subscription
   - Format validation
 - **Output Encoding**: Escape all user-generated content
 - **SQL Injection Prevention**: 
-  - Parameterized queries
-  - ORM usage (Eloquent)
-  - No dynamic SQL
+  - Parameterized queries via Prisma ORM
+  - Type-safe database access with TypeScript
+  - No raw SQL queries without proper escaping
 - **XSS Prevention**:
   - Content Security Policy headers
   - Output sanitization
