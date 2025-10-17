@@ -424,7 +424,7 @@ Orders and payments
 - **FR-033**: The system MUST send order status notifications at key stages (confirmation, shipment, delivery, cancellation, refund).
 - **FR-034**: The system MUST support order cancellations (by staff or by auto‑cancel policy for unpaid orders) with configurable grace period.
 - **FR-035**: The system MUST support refunds, including partial refunds at item level or amount level, with validation against captured payments.
-- **FR-036**: The system MUST support Stripe and PayPal payment gateways as primary payment methods.
+- **FR-036**: The system MUST support SSLCommerz and Stripe payment gateways as primary payment methods.
 - **FR-037**: The system MUST allow Store Admins to configure payment gateway credentials (API keys, webhook secrets) per store with test/sandbox mode support.
 - **FR-038**: The system MUST handle payment webhooks for async payment confirmation and reconcile with orders; use idempotent processing.
 - **FR-039**: The system MUST retry failed payments with exponential backoff (max 3 attempts) and log all payment attempts.
@@ -591,7 +591,7 @@ Data retention and compliance
 - Cart: customer reference, items, created at, expires at; used for abandoned cart tracking.
 - Order: number, customer, items, totals (subtotal, shipping, tax, discount, total), status timeline, payments, shipments, invoices, shipping address, billing address.
 - Order Item: product/variant ref, qty, unit price, discounts, tax amount.
-- Payment: method (Stripe, PayPal, COD, Bank Transfer), amount, status (pending, authorized, captured, failed, refunded), transaction ID, reference; linked to Order.
+- Payment: method (SSLCommerz, bKash, Stripe, PayPal, COD, Bank Transfer), amount, status (pending, authorized, captured, failed, refunded), transaction ID, reference; linked to Order.
 - Payment Gateway Config: store reference, gateway type, credentials (encrypted), test mode flag, webhook secret.
 - Shipment: carrier, tracking number, status, shipped date, delivered date; linked to Order.
 - Refund: amount, items, reason, payment reference, status, refund method; linked to Order.
@@ -628,7 +628,7 @@ Assumptions
 - Standard e‑commerce privacy and data retention practices apply unless stricter policies are configured by the store.
 - **Shipping rates**: Manual rate configuration (zones + classes) for Phase 1; carrier API integration (FedEx, UPS, USPS) deferred to Phase 2 as optional enhancement.
 - **Tax calculation**: Manual tax rate configuration for Phase 1; tax service API integration (Avalara, TaxJar) deferred to Phase 2 as optional enhancement.
-- **Payment gateways**: Stripe and PayPal are must-have for Phase 1 (industry standard, covers most markets); additional gateways (Square, Authorize.net) can be added in Phase 2.
+- **Payment gateways**: SSLCommerz (For Bangladesh) and Stripe (For International) are must-have for Phase 1 (industry standard, covers most markets); additional gateways (bKash, PayPal, Square, Authorize.net) can be added in Phase 2.
 - **Subscription plans**: Default 4-tier structure (Free, Basic, Pro, Enterprise) with defined limits; specific pricing and limits are configurable per deployment.
 - **Multi-language**: English-only for Phase 1 MVP; additional languages (Spanish, French, German, Chinese, Arabic) deferred to Phase 2 based on market demand.
 - **Multi-currency**: Deferred to Phase 2; Phase 1 stores operate in single base currency per store.
@@ -651,7 +651,7 @@ Assumptions
 - **Grace period after expiration**: Default 7 days read-only access before full suspension.
 
 Dependencies
-- Payment gateway providers (Stripe, PayPal) for capturing, refunding, and reconciling payments per store.
+- Payment gateway providers (SSLCommerz, Stripe) for capturing, refunding, and reconciling payments per store.
 - Email service provider (transactional email API like SendGrid, Mailgun, or SMTP) for notifications.
 - Optional SMS provider for MFA SMS fallback (Twilio, SNS).
 - Optional SSO identity providers (Okta, Azure AD, Google, OneLogin) where enabled.

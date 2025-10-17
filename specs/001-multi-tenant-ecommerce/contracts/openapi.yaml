@@ -1,0 +1,1349 @@
+openapi: 3.1.0
+info:
+  title: StormCom Multi-tenant E-commerce API
+  version: 1.0.0
+  description: |
+    RESTful API for the StormCom multi-tenant e-commerce platform.
+    
+    ## Authentication
+    All API requests require authentication via JWT tokens obtained from `/api/auth/login`.
+    Include the token in the `Authorization` header: `Bearer <token>`
+    
+    ## Multi-tenancy
+    All requests are scoped to a store via the authenticated user's context.
+    Store ID is extracted from the JWT token and auto-injected into queries.
+    
+    ## Rate Limiting
+    Rate limits are enforced per subscription plan:
+    - Free: 60 requests/minute
+    - Basic: 120 requests/minute
+    - Pro: 300 requests/minute
+    - Enterprise: 1000 requests/minute
+    
+    Rate limit headers are returned with each response:
+    - `X-RateLimit-Limit`: Total requests allowed per window
+    - `X-RateLimit-Remaining`: Remaining requests in current window
+    - `X-RateLimit-Reset`: Timestamp when the limit resets
+    
+    ## Pagination
+    List endpoints support cursor-based pagination:
+    - `page`: Page number (default: 1)
+    - `perPage`: Items per page (default: 20, max: 100)
+    
+    ## Error Handling
+    All errors follow a consistent format with appropriate HTTP status codes.
+
+  contact:
+    name: StormCom API Support
+    email: api@stormcom.io
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.stormcom.io/v1
+    description: Production server
+  - url: https://staging-api.stormcom.io/v1
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Stores
+    description: Store management and configuration
+  - name: Products
+    description: Product catalog management
+  - name: Inventory
+    description: Inventory tracking and adjustments
+  - name: Categories
+    description: Product categorization
+  - name: Orders
+    description: Order processing and management
+  - name: Customers
+    description: Customer management
+  - name: Payments
+    description: Payment processing
+  - name: Shipping
+    description: Shipping zones and rates
+  - name: Coupons
+    description: Discount coupons and promotions
+  - name: Marketing
+    description: Marketing campaigns and flash sales
+  - name: Content
+    description: CMS pages and blog posts
+  - name: Integrations
+    description: External platform integrations
+  - name: Reports
+    description: Analytics and reporting
+  - name: Settings
+    description: Store settings and configuration
+
+paths:
+  # ==================== AUTHENTICATION ====================
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login user
+      description: Authenticate user and return JWT token
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePass123!
+                mfaCode:
+                  type: string
+                  description: Required if MFA is enabled
+                  example: "123456"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      user:
+                        $ref: '#/components/schemas/User'
+                  message:
+                    type: string
+                    example: Login successful
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout user
+      description: Invalidate current session
+      operationId: logout
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user
+      description: Create new user account (requires invitation or admin approval)
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+                invitationToken:
+                  type: string
+                  description: Required for invited users
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user
+      description: Returns authenticated user profile
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== STORES ====================
+  /stores:
+    get:
+      tags: [Stores]
+      summary: List stores
+      description: List all stores accessible by current user
+      operationId: listStores
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ACTIVE, TRIAL, SUSPENDED, CLOSED]
+      responses:
+        '200':
+          description: List of stores
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Store'
+
+    post:
+      tags: [Stores]
+      summary: Create store
+      description: Create new store (requires platform admin role)
+      operationId: createStore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStoreRequest'
+      responses:
+        '201':
+          description: Store created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /stores/{storeId}:
+    get:
+      tags: [Stores]
+      summary: Get store details
+      operationId: getStore
+      parameters:
+        - $ref: '#/components/parameters/StoreIdParam'
+      responses:
+        '200':
+          description: Store details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Store'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [Stores]
+      summary: Update store
+      operationId: updateStore
+      parameters:
+        - $ref: '#/components/parameters/StoreIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStoreRequest'
+      responses:
+        '200':
+          description: Store updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== PRODUCTS ====================
+  /products:
+    get:
+      tags: [Products]
+      summary: List products
+      description: List all products for current store with filtering and search
+      operationId: listProducts
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: search
+          in: query
+          description: Full-text search across name and description
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [DRAFT, ACTIVE, ARCHIVED]
+        - name: categoryId
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: brandId
+          in: query
+          description: Filter by brand
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+
+    post:
+      tags: [Products]
+      summary: Create product
+      description: Create new product with variants
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Product'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product details
+      operationId: getProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      responses:
+        '200':
+          description: Product details with variants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [Products]
+      summary: Update product
+      operationId: updateProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Product'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Products]
+      summary: Delete product
+      description: Soft delete product (can be restored)
+      operationId: deleteProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductIdParam'
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==================== INVENTORY ====================
+  /inventory/adjustments:
+    post:
+      tags: [Inventory]
+      summary: Create inventory adjustment
+      description: Adjust stock quantity for a variant
+      operationId: createInventoryAdjustment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [variantId, quantityChange, reason]
+              properties:
+                variantId:
+                  type: string
+                quantityChange:
+                  type: integer
+                  description: Positive for increase, negative for decrease
+                  example: 10
+                reason:
+                  type: string
+                  enum: [RESTOCK, DAMAGE, THEFT, CORRECTION, RETURN, MANUAL]
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Inventory adjusted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      adjustmentId:
+                        type: string
+                      newQuantity:
+                        type: integer
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /inventory/low-stock:
+    get:
+      tags: [Inventory]
+      summary: Get low stock variants
+      description: List variants below low stock threshold
+      operationId: getLowStockVariants
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: List of low stock variants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        variantId:
+                          type: string
+                        sku:
+                          type: string
+                        productName:
+                          type: string
+                        currentStock:
+                          type: integer
+                        lowStockThreshold:
+                          type: integer
+
+  # ==================== ORDERS ====================
+  /orders:
+    get:
+      tags: [Orders]
+      summary: List orders
+      description: List all orders for current store with filtering
+      operationId: listOrders
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED, REFUNDED]
+        - name: customerId
+          in: query
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Order'
+
+    post:
+      tags: [Orders]
+      summary: Create order
+      description: Create new order (from cart or manual entry)
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Order'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order details
+      operationId: getOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderIdParam'
+      responses:
+        '200':
+          description: Order details with items and payments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [Orders]
+      summary: Update order
+      description: Update order status and details
+      operationId: updateOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED]
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Order'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{orderId}/cancel:
+    post:
+      tags: [Orders]
+      summary: Cancel order
+      description: Cancel pending order and restore inventory
+      operationId: cancelOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderIdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Order canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ==================== CUSTOMERS ====================
+  /customers:
+    get:
+      tags: [Customers]
+      summary: List customers
+      operationId: listCustomers
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: search
+          in: query
+          description: Search by name or email
+          schema:
+            type: string
+        - name: isGuest
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Customer'
+
+    post:
+      tags: [Customers]
+      summary: Create customer
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Customer'
+                  message:
+                    type: string
+
+  /customers/{customerId}:
+    get:
+      tags: [Customers]
+      summary: Get customer details
+      operationId: getCustomer
+      parameters:
+        - $ref: '#/components/parameters/CustomerIdParam'
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Customer'
+
+    patch:
+      tags: [Customers]
+      summary: Update customer
+      operationId: updateCustomer
+      parameters:
+        - $ref: '#/components/parameters/CustomerIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerRequest'
+      responses:
+        '200':
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Customer'
+
+    delete:
+      tags: [Customers]
+      summary: Delete customer
+      description: Soft delete customer (GDPR compliance)
+      operationId: deleteCustomer
+      parameters:
+        - $ref: '#/components/parameters/CustomerIdParam'
+      responses:
+        '204':
+          description: Customer deleted successfully
+
+  # ==================== PAYMENTS ====================
+  /payments/create-intent:
+    post:
+      tags: [Payments]
+      summary: Create payment intent
+      description: Create SSLCommerz/Stripe payment intent for order
+      operationId: createPaymentIntent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, gateway]
+              properties:
+                orderId:
+                  type: string
+                gateway:
+                  type: string
+                  enum: [sslcommerz, stripe]
+      responses:
+        '201':
+          description: Payment intent created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      clientSecret:
+                        type: string
+                      paymentId:
+                        type: string
+
+  /payments/webhooks/stripe:
+    post:
+      tags: [Payments]
+      summary: Stripe webhook handler
+      description: Handle Stripe payment events
+      operationId: stripeWebhook
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+        '400':
+          description: Invalid signature
+
+# ==================== COMPONENTS ====================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/login`
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PerPageParam:
+      name: perPage
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    StoreIdParam:
+      name: storeId
+      in: path
+      required: true
+      description: Store ID
+      schema:
+        type: string
+
+    ProductIdParam:
+      name: productId
+      in: path
+      required: true
+      description: Product ID
+      schema:
+        type: string
+
+    OrderIdParam:
+      name: orderId
+      in: path
+      required: true
+      description: Order ID
+      schema:
+        type: string
+
+    CustomerIdParam:
+      name: customerId
+      in: path
+      required: true
+      description: Customer ID
+      schema:
+        type: string
+
+  schemas:
+    # ==================== COMMON SCHEMAS ====================
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation completed successfully
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum: [VALIDATION_ERROR, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, RATE_LIMIT_EXCEEDED, INTERNAL_ERROR]
+            message:
+              type: string
+            details:
+              type: object
+              description: Additional error context (validation errors, etc.)
+
+    PaginatedResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            perPage:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+
+    # ==================== ENTITY SCHEMAS ====================
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+        mfaEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    Store:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        domain:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [ACTIVE, TRIAL, TRIAL_EXPIRED, SUSPENDED, CLOSED]
+        email:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        subscription:
+          type: object
+          properties:
+            plan:
+              type: string
+            status:
+              type: string
+            trialEndDate:
+              type: string
+              format: date-time
+              nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [DRAFT, ACTIVE, ARCHIVED]
+        brand:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variant'
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+        media:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              altText:
+                type: string
+              isFeatured:
+                type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    Variant:
+      type: object
+      properties:
+        id:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+          format: decimal
+        stockQuantity:
+          type: integer
+        attributes:
+          type: object
+          description: 'Variant attributes (e.g., size: M, color: Red)'
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        orderNumber:
+          type: string
+        customer:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            firstName:
+              type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        subtotal:
+          type: number
+          format: decimal
+        shippingCost:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED, REFUNDED]
+        paymentStatus:
+          type: string
+          enum: [PENDING, AUTHORIZED, PAID, REFUNDED, FAILED]
+        createdAt:
+          type: string
+          format: date-time
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        productName:
+          type: string
+        variantSku:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: decimal
+        subtotal:
+          type: number
+          format: decimal
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        totalOrders:
+          type: integer
+        totalSpent:
+          type: number
+          format: decimal
+        createdAt:
+          type: string
+          format: date-time
+
+    # ==================== REQUEST SCHEMAS ====================
+    CreateStoreRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 3
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        email:
+          type: string
+          format: email
+        planId:
+          type: string
+
+    UpdateStoreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        logoUrl:
+          type: string
+        primaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+
+    CreateProductRequest:
+      type: object
+      required: [name, variants]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        brandId:
+          type: string
+        categoryIds:
+          type: array
+          items:
+            type: string
+        variants:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [sku, price]
+            properties:
+              sku:
+                type: string
+              price:
+                type: number
+              stockQuantity:
+                type: integer
+              attributes:
+                type: object
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [DRAFT, ACTIVE, ARCHIVED]
+
+    CreateOrderRequest:
+      type: object
+      required: [customerId, items, shippingAddress]
+      properties:
+        customerId:
+          type: string
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [variantId, quantity]
+            properties:
+              variantId:
+                type: string
+              quantity:
+                type: integer
+                minimum: 1
+        shippingAddress:
+          type: object
+          required: [address1, city, postalCode, country]
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            address1:
+              type: string
+            address2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            postalCode:
+              type: string
+            country:
+              type: string
+        billingAddress:
+          type: object
+        couponCode:
+          type: string
+
+    CreateCustomerRequest:
+      type: object
+      required: [email, firstName]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+          minLength: 8
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        marketingOptIn:
+          type: boolean
+
+  responses:
+    BadRequest:
+      description: Bad request - Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Total requests allowed per window
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in current window
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Timestamp when limit resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+security:
+  - BearerAuth: []

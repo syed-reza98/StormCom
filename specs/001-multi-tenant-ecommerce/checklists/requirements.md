@@ -70,7 +70,7 @@
 - Inventory tracking with concurrency control
 - Shipping management (zones, classes, rates)
 - Tax management (rates, exemptions, calculation)
-- Payment processing (Stripe, PayPal, webhooks)
+- Payment processing (SSLCommerz, Stripe, webhooks)
 - Order lifecycle (pending → delivered)
 - Subscription plan management (4-tier structure with limits)
 - Customer management with profiles

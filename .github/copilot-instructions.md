@@ -1,4 +1,4 @@
-# StormCom - Copilot Instructions
+﻿# StormCom - Copilot Instructions
 
 StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Next.js 15.5.5, TypeScript 5.9.3, and Prisma ORM. This file provides guidance for GitHub Copilot Coding Agent to work effectively with this codebase.
 
