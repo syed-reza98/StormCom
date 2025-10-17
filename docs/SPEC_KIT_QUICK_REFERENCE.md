@@ -100,7 +100,7 @@ uvx --from git+https://github.com/github/spec-kit.git specify init my-project
 
 4. **Customize Constitution**
    ```bash
-   vim docs/specifications/.speckit/constitution.md
+   vim .specify/memory/constitution.md
    ```
 
 5. **Create Specifications**
