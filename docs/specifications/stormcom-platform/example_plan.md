@@ -1,6 +1,8 @@
 # Implementation Plan: StormCom E-commerce SaaS Platform
 
-**Branch**: `001-stormcom-platform` | **Date**: 2025-10-16 | **Spec**: [spec.md](./spec.md)  
+> **📋 Note**: This is a **comprehensive implementation plan template** for the StormCom platform. It serves as an example of how to write detailed implementation plans following Spec-Driven Development principles. When creating new implementation plans, use this as a reference template.
+
+**Branch**: `stormcom-platform` | **Date**: 2025-10-16 | **Spec**: [example_spec.md](./example_spec.md)  
 **Project**: StormCom - Multi-Tenant E-commerce Management System
 
 ---
@@ -115,16 +117,19 @@ Building a full-stack multi-tenant e-commerce SaaS platform using **Next.js 15.5
 
 ```
 docs/
+├── README.md                     # Documentation index
 ├── specifications/
-│   ├── 001-stormcom-platform/
-│   │   ├── spec.md              # This feature specification
-│   │   ├── plan.md              # This implementation plan
-│   │   ├── data-model.md        # Database schema (create next)
-│   │   └── api-contracts.md     # API documentation (create next)
-│   └── .speckit/
-│       └── constitution.md      # Project standards
-├── analysis/                    # Original SRS analysis
-└── references/                  # Legacy documentation
+│   ├── README.md                 # Specifications guide
+│   ├── stormcom-platform/
+│   │   ├── example_spec.md       # This feature specification template
+│   │   ├── example_plan.md       # This implementation plan template
+│   │   ├── (data-model.md)       # Database schema (optional)
+│   │   └── (api-contracts.md)    # API documentation (optional)
+│   └── speckit/
+│       ├── example_constitution.md    # Constitution template v1
+│       └── example_constitution_v2.md # Constitution template v2
+├── analysis/                     # Original SRS analysis
+└── references/                   # Legacy documentation
 ```
 
 ### Source Code

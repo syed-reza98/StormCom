@@ -21,7 +21,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-          issue-message: |
+          issue_message: |
             👋 Thanks for opening your first issue in StormCom!
 
             A maintainer will review your issue soon. In the meantime,
@@ -32,7 +32,7 @@ jobs:
 
             We appreciate your contribution to making StormCom better! 🚀
 
-          pr-message: |
+          pr_message: |
             👋 Thanks for opening your first pull request in StormCom!
 
             A maintainer will review your PR soon. Please make sure:
