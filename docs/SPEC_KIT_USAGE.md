@@ -167,20 +167,20 @@ specify --help
 
 1. **Follow the constitution** - All coding standards are in `.specify/memory/constitution.md`
 2. **Update specs before code** - Write specifications first, then implement
-3. **Use descriptive names** - e.g., `003-customer-reviews` not `feature3`
+3. **Use descriptive names** - e.g., `customer-reviews` not `feature3`
 4. **Document all changes** - Update specs when implementation changes
-5. **Reference existing specs** - Use `001-stormcom-platform` as a template
+5. **Reference existing specs** - Use `stormcom-platform` as a template
 
 ## Specification Structure
 
 Each specification directory should contain:
 
 ```
-docs/specifications/XXX-feature-name/
+docs/specifications/feature-name/
 ├── spec.md              # Feature requirements, user stories, acceptance criteria
 ├── plan.md              # Implementation plan, phases, tasks
-├── data-model.md        # Database schema changes, entities, relationships
-└── api-contracts.md     # API endpoints, request/response formats
+├── data-model.md        # Database schema changes, entities, relationships (optional)
+└── api-contracts.md     # API endpoints, request/response formats (optional)
 ```
 
 ## Example: Viewing Existing Specifications
@@ -189,14 +189,14 @@ docs/specifications/XXX-feature-name/
 # List all specifications
 ls -la docs/specifications/
 
-# View platform specification
-cat docs/specifications/001-stormcom-platform/spec.md
+# View platform specification template
+cat docs/specifications/stormcom-platform/example_spec.md
 
-# View implementation plan
-cat docs/specifications/001-stormcom-platform/plan.md
+# View implementation plan template
+cat docs/specifications/stormcom-platform/example_plan.md
 
-# View database schema
-cat docs/specifications/001-stormcom-platform/data-model.md
+# View specification guide
+cat docs/specifications/README.md
 ```
 
 ## Troubleshooting
@@ -207,7 +207,7 @@ cat docs/specifications/001-stormcom-platform/data-model.md
 
 ### Q: How do I create a new specification?
 
-**A:** Copy the structure from `docs/specifications/001-stormcom-platform/` and customize for your feature.
+**A:** Copy the structure from `docs/specifications/stormcom-platform/` and customize for your feature. See `docs/specifications/README.md` for detailed guide.
 
 ### Q: Where are the project coding standards?
 
@@ -222,16 +222,18 @@ cat docs/specifications/001-stormcom-platform/data-model.md
 - **Setup Guide**: [SPEC_KIT_SETUP.md](SPEC_KIT_SETUP.md) - Installation instructions
 - **Quick Reference**: [SPEC_KIT_QUICK_REFERENCE.md](SPEC_KIT_QUICK_REFERENCE.md) - Command cheat sheet
 - **Constitution**: `.specify/memory/constitution.md` - Project standards
-- **Example Specs**: `docs/specifications/001-stormcom-platform/` - Platform specification
+- **Specifications Guide**: `docs/specifications/README.md` - How to create specifications
+- **Example Specs**: `docs/specifications/stormcom-platform/` - Platform specification templates
 
 ## Summary
 
 ✅ **You're all set!** The Spec Kit CLI is installed and StormCom is configured for spec-driven development.
 
 **Next Steps:**
-1. Review existing specifications in `docs/specifications/001-stormcom-platform/`
-2. Read the constitution in `.specify/memory/constitution.md`
-3. Use slash commands with GitHub Copilot:
+1. Review specification templates in `docs/specifications/stormcom-platform/`
+2. Read the specifications guide in `docs/specifications/README.md`
+3. Read the constitution in `.specify/memory/constitution.md`
+4. Use slash commands with GitHub Copilot:
    - `/speckit.constitution` - Review/update project principles
    - `/speckit.specify` - Create new specifications
    - `/speckit.plan` - Create implementation plans

@@ -538,11 +538,13 @@ All documentation organized in `docs/` directory:
 ```
 docs/
 ├── specifications/              # Spec-Driven Development
-│   ├── 001-stormcom-platform/
-│   │   ├── spec.md             # 70KB feature specifications
-│   │   └── plan.md             # 36KB implementation plan
-│   └── .speckit/
-│       └── constitution.md     # 12KB project standards
+│   ├── stormcom-platform/
+│   │   ├── example_spec.md      # Feature specification template
+│   │   ├── example_plan.md      # Implementation plan template
+│   │   └── README.md            # Specifications guide
+│   └── speckit/
+│       ├── example_constitution.md    # Constitution template v1
+│       └── example_constitution_v2.md # Constitution template v2
 ├── analysis/                    # Original SRS analysis (this file)
 │   ├── ecommerce_complete_srs.md
 │   ├── NAVIGATION_INDEX.md
