@@ -1,0 +1,30 @@
+# CODEOWNERS file for StormCom
+# 
+# This file defines who owns what code in the repository.
+# Code owners are automatically requested for review when someone 
+# opens a pull request that modifies code they own.
+#
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @syed-reza98
+
+# Documentation
+/docs/ @syed-reza98
+*.md @syed-reza98
+
+# GitHub configuration
+/.github/ @syed-reza98
+
+# Specifications and architecture
+/docs/specifications/ @syed-reza98
+
+# Database schema
+/prisma/schema.prisma @syed-reza98
+
+# CI/CD workflows
+/.github/workflows/ @syed-reza98
+
+# Security-sensitive files
+/.github/dependabot.yml @syed-reza98
+/.env.example @syed-reza98

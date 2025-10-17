@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/syed-reza98/StormCom/tree/main/docs
+    about: Check the documentation for usage guides and specifications
+  - name: 💬 Discussions
+    url: https://github.com/syed-reza98/StormCom/discussions
+    about: Ask questions and discuss ideas with the community
