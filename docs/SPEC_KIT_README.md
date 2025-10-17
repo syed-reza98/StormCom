@@ -63,7 +63,7 @@ specify check         # Should check for tools
    - Added links to spec-kit documentation
    - Added installation commands
 
-2. **[constitution.md](specifications/.speckit/constitution.md)**
+2. **[constitution.md](../.specify/memory/constitution.md)**
    - Added "Spec-Driven Development Tools" section
    - Referenced spec-kit CLI installation
    - Linked to documentation
