@@ -165,7 +165,7 @@ specify --help
 
 ## Best Practices
 
-1. **Follow the constitution** - All coding standards are in `.speckit/constitution.md`
+1. **Follow the constitution** - All coding standards are in `.specify/memory/constitution.md`
 2. **Update specs before code** - Write specifications first, then implement
 3. **Use descriptive names** - e.g., `003-customer-reviews` not `feature3`
 4. **Document all changes** - Update specs when implementation changes
