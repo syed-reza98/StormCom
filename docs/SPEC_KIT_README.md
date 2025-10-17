@@ -74,20 +74,18 @@ StormCom already has a complete spec-driven development setup:
 
 ```
 StormCom/
-├── docs/
-│   ├── SPEC_KIT_SETUP.md          # ← NEW: Installation guide
-│   ├── SPEC_KIT_USAGE.md          # ← NEW: Usage guide
-│   ├── SPEC_KIT_QUICK_REFERENCE.md # ← NEW: Quick reference
-│   ├── SPEC_KIT_README.md         # ← NEW: This file
-│   └── specifications/
-│       ├── .speckit/
-│       │   └── constitution.md    # ← UPDATED: Added tooling section
-│       └── 001-stormcom-platform/
-│           ├── spec.md
-│           ├── plan.md
-│           ├── data-model.md
-│           └── api-contracts.md
+├── .specify/                      # ← NEW: Spec-kit configuration (root)
+│   ├── memory/
+│   │   └── constitution.md        # Project standards & conventions
+│   ├── scripts/                   # Helper scripts for workflows
+│   │   └── bash/
+│   └── templates/                 # Specification templates
 ├── .github/
+│   ├── prompts/                   # ← NEW: Spec-kit prompt files
+│   │   ├── speckit.constitution.prompt.md
+│   │   ├── speckit.specify.prompt.md
+│   │   ├── speckit.plan.prompt.md
+│   │   └── ...
 │   ├── copilot-instructions.md    # ✓ Already configured
 │   └── instructions/              # ✓ Already configured
 │       ├── testing.instructions.md
@@ -95,6 +93,17 @@ StormCom/
 │       ├── database.instructions.md
 │       ├── components.instructions.md
 │       └── api-routes.instructions.md
+├── docs/
+│   ├── SPEC_KIT_SETUP.md          # ← NEW: Installation guide
+│   ├── SPEC_KIT_USAGE.md          # ← NEW: Usage guide
+│   ├── SPEC_KIT_QUICK_REFERENCE.md # ← NEW: Quick reference
+│   ├── SPEC_KIT_README.md         # ← NEW: This file
+│   └── specifications/
+│       └── 001-stormcom-platform/
+│           ├── spec.md
+│           ├── plan.md
+│           ├── data-model.md
+│           └── api-contracts.md
 └── README.md                      # ← UPDATED: Added spec-kit section
 ```
 
@@ -175,7 +184,7 @@ specify check
 1. [SPEC_KIT_SETUP.md](SPEC_KIT_SETUP.md) - Understand installation process
 2. [SPEC_KIT_USAGE.md](SPEC_KIT_USAGE.md) - Learn how to use in StormCom
 3. [SPEC_KIT_QUICK_REFERENCE.md](SPEC_KIT_QUICK_REFERENCE.md) - Bookmark for commands
-4. [constitution.md](specifications/.speckit/constitution.md) - Study project standards
+4. [constitution.md](../.specify/memory/constitution.md) - Study project standards
 
 ## Resources
 

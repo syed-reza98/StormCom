@@ -174,12 +174,13 @@ StormCom is an existing project (brownfield), so we use `specify init` to add sp
 
 3. **Review generated files:**
    The initialization will create/update:
-   - `.speckit/` - Configuration directory
-   - `docs/specifications/` - Specification templates
-   - AI assistant configuration files
+   - `.specify/` - Configuration directory in root
+   - `.github/prompts/` - Spec-kit prompt files
+   - `.specify/memory/constitution.md` - Project constitution
+   - `.specify/templates/` - Specification templates
 
 4. **Customize constitution:**
-   Edit `.speckit/constitution.md` to define your project's standards and conventions.
+   Edit `.specify/memory/constitution.md` to define your project's standards and conventions.
 
 ### What Gets Created?
 
@@ -199,19 +200,27 @@ After initialization, your project should have:
 
 ```
 StormCom/
+├── .specify/                      # Spec-kit configuration (root)
+│   ├── memory/
+│   │   └── constitution.md        # Project standards & conventions
+│   ├── scripts/                   # Helper scripts
+│   │   └── bash/                  # Shell scripts for workflows
+│   └── templates/                 # Specification templates
+├── .github/
+│   ├── prompts/                   # Spec-kit prompt files
+│   │   ├── speckit.constitution.prompt.md
+│   │   ├── speckit.specify.prompt.md
+│   │   ├── speckit.plan.prompt.md
+│   │   └── ...                    # Other spec-kit prompts
+│   ├── copilot-instructions.md    # GitHub Copilot configuration
+│   └── instructions/              # Context-specific instructions
 ├── docs/
 │   └── specifications/
-│       ├── .speckit/
-│       │   ├── constitution.md    # Project standards & conventions
-│       │   └── agents/            # AI assistant configurations
 │       └── 001-feature-name/      # Individual feature specs
 │           ├── spec.md            # Feature specification
 │           ├── plan.md            # Implementation plan
 │           ├── data-model.md      # Database schema
 │           └── api-contracts.md   # API documentation
-├── .github/
-│   ├── copilot-instructions.md    # GitHub Copilot configuration
-│   └── instructions/              # Context-specific instructions
 └── README.md
 ```
 
@@ -327,7 +336,7 @@ pip3 install uv
 - **Spec Kit Repository**: https://github.com/github/spec-kit
 - **Documentation**: https://github.com/github/spec-kit/tree/main/docs
 - **Issues & Discussions**: https://github.com/github/spec-kit/issues
-- **StormCom Constitution**: `docs/specifications/.speckit/constitution.md`
+- **StormCom Constitution**: `.specify/memory/constitution.md`
 - **StormCom Specifications**: `docs/specifications/001-stormcom-platform/`
 
 ---

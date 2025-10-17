@@ -5,7 +5,9 @@
 ✅ **StormCom is already configured for Spec-Driven Development!**
 
 The project includes:
-- ✅ `.speckit/constitution.md` - Project standards and conventions
+- ✅ `.specify/memory/constitution.md` - Project standards and conventions
+- ✅ `.specify/` - Spec-kit configuration in root directory
+- ✅ `.github/prompts/` - Spec-kit prompt files
 - ✅ `.github/copilot-instructions.md` - GitHub Copilot configuration
 - ✅ `.github/instructions/` - Context-specific instructions
 - ✅ `docs/specifications/001-stormcom-platform/` - Platform specifications
@@ -84,10 +86,10 @@ Refer to the constitution for all development standards:
 
 ```bash
 # View project standards
-cat docs/specifications/.speckit/constitution.md
+cat .specify/memory/constitution.md
 
 # Or open in your editor
-code docs/specifications/.speckit/constitution.md
+code .specify/memory/constitution.md
 ```
 
 ### 3. Using AI Assistants
@@ -209,7 +211,7 @@ cat docs/specifications/001-stormcom-platform/data-model.md
 
 ### Q: Where are the project coding standards?
 
-**A:** See `docs/specifications/.speckit/constitution.md` for all standards.
+**A:** See `.specify/memory/constitution.md` for all standards.
 
 ### Q: How do I configure GitHub Copilot?
 
@@ -219,7 +221,7 @@ cat docs/specifications/001-stormcom-platform/data-model.md
 
 - **Setup Guide**: [SPEC_KIT_SETUP.md](SPEC_KIT_SETUP.md) - Installation instructions
 - **Quick Reference**: [SPEC_KIT_QUICK_REFERENCE.md](SPEC_KIT_QUICK_REFERENCE.md) - Command cheat sheet
-- **Constitution**: `docs/specifications/.speckit/constitution.md` - Project standards
+- **Constitution**: `.specify/memory/constitution.md` - Project standards
 - **Example Specs**: `docs/specifications/001-stormcom-platform/` - Platform specification
 
 ## Summary
@@ -228,6 +230,10 @@ cat docs/specifications/001-stormcom-platform/data-model.md
 
 **Next Steps:**
 1. Review existing specifications in `docs/specifications/001-stormcom-platform/`
-2. Read the constitution in `docs/specifications/.speckit/constitution.md`
-3. Create new specifications following the established structure
+2. Read the constitution in `.specify/memory/constitution.md`
+3. Use slash commands with GitHub Copilot:
+   - `/speckit.constitution` - Review/update project principles
+   - `/speckit.specify` - Create new specifications
+   - `/speckit.plan` - Create implementation plans
+   - `/speckit.tasks` - Generate actionable tasks
 4. Use `specify check` to verify your development environment

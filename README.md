@@ -181,7 +181,7 @@ npm run type-check   # TypeScript check
 - **Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
 - **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
 - **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
-- **Project Standards**: `docs/specifications/.speckit/constitution.md`
+- **Project Standards**: `.specify/memory/constitution.md`
 - **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
 
 ### Spec Kit Documentation
