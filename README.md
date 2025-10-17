@@ -178,12 +178,16 @@ npm run type-check   # TypeScript check
 ## 📚 Documentation
 
 ### Core Documentation
-- **Spec Kit Setup**: `docs/SPEC_KIT_SETUP.md` - How to install and use GitHub Spec Kit CLI
 - **Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
 - **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
 - **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
 - **Project Standards**: `docs/specifications/.speckit/constitution.md`
 - **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
+
+### Spec Kit Documentation
+- **Setup Guide**: `docs/SPEC_KIT_SETUP.md` - How to install GitHub Spec Kit CLI
+- **Usage Guide**: `docs/SPEC_KIT_USAGE.md` - How to use spec-kit in StormCom
+- **Quick Reference**: `docs/SPEC_KIT_QUICK_REFERENCE.md` - Command cheat sheet
 
 ### Spec-Driven Development
 
@@ -196,11 +200,14 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Install specify-cli
 uv tool install --from git+https://github.com/github/spec-kit.git specify-cli
 
-# Check installation
-specify --help
+# Check installation and available tools
+specify check
 ```
 
-For detailed setup instructions, see [Spec Kit Setup Guide](docs/SPEC_KIT_SETUP.md).
+For detailed instructions, see:
+- [Setup Guide](docs/SPEC_KIT_SETUP.md) - Installation and initial setup
+- [Usage Guide](docs/SPEC_KIT_USAGE.md) - Working with specifications in StormCom
+- [Quick Reference](docs/SPEC_KIT_QUICK_REFERENCE.md) - Command reference
 
 ---
 

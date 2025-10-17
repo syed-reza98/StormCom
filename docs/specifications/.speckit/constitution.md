@@ -296,6 +296,13 @@
 - Ensure performance best practices
 - Confirm accessibility compliance
 
+**Spec-Driven Development Tools**
+- **Spec Kit CLI** installed via `uv tool install --from git+https://github.com/github/spec-kit.git specify-cli`
+- Use `specify check` to verify development environment
+- See `docs/SPEC_KIT_SETUP.md` for installation instructions
+- See `docs/SPEC_KIT_USAGE.md` for workflow guidance
+- Follow specification structure in `docs/specifications/001-stormcom-platform/` for new features
+
 ---
 
 For complete implementation details, see `docs/specifications/001-stormcom-platform/plan.md`.
