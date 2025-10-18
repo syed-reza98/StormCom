@@ -4,23 +4,30 @@ applyTo: "**/*.md,docs/**"
 
 # Documentation Instructions
 
-## Documentation Structure
+Documentation Structure
 
-StormCom uses **Spec-Driven Development** methodology with comprehensive documentation:
+StormCom uses **Spec-Driven Development** with documentation organized across `docs/` and feature-specific specs under `specs/`:
 
 ```
+specs/
+└── 001-multi-tenant-ecommerce/
+  ├── spec.md           # Feature specification
+  ├── plan.md           # Implementation plan
+  ├── data-model.md     # Database schema
+  ├── quickstart.md     # Local setup guide
+  ├── tasks.md          # Task breakdown
+  └── contracts/
+    └── openapi.yaml  # API documentation
+
 docs/
-├── specifications/            # Feature specifications
-│   ├── .speckit/             # Project constitution
-│   │   └── constitution.md   # Standards and guidelines
-│   └── 001-stormcom-platform/
-│       ├── spec.md           # Feature specifications
-│       ├── plan.md           # Implementation plan
-│       ├── data-model.md     # Database schema
-│       └── api-contracts.md  # API documentation
 ├── analysis/                  # Analysis documents
 │   └── ecommerce_complete_srs.md
+├── audit/                     # UI audit HTML snapshots
 └── references/                # Legacy documentation
+
+.specify/
+└── memory/
+  └── constitution.md       # Project standards and requirements
 ```
 
 ## Markdown Standards
@@ -82,8 +89,8 @@ npm run dev
 **Internal links** - Use relative paths:
 
 ```markdown
-See [Project Constitution](./specifications/.speckit/constitution.md)
-See [Implementation Plan](./specifications/001-stormcom-platform/plan.md)
+See [Project Constitution](../../.specify/memory/constitution.md)
+See [Implementation Plan](../../specs/001-multi-tenant-ecommerce/plan.md)
 ```
 
 **External links**:

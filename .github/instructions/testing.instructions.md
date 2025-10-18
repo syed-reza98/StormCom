@@ -13,6 +13,7 @@ applyTo: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,tests/**"
 
 ## Test File Organization
 
+tests/
 ```
 src/
 ├── components/
@@ -24,22 +25,21 @@ src/
 │   └── __tests__/
 │       └── products.test.ts
 └── lib/
-    ├── utils.ts
-    └── __tests__/
-        └── utils.test.ts
+  ├── utils.ts
+  └── __tests__/
+    └── utils.test.ts
 
-tests/
+
 ├── integration/
 │   ├── api/
 │   │   └── products.test.ts
 │   └── services/
 │       └── orders.test.ts
 └── e2e/
-    ├── auth.spec.ts
-    ├── products.spec.ts
-    └── checkout.spec.ts
+  ├── auth.spec.ts
+  ├── products.spec.ts
+  └── checkout.spec.ts
 ```
-
 ## Unit Tests (Vitest)
 
 ### Component Testing
@@ -471,3 +471,5 @@ npm run test -- --grep "Product"
 8. **Avoid implementation details**: Test behavior, not implementation
 9. **Keep tests fast**: Use mocks, avoid real database calls in unit tests
 10. **Maintain tests**: Update tests when behavior changes
+
+> See `.specify/memory/constitution.md` for coverage and testing standards.

@@ -66,68 +66,55 @@ Built using **Spec-Driven Development** methodology with [GitHub Specs Kit](http
 
 ## 📁 Project Structure
 
+Current repository structure (documentation-first phase):
+
 ```
 StormCom/
-├── docs/                          # 📚 Documentation
-│   ├── specifications/            # Spec-Driven Development
-│   │   ├── 001-stormcom-platform/
-│   │   │   ├── spec.md           # Feature specifications
-│   │   │   ├── plan.md           # Implementation plan
-│   │   │   ├── data-model.md     # Database schema
-│   │   │   └── api-contracts.md  # API documentation
-│   │   └── .speckit/
-│   │       └── constitution.md   # Project standards
-│   ├── analysis/                  # Original SRS analysis
-│   └── references/                # Legacy documentation
-│
-├── src/
-│   ├── app/                       # Next.js App Router
-│   ├── components/                # React components
-│   ├── lib/                       # Utilities & config
-│   ├── services/                  # Business logic
-│   ├── hooks/                     # Custom hooks
-│   └── types/                     # TypeScript types
-│
-├── prisma/
-│   ├── schema.prisma              # Database schema
-│   ├── migrations/                # Migrations
-│   └── seed.ts                    # Seed data
-│
-└── tests/                         # Test files
+├── .github/
+│   ├── copilot-instructions.md        # Copilot coding guidance
+│   └── instructions/                  # Per-area instructions
+├── .specify/
+│   └── memory/
+│       └── constitution.md            # Project constitution & standards
+├── docs/                              # 📚 Documentation
+│   ├── analysis/                      # SRS and analysis docs
+│   ├── audit/                         # UI audit HTML snapshots
+│   ├── references/                    # Legacy/reference docs
+│   └── spec-kit-docs/                 # Spec Kit guides
+├── specs/                             # Feature specifications
+│   └── 001-multi-tenant-ecommerce/
+│       ├── spec.md                    # Feature specification
+│       ├── plan.md                    # Implementation plan
+│       ├── data-model.md              # Database schema
+│       ├── quickstart.md              # Local setup (spec phase)
+│       ├── research.md                # Technical decisions
+│       ├── tasks.md                   # Task breakdown
+│       └── contracts/                 # API contracts (OpenAPI)
+│           ├── openapi.yaml
+│           └── README.md
+└── README.md
 ```
+
+Planned source code structure (per spec plan) will be introduced during implementation, including `src/`, `prisma/`, and `tests/` directories.
 
 ---
 
 ## 🚀 Quick Start
 
-```bash
-# Clone repository
-git clone https://github.com/syed-reza98/StormCom.git
-cd StormCom
+This repository is currently in the specification and planning phase. To explore the project:
 
-# Install dependencies
-npm install
+- Review the feature spec: `specs/001-multi-tenant-ecommerce/spec.md`
+- See the plan: `specs/001-multi-tenant-ecommerce/plan.md`
+- Explore the data model: `specs/001-multi-tenant-ecommerce/data-model.md`
+- Read the constitution: `.specify/memory/constitution.md`
 
-# Setup environment
-cp .env.example .env.local
-
-# Initialize database
-npx prisma db push
-npx prisma db seed
-
-# Start development
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000)
-
-**Default Login:**
-- Email: `admin@example.com`
-- Password: `admin123`
+Implementation commands (install, dev server, database) will apply after the codebase is scaffolded according to the plan.
 
 ---
 
-## 📋 Commands
+## 📋 Commands (planned)
+
+The following commands are part of the implementation plan and will be available once the application source is added:
 
 ```bash
 # Development
@@ -178,10 +165,11 @@ npm run type-check   # TypeScript check
 ## 📚 Documentation
 
 ### Core Documentation
-- **Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
-- **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
-- **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
-- **Project Standards**: `.specify/memory/constitution.md`
+- **Specification**: `specs/001-multi-tenant-ecommerce/spec.md`
+- **Implementation Plan**: `specs/001-multi-tenant-ecommerce/plan.md`
+- **Database Schema**: `specs/001-multi-tenant-ecommerce/data-model.md`
+- **API Contracts**: `specs/001-multi-tenant-ecommerce/contracts/openapi.yaml`
+- **Project Standards (Constitution)**: `.specify/memory/constitution.md`
 - **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
 
 ### Spec Kit Documentation
@@ -220,7 +208,7 @@ For detailed instructions, see:
 3. Configure environment variables
 4. Deploy automatically
 
-See `docs/specifications/001-stormcom-platform/plan.md` for details.
+See `specs/001-multi-tenant-ecommerce/plan.md` for details.
 
 ---
 
@@ -254,7 +242,6 @@ MIT License - see [LICENSE](LICENSE) file
 ## 📧 Contact
 
 **Repository**: https://github.com/syed-reza98/StormCom  
-**Demo Reference**: https://ecom-demo.workdo.io/
 
 ---
 

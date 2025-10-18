@@ -16,7 +16,8 @@ applyTo: "src/components/**/*.tsx,src/app/**/page.tsx,src/app/**/layout.tsx"
 - React hooks: `useState`, `useEffect`, `useContext`, `useReducer`, custom hooks
 - Browser APIs: `window`, `document`, `localStorage`, `sessionStorage`
 - Third-party libraries requiring client-side JavaScript
-- CSS-in-JS libraries (though we use Tailwind, not CSS-in-JS)
+
+> **Note:** Tailwind CSS is required. Do **not** use CSS-in-JS libraries.
 
 ## Component Structure
 
@@ -123,17 +124,17 @@ export default function ProductCard({
 ### File Organization
 
 - **One component per file** (exception: small related components)
-- **Co-locate with related files**:
-  ```
-  components/
-  ├── product/
-  │   ├── ProductCard.tsx
-  │   ├── ProductForm.tsx
-  │   ├── ProductList.tsx
-  │   └── __tests__/
-  │       ├── ProductCard.test.tsx
-  │       └── ProductForm.test.tsx
-  ```
+  - **Co-locate with related files**:
+    ```
+    src/components/
+    ├── product/
+    │   ├── ProductCard.tsx
+    │   ├── ProductForm.tsx
+    │   ├── ProductList.tsx
+    │   └── __tests__/
+    │       ├── ProductCard.test.tsx
+    │       └── ProductForm.test.tsx
+    ```
 
 ### Component Size
 
@@ -146,7 +147,7 @@ export default function ProductCard({
 
 We use **shadcn/ui** components built on **Radix UI**:
 
-- **Import from `@/components/ui`**: All UI primitives
+  - **Import from `@/components/ui`**: All UI primitives (see `src/components/ui`)
 - **Customize via Tailwind**: Modify classes in component files
 - **Follow accessibility**: shadcn/ui components are accessible by default
 - **Add new components**: Use `npx shadcn-ui@latest add [component-name]`
@@ -162,7 +163,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 
 ## Forms & Validation
 
-### Use React Hook Form + Zod
+### Use React Hook Form + Zod (see `.specify/memory/constitution.md` for validation standards)
 
 ```typescript
 'use client';

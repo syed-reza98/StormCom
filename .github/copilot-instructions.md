@@ -11,27 +11,36 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Nex
 
 ## Repository Structure
 
+Current documentation-first structure:
+
 ```
 StormCom/
-├── docs/                          # Documentation
-│   ├── specifications/            # Spec-Driven Development specs
-│   │   ├── .speckit/             # Project constitution and standards
-│   │   └── 001-stormcom-platform/ # Platform specifications
-│   ├── analysis/                  # SRS analysis documents
-│   └── references/                # Legacy documentation
-├── src/
-│   ├── app/                       # Next.js App Router (pages & API routes)
-│   ├── components/                # React components (Server & Client)
-│   ├── lib/                       # Utilities, config, helpers
-│   ├── services/                  # Business logic layer
-│   ├── hooks/                     # Custom React hooks
-│   └── types/                     # TypeScript type definitions
-├── prisma/
-│   ├── schema.prisma              # Database schema
-│   ├── migrations/                # Database migrations
-│   └── seed.ts                    # Database seed data
-└── tests/                         # Test files
+├── .github/
+│   ├── copilot-instructions.md        # Copilot guidance (this file)
+│   └── instructions/                  # Area-specific coding rules
+├── .specify/
+│   └── memory/
+│       └── constitution.md            # Project constitution & standards
+├── docs/
+│   ├── analysis/                      # SRS and analysis docs
+│   ├── audit/                         # UI audit HTML snapshots
+│   ├── references/                    # Legacy documentation
+│   └── spec-kit-docs/                 # Spec Kit guides
+├── specs/
+│   └── 001-multi-tenant-ecommerce/
+│       ├── spec.md                    # Feature specification
+│       ├── plan.md                    # Implementation plan
+│       ├── data-model.md              # Database schema
+│       ├── quickstart.md              # Local setup (spec phase)
+│       ├── research.md                # Technical decisions
+│       ├── tasks.md                   # Task breakdown
+│       └── contracts/
+│           ├── openapi.yaml           # OpenAPI 3.1 spec
+│           └── README.md              # API documentation
+└── README.md
 ```
+
+Planned source code structure (per plan) will introduce `src/`, `prisma/`, and `tests/` during implementation.
 
 ## Tech Stack & Versions
 
@@ -349,10 +358,11 @@ export default function ProductForm({ onSubmit }: Props) {
 
 ## Key Documentation References
 
-- **Project Standards**: `docs/specifications/.speckit/constitution.md`
-- **Platform Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
-- **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
-- **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
+- **Project Standards (Constitution)**: `.specify/memory/constitution.md`
+- **Feature Specification**: `specs/001-multi-tenant-ecommerce/spec.md`
+- **Implementation Plan**: `specs/001-multi-tenant-ecommerce/plan.md`
+- **Database Schema**: `specs/001-multi-tenant-ecommerce/data-model.md`
+- **API Contracts**: `specs/001-multi-tenant-ecommerce/contracts/openapi.yaml`
 - **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
 
 ## Working with Copilot
@@ -370,10 +380,22 @@ When Copilot Coding Agent works on tasks in this repository:
 9. **Optimize for performance** - follow performance budgets and best practices
 10. **Ensure accessibility** - all UI changes must meet WCAG 2.1 Level AA standards
 
+### Copilot Coding Agent best practices
+
+- Start with context: read `.specify/memory/constitution.md` and `specs/001-multi-tenant-ecommerce/spec.md` before editing.
+- Plan first: create a todo list, outline edits, and prefer minimal, focused patches. Preserve existing style and public APIs.
+- Use the repo instructions: respect `.github/instructions/*` applyTo rules when editing files.
+- Validate early and often: after changes, run lint, type-check, and tests; update docs when behavior changes.
+- Be explicit: add types, avoid `any`, keep functions <50 lines and files <300 lines (refactor when needed).
+- Security & tenancy: never bypass auth; always enforce `storeId` filtering and soft-deletes in queries.
+- Tests alongside code: add unit/integration/E2E tests for new behavior; use AAA and mock external deps.
+- Documentation hygiene: update README and spec references when paths/structures change.
+- Commit well: use Conventional Commits and small, reviewable PRs.
+
 ## Getting Help
 
-- **Documentation**: Start with `docs/` directory
-- **Constitution**: See `docs/specifications/.speckit/constitution.md` for all standards
-- **Specifications**: See `docs/specifications/001-stormcom-platform/` for detailed specs
+- **Documentation**: Start with `README.md` and `docs/`
+- **Constitution**: `.specify/memory/constitution.md`
+- **Specifications**: `specs/001-multi-tenant-ecommerce/`
 - **Issues**: Check existing GitHub issues for context and discussions
 - **Demo**: Reference demo at https://ecom-demo.workdo.io/ for UI/UX guidance
