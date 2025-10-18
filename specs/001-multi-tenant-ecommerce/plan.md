@@ -24,7 +24,8 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 - **File Storage**: Vercel Blob (product images, invoices, backups)
 - **Background Jobs**: Inngest (cron scheduling, event-driven tasks, auto-retries)
 - **Search**: PostgreSQL Full-Text Search (Phase 1) → Algolia (Phase 2 optional upgrade)
-- **Monitoring**: Vercel Analytics (performance/Web Vitals) + Sentry (error tracking/logging)
+- **Rate Limiting**: Vercel KV (serverless Redis) for tiered API rate limiting per subscription plan
+- **Monitoring**: Vercel Analytics (performance/Web Vitals) + Sentry (error tracking/logging) + Uptime monitoring (external service like UptimeRobot for availability tracking)
 
 **Storage**: PostgreSQL (production on Vercel Postgres), SQLite (local development via Prisma file: ./prisma/dev.db)
 
