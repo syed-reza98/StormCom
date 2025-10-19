@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles for StormCom */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-background text-foreground min-h-screen antialiased;
+}
+
+/* shadcn/ui and Radix UI base styles */
+:root {
+  --radius: 0.5rem;
+}
+
+/* Example container class for responsive layouts */
+.container {
+  @apply mx-auto px-4;
+}
