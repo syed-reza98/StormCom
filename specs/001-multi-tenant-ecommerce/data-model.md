@@ -100,6 +100,10 @@ model Store {
   address      String?
   taxId        String? // VAT/GST/EIN number
   
+  // Onboarding and configuration
+  onboardingCompleted Boolean @default(false) // Track first-time setup completion (CHK054)
+  allowCouponsWithFlashSale Boolean @default(true) // Allow coupon stacking during flash sales (CHK060)
+  
   // Settings (JSON for flexibility)
   settings  Json @default("{}")  // Auto-cancel timeout, email from address, etc.
   
@@ -114,6 +118,7 @@ model Store {
   coupons        Coupon[]
   shippingZones  ShippingZone[]
   taxRates       TaxRate[]
+  taxExemptions  TaxExemption[]
   pages          Page[]
   blogs          Blog[]
   auditLogs      AuditLog[]
@@ -279,6 +284,7 @@ model User {
   sessions      Session[]
   accounts      Account[]  // OAuth accounts
   auditLogs     AuditLog[]
+  passwordHistory PasswordHistory[]
   
   @@index([email])
   @@index([status])
@@ -290,6 +296,36 @@ enum UserStatus {
   SUSPENDED
 }
 ```
+
+### 4.1 PasswordHistory
+
+Tracks password history for security policy enforcement (CHK009).
+
+**Purpose**: Prevent password reuse by storing hashed history of last 5 passwords.
+
+```prisma
+model PasswordHistory {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Password hash (bcrypt cost 12)
+  passwordHash String
+  
+  @@index([userId, createdAt])
+}
+```
+
+**Implementation Notes**:
+- Store bcrypt hash on every password change
+- Validate new password against last 5 historical hashes using `bcrypt.compare()`
+- Auto-delete entries older than 2 years (GDPR compliance)
+- See `src/lib/security/password-policy.ts` for validation logic
+- See `src/services/jobs/password-history-cleanup.ts` for cleanup job
+
+---
 
 ### 5. UserStore (Many-to-Many Join Table)
 
@@ -822,6 +858,7 @@ model Customer {
   carts          Cart[]
   wishlists      Wishlist[]
   reviews        ProductReview[]
+  taxExemptions  TaxExemption[]
   
   @@unique([storeId, email])
   @@index([storeId, email])
@@ -1533,6 +1570,64 @@ model TaxRate {
   @@index([isActive])
 }
 ```
+
+### 35.1 TaxExemption
+
+Manages tax exemption certificates and approval workflow (CHK091).
+
+**Purpose**: Allow eligible customers to request and maintain tax-exempt status with certificate management.
+
+```prisma
+model TaxExemption {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  storeId    String
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  // Certificate details
+  certificateUrl String    // Vercel Blob storage URL (PDF/JPG, max 5MB)
+  certificateNum String
+  issuingState   String
+  expiresAt      DateTime
+  
+  // Status workflow
+  status         TaxExemptionStatus @default(PENDING)
+  
+  // Admin review
+  approvedBy     String?   // Admin user ID
+  approvedAt     DateTime?
+  rejectedBy     String?   // Admin user ID
+  rejectedAt     DateTime?
+  rejectionReason String?
+  
+  @@index([storeId, customerId, status])
+  @@index([customerId, status, expiresAt])
+  @@index([expiresAt]) // For auto-expiry job
+}
+
+enum TaxExemptionStatus {
+  PENDING    // Awaiting admin review
+  APPROVED   // Approved and active
+  REJECTED   // Rejected by admin
+  EXPIRED    // Certificate expired
+  REVOKED    // Manually revoked by admin
+}
+```
+
+**Implementation Notes**:
+- Request workflow: Customer uploads certificate → Admin reviews → Approve/Reject
+- Auto-expiration job: Runs daily, marks EXPIRED on `expiresAt` date
+- Reminder email: Sent 30 days before expiration
+- Audit trail: All status changes logged in AuditLog
+- See `src/services/tax/tax-exemption-service.ts` for business logic
+- See `src/services/jobs/tax-exemption-expiry.ts` for auto-expiry job
+
+---
 
 ---
 
