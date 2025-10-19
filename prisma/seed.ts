@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, BillingCycle } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -85,17 +85,20 @@ async function main() {
       tier: 0,
       description: 'Free tier for testing',
       price: 0,
-      billingCycle: 'MONTHLY',
+      billingCycle: BillingCycle.MONTHLY,
       trialDays: 14,
       maxProducts: 10,
       maxOrders: 50,
       maxStaff: 1,
       maxStorage: 100, // MB
-      features: {
-        basicReports: true,
-        emailSupport: true,
-      },
+      apiRateLimit: 60,
+      hasAdvancedReports: false,
+      hasAbandonedCart: false,
+      hasPosAccess: false,
+      hasApiAccess: false,
+      hasPrioritySupport: false,
       isActive: true,
+      isPublic: true,
     },
     {
       name: 'Basic',
@@ -103,18 +106,20 @@ async function main() {
       tier: 1,
       description: 'Basic plan for small businesses',
       price: 29.0,
-      billingCycle: 'MONTHLY',
+      billingCycle: BillingCycle.MONTHLY,
       trialDays: 14,
       maxProducts: 100,
       maxOrders: 500,
       maxStaff: 3,
       maxStorage: 1000, // 1GB
-      features: {
-        basicReports: true,
-        emailSupport: true,
-        customDomain: true,
-      },
+      apiRateLimit: 120,
+      hasAdvancedReports: false,
+      hasAbandonedCart: true,
+      hasPosAccess: false,
+      hasApiAccess: false,
+      hasPrioritySupport: false,
       isActive: true,
+      isPublic: true,
     },
     {
       name: 'Pro',
@@ -122,20 +127,20 @@ async function main() {
       tier: 2,
       description: 'Professional plan for growing businesses',
       price: 79.0,
-      billingCycle: 'MONTHLY',
+      billingCycle: BillingCycle.MONTHLY,
       trialDays: 14,
       maxProducts: 1000,
       maxOrders: 5000,
       maxStaff: 10,
       maxStorage: 5000, // 5GB
-      features: {
-        advancedReports: true,
-        prioritySupport: true,
-        customDomain: true,
-        multiCurrency: true,
-        apiAccess: true,
-      },
+      apiRateLimit: 300,
+      hasAdvancedReports: true,
+      hasAbandonedCart: true,
+      hasPosAccess: true,
+      hasApiAccess: true,
+      hasPrioritySupport: false,
       isActive: true,
+      isPublic: true,
     },
     {
       name: 'Enterprise',
@@ -143,22 +148,20 @@ async function main() {
       tier: 3,
       description: 'Enterprise plan with unlimited resources',
       price: 299.0,
-      billingCycle: 'MONTHLY',
+      billingCycle: BillingCycle.MONTHLY,
       trialDays: 30,
       maxProducts: 10000,
       maxOrders: 100000,
       maxStaff: 50,
       maxStorage: 50000, // 50GB
-      features: {
-        advancedReports: true,
-        dedicatedSupport: true,
-        customDomain: true,
-        multiCurrency: true,
-        apiAccess: true,
-        whiteLabel: true,
-        ssoIntegration: true,
-      },
+      apiRateLimit: 1000,
+      hasAdvancedReports: true,
+      hasAbandonedCart: true,
+      hasPosAccess: true,
+      hasApiAccess: true,
+      hasPrioritySupport: true,
       isActive: true,
+      isPublic: true,
     },
   ];
 

@@ -243,6 +243,10 @@ MIT License - see [LICENSE](LICENSE) file
 
 **Repository**: https://github.com/syed-reza98/StormCom  
 
+***Super admin***: admin@stormcom.io
+
+***Password***: admin123 (CHANGE THIS IN PRODUCTION!)
+
 ---
 
 **Built with ❤️ using Next.js 15, TypeScript 5.9, and Prisma**
