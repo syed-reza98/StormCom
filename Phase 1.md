@@ -25,6 +25,11 @@ T011: Constants
 T012-T012d: Sentry monitoring
 Run initial setup:
 
+npm install
+npx prisma init
+npx prisma generate
+npm run db:seed
+
 TypeScript Errors Note:
 The TypeScript errors you see are expected because:
 
