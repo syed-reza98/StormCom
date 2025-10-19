@@ -1,9 +1,7 @@
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import AzureADProvider from 'next-auth/providers/azure-ad';
-import * as bcrypt from 'bcrypt';
-import prisma from './prisma';
 
 /**
  * NextAuth.js v5 Configuration
@@ -15,9 +13,12 @@ import prisma from './prisma';
  * - JWT sessions (HTTP-only cookies)
  *
  * @see https://next-auth.js.org/configuration/options
+ * 
+ * NOTE: This is a placeholder configuration for Phase 1.
+ * Full implementation with Prisma integration will be completed in Phase 2.
  */
 
-export const authOptions: NextAuthOptions = {
+export const authConfig: NextAuthConfig = {
   providers: [
     // Email/Password Provider
     CredentialsProvider({
@@ -26,74 +27,17 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
-        totpCode: { label: 'MFA Code (if enabled)', type: 'text', optional: true },
+        totpCode: { label: 'MFA Code (if enabled)', type: 'text' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<any> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password are required');
         }
 
-        // Find user
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase() },
-          include: {
-            stores: {
-              include: {
-                store: true,
-                role: true,
-              },
-            },
-          },
-        });
-
-        if (!user || !user.password) {
-          throw new Error('Invalid credentials');
-        }
-
-        // Check password
-        const isValidPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isValidPassword) {
-          throw new Error('Invalid credentials');
-        }
-
-        // Check user status
-        if (user.status !== 'ACTIVE') {
-          throw new Error(`Account is ${user.status.toLowerCase()}`);
-        }
-
-        // Check MFA if enabled
-        if (user.mfaEnabled) {
-          if (!credentials.totpCode) {
-            throw new Error('MFA code is required');
-          }
-
-          // TODO: Verify TOTP code (implement in separate utility)
-          // const isValidTOTP = verifyTOTP(user.mfaSecret, credentials.totpCode);
-          // if (!isValidTOTP) {
-          //   throw new Error('Invalid MFA code');
-          // }
-        }
-
-        // Update last login
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            lastLoginAt: new Date(),
-            // TODO: Get IP from request headers
-            // lastLoginIp: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-          },
-        });
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        };
+        // TODO: Implement user authentication with Prisma in Phase 2
+        // For now, return null to indicate authentication is not yet implemented
+        console.warn('Authentication not yet implemented - Phase 2 required');
+        return null;
       },
     }),
 
@@ -113,9 +57,9 @@ export const authOptions: NextAuthOptions = {
     process.env.AZURE_AD_TENANT_ID
       ? [
           AzureADProvider({
-            clientId: process.env.AZURE_AD_CLIENT_ID,
-            clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-            tenantId: process.env.AZURE_AD_TENANT_ID,
+            clientId: process.env.AZURE_AD_CLIENT_ID!,
+            clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
+            issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`,
           }),
         ]
       : []),
@@ -129,45 +73,22 @@ export const authOptions: NextAuthOptions = {
 
   // Callbacks
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       // Initial sign in
       if (user) {
         token.id = user.id;
         token.email = user.email;
-
-        // Load user stores and roles
-        const userStores = await prisma.userStore.findMany({
-          where: { userId: user.id, isActive: true },
-          include: {
-            store: true,
-            role: true,
-          },
-        });
-
-        token.stores = userStores.map((us) => ({
-          storeId: us.storeId,
-          storeName: us.store.name,
-          storeSlug: us.store.slug,
-          roleId: us.roleId,
-          roleName: us.role.name,
-          permissions: us.role.permissions,
-        }));
-
-        // Set default active store (first store)
-        if (userStores.length > 0) {
-          token.activeStoreId = userStores[0].storeId;
-        }
+        // TODO: Load user stores and roles in Phase 2
       }
-
       return token;
     },
 
     async session({ session, token }) {
       // Add custom fields to session
-      session.user.id = token.id as string;
-      session.user.stores = token.stores as any[];
-      session.user.activeStoreId = token.activeStoreId as string;
-
+      if (session.user) {
+        session.user.id = token.id as string;
+        // TODO: Add stores and roles in Phase 2
+      }
       return session;
     },
   },
@@ -178,9 +99,6 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
 
-  // Security
+  // Secret for JWT signing
   secret: process.env.NEXTAUTH_SECRET,
-
-  // Debug in development
-  debug: process.env.NODE_ENV === 'development',
 };

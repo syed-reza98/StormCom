@@ -63,8 +63,8 @@ export const slugSchema = z
 /**
  * Helper to create a validated enum schema
  */
-export function createEnumSchema<T extends readonly string[]>(values: T, name: string) {
-  return z.enum(values as [string, ...string[]], {
+export function createEnumSchema<T extends readonly [string, ...string[]]>(values: T, name: string) {
+  return z.enum(values, {
     errorMap: () => ({ message: `Invalid ${name}` }),
   });
 }
@@ -72,7 +72,7 @@ export function createEnumSchema<T extends readonly string[]>(values: T, name: s
 /**
  * Helper to make all fields optional (for PATCH updates)
  */
-export function makeOptional<T extends z.ZodTypeAny>(schema: T) {
+export function makeOptional<T extends z.ZodObject<any>>(schema: T): z.ZodObject<any> {
   return schema.partial();
 }
 

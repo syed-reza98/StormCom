@@ -20,25 +20,25 @@ Related docs:
 
 Objective: Initialize repo tooling, environment, and baseline scaffolding required by all stories.
 
-- [ ] T001 Create environment example file at .env.example
-- [ ] T002 Add Prisma schema seed harness at prisma/seed.ts
-- [ ] T003 Add Prisma client singleton at src/lib/prisma.ts
-- [ ] T003a Add connection pooling configuration for serverless at src/lib/prisma.ts
-- [ ] T004 Create NextAuth config at src/lib/auth.ts
-- [ ] T005 Add API error handler utility at src/lib/errors.ts
-- [ ] T006 Add response helper (standard format) at src/lib/response.ts
-- [ ] T007 Create Zod validation base helpers at src/lib/validation/index.ts
-- [ ] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
-- [ ] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
-- [ ] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
-- [ ] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
-- [ ] T010 Add shared types barrel at src/types/index.ts
-- [ ] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
-- [ ] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
-- [ ] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
-- [ ] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
-- [ ] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
-- [ ] T012d Configure Sentry source map upload for production debugging at sentry.config.js
+- [x] T001 Create environment example file at .env.example
+- [x] T002 Add Prisma schema seed harness at prisma/seed.ts
+- [x] T003 Add Prisma client singleton at src/lib/prisma.ts
+- [x] T003a Add connection pooling configuration for serverless at src/lib/prisma.ts
+- [x] T004 Create NextAuth config at src/lib/auth.ts
+- [x] T005 Add API error handler utility at src/lib/errors.ts
+- [x] T006 Add response helper (standard format) at src/lib/response.ts
+- [x] T007 Create Zod validation base helpers at src/lib/validation/index.ts
+- [x] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
+- [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
+- [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
+- [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
+- [x] T010 Add shared types barrel at src/types/index.ts
+- [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
+- [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
+- [x] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
+- [x] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
+- [x] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
+- [x] T012d Configure Sentry source map upload for production debugging at sentry.config.js
 
 ---
 
