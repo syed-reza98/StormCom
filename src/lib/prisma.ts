@@ -1,10 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 
 /**
- * Prisma Client Singleton
+ * Prisma Client Singleton with Multi-tenant Middleware
  *
  * Prevents multiple Prisma Client instances in development (hot reload)
  * and configures connection pooling for serverless environments.
+ * 
+ * Note: Multi-tenant isolation middleware is applied separately via context
+ * in API routes using setTenantContext from middleware/tenantIsolation.ts
  *
  * @see https://www.prisma.io/docs/guides/performance-and-optimization/connection-management
  */

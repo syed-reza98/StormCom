@@ -46,25 +46,25 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 
 Objective: Core foundations required before user stories. Complete these first.
 
-- [ ] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
-- [ ] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
+- [x] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
+- [x] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
 - [ ] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
 - [ ] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
-- [ ] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
-- [ ] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
-- [ ] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
-- [ ] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
-- [ ] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
-- [ ] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
+- [x] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
+- [x] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
+- [x] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
+- [x] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
+- [x] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
+- [x] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
 - [ ] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
-- [ ] T018 Implement RBAC guard utility at src/lib/rbac.ts
-- [ ] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
+- [x] T018 Implement RBAC guard utility at src/lib/rbac.ts
+- [x] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
 - [ ] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
 - [ ] T020a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
 - [ ] T020b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
 - [ ] T021 Add email sender (Resend) at src/lib/email/resend.ts
 - [ ] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
-- [ ] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
+- [x] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
 - [ ] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
 - [ ] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
 
