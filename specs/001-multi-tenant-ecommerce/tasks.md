@@ -66,7 +66,7 @@ Objective: Core foundations required before user stories. Complete these first.
 - [x] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
 - [x] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
 - [x] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
-- [ ] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
+- [x] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
 
 Dependencies: T013 → T014 → T019; T016 requires T004; Payment tasks require T013.
 
@@ -79,10 +79,10 @@ Goal: Super Admin can create a store, assign admin; Store Admin can log in and i
 Independent Test Criteria:
 - End-to-end create store → assign admin → admin logs in → sees only their store.
 
-- [ ] T026 [US1] Implement Store service (CRUD, settings) at src/services/stores/store-service.ts
-- [ ] T027 [P] [US1] Implement Stores API (list/create) at src/app/api/stores/route.ts
-- [ ] T028 [P] [US1] Implement Store by ID API (get/update) at src/app/api/stores/[storeId]/route.ts
-- [ ] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
+- [x] T026 [US1] Implement Store service (CRUD, settings) at src/services/stores/store-service.ts
+- [x] T027 [P] [US1] Implement Stores API (list/create) at src/app/api/stores/route.ts
+- [x] T028 [P] [US1] Implement Store by ID API (get/update) at src/app/api/stores/[storeId]/route.ts
+- [x] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
 - [ ] T030 [US1] Admin dashboard entry page at src/app/(admin)/dashboard/page.tsx
 - [ ] T031 [P] [US1] Super Admin stores list page at src/app/(admin)/settings/stores/page.tsx
 - [ ] T032 [US1] Super Admin create store form at src/app/(admin)/settings/stores/new/page.tsx
