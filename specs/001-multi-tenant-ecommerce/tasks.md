@@ -20,25 +20,25 @@ Related docs:
 
 Objective: Initialize repo tooling, environment, and baseline scaffolding required by all stories.
 
-- [ ] T001 Create environment example file at .env.example
-- [ ] T002 Add Prisma schema seed harness at prisma/seed.ts
-- [ ] T003 Add Prisma client singleton at src/lib/prisma.ts
-- [ ] T003a Add connection pooling configuration for serverless at src/lib/prisma.ts
-- [ ] T004 Create NextAuth config at src/lib/auth.ts
-- [ ] T005 Add API error handler utility at src/lib/errors.ts
-- [ ] T006 Add response helper (standard format) at src/lib/response.ts
-- [ ] T007 Create Zod validation base helpers at src/lib/validation/index.ts
-- [ ] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
-- [ ] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
-- [ ] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
-- [ ] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
-- [ ] T010 Add shared types barrel at src/types/index.ts
-- [ ] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
-- [ ] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
-- [ ] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
-- [ ] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
-- [ ] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
-- [ ] T012d Configure Sentry source map upload for production debugging at sentry.config.js
+- [x] T001 Create environment example file at .env.example
+- [x] T002 Add Prisma schema seed harness at prisma/seed.ts
+- [x] T003 Add Prisma client singleton at src/lib/prisma.ts
+- [x] T003a Add connection pooling configuration for serverless at src/lib/prisma.ts
+- [x] T004 Create NextAuth config at src/lib/auth.ts
+- [x] T005 Add API error handler utility at src/lib/errors.ts
+- [x] T006 Add response helper (standard format) at src/lib/response.ts
+- [x] T007 Create Zod validation base helpers at src/lib/validation/index.ts
+- [x] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
+- [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
+- [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
+- [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
+- [x] T010 Add shared types barrel at src/types/index.ts
+- [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
+- [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
+- [x] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
+- [x] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
+- [x] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
+- [x] T012d Configure Sentry source map upload for production debugging at sentry.config.js
 
 ---
 
@@ -46,27 +46,27 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 
 Objective: Core foundations required before user stories. Complete these first.
 
-- [ ] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
-- [ ] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
+- [x] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
+- [x] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
 - [ ] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
-- [ ] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
-- [ ] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
-- [ ] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
-- [ ] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
-- [ ] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
-- [ ] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
-- [ ] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
-- [ ] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
-- [ ] T018 Implement RBAC guard utility at src/lib/rbac.ts
-- [ ] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
-- [ ] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
-- [ ] T020a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
-- [ ] T020b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
-- [ ] T021 Add email sender (Resend) at src/lib/email/resend.ts
-- [ ] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
-- [ ] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
-- [ ] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
-- [ ] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
+- [x] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
+- [x] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
+- [x] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
+- [x] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
+- [x] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
+- [x] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
+- [x] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
+- [x] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
+- [x] T018 Implement RBAC guard utility at src/lib/rbac.ts
+- [x] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
+- [x] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
+- [x] T020a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
+- [x] T020b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
+- [x] T021 Add email sender (Resend) at src/lib/email/resend.ts
+- [x] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
+- [x] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
+- [x] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
+- [x] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
 
 Dependencies: T013 → T014 → T019; T016 requires T004; Payment tasks require T013.
 
@@ -79,10 +79,10 @@ Goal: Super Admin can create a store, assign admin; Store Admin can log in and i
 Independent Test Criteria:
 - End-to-end create store → assign admin → admin logs in → sees only their store.
 
-- [ ] T026 [US1] Implement Store service (CRUD, settings) at src/services/stores/store-service.ts
-- [ ] T027 [P] [US1] Implement Stores API (list/create) at src/app/api/stores/route.ts
-- [ ] T028 [P] [US1] Implement Store by ID API (get/update) at src/app/api/stores/[storeId]/route.ts
-- [ ] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
+- [x] T026 [US1] Implement Store service (CRUD, settings) at src/services/stores/store-service.ts
+- [x] T027 [P] [US1] Implement Stores API (list/create) at src/app/api/stores/route.ts
+- [x] T028 [P] [US1] Implement Store by ID API (get/update) at src/app/api/stores/[storeId]/route.ts
+- [x] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
 - [ ] T030 [US1] Admin dashboard entry page at src/app/(admin)/dashboard/page.tsx
 - [ ] T031 [P] [US1] Super Admin stores list page at src/app/(admin)/settings/stores/page.tsx
 - [ ] T032 [US1] Super Admin create store form at src/app/(admin)/settings/stores/new/page.tsx

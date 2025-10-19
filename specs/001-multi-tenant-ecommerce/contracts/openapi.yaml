@@ -848,6 +848,88 @@ paths:
         '400':
           description: Invalid signature
 
+  /payments/webhooks/sslcommerz:
+    post:
+      tags: [Payments]
+      summary: SSLCommerz IPN handler
+      description: Handle SSLCommerz Instant Payment Notification (IPN) events
+      operationId: sslcommerzWebhook
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Payment status (VALID, VALIDATED, FAILED, CANCELLED)
+                tran_id:
+                  type: string
+                  description: Transaction ID
+                val_id:
+                  type: string
+                  description: Validation ID for transaction verification
+                amount:
+                  type: string
+                  description: Payment amount
+                card_type:
+                  type: string
+                  description: Card type used for payment
+                store_amount:
+                  type: string
+                  description: Amount after gateway fees
+                card_no:
+                  type: string
+                  description: Masked card number
+                bank_tran_id:
+                  type: string
+                  description: Bank transaction ID
+                card_issuer:
+                  type: string
+                  description: Card issuer bank
+                card_brand:
+                  type: string
+                  description: Card brand (VISA, MASTER, etc.)
+                card_issuer_country:
+                  type: string
+                  description: Card issuer country
+                currency:
+                  type: string
+                  description: Currency code
+                tran_date:
+                  type: string
+                  description: Transaction date
+                verify_sign:
+                  type: string
+                  description: Signature for verification
+                verify_key:
+                  type: string
+                  description: Verification key
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+        '400':
+          description: Invalid signature or malformed request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid signature
+        '404':
+          description: Transaction not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Transaction not found
+
 # ==================== COMPONENTS ====================
 components:
   securitySchemes:
