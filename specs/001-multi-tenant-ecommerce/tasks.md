@@ -46,11 +46,14 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 
 Objective: Core foundations required before user stories. Complete these first.
 
-- [ ] T013 Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
-- [ ] T013a Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
-- [ ] T013b Add database triggers for soft delete validation at prisma/migrations/
-- [ ] T013c Document schema relationships and migration strategy at docs/database/schema-guide.md
-- [ ] T014 Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
+- [ ] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
+- [ ] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
+- [ ] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
+- [ ] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
+- [ ] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
+- [ ] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
+- [ ] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
+- [ ] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
 - [ ] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
 - [ ] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
 - [ ] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
@@ -106,9 +109,16 @@ Independent Test Criteria:
 - [ ] T040 [US2] Products API (list/create) at src/app/api/products/route.ts
 - [ ] T041 [P] [US2] Product by ID API (get/update/delete) at src/app/api/products/[productId]/route.ts
 - [ ] T042 [P] [US2] Import products API (CSV) at src/app/api/products/import/route.ts
+- [ ] T042a [US2] Add duplicate SKU detection during CSV import (CHK002) at src/services/products/duplicate-sku-validator.ts
+- [ ] T042b [US2] Add inline validation with error CSV generation for duplicate SKUs at src/app/api/products/import/route.ts
+- [ ] T042c [US2] Add suggested alternatives for duplicate SKUs (by name/category) at src/services/products/product-suggestions.ts
 - [ ] T043 [P] [US2] Export products API (CSV) at src/app/api/products/export/route.ts
 - [ ] T044 [US2] Admin product list page at src/app/(admin)/products/page.tsx
 - [ ] T045 [P] [US2] Admin product create page at src/app/(admin)/products/new/page.tsx
+- [ ] T045a [US2] Add zero-product onboarding wizard (CHK054) at src/components/admin/onboarding-wizard.tsx
+- [ ] T045b [US2] Add sample products seed function for onboarding at src/services/products/sample-products.ts
+- [ ] T045c [US2] Add empty catalog state with tutorial video and action cards at src/components/admin/empty-catalog-state.tsx
+- [ ] T045d [US2] Add onboardingCompleted flag to Store model and track completion at prisma/schema.prisma
 - [ ] T046 [P] [US2] Admin product edit page at src/app/(admin)/products/[productId]/page.tsx
 - [ ] T047 [US2] Zod schemas for product/variant at src/lib/validation/product.ts
 - [ ] T047d [US2] Add product attribute combination validator (prevent duplicate variant combinations) at src/lib/validation/product-variants.ts
@@ -131,14 +141,31 @@ Independent Test Criteria:
 - [ ] T048 [US3] Shipping zones service at src/services/shipping/shipping-zone-service.ts
 - [ ] T049 [P] [US3] Shipping rates service at src/services/shipping/shipping-rate-service.ts
 - [ ] T050 [US3] Tax rates service at src/services/tax/tax-rate-service.ts
+- [ ] T050a [US3] Add tax exemption service (CHK091) at src/services/tax/tax-exemption-service.ts
+- [ ] T050b [US3] Add tax exemption API endpoints at src/app/api/customers/[customerId]/tax-exemptions/route.ts
+- [ ] T050c [US3] Add admin tax exemption review page at src/app/(admin)/settings/tax-exemptions/page.tsx
+- [ ] T050d [US3] Add tax exemption auto-expiry job at src/services/jobs/tax-exemption-expiry.ts
+- [ ] T050e [US3] Add TaxExemption model to Prisma schema at prisma/schema.prisma
 - [ ] T051 [US3] Cart service (server) at src/services/cart/cart-service.ts
 - [ ] T052 [US3] Checkout service (compute totals, shipping, tax) at src/services/checkout/checkout-service.ts
+- [ ] T052a [US3] Add flash sale + coupon discount precedence logic (CHK060) at src/services/checkout/discount-precedence.ts
+- [ ] T052b [US3] Add discount breakdown display in cart UI at src/components/storefront/cart-summary.tsx
+- [ ] T052c [US3] Add allowCouponsWithFlashSale store setting at prisma/schema.prisma
+- [ ] T052d [US3] Add admin toggle for coupon+flash sale configuration at src/app/(admin)/settings/promotions/page.tsx
 - [ ] T053 [P] [US3] Create order API at src/app/api/orders/route.ts
+- [ ] T053a [US3] Add 60-second grace period for plan expiration (CHK056) at src/lib/plan-guard.ts
+- [ ] T053b [US3] Add server UTC timestamp validation for order timing at src/services/orders/order-timing-validator.ts
+- [ ] T053c [US3] Add plan expiration notification email at src/services/notifications/plan-notifier.ts
+- [ ] T053d [US3] Add upgrade modal for expired plans at src/components/admin/plan-expired-modal.tsx
 - [ ] T054 [P] [US3] Order by ID API (get/update) at src/app/api/orders/[orderId]/route.ts
 - [ ] T055 [US3] Payment intent API (Stripe/SSLCommerz) at src/app/api/payments/create-intent/route.ts
 - [ ] T055a [US3] Add payment timeout handler (auto-cancel unpaid orders) at src/lib/jobs/payment-timeout-job.ts
 - [ ] T055b [US3] Add payment reconciliation job (webhook replay for missed events) at src/lib/jobs/payment-reconciliation-job.ts
 - [ ] T056 [P] [US3] Payment webhooks (Stripe, SSLCommerz) at src/app/api/payments/webhooks/stripe/route.ts and src/app/api/payments/webhooks/sslcommerz/route.ts
+- [ ] T056a [US3] Add webhook restoration for cancelled orders (CHK058) at src/services/orders/order-restoration-service.ts
+- [ ] T056b [US3] Add idempotency key handling for payment webhooks at src/lib/payments/idempotency.ts
+- [ ] T056c [US3] Add inventory restock check before restoration at src/services/inventory/restock-validator.ts
+- [ ] T056d [US3] Add webhook replay protection via Redis at src/lib/payments/webhook-replay-guard.ts
 - [ ] T057 [US3] Storefront checkout pages at src/app/(storefront)/checkout/page.tsx
 - [ ] T057a [US3] Add email template for order confirmation at src/lib/email/templates/order-confirmation.tsx
 - [ ] T057b [US3] Add email template for payment received at src/lib/email/templates/payment-received.tsx
@@ -196,6 +223,7 @@ Independent Test Criteria:
 - [ ] T074a [US4] Write unit tests for order workflow service (>80% coverage) at src/services/orders/__tests__/order-workflow-service.test.ts
 - [ ] T074b [US4] Write integration tests for refund and cancel APIs at src/app/api/orders/[orderId]/__tests__/refunds.test.ts
 - [ ] T074c [US4] Write E2E test for order lifecycle (place, process, refund) at tests/e2e/orders/order-lifecycle.spec.ts
+- [ ] T074d [US4] Write E2E test for webhook restoration after cancellation (CHK058) at tests/e2e/orders/webhook-restoration.spec.ts
 
 Dependencies: US3 orders/payments; email sender present.
 
@@ -211,6 +239,7 @@ Independent Test Criteria:
 - [ ] T075 [US5] Plans service (limits, usage) at src/services/subscriptions/plans-service.ts
 - [ ] T076 [P] [US5] Plan usage tracker middleware at src/lib/middleware/plan-usage.ts
 - [ ] T077 [US5] Plan enforcement guard at src/lib/plan-guard.ts
+- [ ] T077a [US5] Write E2E test for plan expiration grace period (CHK056) at tests/e2e/subscriptions/plan-expiration-grace.spec.ts
 - [ ] T078 [P] [US5] Plan settings UI at src/app/(admin)/settings/plan/page.tsx
 - [ ] T079 [US5] Dashboard usage indicators at src/app/(admin)/dashboard/_components/usage-widgets.tsx
 - [ ] T080 [US5] Plan lifecycle jobs (trial expiry, grace) at src/services/jobs/plan-lifecycle.ts
@@ -250,6 +279,9 @@ Independent Test Criteria:
 - Enforce password policy; MFA flow; lockouts after failed attempts; audit capture.
 
 - [ ] T086 [US12] Password policy validators at src/lib/security/password-policy.ts
+- [ ] T086a [US12] Add password history table and validation (CHK009) at prisma/schema.prisma
+- [ ] T086b [US12] Add password history service (last 5 passwords) at src/services/security/password-history-service.ts
+- [ ] T086c [US12] Add password history cleanup job (2-year retention) at src/services/jobs/password-history-cleanup.ts
 - [ ] T087 [P] [US12] MFA (TOTP + recovery codes) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
 - [ ] T088 [US12] Account lockout policy at src/services/security/lockout-service.ts
 - [ ] T089 [P] [US12] RBAC policies and guards integration at src/lib/rbac.ts
@@ -258,6 +290,7 @@ Independent Test Criteria:
 - [ ] T090a [US12] Write unit tests for password policy, MFA, and lockout services (100% coverage) at src/services/security/__tests__/security.test.ts
 - [ ] T090b [US12] Write integration tests for MFA API and RBAC guards at src/app/api/auth/__tests__/mfa.test.ts
 - [ ] T090c [US12] Write E2E test for authentication, MFA enrollment, and lockout flow at tests/e2e/security/auth-security.spec.ts
+- [ ] T090d [US12] Write E2E test for password history enforcement (CHK009) at tests/e2e/security/password-history.spec.ts
 
 Dependencies: Foundational auth.
 

@@ -245,6 +245,188 @@ StormCom/
 
 **Structure Decision**: Web application using Next.js 15.5.5 App Router with monorepo structure. The app is organized into three main route groups: `(admin)` for store management dashboard, `(storefront)` for customer-facing shopping experience, and `(auth)` for authentication flows. Business logic is centralized in `/src/services/` to maintain separation of concerns and facilitate testing. Prisma ORM manages database access with strict multi-tenant isolation via middleware. The structure follows Next.js best practices and constitution requirements for feature-based organization.
 
+## Edge Case Implementation Requirements
+
+**Session 2 Additions** (Post-Phase 1 completion, pre-Phase 2 implementation):
+
+The following edge cases were added to `spec.md` after requirements quality audit Session 2. These must be implemented as part of their respective user stories/tasks:
+
+### 1. Duplicate SKU Handling (CHK002)
+**Affected Tasks**: T042 (Import products API), T047 (Product validation schemas)
+**Location in spec.md**: Catalog management edge cases section
+**Requirements**:
+- Real-time validation during CSV preview (before import commit)
+- UI feedback: Highlight duplicate SKU rows in red with warning icon
+- Resolution options: Auto-rename with suffix, skip duplicates, download error CSV
+- Suggest existing similar products by name/category
+- Error logging with row numbers for review
+
+**Implementation Notes**:
+- Add duplicate detection to `src/services/products/product-service.ts` bulk import validation
+- Extend Zod schema at `src/lib/validation/product.ts` to check against existing SKUs
+- Return error report with suggested alternatives in API response
+
+---
+
+### 2. Password History Requirements (CHK009)
+**Affected Tasks**: T086 (Password policy validators), T013 (Prisma schema - new PasswordHistory table)
+**Location in spec.md**: Security edge cases section
+**Requirements**:
+- Prevent reuse of last 5 passwords
+- Separate `PasswordHistory` table with bcrypt hashed values
+- Compare new password hash against last 5 historical hashes using `bcrypt.compare()`
+- Auto-delete history entries older than 2 years (GDPR compliance)
+- Error message: "Password has been used recently. Please choose a different password."
+
+**Data Model Addition**:
+```prisma
+model PasswordHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  hash      String   // bcrypt hash of password
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  @@index([userId, createdAt])
+}
+```
+
+**Implementation Notes**:
+- Add to `src/lib/security/password-policy.ts` validation logic
+- Store hash on every password change in `src/services/security/password-service.ts`
+- Add cleanup job to `src/services/jobs/password-history-cleanup.ts`
+
+---
+
+### 3. Zero-Product Onboarding Wizard (CHK054)
+**Affected Tasks**: T045 (Product create page - add wizard flow), New task for sample data seeding
+**Location in spec.md**: Catalog management edge cases section
+**Requirements**:
+- 5-step welcome wizard on first login (store branding, **product catalog setup**, payment, shipping, theme)
+- Product catalog step options: Import sample products (10 demo products), Upload CSV (with template), Skip
+- Empty state UI: Tutorial video (2-min quickstart), three action cards, progress checklist (0/5 products)
+- Contextual help tooltips throughout
+
+**Implementation Notes**:
+- Add onboarding wizard component at `src/components/admin/onboarding-wizard.tsx`
+- Create sample products seed function at `src/services/products/sample-products.ts`
+- Add empty state component at `src/components/admin/empty-catalog-state.tsx`
+- Track onboarding completion in `Store` model with `onboardingCompleted` boolean
+
+---
+
+### 4. Order at Plan Expiration Timing (CHK056)
+**Affected Tasks**: T077 (Plan enforcement guard), T053 (Create order API)
+**Location in spec.md**: Subscription edge cases section
+**Requirements**:
+- 60-second grace period after plan expiration
+- Server UTC timestamp is authoritative (ignore client-side time)
+- Accept order if `serverTime <= planExpiresAt + 60s`, otherwise reject
+- Rejection message: "Your subscription has expired. Please renew to accept new orders."
+- Admin email notification when plan expiration blocks orders
+- Immediate upgrade modal shown to store owner
+
+**Implementation Notes**:
+- Add grace period logic to `src/lib/plan-guard.ts` enforcement checks
+- Use `new Date()` for server UTC time in order validation
+- Send notification via `src/services/notifications/plan-notifier.ts`
+- Add upgrade modal component at `src/components/admin/plan-expired-modal.tsx`
+
+---
+
+### 5. Webhook After Auto-Cancellation Race Condition (CHK058)
+**Affected Tasks**: T056 (Payment webhooks), T074 (Auto-cancel job)
+**Location in spec.md**: Webhook edge cases section
+**Requirements**:
+- Detect if order status is `cancelled` when webhook received (payment after 15-min timeout)
+- Validate payment webhook signature (prevent replay attacks)
+- Check idempotency key (prevent duplicate processing): `payment_{paymentGateway}_{transactionId}`
+- Restoration workflow: Restore order status (`cancelled` → `processing`), restock inventory, send "Payment Received" email
+- Inventory restock only if items still available (prevent overselling)
+- Webhook replay protection via Redis cache (24-hour TTL)
+- Audit log: Record cancellation, restoration, webhook events with timestamps
+
+**Implementation Notes**:
+- Add order restoration logic to `src/services/orders/order-restoration-service.ts`
+- Implement idempotency check in `src/lib/payments/idempotency.ts` using Vercel KV
+- Extend webhook handlers at `src/app/api/payments/webhooks/*/route.ts`
+- Add inventory availability check before restocking
+
+---
+
+### 6. Flash Sale + Coupon Discount Overlap (CHK060)
+**Affected Tasks**: T052 (Checkout service - discount calculation), T099 (Flash sales service), T097 (Coupons service)
+**Location in spec.md**: Marketing edge cases section
+**Requirements**:
+- Default stacking order: Apply flash sale first (20% off), then coupon on discounted price (additional 10% off)
+- Configuration option: Store setting to block/allow coupon usage during flash sales
+- Block mode: Display "Coupon codes cannot be used during flash sales"
+- Allow mode: Apply stacking with order above
+- Cart UI display: Show discount breakdown (Original Price, Flash Sale discount, Subtotal, Coupon discount, Final Total)
+- Admin toggle: "Allow coupons during flash sales" in store settings
+
+**Implementation Notes**:
+- Add discount precedence logic to `src/services/checkout/checkout-service.ts`
+- Add `allowCouponsWithFlashSale` boolean to `Store` model
+- Update cart component at `src/components/storefront/cart-summary.tsx` to show breakdown
+- Add store setting at `src/app/(admin)/settings/promotions/page.tsx`
+
+---
+
+### 7. Tax-Exempt Approval Workflow (CHK091)
+**Affected Tasks**: New tasks for tax exemption management, T050 (Tax rates service - add exemption check)
+**Location in spec.md**: Tax compliance edge cases section
+**Requirements**:
+- Request workflow: Customer uploads tax-exempt certificate (PDF/JPG, max 5MB), provides certificate details (number, expiration, state)
+- Admin review: Email notification with certificate preview, approval/rejection actions, reason for rejection
+- Auto-expiration: System revokes exemption on certificate expiration date, sends reminder 30 days before
+- Audit trail: Log all requests, approvals, rejections, expirations
+
+**Data Model Addition**:
+```prisma
+model TaxExemption {
+  id              String   @id @default(cuid())
+  customerId      String
+  certificateUrl  String   // Vercel Blob storage URL
+  certificateNum  String
+  issuingState    String
+  expiresAt       DateTime
+  status          String   // pending, approved, rejected, expired
+  approvedBy      String?  // Admin user ID
+  approvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  @@index([customerId, status, expiresAt])
+}
+```
+
+**Implementation Notes**:
+- Add tax exemption service at `src/services/tax/tax-exemption-service.ts`
+- Add API endpoints at `src/app/api/customers/[customerId]/tax-exemptions/route.ts`
+- Add admin review page at `src/app/(admin)/settings/tax-exemptions/page.tsx`
+- Add expiration job at `src/services/jobs/tax-exemption-expiry.ts`
+- Integrate exemption check into `src/services/tax/tax-rate-service.ts`
+
+---
+
+### 8. Rate Limit Headers in OpenAPI (CHK097)
+**Affected Tasks**: API documentation update (already completed in `contracts/openapi.yaml`)
+**Location**: `contracts/openapi.yaml` components/headers section
+**Status**: ✅ **COMPLETED** - Headers defined, RateLimitExceeded response updated, info/description enhanced
+
+---
+
+## Implementation Sequencing
+
+**Edge cases must be implemented alongside their primary features**:
+
+1. **Phase 4 (US2 - Product catalog)**: CHK002 (duplicate SKU), CHK054 (onboarding wizard)
+2. **Phase 5 (US3 - Checkout)**: CHK056 (order expiration), CHK060 (discount stacking), CHK091 (tax exemption)
+3. **Phase 5 (US3 - Payments)**: CHK058 (webhook restoration)
+4. **Phase 10 (US12 - Security)**: CHK009 (password history)
+
+All edge cases have been documented in `spec.md` with complete workflows, error handling, and acceptance criteria. Implementation tasks added to `tasks.md` as subtasks under their respective user stories.
+
+---
+
 ## Complexity Tracking
 
 *Fill ONLY if Constitution Check has violations that must be justified*

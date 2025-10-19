@@ -17,6 +17,65 @@
 - Q: What data retention policy should be enforced for compliance? → A: Standard retention - 3 years for orders/invoices, 1 year for audit logs, 90 days for backups.
 - Q: What API rate limiting strategy should be enforced? → A: Tiered rate limiting by subscription plan - Free (60 req/min), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
 
+## Technical Assumptions
+
+### Infrastructure & Deployment (Vercel Platform)
+
+- **Vercel Serverless Functions**: 10-second timeout (Hobby/Pro tier), 60-second timeout (Enterprise tier with advance request); 1024MB memory default, configurable up to 3008MB on Enterprise.
+- **Database**: PostgreSQL 15+ required for full-text search with pg_trgm extension (trigram similarity for autocomplete); pg_stat_statements for query performance monitoring.
+- **CDN**: Vercel Edge Network for static assets (images, CSS, JS) with automatic global distribution and cache invalidation.
+- **Email Service**: Resend transactional email service; rate limit 100 emails/hour (Free tier), 1000/hour (Pro tier); batch sending for newsletters uses 5req/sec throttling.
+
+### Browser Support & Compatibility
+
+- **Supported Browsers**: Chrome 90+, Safari 14+, Firefox 88+, Edge 90+, mobile Safari iOS 14+, Chrome Android 90+.
+- **Responsive Breakpoints**: 640px (sm), 768px (md), 1024px (lg), 1280px (xl), 1536px (2xl) - mobile-first approach.
+- **JavaScript**: ES2020+ features; no IE11 support; polyfills only for Safari 14 (Promise.allSettled, String.replaceAll).
+- **Progressive Enhancement**: Core checkout flow works without JavaScript (server-side rendering + forms); enhanced features (autocomplete, real-time validation) require JavaScript.
+
+### Performance & Scalability Assumptions
+
+- **Concurrent Users**: 100 concurrent users per store (95th percentile); above this threshold may require plan upgrade or Enterprise tier with dedicated resources.
+- **API Request Distribution**: Assumes even distribution across 60-second rate limit window; burst protection via Vercel KV (Redis) sliding window counter.
+- **Database Connections**: Prisma connection pool default 5 connections per serverless function instance; total connections limited by PostgreSQL max_connections (100 on standard tier).
+- **File Storage**: Vercel Blob for product images/invoices; 100MB max file size per upload; images auto-optimized to WebP with srcset for responsive loading.
+- **Search Performance**: PostgreSQL Full-Text Search <1s response for catalogs up to 10K products; beyond 10K products recommend Algolia upgrade (Phase 2).
+
+### External Platform API Versions
+
+- **WooCommerce**: REST API v3 (WooCommerce 3.5+); requires JWT authentication plugin for secure API access.
+- **Shopify**: Admin API 2024-01 (stable version); uses private app credentials with scopes: read_products, write_products, read_orders, write_orders, read_inventory, write_inventory.
+- **SSLCommerz**: Sandbox API v4 for testing; production IPN (Instant Payment Notification) v3 for payment confirmation webhooks.
+- **Stripe**: API version 2023-10-16; uses webhook v1 with signature verification (HMAC-SHA256).
+
+### Security & Compliance Assumptions
+
+- **Password Policy**: Minimum 8 characters; requires uppercase, lowercase, number, and special character; password history (last 5 passwords) checked; bcrypt cost factor 12.
+- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies.
+- **HTTPS**: TLS 1.3 enforced via Vercel; HSTS headers with max-age=31536000 (1 year); automatic certificate renewal via Let's Encrypt.
+- **CORS**: Allowed origins configurable per store (default: same-origin only); API endpoints support CORS preflight with credentials.
+- **PCI Compliance**: Level 1 PCI-DSS compliance by never storing card data; relying on payment gateway tokenization (Stripe/SSLCommerz hosted checkout or Elements/JS SDK).
+
+### Data & Timestamps
+
+- **Server Time**: All timestamps use server-side UTC; stored as ISO 8601 in database (timestamptz in PostgreSQL).
+- **Client Timezone**: Detected via browser timezone offset; user preference stored in profile; all times displayed in user's local timezone with offset indicator.
+- **Order Timestamps**: Server time is canonical; client-submitted timestamps ignored to prevent manipulation or time drift issues.
+- **Scheduled Tasks**: Cron jobs use UTC; flash sales/promotions start/end times stored in UTC and converted to store timezone for display.
+
+### Guest User Experience
+
+- **Cart Persistence**: Guest carts stored in session (cookie-based; 7-day expiration); logged-in user carts stored in database (permanent until cart expiration or order completion).
+- **Session Duration**: Guest sessions expire after 7 days of inactivity; guest checkout preserves cart through email verification flow.
+- **Data Migration**: Guest cart auto-migrates to user account on login/registration; duplicate items merged with quantity summed.
+
+### Internationalization (Phase 1 Scope)
+
+- **Default Language**: English only in Phase 1; UI, emails, and error messages in English.
+- **Phase 2 Multi-language**: 16 languages planned (ar, da, de, en, es, fr, he, it, ja, nl, pl, pt, pt-br, ru, tr, zh); RTL support for Arabic/Hebrew.
+- **Currency Display**: Store base currency only in Phase 1; Phase 2 adds multi-currency with manual exchange rates updated daily.
+- **Date/Time Format**: ISO 8601 in API; localized display in UI (YYYY-MM-DD for en-US, DD/MM/YYYY for en-GB based on user locale).
+
 ## User Scenarios & Testing (mandatory)
 
 ### User Story 1 - Create and manage a store (Priority: P1)
@@ -187,9 +246,10 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 ### Edge Cases
 
 **Multi-tenancy and data isolation**:
-- Duplicate SKU or slug within the same store must fail with a clear message; across stores is allowed.
-- Staff switching stores must not retain cached data or permissions from previous store.
+- Duplicate SKU or slug within the same store must fail with a clear message showing "SKU '{sku}' already exists for product '{product_name}'. Please use a unique SKU." and suggesting auto-generated SKU alternatives.
+- Staff switching stores must not retain cached data or permissions from previous store; session context is cleared and re-initialized with new store context.
 - All queries, exports, and scheduled jobs must filter by store ID; cross-tenant data leakage is prohibited.
+- Multi-tenant isolation test scenarios MUST include: (a) Direct ID manipulation attempts across tenants return 404 Not Found (never 403 Forbidden to avoid information disclosure), (b) SQL injection attempts are blocked by Prisma parameterized queries, (c) JWT token tampering to access other stores fails signature verification, (d) API endpoint authorization checks enforce storeId match before data access.
 
 **Inventory and concurrency**:
 - Concurrent orders reducing the same variant stock must not produce negative inventory; second attempt fails gracefully.
@@ -229,15 +289,36 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 **Subscription plan limits**:
 - Reaching plan limits must prevent new creations with clear messaging; existing data is preserved.
 - Plan downgrades with excess data mark store as over-limit; no new additions until within limits or upgrade.
+- Concurrent operations exceeding plan limits MUST use database-level advisory locks (Prisma's `@@unique([storeId, productCount])` constraints or SELECT FOR UPDATE) to prevent race conditions where multiple users simultaneously create resources that collectively exceed limits.
 - Plan expiration during order processing allows in-progress orders to complete; new orders blocked.
 - Bulk operations (import, batch updates) check limits before processing; partial completion up to limit allowed.
 - Grace period after plan expiration allows read-only access; configurable per plan (default 7 days).
+- Soft-deleted resources (deletedAt IS NOT NULL) DO count toward plan limits during 90-day grace period to prevent limit circumvention; DO NOT count after hard deletion. Admin "Reclaim Space" action available to force hard delete before 90 days.
 
 **Multi-language edge cases**:
 - Missing translations fall back to store's default language; mark with indicator "(English)" if content language differs.
 - Search indexing supports Unicode; non-English queries are normalized and stemmed appropriately.
 - Language switching preserves cart and session; language preference stored in cookie/session.
 - Email notifications use customer's preferred language from profile; fall back to store default if not available.
+
+**Product catalog edge cases**:
+- **CHK002 - Duplicate SKU during bulk import**: CSV import validation MUST detect duplicate SKUs within import file before processing; display inline validation message "Row {row_number}: SKU '{sku}' duplicates existing product '{product_name}' or row {duplicate_row_number}. Suggested SKU: {sku}-{variant_id}". Import continues for valid rows; invalid rows exported to error report CSV.
+- **CHK054 - Zero-product onboarding**: New stores with no products show onboarding wizard with: (a) Quick-start guide video, (b) Sample product creation walkthrough, (c) Import sample products button (adds 5 demo products to catalog), (d) CSV import tutorial. Dashboard displays "Getting Started" checklist until first product created.
+
+**Security and authentication edge cases**:
+- **CHK009 - Password history**: System MUST prevent password reuse for last 5 passwords; compare bcrypt hashes during password change/reset. Display message: "This password was used recently. Please choose a different password." Password history stored in separate `password_history` table with userId, hashedPassword, createdAt; auto-pruned to keep only last 5 per user.
+
+**Subscription and billing edge cases**:
+- **CHK056 - Order at plan expiration**: Orders submitted within 60 seconds of plan expiration are allowed to complete if initiated before expiration; use order creation timestamp (server UTC time) as authoritative. New orders blocked after grace period (default 7 days); display message: "Your subscription has expired. Please renew to continue accepting orders."
+
+**Webhook and external integration edge cases**:
+- **CHK058 - Webhook after auto-cancellation**: Payment webhooks arriving after order auto-cancellation (default 72 hours for unpaid orders) MUST check order status; if canceled, restore order to "pending" status, mark as paid, restock inventory if already restocked, send order confirmation email, and log reconciliation event. Use idempotency key (transaction_id + order_id) to prevent duplicate processing.
+
+**Marketing and promotions edge cases**:
+- **CHK060 - Flash sale + coupon overlap**: When flash sale and coupon apply to same product, apply discounts in order: (1) Flash sale price (fixed sale price), (2) Coupon discount (percentage or fixed amount on sale price). Display breakdown in cart: "Original Price: $100, Flash Sale: -$20 (80), Coupon '10OFF': -$8 (10%), Final Price: $72". Configuration option to allow/block coupon usage during flash sales per campaign.
+
+**Tax and compliance edge cases**:
+- **CHK091 - Tax-exempt approval workflow**: Tax-exempt status requires admin approval workflow: (1) Customer requests tax exemption via account settings, (2) Upload tax exemption certificate (PDF/image, validated for file type and size <5MB), (3) Admin receives notification and reviews certificate in pending approvals queue, (4) Admin approves/rejects with optional notes, (5) Customer notified via email. Auto-expiration after 1 year; renewal reminder sent 30 days before expiration.
 
 **Email and notifications**:
 - Email delivery failures are retried with exponential backoff (max 3 attempts); failures logged for admin review.
@@ -273,7 +354,7 @@ Multi‑tenancy and administration
 - **POS Cashier**: Limited role for POS terminals with restricted access to back-office features (Phase 3).
 
 Products and catalog
-- **FR-010**: Store Admins/Staff MUST create, edit, publish/unpublish, and delete products with name, description, price, category, brand, attributes, labels, and images.
+- **FR-010**: Store Admins/Staff MUST create, edit, publish/unpublish, and delete products with name, description, price, category, brand, attributes, labels, and images. Featured products display in "prominent positions": top 3 grid positions on category pages, hero banner carousel on homepage (up to 5 products with 5-second auto-rotation), and dedicated "Featured Products" section with maximum 12 products in 3×4 grid layout.
 - **FR-011**: The system MUST support variants with per‑variant SKU, price, attributes, and inventory.
 - **FR-012**: The system MUST enforce SKU uniqueness per store and slug uniqueness per store for both products and variants as applicable.
 - **FR-013**: The system MUST support categories and brands, and allow assigning multiple categories to a product.
@@ -312,9 +393,9 @@ Tax management
 
 Orders and payments
 - **FR-030**: The system MUST list all orders with search and filter (status, date range, customer, totals, payment/shipment status).
-- **FR-031**: The system MUST support order lifecycle with status progression: pending → confirmed → shipped → delivered; include canceled and refunded states. Status transitions are managed by workflow logic with validation rules (e.g., cannot ship canceled orders).
+- **FR-031**: The system MUST support order lifecycle with status progression: pending → confirmed → shipped → delivered; include canceled and refunded states. Status transitions are managed by workflow logic with validation rules (e.g., cannot ship canceled orders). Partial fulfillment workflow: (a) Order status "partially_shipped" when some items ship, (b) Customer receives separate shipment notifications for each package with tracking, (c) Remaining items stay in "awaiting_shipment" status, (d) Separate shipping charges calculated per shipment; customer notified of additional charges before processing.
 - **FR-032**: The system MUST generate unique order numbers per store and allow generating invoices and packing slips.
-- **FR-033**: The system MUST send order status notifications at key stages (confirmation, shipment, delivery, cancellation, refund).
+- **FR-033**: The system MUST send order status notifications at key stages (confirmation, shipment, delivery, cancellation, refund, partial shipment).
 - **FR-034**: The system MUST support order cancellations (by staff or by auto‑cancel policy for unpaid orders) with configurable grace period.
 - **FR-035**: The system MUST support refunds, including partial refunds at item level or amount level, with validation against captured payments.
 - **FR-036**: The system MUST support SSLCommerz (Phase 1, for Bangladesh) and Stripe (Phase 1, for International) payment gateways as primary payment methods. Additional gateways (bKash, PayPal, Square, Authorize.net) will be added in Phase 2 based on market demand.
@@ -337,7 +418,7 @@ Subscription and plan management
 - **FR-045**: The system MUST support multiple subscription plan tiers with configurable pricing and billing cycles (monthly, yearly).
 - **FR-046**: The system MUST define default plan tiers: Free (10 products, 50 orders/month, 1 staff, 100MB storage), Basic ($29/month: 100 products, 500 orders/month, 3 staff, 1GB storage), Pro ($99/month: 1000 products, 5000 orders/month, 10 staff, 10GB storage), Enterprise (custom pricing: unlimited).
 - **FR-047**: The system MUST enforce plan limits (max products, orders per period, staff users, storage) per store and prevent operations exceeding limits with clear messaging.
-- **FR-048**: The system MUST support plan upgrades and downgrades with prorated billing calculations; changes apply immediately.
+- **FR-048**: The system MUST support plan upgrades and downgrades with prorated billing calculations; changes apply immediately. Store ownership transfer between subscription plans: (a) Current Store Owner initiates transfer from Settings → Transfer Ownership, (b) New owner receives email invitation with 7-day expiration, (c) New owner accepts and selects target subscription plan (existing or new), (d) Billing switches to new owner's plan; prorated credits/charges calculated, (e) Original owner loses admin access; new owner becomes Store Admin, (f) All store data and configuration preserved during transfer.
 - **FR-049**: The system MUST support trial periods with configurable duration (default 14 days) and automatic conversion to paid plan or expiration.
 - **FR-04A**: The system MUST send notifications before plan expiration (7 days, 3 days, 1 day) and after expiration grace period.
 - **FR-04B**: The system MUST restrict store access after plan expiration: read-only mode during grace period (default 7 days), then suspended.
@@ -353,6 +434,7 @@ Marketing
 Dashboards and reporting
 - **FR-060**: The system MUST provide dashboards for sales, inventory, and customer insights with configurable thresholds and highlighting.
 - **FR-061**: The system MUST support data export for reports (CSV/Excel) with applied filters and date ranges.
+- **FR-062**: "Advanced reports" scope: Predefined reports include (a) Sales by product with revenue, quantity, refund rate, (b) Sales by category with trend analysis, (c) Customer lifetime value (LTV) segmentation, (d) Inventory turnover rate, (e) Marketing campaign ROI with attributed orders, (f) Tax liability by region. Custom report builder (Phase 2) allows Store Admins to select dimensions, metrics, filters, and date ranges with drag-and-drop interface.
 
 Content management
 - **FR-070**: The system MUST manage pages, blogs, menus, FAQs, and testimonials (store-level testimonials for homepage/about page, not product-specific; see FR-016 for product-level testimonials) with publish/unpublish and scheduling.
@@ -365,7 +447,7 @@ Content management
 
 Email and notifications
 - **FR-077**: The system MUST queue notifications with retry logic on delivery failure (exponential backoff, max 3 attempts).
-- **FR-078**: The system MUST support email notifications for all order status changes, low stock alerts, and plan limit warnings.
+- **FR-078**: The system MUST support email notifications for all order status changes, low stock alerts, and plan limit warnings. Email template variables with fallback behavior: {firstName} → "Valued Customer", {lastName} → "" (empty string), {orderNumber} → "[Order #]", {orderTotal} → "$0.00", {storeName} → "Our Store", {productName} → "Product", {quantity} → "0". Missing critical variables (orderNumber for order confirmation) log error and send fallback email: "Your order has been received. Please contact support for details."
 - **FR-079**: The system MUST prevent duplicate notifications for the same event using deduplication by order ID and event type.
 - **FR-07A**: The system SHOULD support notification preferences per user (email, none) for non-critical notifications.
 
@@ -378,13 +460,14 @@ Store settings and configuration
 - **FR-07G**: The system SHOULD support basic SEO settings per store (meta title, meta description, Open Graph tags).
 - **FR-07H**: The system SHOULD support maintenance mode per store with custom message and allow admin access during maintenance.
 - **FR-07I**: The system SHOULD support analytics integration (Google Analytics, Facebook Pixel) with tracking code configuration.
+- **FR-07J**: The system MUST implement store deletion safeguards: (a) Block deletion when active subscription exists with message "Cannot delete store with active subscription. Cancel subscription first.", (b) Allow deletion with warning when unpaid orders exist; orders archived for 3-year retention period, (c) Require admin confirmation with store name entry, (d) Send final export of all store data (products, orders, customers) to Store Owner email before deletion completes.
 
 Storefront features
 - **FR-07J**: The system MUST provide a full-stack solution with both admin dashboard AND customer-facing storefront UI (complete turnkey e-commerce platform).
 - **FR-07K**: The system MUST provide a responsive customer-facing storefront with product browsing, search, filtering, and checkout flow.
-- **FR-07L**: The system MUST support home page customization (hero banners, featured products, category showcases) via admin dashboard.
+- **FR-07L**: The system MUST support home page customization (hero banners, featured products, category showcases) via admin dashboard. Visual hierarchy requirements: (a) 3-level navigation depth maximum (Category → Subcategory → Sub-subcategory), (b) Font size ratios: H1 (2.5rem/40px) → H2 (1.875rem/30px) → H3 (1.5rem/24px) → body (1rem/16px), (c) Color contrast ratio ≥4.5:1 for text per WCAG 2.1 AA, (d) CTA buttons minimum 44×44px touch target.
 - **FR-07M**: The system MUST support product listing pages with grid/list views, sorting, and filtering by categories, brands, attributes, price range.
-- **FR-07N**: The system MUST support product search with autocomplete suggestions and results relevance ranking. Implementation uses PostgreSQL Full-Text Search with trigram similarity for autocomplete (Phase 1); consider Algolia upgrade for Phase 2 if search performance requires further optimization beyond 10K products.
+- **FR-07N**: The system MUST support product search with autocomplete suggestions and results relevance ranking. Implementation uses PostgreSQL Full-Text Search with trigram similarity for autocomplete (Phase 1); consider Algolia upgrade for Phase 2 if search performance requires further optimization beyond 10K products. Search result pagination: 24 products per page with infinite scroll (Phase 1) or numbered pagination (optional Phase 2 configuration).
 - **FR-07O**: The system MUST support navigation menu customization per store with multi-level menus managed from admin.
 - **FR-07P**: The system SHOULD support product quick view (modal preview) without leaving listing page for improved browsing experience.
 - **FR-07Q**: The system MUST be SEO-optimized with server-side rendering for product and content pages to support organic search traffic.
@@ -395,7 +478,7 @@ Storefront features
 - **FR-07V**: The system SHOULD support breadcrumb navigation throughout the storefront for improved user experience and SEO.
 
 POS
-- **FR-080**: The system MUST support POS checkout for in‑store transactions, including product scan/search, discounts, tax, and receipt generation.
+- **FR-080**: The system MUST support POS checkout for in‑store transactions, including product scan/search, discounts, tax, and receipt generation. POS operates in online-only mode (Phase 1); offline mode with local storage sync-back deferred to Phase 2 based on demand. POS sessions persist in database across device restarts; Staff can resume open session on any device by entering session ID or staff credentials.
 - **FR-081**: The system MUST update inventory and customer history upon successful POS sale.
 - **FR-082**: The system SHOULD allow basic POS user roles to limit access to back‑office features.
 - **FR-083**: The system SHOULD support barcode scanning for products in POS interface.
@@ -406,13 +489,13 @@ Security and compliance
 - **FR-091**: The system MUST support optional multi‑factor authentication (MFA) with: (a) TOTP authenticator apps (RFC 6238) as the primary method, (b) one‑time recovery codes for account recovery, and (c) optional SMS fallback (opt‑in per tenant). The system MAY additionally offer WebAuthn/FIDO2 security keys as an optional method for enterprises.
 - **FR-092**: The system MUST support optional SSO for enterprises using OIDC and SAML 2.0 with common identity providers (e.g., Okta, Azure AD, Google, OneLogin).
 - **FR-093**: The system MUST lock accounts after repeated failed login attempts for a configurable duration and notify the user.
-- **FR-094**: The system MUST maintain detailed, immutable audit logs for security‑sensitive actions (auth events, role changes, inventory adjustments, order changes).
+- **FR-094**: The system MUST maintain detailed, immutable audit logs for security‑sensitive actions (auth events, role changes, inventory adjustments, order changes); implement data encryption at rest (AES-256) and in transit (TLS 1.3).
 - **FR-095**: The system MUST ensure tenant isolation in all queries, exports, and scheduled jobs; cross‑tenant access is prohibited.
 - **FR-096**: The system MUST sanitize all user inputs to prevent XSS attacks and validate all data before database operations.
-- **FR-097**: The system MUST use HTTPS for all communications and secure session management with HTTP-only cookies.
-- **FR-128**: The system MUST implement API rate limiting per user/store based on subscription plan tier to prevent abuse and ensure fair resource allocation.
+- **FR-097**: The system MUST use HTTPS for all communications and secure session management with HTTP-only cookies; JWT session timeout: 30 days absolute expiration, 7 days idle timeout (sliding window); sessions invalidated on password change or permission revocation.
+- **FR-128**: The system MUST implement API rate limiting per user/store based on subscription plan tier to prevent abuse and ensure fair resource allocation using sliding window algorithm counting requests per minute per authenticated user.
 - **FR-129**: The system MUST enforce tiered rate limits: Free plan (60 requests/minute), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
-- **FR-130**: The system MUST return HTTP 429 (Too Many Requests) with Retry-After header when rate limits are exceeded; include clear error messaging.
+- **FR-130**: The system MUST return HTTP 429 (Too Many Requests) with standard rate limit HTTP headers and Retry-After header when limits are exceeded: `X-RateLimit-Limit: 120` (max requests per window), `X-RateLimit-Remaining: 0` (remaining requests), `X-RateLimit-Reset: 1698345600` (Unix timestamp when window resets), `Retry-After: 45` (seconds until retry allowed). Error response body: `{ "error": { "code": "RATE_LIMIT_EXCEEDED", "message": "Rate limit of 120 requests per minute exceeded. Please retry after 45 seconds.", "limit": 120, "resetAt": "2025-10-19T14:30:00Z" } }`
 - **FR-131**: The system SHOULD implement rate limit monitoring dashboard for Super Admins showing per-store API usage patterns and rate limit violations.
 - **FR-132**: The system SHOULD allow temporary rate limit increases for Enterprise customers during known high-traffic events (e.g., flash sales) with advance request.
 
@@ -425,9 +508,83 @@ Future features (deferred to Phase 2)
 - **FR-09D**: The system MAY support product comparison feature for customers.
 - **FR-09E**: The system MAY support an add-on/module system for platform extensibility.
 
+## Phase 2 Backlog
+
+Features explicitly deferred to Phase 2 based on market demand and performance requirements:
+
+### Payment & Shipping Integrations
+- **P2-001**: Additional payment gateways (bKash, PayPal, Square, Authorize.net, Razorpay) - Priority based on market demand surveys.
+- **P2-002**: Carrier API integrations (FedEx, UPS, USPS, DHL) for real-time shipping quotes - Currently supporting manual rate configuration (FR-02B).
+- **P2-003**: Tax calculation service integrations (Avalara, TaxJar) for automated tax determination - Currently using manual tax rate configuration (FR-02J).
+
+### Search & Performance Enhancements
+- **P2-004**: Algolia search integration for catalogs >10K products - Phase 1 uses PostgreSQL Full-Text Search with pg_trgm (FR-07N).
+- **P2-005**: Advanced product search features: visual search, voice search, natural language processing.
+- **P2-006**: Search analytics dashboard showing popular queries, zero-result searches, conversion rates.
+
+### POS & Offline Features
+- **P2-007**: POS offline mode with local storage and sync-back when connectivity restored - Phase 1 online-only (FR-080).
+- **P2-008**: POS inventory management: local stock adjustments, inter-store transfers, physical count audits.
+- **P2-009**: POS customer-facing display for price verification and digital receipts.
+
+### Internationalization & Localization
+- **P2-010**: Multi-language support (16 languages: ar, da, de, en, es, fr, he, it, ja, nl, pl, pt, pt-br, ru, tr, zh) - Phase 1 English only (FR-072).
+- **P2-011**: RTL language layout support (Arabic, Hebrew) with mirrored UI components (FR-073).
+- **P2-012**: Multi-currency support with exchange rate APIs (Open Exchange Rates, Fixer.io) and customer currency selection (FR-098).
+- **P2-013**: Localized payment methods per region (iDEAL for Netherlands, Klarna for Europe, Alipay for China).
+
+### Advanced Reporting & Analytics
+- **P2-014**: Custom report builder with drag-and-drop dimensions, metrics, filters (FR-062 currently predefined reports only).
+- **P2-015**: Predictive analytics: sales forecasting, inventory recommendations, customer churn prediction.
+- **P2-016**: Advanced cohort analysis: customer lifetime value trends, repeat purchase patterns, channel attribution.
+- **P2-017**: Real-time dashboard with WebSocket updates for order notifications and inventory alerts.
+
+### Marketing & Customer Engagement
+- **P2-018**: SMS marketing campaigns with Twilio/SendGrid integration.
+- **P2-019**: Push notification support (web push + mobile app notifications).
+- **P2-020**: Customer segmentation engine with behavioral triggers (cart abandonment, browse abandonment, post-purchase follow-ups).
+- **P2-021**: Loyalty/rewards program with points, tiers, and redemption rules.
+- **P2-022**: Referral program with unique codes and commission tracking.
+
+### Content & Storefront Enhancements
+- **P2-023**: Theme marketplace with third-party theme support and preview sandboxing.
+- **P2-024**: Advanced page builder with drag-and-drop widgets (hero sections, testimonials, FAQs, comparison tables).
+- **P2-025**: Blog commenting system with moderation, spam filtering, and social sharing.
+- **P2-026**: Product comparison feature allowing customers to compare up to 4 products side-by-side (FR-09D).
+- **P2-027**: Product quick view modal on listing pages without navigation (FR-07P currently basic implementation).
+
+### Digital Products & Downloads
+- **P2-028**: Downloadable/digital product support with secure file delivery and access control (FR-09C).
+- **P2-029**: License key generation and management for software products.
+- **P2-030**: Subscription products with recurring billing (weekly, monthly, yearly cycles).
+
+### Platform Extensibility
+- **P2-031**: Add-on/module marketplace for third-party extensions (FR-09E).
+- **P2-032**: Webhook management UI for custom integrations (Zapier, Make, n8n).
+- **P2-033**: GraphQL API alongside REST API for mobile app development.
+- **P2-034**: Public API documentation portal with interactive examples (Swagger/OpenAPI UI).
+
+### Enterprise Features
+- **P2-035**: Multi-warehouse inventory management with stock allocation rules.
+- **P2-036**: Advanced role-based permissions with custom role creation and field-level access control.
+- **P2-037**: White-label SaaS option allowing resellers to rebrand the platform.
+- **P2-038**: Dedicated infrastructure option for Enterprise customers (isolated database, dedicated compute).
+- **P2-039**: Advanced SLA monitoring with customer-specific uptime dashboards and SLA credits for violations.
+
+### Customer Support & Ticketing
+- **P2-040**: Built-in helpdesk/ticketing system with email integration and SLA tracking (FR-09A).
+- **P2-041**: Live chat widget with real-time customer support and chat history.
+- **P2-042**: AI chatbot for common questions (order status, return policy, product recommendations).
+
+### Priority Matrix
+- **P0 (Launch Blocker)**: None - Phase 1 complete.
+- **P1 (High Demand)**: P2-001 (bKash payment for Bangladesh), P2-004 (Algolia for large catalogs), P2-010 (Multi-language).
+- **P2 (Medium Demand)**: P2-002 (Carrier APIs), P2-007 (POS offline), P2-014 (Custom reports), P2-020 (Customer segmentation).
+- **P3 (Low Demand/Nice-to-Have)**: P2-026 (Product comparison), P2-028 (Digital products), P2-033 (GraphQL API).
+
 Integrations
- - **FR-100**: The system MUST support optional integration with external e‑commerce platforms (e.g., WooCommerce/Shopify) using real-time bidirectional synchronization via webhooks for immediate data consistency across platforms.
- - **FR-101**: External platform integration MUST implement webhook handlers for both inbound (external → StormCom) and outbound (StormCom → external) events including product changes, inventory updates, order status changes, and customer data synchronization.
+ - **FR-100**: The system MUST support optional integration with external e‑commerce platforms (e.g., WooCommerce/Shopify) using real-time bidirectional synchronization via webhooks for immediate data consistency across platforms. "Real-time sync" latency target: <5 seconds from webhook receipt to data sync completion (95th percentile).
+ - **FR-101**: External platform integration MUST implement webhook handlers for both inbound (external → StormCom) and outbound (StormCom → external) events including product changes, inventory updates, order status changes, and customer data synchronization. Category mapping conflict resolution: (a) Attempt exact name match (case-insensitive), (b) If no match, map to "Uncategorized" category (auto-created), (c) Log conflict with original name for admin review, (d) Admin dashboard shows "Unmapped Categories" with bulk mapping tool, (e) Future syncs use saved mappings.
  - **FR-102**: External platform integration MUST implement webhook retry logic with exponential backoff (max 5 attempts), dead-letter queue for permanent failures, and manual retry capability for failed syncs.
  - **FR-103**: External platform integration MUST include configurable conflict resolution strategies for bidirectional sync when the same entity is modified in both systems: last-write-wins (timestamp-based), manual resolution queue (staff review), or configurable priority rules (e.g., always prefer StormCom inventory).
  - **FR-104**: External platform integration MUST maintain a real-time sync status monitoring dashboard per store showing: last successful sync timestamp, sync health status, pending sync items count, failed sync items with error details, and data discrepancy alerts.
