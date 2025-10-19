@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { tenantIsolationExtension } from './middleware/tenantIsolation';
 
 /**
  * Prisma Client Singleton
@@ -15,7 +16,7 @@ const connectionLimit = process.env.DATABASE_CONNECTION_LIMIT
   : 5;
 
 const prismaClientSingleton = () => {
-  return new PrismaClient({
+  const client = new PrismaClient({
     log:
       process.env.NODE_ENV === 'development'
         ? ['query', 'error', 'warn']
@@ -26,6 +27,9 @@ const prismaClientSingleton = () => {
       },
     },
   });
+
+  // Apply multi-tenant isolation extension
+  return client.$extends(tenantIsolationExtension);
 };
 
 declare const globalThis: {

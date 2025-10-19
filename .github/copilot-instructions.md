@@ -289,7 +289,7 @@ export default function ProductForm({ onSubmit }: Props) {
 
 ### Authentication & Authorization
 
-- **NextAuth.js v5** for all authentication
+- **NextAuth.js v4** for all authentication
 - **JWT sessions** with HTTP-only cookies
 - **bcrypt** password hashing (cost factor: 12)
 - **Role-Based Access Control (RBAC)** with granular permissions
