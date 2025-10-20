@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { createApiHandler } from '@/lib/api-wrapper';
 import * as storeService from '@/services/stores/store-service';
 import { PERMISSIONS } from '@/lib/constants';
@@ -20,9 +19,10 @@ const ParamsSchema = z.object({
  * @params storeId
  * @returns Store details
  */
-export const GET = createApiHandler(
-  async ({ params }) => {
+export const GET = createApiHandler<unknown, unknown, { storeId: string }>(
+  async ({ params: paramsPromise }) => {
     // ParamsSchema validation ensures params is defined
+    const params = await paramsPromise;
     const store = await storeService.getStore(params!.storeId);
     
     if (!store) {
@@ -56,16 +56,18 @@ export const GET = createApiHandler(
  * @body UpdateStoreInput
  * @returns Updated store
  */
-export const PATCH = createApiHandler(
-  async ({ params, body }) => {
+export const PATCH = createApiHandler<storeService.UpdateStoreInput, unknown, { storeId: string }>(
+  async ({ params: paramsPromise, body }) => {
     // ParamsSchema and bodySchema validation ensures params and body are defined and validated
+    const params = await paramsPromise;
     const validatedBody = body! as storeService.UpdateStoreInput;
     const store = await storeService.updateStore(params!.storeId, validatedBody);
     return { data: store, message: 'Store updated successfully' };
   },
   {
     paramsSchema: ParamsSchema,
-    bodySchema: storeService.UpdateStoreSchema,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bodySchema: storeService.UpdateStoreSchema as any,
     permission: PERMISSIONS.STORES.UPDATE,
     requireAuth: true,
     requireStore: true,

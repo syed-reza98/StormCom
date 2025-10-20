@@ -10,11 +10,6 @@ import { tenantIsolationExtension } from './middleware/tenantIsolation';
  * @see https://www.prisma.io/docs/guides/performance-and-optimization/connection-management
  */
 
-// Connection pool configuration for serverless (Vercel)
-const connectionLimit = process.env.DATABASE_CONNECTION_LIMIT
-  ? parseInt(process.env.DATABASE_CONNECTION_LIMIT, 10)
-  : 5;
-
 const prismaClientSingleton = () => {
   const client = new PrismaClient({
     log:

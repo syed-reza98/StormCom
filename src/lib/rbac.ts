@@ -1,4 +1,4 @@
-import { PERMISSIONS, DEFAULT_ROLES, ROLE_HIERARCHY } from './constants';
+import { DEFAULT_ROLES, ROLE_HIERARCHY } from './constants';
 import { getRequestContext } from './request-context';
 import type { RBACContext } from '../types';
 

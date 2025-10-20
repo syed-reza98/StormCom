@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
 
   // Callbacks
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       // Initial sign in
       if (user) {
         token.id = user.id;
@@ -174,8 +174,8 @@ export const authOptions: NextAuthOptions = {
 
   // Pages
   pages: {
-    signIn: '/auth/login',
-    error: '/auth/error',
+    signIn: '/login',
+    error: '/error',
   },
 
   // Security

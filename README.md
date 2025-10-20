@@ -245,7 +245,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 ***Super admin***: admin@stormcom.io
 
-***Password***: admin123 (CHANGE THIS IN PRODUCTION!)
+***Password***: admin123 || Admin@123 (CHANGE THIS IN PRODUCTION!)
 
 ---
 

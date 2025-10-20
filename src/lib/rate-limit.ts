@@ -1,6 +1,5 @@
 import { Redis } from '@upstash/redis';
 import { API_RATE_LIMITS } from './constants';
-import type { BillingCycle } from '@prisma/client';
 
 /**
  * Rate limiting utilities using Upstash Redis.

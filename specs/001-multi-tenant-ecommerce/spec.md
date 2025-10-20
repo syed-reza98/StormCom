@@ -17,6 +17,13 @@
 - Q: What data retention policy should be enforced for compliance? → A: Standard retention - 3 years for orders/invoices, 1 year for audit logs, 90 days for backups.
 - Q: What API rate limiting strategy should be enforced? → A: Tiered rate limiting by subscription plan - Free (60 req/min), Basic (120 req/min), Pro (300 req/min), Enterprise (1000 req/min).
 
+### Session 2025-10-20
+
+- Q: How should the Role/Permission system be modeled in the database to support granular permissions? → A: Predefined roles with fixed permissions (no custom roles in Phase 1)
+- Q: How should user sessions be stored to support fast invalidation (<60s) while maintaining scalability? → A: JWT + Server-side session store with environment-based implementation: Vercel KV (Redis) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Session ID stored in JWT, validated on every request.
+- Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes - users must use authenticator app only (TOTP required for MFA-enabled accounts).
+- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: Optional MFA for Super Admins (same as other users) - maintains consistency but may reduce security for privileged accounts.
+
 ## Technical Assumptions
 
 ### Infrastructure & Deployment (Vercel Platform)
@@ -51,7 +58,7 @@
 ### Security & Compliance Assumptions
 
 - **Password Policy**: Minimum 8 characters; requires uppercase, lowercase, number, and special character; password history (last 5 passwords) checked; bcrypt cost factor 12.
-- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies.
+- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10ms validation and immediate invalidation; in-memory Map in local development (no Redis setup required). Session ID embedded in JWT; validated on every API request.
 - **HTTPS**: TLS 1.3 enforced via Vercel; HSTS headers with max-age=31536000 (1 year); automatic certificate renewal via Let's Encrypt.
 - **CORS**: Allowed origins configurable per store (default: same-origin only); API endpoints support CORS preflight with credentials.
 - **PCI Compliance**: Level 1 PCI-DSS compliance by never storing card data; relying on payment gateway tokenization (Stripe/SSLCommerz hosted checkout or Elements/JS SDK).
@@ -77,6 +84,94 @@
 - **Date/Time Format**: ISO 8601 in API; localized display in UI (YYYY-MM-DD for en-US, DD/MM/YYYY for en-GB based on user locale).
 
 ## User Scenarios & Testing (mandatory)
+
+
+### User Story 0 - Authentication and Authorization (Priority: P0)
+
+As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate securely with my credentials to access the appropriate areas of the system based on my role.
+
+**Why this priority**: Authentication is the entry point to the entire system. Without secure login, no user can access any functionality. This is a P0 (blocking) priority because all other features depend on it.
+
+
+**UI Interface Requirements:**
+
+**Login Page (Dashboard):**
+- Must include: labeled email and password fields, "Forgot Password" link, "Sign In" button, and a visible loading indicator on submit.
+- Error messages must be shown inline directly below the relevant field for all validation and authentication errors (e.g., invalid email, incorrect password, locked account, network failure).
+- Layout must use a centered card with clear visual hierarchy: logo at top, dashboard branding, form fields, and action buttons. All spacing, font sizes, and button prominence must be specified in the wireframe.
+- Accessibility: All elements must be reachable by keyboard (tab order), have ARIA labels, and provide visible focus indicators. Screen reader labels must match visible labels. Color contrast must meet WCAG 2.1 AA.
+- Responsive: Layout must adapt to mobile, tablet, and desktop breakpoints as per design system. Minimum touch target size 44x44px.
+- Loading and feedback: While submitting, the "Sign In" button must show a spinner and be disabled. On error, the form must display a clear error message and restore focus to the first invalid field.
+- Edge cases: Requirements must specify behavior for network failure (show error banner), slow loading (show spinner for >1s), and form resubmission (prevent double submit).
+- Wireframe: [Login Page Wireframe] must specify all element positions, spacing, and error/empty/loading states.
+
+**Register Page (Dashboard):**
+- Must include: labeled fields for name, email, password, confirm password, a password requirements checklist (showing which criteria are met), "Sign Up" button, and a link to the login page.
+- Error messages must be shown inline below each field for all validation errors (e.g., invalid email, password mismatch, weak password, duplicate email, network failure).
+- Password requirements checklist must update in real time as the user types, with each requirement (min length, uppercase, etc.) shown as checked/unchecked.
+- Layout, accessibility, and responsiveness must match the Login page requirements.
+- Loading and feedback: While submitting, the "Sign Up" button must show a spinner and be disabled. On error, the form must display a clear error message and restore focus to the first invalid field.
+- Edge cases: Requirements must specify behavior for network failure, slow loading, and form resubmission.
+- Wireframe: [Register Page Wireframe] must specify all element positions, spacing, and error/empty/loading states.
+
+**Logout:**
+- Logout action must be available in the dashboard user menu (top right avatar dropdown), with a clear label and accessible via keyboard and screen reader.
+- On logout, the user must be redirected to the login page with a visible message: "You have been logged out." The message must be announced to screen readers.
+- Menu must be fully keyboard accessible (open/close, navigate, select), and meet WCAG 2.1 AA.
+
+**Wireframe Documentation Requirements:**
+- Wireframes for Login and Register pages must be included in the design documentation (docs/audit/login-register-wireframes.md) and reviewed for accessibility, responsive layout, and error/loading/empty states. All element positions, spacing, and visual hierarchy must be specified.
+
+**Non-Functional Requirements:**
+- All UI flows must meet WCAG 2.1 AA accessibility, be responsive across breakpoints, and handle all error and edge cases as specified. Color contrast, focus indicators, and ARIA labeling must be testable.
+
+**Dependencies & Assumptions:**
+- UI must be implemented using Next.js App Router, shadcn/ui, and Tailwind CSS as per plan.md. Wireframes are a dependency for implementation and review.
+
+**Ambiguities & Conflicts:**
+- All terms such as "centered card layout", "dashboard branding", and "wireframe" must be defined in the design documentation. Any conflicts between UI, accessibility, and branding must be resolved in favor of accessibility.
+
+**Independent Test**: Attempt login with valid/invalid credentials for different user types (Super Admin, Store Admin, Staff, Customer), verify role-based redirects, test "Forgot Password" flow, verify account lockout after failed attempts, confirm MFA prompt when enabled. Attempt registration and logout flows, verify UI accessibility and error handling.
+
+**Acceptance Scenarios**:
+
+**Super Admin Login**:
+
+1. Given I am a Super Admin, When I navigate to `/auth/login`, Then I see a login form with email and password fields, "Forgot Password" link, and "Sign In" button, styled as per UI requirements.
+2. Given I am on the login page, When I enter a valid Super Admin email and password, Then I am authenticated and redirected to the Super Admin dashboard at `/admin/dashboard`.
+3. Given I am on the login page, When I enter an invalid email format (e.g., "notanemail"), Then I see an inline validation error: "Please enter a valid email address."
+4. Given I am on the login page, When I enter valid email but incorrect password, Then I see an error message: "Invalid email or password. Please try again." and the failed attempt is logged.
+5. Given I have entered incorrect credentials 5 times, When I attempt to login again, Then my account is locked for 15 minutes and I see: "Account locked due to too many failed login attempts. Please try again in 15 minutes or use 'Forgot Password' to reset."
+6. Given I have forgotten my password, When I click "Forgot Password" and enter my email, Then I receive a password reset link via email valid for 1 hour.
+7. Given I am a Super Admin with MFA enabled (optional for Super Admins), When I enter correct credentials, Then I am prompted for a 6-digit TOTP code from my authenticator app before being granted access.
+8. Given I am authenticated as Super Admin, When I navigate to any store-specific page, Then I can view and manage data across all stores in the system.
+
+**Store Admin/Staff Login**:
+
+1. Given I am a Store Admin or Staff member, When I login successfully, Then I am redirected to my assigned store's dashboard and can only access data for my store.
+2. Given I am a Staff member with limited permissions, When I attempt to access a restricted page (e.g., store settings), Then I see "403 Forbidden - You don't have permission to access this resource" and the attempt is logged in the audit trail.
+3. Given my account status is set to "INACTIVE" by an admin, When I attempt to login, Then authentication fails with message: "Your account has been deactivated. Please contact your administrator."
+
+**Customer Login**:
+
+1. Given I am a Customer, When I login successfully from the storefront, Then I am redirected to my account page showing order history, saved addresses, and wish list.
+2. Given I am a guest user who has not registered, When I view the login page, Then I also see a "Create Account" or "Register" link to sign up.
+3. Given I am a logged-in Customer, When my session expires after 7 days of inactivity, Then I am automatically logged out and redirected to login page with message: "Your session has expired. Please login again."
+
+**Session Management**:
+
+1. Given I am logged in, When I change my password, Then all active sessions for my account are invalidated within 60 seconds and I must login again.
+2. Given I am logged in on multiple devices, When an admin revokes my permissions, Then all my active sessions are terminated within 60 seconds.
+3. Given I am authenticated, When I remain idle for 7 days, Then my session expires and I must login again (sliding window timeout; session expiration occurs within 60 seconds of timeout being reached).
+
+**Password Requirements** (enforced during registration and password reset):
+
+1. Given I am setting a new password, When I enter a password shorter than 8 characters, Then I see the error message: "Password must be at least 8 characters long."
+2. Given I am setting a new password, When I enter a password without uppercase, lowercase, number, and special character, Then I see the error message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+3. Given I am changing my password, When I enter a password I've used in my last 5 passwords, Then I see the error message: "Password has been used recently. Please choose a different password."
+4. Given I am setting a new password, When I meet all password requirements, Then my password is hashed using bcrypt with cost factor 12 and stored securely.
+
+---
 
 ### User Story 1 - Create and manage a store (Priority: P1)
 
@@ -307,6 +402,16 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 
 **Security and authentication edge cases**:
 - **CHK009 - Password history**: System MUST prevent password reuse for last 5 passwords; compare bcrypt hashes during password change/reset. Display message: "This password was used recently. Please choose a different password." Password history stored in separate `password_history` table with userId, hashedPassword, createdAt; auto-pruned to keep only last 5 per user.
+- **CHK101 - Account lockout timing**: Failed login attempts are tracked per user account (not per IP) with sliding 15-minute window. After 5 failed attempts within any 15-minute period, account is locked for 15 minutes from the 5th failed attempt. Lockout counter resets on successful login or after lockout period expires. Email notification sent to user's registered email on lockout with "Unlock Account" link (valid for 1 hour) and "Forgot Password" option.
+- **CHK102 - Concurrent login sessions**: Users can be logged in on multiple devices/browsers simultaneously. Each session is tracked separately with unique session ID. When password is changed, all active sessions except the current one are immediately invalidated. User sees list of active sessions in account settings with device type, browser, IP address, last activity timestamp, and "Sign Out" button for each session.
+- **CHK103 - Session hijacking prevention**: JWT tokens include: (a) User ID, (b) Session ID (unique per login), (c) Issued At timestamp, (d) Expiration timestamp, (e) User agent hash (optional, for stricter security). Token signature is verified on every API request. If signature verification fails or token is expired, return HTTP 401 with message: "Session expired or invalid. Please login again."
+- **CHK104 - Password reset token expiration**: Password reset tokens are single-use and expire after 1 hour. If user clicks expired reset link, show: "This password reset link has expired. Please request a new one." If token is already used, show: "This password reset link has already been used. If you need to reset your password again, please request a new link."
+- **CHK105 - Email verification for new accounts**: New user registrations (Store Admins, Staff, Customers) require email verification before account activation. Verification email sent immediately with link valid for 24 hours. User cannot login until email is verified (show message: "Please verify your email address. Check your inbox for verification link."). Resend verification email option available on login page.
+- **CHK106 - MFA backup codes**: When enabling MFA, system generates 10 single-use backup codes (8 alphanumeric characters each). User must download/save backup codes before MFA activation completes. If user loses access to authenticator app, they can use a backup code to login. Each backup code is invalidated after use. "Generate New Backup Codes" option available in account settings (invalidates all previous codes).
+- **CHK107 - SSO account linking**: When user logs in via SSO (OIDC/SAML) for the first time, system checks if email matches existing account. If match found, prompt: "An account with this email already exists. Link your SSO account to existing account?" with "Link Account" or "Use Different Email" options. If linked, user can login with either SSO or password. If email already linked to different SSO provider, show error: "This email is already linked to another SSO provider."
+- **CHK108 - Role change during active session**: If admin changes user's role or permissions while user is logged in, changes take effect on next API request (no page refresh required). User sees notification: "Your permissions have been updated. Some features may no longer be accessible." If user loses all permissions, redirect to "Access Denied" page with logout option.
+- **CHK109 - Super Admin privilege escalation**: Super Admin login requires additional verification for sensitive actions: (a) Password re-confirmation for creating new Super Admin accounts, (b) MFA challenge for accessing system-wide settings, (c) Audit log entry for every Super Admin action with IP address, user agent, and timestamp. Super Admin cannot delete their own account (requires another Super Admin).
+- **CHK110 - Login rate limiting per IP**: In addition to account-level lockout, implement IP-based rate limiting: 20 login attempts per IP address per 5-minute window. If exceeded, return HTTP 429 with message: "Too many login attempts from your IP address. Please try again in 5 minutes." This prevents distributed brute force attacks across multiple accounts from same IP.
 
 **Subscription and billing edge cases**:
 - **CHK056 - Order at plan expiration**: Orders submitted within 60 seconds of plan expiration are allowed to complete if initiated before expiration; use order creation timestamp (server UTC time) as authoritative. New orders blocked after grace period (default 7 days); display message: "Your subscription has expired. Please renew to continue accepting orders."
@@ -344,14 +449,16 @@ Multi‑tenancy and administration
 - **FR-001**: The system MUST support multiple stores (tenants) with strict data isolation; users only access data for their assigned stores unless Super Admin.
 - **FR-002**: Super Admins MUST be able to create, edit, pause, and archive stores, and assign Store Admins and Staff.
 - **FR-003**: The system MUST provide a unified Super Admin dashboard to view cross‑store KPIs and manage stores without exposing store‑private data.
-- **FR-004**: The system MUST enforce RBAC with at least roles: Super Admin, Store Admin, Staff; permissions are granular by module/action. Additional specialized roles (POS Cashier) may be added in later phases.
+- **FR-004**: The system MUST enforce RBAC using predefined enum-based roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with permissions hard-coded in application logic. Permission checking uses direct role comparison. Custom roles with granular permission assignment deferred to Phase 2. **Staff permissions**: Configurable per-staff module access flags (canManageProducts, canManageOrders, canManageCustomers, canManageInventory, canViewReports) stored as boolean fields on User model.
 
 **Role Definitions**:
 - **Super Admin**: Platform-level administrator with cross-store access; manages all stores and global settings.
 - **Store Owner**: Billing entity (not a user role); the person/company who owns the store subscription.
 - **Store Admin**: Primary store administrator with full access to store management; can assign Staff users.
-- **Staff**: Store team members with configurable permissions (e.g., read-only, can manage products, can process orders).
-- **POS Cashier**: Limited role for POS terminals with restricted access to back-office features (Phase 3).
+- **Staff**: Store team members with configurable module-level permissions (canManageProducts, canManageOrders, canManageCustomers, canManageInventory, canViewReports). Staff cannot access store settings or assign other staff.
+- **Customer**: Storefront user with account management and order history access.
+- **POS Cashier**: Limited role for POS terminals (Phase 3) - deferred.
+
 
 Products and catalog
 - **FR-010**: Store Admins/Staff MUST create, edit, publish/unpublish, and delete products with name, description, price, category, brand, attributes, labels, and images. Featured products display in "prominent positions": top 3 grid positions on category pages, hero banner carousel on homepage (up to 5 products with 5-second auto-rotation), and dedicated "Featured Products" section with maximum 12 products in 3×4 grid layout.
@@ -486,7 +593,17 @@ POS
 
 Security and compliance
 - **FR-090**: The system MUST require login with email/password and enforce strong password policies (length, complexity, history).
-- **FR-091**: The system MUST support optional multi‑factor authentication (MFA) with: (a) TOTP authenticator apps (RFC 6238) as the primary method, (b) one‑time recovery codes for account recovery, and (c) optional SMS fallback (opt‑in per tenant). The system MAY additionally offer WebAuthn/FIDO2 security keys as an optional method for enterprises.
+- **FR-090A**: The system MUST provide a login page at `/auth/login` with email input field (validated for email format), password input field (masked with show/hide toggle), "Remember Me" checkbox (extends session to 30 days), "Forgot Password" link, and "Sign In" button. Login page must be accessible without authentication and redirect authenticated users to their default dashboard.
+- **FR-090B**: The system MUST validate credentials server-side using bcrypt.compare() with stored password hash. On successful authentication, generate JWT token signed with **HS256 (HMAC-SHA256)** using secret from environment variable. JWT payload includes: user ID, session ID (UUID v4), role (enum), store ID (if applicable), issued at timestamp (iat), expiration timestamp (exp: 30 days). Store JWT in HTTP-only, Secure, SameSite=Lax cookie. Validate JWT signature on every API request; reject tampered tokens with HTTP 401.
+- **FR-090C**: The system MUST support role-based redirects after successful login: (a) Super Admin → `/admin/dashboard` (cross-store system dashboard), (b) Store Admin/Staff → `/dashboard` (store-specific dashboard for assigned store), (c) Customer → `/account` (customer account page with order history).
+- **FR-090D**: The system MUST display clear error messages for failed login attempts: (a) Invalid credentials → "Invalid email or password. Please try again." (generic message to prevent account enumeration), (b) Account locked → "Account locked due to too many failed login attempts. Please try again in X minutes or reset your password.", (c) Account inactive → "Your account has been deactivated. Please contact support.", (d) Email not verified → "Please verify your email address. Check your inbox or request a new verification link."
+- **FR-090E**: The system MUST implement "Forgot Password" flow: (a) User enters email on forgot password page, (b) System sends password reset email with unique token valid for 1 hour, (c) User clicks link and enters new password (validated against password policy), (d) Password is updated and all active sessions except current are invalidated, (e) User is redirected to login page with success message: "Password reset successful. Please login with your new password."
+- **FR-090F**: The system MUST enforce password policy requirements: (a) Minimum 8 characters, (b) At least one uppercase letter (A-Z), (c) At least one lowercase letter (a-z), (d) At least one number (0-9), (e) At least one special character (!@#$%^&*()_+-=[]{}|;:',.<>?/), (f) Password cannot match last 5 passwords (stored in `password_history` table with bcrypt hash).
+- **FR-090G**: The system MUST track failed login attempts per user account in a sliding 15-minute window. After 5 failed attempts, lock account for 15 minutes and send email notification with unlock link and timestamp when lockout expires. Reset failed attempt counter on successful login or after lockout period expires.
+- **FR-090H**: The system MUST implement logout functionality at `/auth/signout` that: (a) Invalidates current session token, (b) Clears authentication cookie, (c) Redirects to login page with message: "You have been logged out successfully.", (d) Logs audit event with user ID, timestamp, and IP address.
+- **FR-090I**: The system MUST provide session management UI in user account settings showing: (a) List of active sessions with device type, browser, IP address, login timestamp, last activity timestamp, (b) "Current Session" indicator for the session user is viewing from, (c) "Sign Out" button for each session to remotely terminate that session, (d) "Sign Out All Other Sessions" button to terminate all sessions except current.
+- **FR-090J**: The system MUST implement IP-based rate limiting for login attempts: 20 attempts per IP address per 5-minute sliding window. When exceeded, return HTTP 429 with message: "Too many login attempts. Please try again in 5 minutes." Log rate limit violations with IP address, timestamp, and attempted email addresses (for security monitoring).
+- **FR-091**: The system MUST support optional multi‑factor authentication (MFA) with TOTP authenticator apps (RFC 6238) as the primary method. The system MAY additionally offer WebAuthn/FIDO2 security keys as an optional method for enterprises. No backup codes are provided - users must use their authenticator app for MFA-enabled accounts.
 - **FR-092**: The system MUST support optional SSO for enterprises using OIDC and SAML 2.0 with common identity providers (e.g., Okta, Azure AD, Google, OneLogin).
 - **FR-093**: The system MUST lock accounts after repeated failed login attempts for a configurable duration and notify the user.
 - **FR-094**: The system MUST maintain detailed, immutable audit logs for security‑sensitive actions (auth events, role changes, inventory adjustments, order changes); implement data encryption at rest (AES-256) and in transit (TLS 1.3).
@@ -623,7 +740,13 @@ Data retention and compliance
 - Subscription Plan: name, tier, pricing, billing cycle, feature limits (max products, orders, staff, storage), trial period; has many Store Subscriptions.
 - Store Subscription: store reference, plan reference, status, start date, end date, trial end date, usage metrics; tracks plan usage and expiration.
 - User: email, name, roles, MFA settings, status, language preference; belongs to one or more Stores; actions audited.
-- Role/Permission: predefined roles and granular permissions assignable per user per store.
+- User Session: **Stored in Vercel KV (production) or in-memory Map (local development)**. Key: session ID (from JWT), Value: { userId, storeId, role, deviceType, browser, ipAddress, userAgent, createdAt, lastActivityAt, expiresAt }. TTL set to 30 days absolute (matching JWT expiration). Session validated on every API request by checking session ID exists in store. Password change/logout/permission revocation deletes session key immediately (invalidation <10ms in production, instant in local dev).
+- Password History: user reference, bcrypt password hash, created at; stores last 5 passwords to prevent reuse.
+- Failed Login Attempt: user email, IP address, attempted at, success flag; tracks failed logins for account lockout enforcement.
+- Password Reset Token: token, user reference, created at, expires at (1 hour), used flag; single-use tokens for password reset flow.
+- MFA Secret: user reference, secret key (encrypted), backup codes (encrypted array), enabled at; stores TOTP secret and recovery codes.
+- Email Verification Token: token, user reference, created at, expires at (24 hours), verified at; for new account email verification.
+- Role/Permission: **Phase 1 uses predefined enum-based roles** (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with permissions hard-coded in application logic. Role stored as enum field on User model. Permission checking done via direct role comparison (e.g., `user.role === 'SUPER_ADMIN'`). **Predefined permission sets**: (1) SUPER_ADMIN - full platform access across all stores, manage users/stores/plans; (2) STORE_ADMIN - full store management, assign staff, configure settings; (3) STAFF - configurable module access (products, orders, customers, inventory) per store; (4) CUSTOMER - storefront access, account management, order history. Custom roles with granular permissions deferred to Phase 2 as enterprise feature.
 - Product: name, description, slug, category links, brand, attributes, labels, media, barcode, taxable status; has many Variants.
 - Variant: SKU, price, attributes, inventory, barcode; belongs to Product.
 - Category: name, hierarchy; linked to Products.
@@ -760,6 +883,14 @@ Dependencies
 - **SC-008**: Reports and exports reflect applied filters accurately; exported files match on‑screen totals within 0.5% variance.
 - **SC-009**: 100% of security‑sensitive actions are captured in audit logs with actor, timestamp, entity, and outcome.
 - **SC-010**: After enabling MFA and lockout policies, unauthorized login attempts result in lockout after the configured threshold 100% of the time in tests.
+- **SC-010A**: User login with valid credentials (Super Admin, Store Admin, Staff, Customer) completes in under 2 seconds and redirects to appropriate dashboard based on role 100% of the time.
+- **SC-010B**: Password validation enforces all 6 policy requirements (length, uppercase, lowercase, number, special character, history) and rejects non-compliant passwords with specific error messages 100% of the time.
+- **SC-010C**: Account lockout triggers after exactly 5 failed login attempts within any 15-minute sliding window; lockout email sent within 30 seconds; unlock occurs automatically after 15 minutes.
+- **SC-010D**: Password reset emails are sent within 60 seconds of request; reset tokens expire after exactly 1 hour; expired/used tokens display appropriate error messages 100% of the time.
+- **SC-010E**: Session invalidation on password change or permission revocation completes within 60 seconds across all active sessions; users are prompted to re-authenticate.
+- **SC-010F**: MFA challenges (TOTP codes) validate successfully for correct codes and reject invalid/expired codes 100% of the time; backup codes work as single-use fallback.
+- **SC-010G**: IP-based rate limiting blocks login attempts after 20 attempts per IP per 5-minute window; returns HTTP 429 with correct Retry-After header.
+- **SC-010H**: All authentication events (login, logout, failed attempts, password changes, MFA operations, session terminations) are logged to audit trail with user ID, timestamp, IP address, user agent, and outcome within 5 seconds of event.
 - **SC-011**: Shipping calculation completes in under 3 seconds at checkout; no matching zone blocks checkout with clear message 100% of the time.
 - **SC-012**: Tax calculation completes in under 2 seconds at checkout; tax-exempt status overrides tax 100% of the time.
 - **SC-013**: Payment processing (authorization) completes within 10 seconds for 95% of transactions; webhook reconciliation occurs within 5 minutes.

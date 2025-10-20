@@ -8,7 +8,7 @@
  */
 
 import { AsyncLocalStorage } from 'async_hooks';
-import type { UserClaims, RBACContext, StorePermissions, SessionUser } from '../types';
+import type { UserClaims, RBACContext, StorePermissions } from '../types';
 
 // TODO: Import proper NextAuth v5 session helper when available
 // For now, this provides the interface for request context management
@@ -55,10 +55,10 @@ export function setRequestContext(context: {
 /**
  * Extract user claims from NextAuth session token.
  * 
- * @param req - Request object (optional, uses session helper if not provided)
+ * @param _req - Request object (optional, uses session helper if not provided)
  * @returns User claims from JWT or null if not authenticated
  */
-export async function extractUserClaims(req?: Request): Promise<UserClaims | null> {
+export async function extractUserClaims(_req?: Request): Promise<UserClaims | null> {
   // TODO: Integrate with NextAuth v5 session retrieval
   // For now, returns null - will be implemented when auth routes are set up
   return null;

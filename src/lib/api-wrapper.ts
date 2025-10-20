@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { z, ZodSchema } from 'zod';
+import { ZodSchema } from 'zod';
 import { initializeRequestContext, getRequestContext } from './request-context';
 import { checkStoreRateLimit, checkIpRateLimit, getClientIp, getRateLimitHeaders } from './rate-limit';
-import { requirePermission, hasPermission } from './rbac';
+import { hasPermission } from './rbac';
 import type { ApiResponse, ApiError } from '../types';
 
 /**
@@ -177,7 +177,7 @@ export type ApiHandlerFunction<TBody = any, TQuery = any, TParams = any, TRespon
 export function createApiHandler<TBody = any, TQuery = any, TParams = any, TResponse = any>(
   handler: ApiHandlerFunction<TBody, TQuery, TParams, TResponse>,
   options: ApiHandlerOptions<TBody, TQuery, TParams> = {}
-): (request: Request, routeContext?: { params?: TParams }) => Promise<NextResponse<ApiResponse<TResponse>>> {
+): (request: Request, routeContext?: { params?: Promise<TParams> }) => Promise<NextResponse<ApiResponse<TResponse>>> {
   const {
     bodySchema,
     querySchema,
@@ -192,7 +192,7 @@ export function createApiHandler<TBody = any, TQuery = any, TParams = any, TResp
     public: isPublic = false,
   } = options;
 
-  return async (request: Request, routeContext?: { params?: TParams }) => {
+  return async (request: Request, routeContext?: { params?: Promise<TParams> }) => {
     try {
       // 1. Initialize request context (AsyncLocalStorage for tenant isolation)
       await initializeRequestContext(request);
@@ -362,7 +362,9 @@ export function createApiHandler<TBody = any, TQuery = any, TParams = any, TResp
       // 9. Validate URL parameters (e.g., /api/products/[id])
       let params: TParams | undefined;
       if (paramsSchema && routeContext?.params) {
-        const validation = paramsSchema.safeParse(routeContext.params);
+        // Next.js 15: params are now async
+        const resolvedParams = await routeContext.params;
+        const validation = paramsSchema.safeParse(resolvedParams);
 
         if (!validation.success) {
           return NextResponse.json<ApiResponse<never>>(
@@ -424,7 +426,7 @@ export function createApiHandler<TBody = any, TQuery = any, TParams = any, TResp
 export function createPublicApiHandler<TBody = any, TQuery = any, TParams = any, TResponse = any>(
   handler: ApiHandlerFunction<TBody, TQuery, TParams, TResponse>,
   options: Omit<ApiHandlerOptions<TBody, TQuery, TParams>, 'permission' | 'anyPermissions' | 'allPermissions' | 'requireAuth' | 'requireStore'> = {}
-): (request: Request, routeContext?: { params?: TParams }) => Promise<NextResponse<ApiResponse<TResponse>>> {
+): (request: Request, routeContext?: { params?: Promise<TParams> }) => Promise<NextResponse<ApiResponse<TResponse>>> {
   return createApiHandler(handler, {
     ...options,
     public: true,

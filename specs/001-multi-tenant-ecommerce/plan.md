@@ -14,8 +14,16 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)  
 **Primary Framework**: Next.js 15.5.5 (App Router only, React 19.x Server Components)  
 **Primary Dependencies**:
-- **Database**: Prisma ORM (latest stable) with PostgreSQL (production) / SQLite (development)
-- **Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA, OIDC/SAML SSO
+**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). MFA is optional for all users, including Super Admins, for consistency.
+
+**UI Requirements:**
+- Login, Register, and Logout UI interfaces for the dashboard must be implemented as per spec.md UI requirements, including:
+  - All required UI elements, error messages, loading/feedback states, and edge case handling for each flow (see spec.md User Story 0 UI Requirements).
+  - Accessibility (WCAG 2.1 AA): keyboard navigation, ARIA labels, focus management, color contrast, and screen reader support for all interactive elements and messages.
+  - Responsive design: layouts must adapt to all breakpoints, with minimum touch target sizes and mobile-first layout.
+  - Wireframes must be included in design documentation (docs/audit/login-register-wireframes.md) and specify all element positions, spacing, error/loading/empty states, and visual hierarchy.
+  - All terms (e.g., "centered card layout", "dashboard branding") must be defined in design docs. Any conflicts between UI, accessibility, and branding must be resolved in favor of accessibility.
+  - Dependencies: Next.js App Router, shadcn/ui, Tailwind CSS, and wireframes are required for implementation and review.
 - **Validation**: Zod for runtime schema validation
 - **Forms**: React Hook Form for form state management
 - **UI**: Tailwind CSS 4.1.14+, Radix UI + shadcn/ui (accessible components)
@@ -27,6 +35,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 - **Rate Limiting**: Vercel KV (serverless Redis) for tiered API rate limiting per subscription plan
 - **Monitoring**: Vercel Analytics (performance/Web Vitals) + Sentry (error tracking/logging) + Uptime monitoring (external service like UptimeRobot for availability tracking)
 
+**Session Management**: JWT + server-side session store. Session ID is embedded in JWT and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). JWT tokens have 30-day absolute expiration, 7-day idle timeout (sliding window), stored in HTTP-only, Secure, SameSite=Lax cookies.
 **Storage**: PostgreSQL (production on Vercel Postgres), SQLite (local development via Prisma file: ./prisma/dev.db)
 
 **Testing**: 
@@ -73,7 +82,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 | **Naming Conventions** | ✅ PASS | camelCase (variables), PascalCase (components/types), UPPER_SNAKE_CASE (constants) |
 | **Database Schema** | ✅ PASS | Prisma with cuid() PKs, createdAt/updatedAt timestamps, deletedAt soft deletes, storeId tenant isolation, compound indexes |
 | **API Standards** | ✅ PASS | RESTful conventions, standardized response format, HTTP status codes, tiered rate limiting (FR-128 to FR-132) |
-| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA, OIDC/SAML SSO, RBAC, input validation (Zod), XSS prevention, HTTPS only |
+| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. MFA is optional for all users, including Super Admins. |
 | **Multi-tenant Isolation** | ✅ PASS | Prisma middleware auto-injects storeId; all queries filtered by tenant; cross-tenant access prohibited (FR-095) |
 
 **Gate Decision**: ✅ **PROCEED TO PHASE 1**
@@ -91,6 +100,7 @@ All technical dependencies resolved via Phase 0 research (see `research.md`). Al
 - `contracts/openapi.yaml`: OpenAPI 3.1 specification (60+ endpoints, 42+ schemas)
 - `contracts/README.md`: API design documentation (authentication, rate limiting, error handling, pagination, webhooks, security)
 - `quickstart.md`: Local development setup guide
+- Login, Register, and Logout UI wireframes for the dashboard (included in design documentation)
 
 **Constitution Check (Final):**
 
@@ -437,4 +447,3 @@ No constitution violations detected. All requirements satisfied:
 - ✅ Following architecture patterns (Server Components first, REST API, Prisma ORM only)
 - ✅ Meeting performance budgets and test coverage requirements
 - ✅ Implementing security standards (NextAuth v5, RBAC, input validation, multi-tenant isolation)
-

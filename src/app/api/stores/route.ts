@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { createApiHandler } from '@/lib/api-wrapper';
 import * as storeService from '@/services/stores/store-service';
 import { PERMISSIONS } from '@/lib/constants';

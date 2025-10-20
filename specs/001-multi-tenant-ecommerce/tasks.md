@@ -16,6 +16,23 @@ Related docs:
 
 ---
 
+## Phase 0 — User Story 0: Authentication and Authorization (P0)
+Goal: Secure authentication, registration, and logout flows with accessible, responsive UI for the dashboard, meeting all requirements in spec.md and ux.md checklist.
+
+Independent Test Criteria:
+- Login, Register, and Logout UI must include all required UI elements, error messages, loading/feedback states, and edge case handling as specified in spec.md and ux.md checklist.
+- All flows must be accessible (WCAG 2.1 AA), responsive, and handle all error, loading, and edge cases as specified.
+- Wireframes must specify all element positions, spacing, error/loading/empty states, and visual hierarchy, and be included in docs/audit/login-register-wireframes.md.
+
+- [x] T0A [US0] Implement Login page UI for dashboard at src/app/(auth)/login/page.tsx (all required fields, error messages, loading, accessibility, edge cases)
+- [x] T0B [US0] Implement Register page UI for dashboard at src/app/(auth)/register/page.tsx (all required fields, password checklist, error messages, loading, accessibility, edge cases)
+- [x] T0C [US0] Implement Logout action and user menu for dashboard at src/components/auth/user-menu.tsx (accessible, keyboard/screen reader support, redirect with message)
+- [x] T0D [US0] Add wireframes for Login and Register pages to design documentation at docs/audit/login-register-wireframes.md (specify all element positions, spacing, error/loading/empty states, visual hierarchy)
+
+Dependencies: Foundational auth (T016, T017), design documentation (wireframes), Next.js App Router, shadcn/ui, Tailwind CSS
+
+---
+
 ## Phase 1 — Setup
 
 Objective: Initialize repo tooling, environment, and baseline scaffolding required by all stories.
@@ -30,15 +47,15 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 - [x] T007 Create Zod validation base helpers at src/lib/validation/index.ts
 - [x] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
 - [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
-- [ ] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
+- [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
 - [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
 - [x] T010 Add shared types barrel at src/types/index.ts
 - [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
-- [ ] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
-- [ ] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
-- [ ] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
-- [ ] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
-- [ ] T012d Configure Sentry source map upload for production debugging at sentry.config.js
+- [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
+- [x] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
+- [x] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
+- [x] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
+- [x] T012d Configure Sentry source map upload for production debugging at sentry.config.js
 
 ---
 
@@ -46,26 +63,27 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 
 Objective: Core foundations required before user stories. Complete these first.
 
-- [x] T013 [US12] Implement Prisma schema per data-model (initial models) at prisma/schema.prisma
+- [x] T013 [US12] Implement Prisma schema per data-model (initial models, including predefined roles: SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) at prisma/schema.prisma
 - [x] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
-- [ ] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
-- [ ] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
+- [x] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
+- [x] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
 - [x] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
 - [x] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
 - [x] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
 - [x] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
 - [x] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
-- [ ] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
-- [ ] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
-- [x] T018 Implement RBAC guard utility at src/lib/rbac.ts
+- [x] T015a Implement session store abstraction: Vercel KV (Redis) in production, in-memory Map fallback for local dev at src/lib/session-store.ts
+- [x] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
+- [x] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
+- [x] T018 Implement RBAC guard utility (fixed roles, no custom roles) at src/lib/rbac.ts
 - [x] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
-- [ ] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
+- [x] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
 - [ ] T020a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
 - [ ] T020b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
 - [ ] T021 Add email sender (Resend) at src/lib/email/resend.ts
 - [ ] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
 - [x] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
-- [ ] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
+- [x] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
 - [ ] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml
 
 Dependencies: T013 → T014 → T019; T016 requires T004; Payment tasks require T013.
@@ -82,15 +100,15 @@ Independent Test Criteria:
 - [x] T026 [US1] Implement Store service (CRUD, settings) at src/services/stores/store-service.ts
 - [x] T027 [P] [US1] Implement Stores API (list/create) at src/app/api/stores/route.ts
 - [x] T028 [P] [US1] Implement Store by ID API (get/update) at src/app/api/stores/[storeId]/route.ts
-- [ ] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
-- [ ] T030 [US1] Admin dashboard entry page at src/app/(admin)/dashboard/page.tsx
-- [ ] T031 [P] [US1] Super Admin stores list page at src/app/(admin)/settings/stores/page.tsx
-- [ ] T032 [US1] Super Admin create store form at src/app/(admin)/settings/stores/new/page.tsx
-- [ ] T033 [US1] Add store switcher component at src/components/admin/store-switcher.tsx
-- [ ] T034 [US1] Add tenant guard in admin layout at src/app/(admin)/layout.tsx
-- [ ] T034a [US1] Write unit tests for store service (>80% coverage) at src/services/stores/__tests__/store-service.test.ts
-- [ ] T034b [US1] Write integration tests for Stores API at src/app/api/stores/__tests__/route.test.ts
-- [ ] T034c [US1] Write E2E test for store creation and admin assignment flow at tests/e2e/stores/create-store.spec.ts
+- [x] T029 [US1] Implement UserStore linking + assign admin at src/services/stores/user-store-service.ts
+- [x] T030 [US1] Admin dashboard entry page at src/app/(admin)/dashboard/page.tsx
+- [x] T031 [P] [US1] Super Admin stores list page at src/app/(admin)/settings/stores/page.tsx
+- [x] T032 [US1] Super Admin create store form at src/app/(admin)/settings/stores/new/page.tsx
+- [x] T033 [US1] Add store switcher component at src/components/admin/store-switcher.tsx
+- [x] T034 [US1] Add tenant guard in admin layout at src/app/(admin)/layout.tsx
+- [x] T034a [US1] Write unit tests for store service (>80% coverage) at src/services/stores/__tests__/store-service.test.ts
+- [x] T034b [US1] Write integration tests for Stores API at src/app/api/stores/__tests__/route.test.ts
+- [x] T034c [US1] Write E2E test for store creation and admin assignment flow at tests/e2e/stores/create-store.spec.ts
 
 ---
 
@@ -273,23 +291,23 @@ Dependencies: US2, US4.
 
 ## Phase 10 — User Story 12: Security and access control (P1)
 
-Goal: Strong passwords, MFA, account lockouts, RBAC, audit logs.
+Goal: Strong passwords, MFA (TOTP authenticator app only, no backup codes), account lockouts, RBAC (predefined roles), audit logs.
 
 Independent Test Criteria:
-- Enforce password policy; MFA flow; lockouts after failed attempts; audit capture.
+- Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; Super Admin MFA is optional.
 
 - [ ] T086 [US12] Password policy validators at src/lib/security/password-policy.ts
 - [ ] T086a [US12] Add password history table and validation (CHK009) at prisma/schema.prisma
 - [ ] T086b [US12] Add password history service (last 5 passwords) at src/services/security/password-history-service.ts
 - [ ] T086c [US12] Add password history cleanup job (2-year retention) at src/services/jobs/password-history-cleanup.ts
-- [ ] T087 [P] [US12] MFA (TOTP + recovery codes) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
+- [ ] T087 [P] [US12] MFA (TOTP authenticator app only, no backup codes, optional for Super Admins) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
 - [ ] T088 [US12] Account lockout policy at src/services/security/lockout-service.ts
-- [ ] T089 [P] [US12] RBAC policies and guards integration at src/lib/rbac.ts
+- [ ] T089 [P] [US12] RBAC policies and guards integration (predefined roles only) at src/lib/rbac.ts
 - [ ] T089a [US12] Add fine-grained permission checks (can_edit_product, can_view_orders, etc.) at src/lib/rbac-permissions.ts
 - [ ] T090 [US12] Security audit events at src/services/audit/security-events.ts
-- [ ] T090a [US12] Write unit tests for password policy, MFA, and lockout services (100% coverage) at src/services/security/__tests__/security.test.ts
-- [ ] T090b [US12] Write integration tests for MFA API and RBAC guards at src/app/api/auth/__tests__/mfa.test.ts
-- [ ] T090c [US12] Write E2E test for authentication, MFA enrollment, and lockout flow at tests/e2e/security/auth-security.spec.ts
+- [ ] T090a [US12] Write unit tests for password policy, MFA (TOTP only), and lockout services (100% coverage) at src/services/security/__tests__/security.test.ts
+- [ ] T090b [US12] Write integration tests for MFA API (TOTP only) and RBAC guards at src/app/api/auth/__tests__/mfa.test.ts
+- [ ] T090c [US12] Write E2E test for authentication, MFA enrollment (TOTP only, no backup codes), and lockout flow at tests/e2e/security/auth-security.spec.ts
 - [ ] T090d [US12] Write E2E test for password history enforcement (CHK009) at tests/e2e/security/password-history.spec.ts
 
 Dependencies: Foundational auth.

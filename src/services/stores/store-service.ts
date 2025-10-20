@@ -5,8 +5,6 @@ import { AppError } from '@/lib/errors';
 import {
   DEFAULT_PAGE_SIZE,
   MAX_PAGE_SIZE,
-  SLUGIFY_OPTIONS,
-  STORE_LIMITS,
 } from '@/lib/constants';
 import type { Store, Prisma } from '@prisma/client';
 
@@ -95,9 +93,48 @@ export const CreateStoreSchema = z.object({
 }).strict();
 
 /**
- * Update store input schema (all fields optional)
+ * Update store input schema (all fields optional, including nested settings)
  */
-export const UpdateStoreSchema = CreateStoreSchema.partial().strict();
+export const UpdateStoreSchema = z.object({
+  name: z.string()
+    .min(2, 'Store name must be at least 2 characters')
+    .max(100, 'Store name must not exceed 100 characters')
+    .trim()
+    .optional(),
+  slug: z.string()
+    .min(2, 'Store slug must be at least 2 characters')
+    .max(100, 'Store slug must not exceed 100 characters')
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase alphanumeric with hyphens')
+    .trim()
+    .optional(),
+  domain: z.string()
+    .regex(/^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}$/i, 'Invalid domain format')
+    .optional()
+    .nullable(),
+  email: z.string()
+    .email('Invalid email address')
+    .trim()
+    .optional(),
+  phone: z.string()
+    .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format (E.164)')
+    .optional()
+    .nullable(),
+  address: z.string()
+    .max(500, 'Address must not exceed 500 characters')
+    .optional()
+    .nullable(),
+  taxId: z.string()
+    .max(50, 'Tax ID must not exceed 50 characters')
+    .optional()
+    .nullable(),
+  timezone: z.string().optional(),
+  currency: z.string().length(3, 'Currency must be ISO 4217 code').optional(),
+  language: z.string().length(2, 'Language must be ISO 639-1 code').optional(),
+  logoUrl: z.string().url().optional().nullable(),
+  faviconUrl: z.string().url().optional().nullable(),
+  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  settings: StoreSettingsSchema.partial().optional(),
+});
 
 /**
  * Query parameters for listing stores

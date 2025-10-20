@@ -19,9 +19,10 @@ const ParamsSchema = z.object({
  * @params storeId
  * @returns Store statistics
  */
-export const GET = createApiHandler(
-  async ({ params }) => {
+export const GET = createApiHandler<unknown, unknown, { storeId: string }>(
+  async ({ params: paramsPromise }) => {
     // ParamsSchema validation ensures params is defined
+    const params = await paramsPromise;
     const stats = await storeService.getStoreStats(params!.storeId);
     return { data: stats };
   },
