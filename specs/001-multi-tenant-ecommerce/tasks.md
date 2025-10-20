@@ -327,16 +327,16 @@ Dependencies: Foundational auth.
 
 ## New Security Hardening Tasks (NEW)
 
-[ ] T190 [SEC] Implement CSRF middleware (double-submit token) and add e2e tests for all POST/PUT/PATCH/DELETE routes.
-[ ] T191 [SEC] Set security headers at edge (HSTS, CSP with nonce, X‑Content‑Type‑Options, Referrer‑Policy, X‑Frame‑Options) and add automated checks.
-[ ] T192 [SEC] Add login-specific rate limiting and account lockout (progressive backoff) with unit tests.
-[ ] T193 [SEC] Expand AuditLog coverage to include auth events, role changes, sensitive configuration changes; verify immutability.
-[ ] T194 [PRIV] Implement DSAR endpoints: export (portable format), erasure, and verification workflow; admin UI to track requests.
-[ ] T195 [PRIV] PII retention jobs per data category; configurable retention policies; deletion logs with AuditLog references.
-[ ] T196 [OPS] Incident response runbook; on-call rotation; tabletop exercise task.
-[ ] T197 [OPS] Integrate IP reputation/threat intel checks on auth routes; instrument anomaly detection metrics.
-[ ] T198 [OPS] Nightly DB snapshots (retain 30 days) + weekly restore drills; blob backup verification; document RPO/RTO in runbook.
-[ ] T199 [ANALYTICS] Normalize analytics endpoints (`/analytics/track`), implement OpenAPI spec, and add tests & auth.
+- [ ] T190 [SEC] Implement CSRF middleware (double-submit token) and add e2e tests for all POST/PUT/PATCH/DELETE routes.
+- [ ] T191 [SEC] Set security headers at edge (HSTS, CSP with nonce, X‑Content‑Type‑Options, Referrer‑Policy, X‑Frame‑Options) and add automated checks.
+- [ ] T192 [SEC] Add login-specific rate limiting and account lockout (progressive backoff) with unit tests.
+- [ ] T193 [SEC] Expand AuditLog coverage to include auth events, role changes, sensitive configuration changes; verify immutability.
+- [ ] T194 [PRIV] Implement DSAR endpoints: export (portable format), erasure, and verification workflow; admin UI to track requests.
+- [ ] T195 [PRIV] PII retention jobs per data category; configurable retention policies; deletion logs with AuditLog references.
+- [ ] T196 [OPS] Incident response runbook; on-call rotation; tabletop exercise task.
+- [ ] T197 [OPS] Integrate IP reputation/threat intel checks on auth routes; instrument anomaly detection metrics.
+- [ ] T198 [OPS] Nightly DB snapshots (retain 30 days) + weekly restore drills; blob backup verification; document RPO/RTO in runbook.
+- [ ] T199 [ANALYTICS] Normalize analytics endpoints (`/analytics/track`), implement OpenAPI spec, and add tests & auth.
 
 ---
 
