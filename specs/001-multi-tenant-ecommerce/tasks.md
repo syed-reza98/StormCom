@@ -49,10 +49,12 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 - [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
 - [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
 - [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
-- [ ] T009c [DESIGN] Define global design tokens (color palette, typography, spacing, border radius) in `tailwind.config.ts`, create design system documentation at `docs/design-system.md`, and verify WCAG 2.1 AA contrast for all color combinations.
-- [ ] T009d [DESIGN] Implement base layout and UI kit components (DashboardShell, StorefrontLayout, Card, Button, Input, PageHeader, Badge) using shadcn/ui and Tailwind classes, adhering to the design tokens.
-- [ ] T009e [DESIGN] Add dynamic theming support based on `Store.primaryColor` and `Store.secondaryColor` using CSS variables; update the theme toggle to support light/dark mode tokens; implement tests to verify theme switching.
-- [ ] T009f [DESIGN] Provide comprehensive design documentation, including Figma files or equivalent design sources, usage guidelines, and examples for all components and tokens in `docs/design-system.md`.
+- [ ] T009c [DESIGN] Define global design tokens (color palette, typography, spacing, border radius) in `tailwind.config.ts`.
+- [ ] T009d [DESIGN] Create design system documentation for tokens in `docs/design-system.md`.
+- [ ] T009e [DESIGN] Verify WCAG 2.1 AA contrast for all color combinations defined in the design tokens.
+- [ ] T009f [DESIGN] Implement base layout and UI kit components (DashboardShell, StorefrontLayout, Card, Button, Input, PageHeader, Badge) using shadcn/ui and Tailwind classes, adhering to the design tokens.
+- [ ] T009g [DESIGN] Add dynamic theming support based on `Store.primaryColor` and `Store.secondaryColor` using CSS variables; update the theme toggle to support light/dark mode tokens; implement tests to verify theme switching.
+- [ ] T009h [DESIGN] Provide comprehensive design documentation, including Figma files or equivalent design sources, usage guidelines, and examples for all components and tokens in `docs/design-system.md`.
 - [x] T010 Add shared types barrel at src/types/index.ts
 - [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
 - [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
