@@ -1,3 +1,19 @@
+# E-commerce Platform — Master Software Requirements Specification (SRS)
+
+**Version:** 1.0  
+**Date:** October 20, 2025
+
+**Source Documents:**  
+- ecommerce_complete_srs.md (backbone)  
+- ecommerce_dashboard_srs.md (NFRs & Technical Requirements injected)  
+- ecommerce_dashboard_srs_copilot.md (fallback only)
+
+
+## Changelog
+- October 20, 2025: Initial Master SRS created by consolidating the Complete SRS backbone with quantified NFRs and the detailed Technical Requirements from Dashboard SRS. Removed credential-like content and unresolved placeholders; normalized mislabeled navigation links (Brand/Category).
+
+
+## Core Specification (Backbone)
 # eCommerceGo SaaS - Complete Software Requirements Specification (SRS)
 
 ## Document Information
@@ -160,7 +176,7 @@ The system supports multiple user roles with hierarchical permissions:
 - **Language**: TypeScript 5.9.3 (Strict Mode)
 - **Styling**: Tailwind CSS 4.1.14 with Radix UI components
 - **Database**: Prisma ORM with PostgreSQL (production) / SQLite (local dev)
-- **Authentication**: NextAuth.js v5 with RBAC
+- **Authentication**: NextAuth.js v4 with RBAC
 - **Session**: Server-side session management (NextAuth.js)
 - **File Storage**: Vercel Blob Storage (production) / Local (development)
 - **Testing**: Vitest 3.2.4 + Playwright 1.56.0 (MCP)
@@ -184,7 +200,7 @@ The system has 148 distinct pages organized into the following navigation struct
 - **Theme Customize**
 
 ### Store Setting
-- **Store Setting**: https://ecom-demo.workdo.io/app-setting
+- **Store Setting**
 
 ### Staff
 - **Roles**
@@ -194,9 +210,9 @@ The system has 148 distinct pages organized into the following navigation struct
 - **Delivery Boy**
 
 ### Products
-- **Brand**: https://ecom-demo.workdo.io/Brand-order-sale-reports
+- **Brand**
 - **Label**
-- **Category**: https://ecom-demo.workdo.io/blog-category
+- **Category**
 - **Product**
 - **Attributes**
 - **Testimonial**
@@ -217,9 +233,9 @@ The system has 148 distinct pages organized into the following navigation struct
 - **Customer Reports**
 - **Sales Report**
 - **Sales Product Report**
-- **Sales Category Report**: https://ecom-demo.workdo.io/category-order-sale-reports
+- **Sales Category Report**
 - **Sales Downloadable Product**
-- **Sales Brand Report**: https://ecom-demo.workdo.io/Brand-order-sale-reports
+- **Sales Brand Report**
 - **Country Based Order Report**
 - **Order Status Reports**
 - **Top Sales Reports**
@@ -230,7 +246,7 @@ The system has 148 distinct pages organized into the following navigation struct
 - **Newsletter**
 - **Flash Sale**
 - **Wishlist**
-- **Abandon Cart**: https://ecom-demo.workdo.io/abandon-carts-handled
+- **Abandon Cart**
 
 ### Support Ticket
 - **Support Ticket**
@@ -241,8 +257,8 @@ The system has 148 distinct pages organized into the following navigation struct
 ### CMS
 - **Menu**
 - **Pages**
-- **Blog**: https://ecom-demo.workdo.io/blog
-- **Blog Category**: https://ecom-demo.workdo.io/blog-category
+- **Blog**
+- **Blog Category**
 - **Faqs**
 - **Tag**
 - **Contact Us**
@@ -251,7 +267,7 @@ The system has 148 distinct pages organized into the following navigation struct
 - **Plan**
 
 ### Settings
-- **Settings**: https://ecom-demo.workdo.io/app-setting
+- **Settings**
 
 
 ---
@@ -305,139 +321,139 @@ This section documents all 148 pages discovered in the system:
 - **Actions**: 11
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 联系我们
+#### eCommerceGo SaaS - Contacts
 - **URL**: https://ecom-demo.workdo.io/contacts
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 优惠券
+#### eCommerceGo SaaS - Coupons
 - **URL**: https://ecom-demo.workdo.io/coupon
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 客户
+#### eCommerceGo SaaS - Customers
 - **URL**: https://ecom-demo.workdo.io/customer
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 控制台
+#### eCommerceGo SaaS - Dashboard
 - **URL**: https://ecom-demo.workdo.io/dashboard
 - **Forms**: 1
 - **Actions**: 3
 - **Data Tables**: 2
 
-#### eCommerceGo SaaS - 送货员
+#### eCommerceGo SaaS - Delivery Boy
 - **URL**: https://ecom-demo.workdo.io/deliveryboy
 - **Forms**: 9
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 常见问题
+#### eCommerceGo SaaS - FAQs
 - **URL**: https://ecom-demo.workdo.io/faqs
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 快速销售
+#### eCommerceGo SaaS - Flash Sale
 - **URL**: https://ecom-demo.workdo.io/flash-sale
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 菜单
+#### eCommerceGo SaaS - Menus
 - **URL**: https://ecom-demo.workdo.io/menus
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 添加程序管理器
+#### eCommerceGo SaaS - Modules List
 - **URL**: https://ecom-demo.workdo.io/modules/list
 - **Forms**: 4
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 关于新闻通讯
+#### eCommerceGo SaaS - Newsletter
 - **URL**: https://ecom-demo.workdo.io/newsletter
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 顺序
+#### eCommerceGo SaaS - Orders
 - **URL**: https://ecom-demo.workdo.io/order
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 订单国家报告
+#### eCommerceGo SaaS - Order Country Reports
 - **URL**: https://ecom-demo.workdo.io/order-country-reports
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 销售 下载产品
+#### eCommerceGo SaaS - Order Downloadable Reports
 - **URL**: https://ecom-demo.workdo.io/order-downloadable-reports
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 销售报告
+#### eCommerceGo SaaS - Order Reports
 - **URL**: https://ecom-demo.workdo.io/order-reports
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 页面
+#### eCommerceGo SaaS - Pages
 - **URL**: https://ecom-demo.workdo.io/pages
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 计划
+#### eCommerceGo SaaS - Plans
 - **URL**: https://ecom-demo.workdo.io/plan
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 没有
+#### eCommerceGo SaaS - POS
 - **URL**: https://ecom-demo.workdo.io/pos
 - **Forms**: 3
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 产品
+#### eCommerceGo SaaS - Products
 - **URL**: https://ecom-demo.workdo.io/product
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 产品
+#### eCommerceGo SaaS - Product Create
 - **URL**: https://ecom-demo.workdo.io/product/create
 - **Forms**: 2
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 属性
+#### eCommerceGo SaaS - Product Attributes
 - **URL**: https://ecom-demo.workdo.io/product-attributes
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 产品品牌
+#### eCommerceGo SaaS - Product Brand
 - **URL**: https://ecom-demo.workdo.io/product-brand
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 产品标签
+#### eCommerceGo SaaS - Product Labels
 - **URL**: https://ecom-demo.workdo.io/product-label
 - **Forms**: 1
 - **Actions**: 2
 - **Data Tables**: 1
 
-#### eCommerceGo SaaS - 销售产品报告
+#### eCommerceGo SaaS - Product Order Sale Reports
 - **URL**: https://ecom-demo.workdo.io/product-order-sale-reports
 - **Forms**: 1
 - **Actions**: 2
@@ -494,7 +510,7 @@ The system contains comprehensive form-based data entry across multiple modules:
 
 ## 6. Actions and Operations
 
-The system provides {len(actions)} distinct actions/operations:
+The system provides TBD distinct actions/operations:
 
 ### 6.1 CRUD Operations
 - **Create**: Add new products, orders, customers, pages, blog posts, coupons, etc.
@@ -537,7 +553,7 @@ The system provides {len(actions)} distinct actions/operations:
 
 ## 7. Data Tables and Attributes
 
-The system displays data in {len(tables)} structured tables across various pages:
+The system displays data in TBD structured tables across various pages:
 
 ### 7.1 Common Table Features
 - **Pagination**: Navigate through large datasets
@@ -1342,25 +1358,23 @@ Admin View:
 
 ---
 
-## 11. ERD Diagram: https://www.mermaidchart.com/d/e90a991b-f77b-4e62-9111-2a035322ea98
-
+## 11. ERD Diagram: https://www.mermaidchart.com/d/47ad90eb-4088-4961-810c-c075022e9559
 ```mermaid
-// [MermaidChart: e90a991b-f77b-4e62-9111-2a035322ea98]
 ---
-id: e90a991b-f77b-4e62-9111-2a035322ea98
+id: 47ad90eb-4088-4961-810c-c075022e9559
 ---
 erDiagram
     USERS ||--o{ ROLE_USER : "has"
     ROLES ||--o{ ROLE_USER : "assigned_to"
     USERS {
-        string id PK
+        int id PK
         string name
         string email UK
         string password
         timestamp created_at
     }
     ROLES {
-        string id PK
+        int id PK
         string name
         json permissions
     }
@@ -1370,7 +1384,7 @@ erDiagram
     CUSTOMERS ||--o{ SUPPORT_TICKETS : "submits"
     CUSTOMERS ||--o{ CUSTOMER_ADDRESSES : "has"
     CUSTOMERS {
-        string id PK
+        int id PK
         string name
         string email UK
         string phone
@@ -1388,26 +1402,26 @@ erDiagram
     LABELS ||--o{ PRODUCT_LABELS : "tags"
     PRODUCTS ||--o{ PRODUCT_LABELS : "tagged_with"
     PRODUCTS {
-        string id PK
+        int id PK
         string name
         string slug UK
-        string description
+        text description
         decimal price
         int stock_quantity
-        string category_id FK
-        string brand_id FK
+        int category_id FK
+        int brand_id FK
         string sku UK
         boolean is_featured
     }
     
     CATEGORIES {
-        string id PK
+        int id PK
         string name
-        string parent_id FK
+        int parent_id FK
     }
     
     BRANDS {
-        string id PK
+        int id PK
         string name
         string logo
         boolean is_popular
@@ -1417,9 +1431,9 @@ erDiagram
     ORDERS ||--o{ REFUND_REQUESTS : "may_have"
     ORDERS ||--o{ ORDER_STATUS_HISTORY : "tracks"
     ORDERS {
-        string id PK
+        int id PK
         string order_number UK
-        string customer_id FK
+        int customer_id FK
         decimal subtotal
         decimal tax_amount
         decimal shipping_cost
@@ -1430,19 +1444,19 @@ erDiagram
     }
     
     ORDER_ITEMS {
-        string id PK
-        string order_id FK
-        string product_id FK
-        string variant_id FK
+        int id PK
+        int order_id FK
+        int product_id FK
+        int variant_id FK
         int quantity
         decimal unit_price
         decimal total_price
     }
     
     REFUND_REQUESTS {
-        string id PK
-        string order_id FK
-        string order_item_id FK
+        int id PK
+        int order_id FK
+        int order_item_id FK
         string reason
         decimal refund_amount
         string status
@@ -1452,7 +1466,7 @@ erDiagram
     SHIPPING_CLASSES ||--o{ SHIPPING_RATES : "applies_to"
     
     COUPONS {
-        string id PK
+        int id PK
         string code UK
         string discount_type
         decimal discount_value
@@ -1464,23 +1478,23 @@ erDiagram
     FLASH_SALES ||--o{ FLASH_SALE_PRODUCTS : "includes"
     PRODUCTS ||--o{ FLASH_SALE_PRODUCTS : "featured_in"
     
-    BLOGS }o--|| BLOG_CATEGORIES : "belongs_to"
+    BLOGS ||--o{ BLOG_CATEGORIES : "belongs_to"
     USERS ||--o{ BLOGS : "authors"
     
     PAGES {
-        string id PK
+        int id PK
         string title
         string slug UK
-        string content
+        text content
         boolean published
     }
     
     MENUS ||--o{ MENU_ITEMS : "contains"
     
     FAQS {
-        string id PK
+        int id PK
         string question
-        string answer
+        text answer
         int sort_order
     }
     
@@ -1597,41 +1611,41 @@ GET    /user                     - Get authenticated user info
 ```
 GET    /product                  - List products
 POST   /product                  - Create product
-GET    /product/{id}             - Get product details
-PUT    /product/{id}             - Update product
-DELETE /product/{id}             - Delete product
+GET    /product/TBD             - Get product details
+PUT    /product/TBD             - Update product
+DELETE /product/TBD             - Delete product
 POST   /product/import           - Bulk import products
 GET    /product/export           - Export products
 
 GET    /product-brand            - List brands
 POST   /product-brand            - Create brand
-PUT    /product-brand/{id}       - Update brand
-DELETE /product-brand/{id}       - Delete brand
+PUT    /product-brand/TBD       - Update brand
+DELETE /product-brand/TBD       - Delete brand
 
 GET    /product-label            - List labels
 POST   /product-label            - Create label
-PUT    /product-label/{id}       - Update label
-DELETE /product-label/{id}       - Delete label
+PUT    /product-label/TBD       - Update label
+DELETE /product-label/TBD       - Delete label
 
 GET    /category                 - List categories
 POST   /category                 - Create category
-PUT    /category/{id}            - Update category
-DELETE /category/{id}            - Delete category
+PUT    /category/TBD            - Update category
+DELETE /category/TBD            - Delete category
 
 GET    /product-attributes       - List attributes
 POST   /product-attributes       - Create attribute
-PUT    /product-attributes/{id}  - Update attribute
-DELETE /product-attributes/{id}  - Delete attribute
+PUT    /product-attributes/TBD  - Update attribute
+DELETE /product-attributes/TBD  - Delete attribute
 
 GET    /testimonial              - List testimonials
 POST   /testimonial              - Create testimonial
-PUT    /testimonial/{id}         - Update testimonial
-DELETE /testimonial/{id}         - Delete testimonial
+PUT    /testimonial/TBD         - Update testimonial
+DELETE /testimonial/TBD         - Delete testimonial
 
 GET    /product-question         - List product Q&A
 POST   /product-question         - Create question
-PUT    /product-question/{id}    - Update/answer question
-DELETE /product-question/{id}    - Delete question
+PUT    /product-question/TBD    - Update/answer question
+DELETE /product-question/TBD    - Delete question
 ```
 
 ### 13.3 Orders
@@ -1639,14 +1653,14 @@ DELETE /product-question/{id}    - Delete question
 ```
 GET    /order                    - List orders
 POST   /order                    - Create order
-GET    /order-view/{id}          - View order details
-PUT    /order/{id}               - Update order
-PUT    /order/{id}/status        - Update order status
-DELETE /order/{id}               - Cancel order
+GET    /order-view/TBD          - View order details
+PUT    /order/TBD               - Update order
+PUT    /order/TBD/status        - Update order status
+DELETE /order/TBD               - Cancel order
 
 GET    /refund-request           - List refund requests
 POST   /refund-request           - Create refund request
-PUT    /refund-request/{id}      - Process refund request
+PUT    /refund-request/TBD      - Process refund request
 ```
 
 ### 13.4 Customers
@@ -1654,11 +1668,11 @@ PUT    /refund-request/{id}      - Process refund request
 ```
 GET    /customer                 - List customers
 POST   /customer                 - Create customer
-GET    /customer/{id}            - Get customer details
-PUT    /customer/{id}            - Update customer
-DELETE /customer/{id}            - Delete customer
-GET    /customer/{id}/orders     - Get customer orders
-GET    /customer/{id}/wishlist   - Get customer wishlist
+GET    /customer/TBD            - Get customer details
+PUT    /customer/TBD            - Update customer
+DELETE /customer/TBD            - Delete customer
+GET    /customer/TBD/orders     - Get customer orders
+GET    /customer/TBD/wishlist   - Get customer wishlist
 ```
 
 ### 13.5 Reports
@@ -1681,13 +1695,13 @@ GET    /stock-reports                   - Stock reports
 ```
 GET    /coupon                   - List coupons
 POST   /coupon                   - Create coupon
-PUT    /coupon/{id}              - Update coupon
-DELETE /coupon/{id}              - Delete coupon
+PUT    /coupon/TBD              - Update coupon
+DELETE /coupon/TBD              - Delete coupon
 
 GET    /flash-sale               - List flash sales
 POST   /flash-sale               - Create flash sale
-PUT    /flash-sale/{id}          - Update flash sale
-DELETE /flash-sale/{id}          - Delete flash sale
+PUT    /flash-sale/TBD          - Update flash sale
+DELETE /flash-sale/TBD          - Delete flash sale
 
 GET    /newsletter               - List newsletters
 POST   /newsletter               - Send newsletter
@@ -1702,31 +1716,31 @@ POST   /abandon-cart/recovery    - Send recovery email
 ```
 GET    /pages                    - List pages
 POST   /pages                    - Create page
-PUT    /pages/{id}               - Update page
-DELETE /pages/{id}               - Delete page
+PUT    /pages/TBD               - Update page
+DELETE /pages/TBD               - Delete page
 
 GET    /blog                     - List blog posts
 POST   /blog                     - Create blog post
-PUT    /blog/{id}                - Update blog post
-DELETE /blog/{id}                - Delete blog post
+PUT    /blog/TBD                - Update blog post
+DELETE /blog/TBD                - Delete blog post
 
 GET    /blog-category            - List blog categories
 POST   /blog-category            - Create blog category
 
 GET    /menus                    - List menus
 POST   /menus                    - Create menu
-PUT    /menus/{id}               - Update menu
+PUT    /menus/TBD               - Update menu
 
 GET    /faqs                     - List FAQs
 POST   /faqs                     - Create FAQ
-PUT    /faqs/{id}                - Update FAQ
-DELETE /faqs/{id}                - Delete FAQ
+PUT    /faqs/TBD                - Update FAQ
+DELETE /faqs/TBD                - Delete FAQ
 
 GET    /tag                      - List tags
 POST   /tag                      - Create tag
 
 GET    /contacts                 - List contact submissions
-GET    /contacts/{id}            - View contact details
+GET    /contacts/TBD            - View contact details
 ```
 
 ### 13.8 Support
@@ -1734,9 +1748,9 @@ GET    /contacts/{id}            - View contact details
 ```
 GET    /support_ticket           - List support tickets
 POST   /support_ticket           - Create ticket
-GET    /support_ticket/{id}      - View ticket details
-PUT    /support_ticket/{id}      - Update ticket
-POST   /support_ticket/{id}/reply - Reply to ticket
+GET    /support_ticket/TBD      - View ticket details
+PUT    /support_ticket/TBD      - Update ticket
+POST   /support_ticket/TBD/reply - Reply to ticket
 ```
 
 ### 13.9 Shipping
@@ -1744,13 +1758,13 @@ POST   /support_ticket/{id}/reply - Reply to ticket
 ```
 GET    /shipping                 - List shipping classes
 POST   /shipping                 - Create shipping class
-PUT    /shipping/{id}            - Update shipping class
-DELETE /shipping/{id}            - Delete shipping class
+PUT    /shipping/TBD            - Update shipping class
+DELETE /shipping/TBD            - Delete shipping class
 
 GET    /shipping-zone            - List shipping zones
 POST   /shipping-zone            - Create shipping zone
-PUT    /shipping-zone/{id}       - Update shipping zone
-DELETE /shipping-zone/{id}       - Delete shipping zone
+PUT    /shipping-zone/TBD       - Update shipping zone
+DELETE /shipping-zone/TBD       - Delete shipping zone
 ```
 
 ### 13.10 Staff
@@ -1758,17 +1772,17 @@ DELETE /shipping-zone/{id}       - Delete shipping zone
 ```
 GET    /roles                    - List roles
 POST   /roles                    - Create role
-PUT    /roles/{id}               - Update role
-DELETE /roles/{id}               - Delete role
+PUT    /roles/TBD               - Update role
+DELETE /roles/TBD               - Delete role
 
 GET    /users                    - List users
 POST   /users                    - Create user
-PUT    /users/{id}               - Update user
-DELETE /users/{id}               - Delete user
+PUT    /users/TBD               - Update user
+DELETE /users/TBD               - Delete user
 
 GET    /deliveryboy              - List delivery boys
 POST   /deliveryboy              - Create delivery boy
-PUT    /deliveryboy/{id}         - Update delivery boy
+PUT    /deliveryboy/TBD         - Update delivery boy
 ```
 
 ### 13.11 Settings
@@ -1781,8 +1795,8 @@ PUT    /app-setting              - Update store settings
 GET    /theme-customize          - Get theme settings
 PUT    /theme-customize          - Update theme settings
 GET    /modules/list             - List modules/add-ons
-PUT    /modules/{id}/activate    - Activate module
-PUT    /modules/{id}/deactivate  - Deactivate module
+PUT    /modules/TBD/activate    - Activate module
+PUT    /modules/TBD/deactivate  - Deactivate module
 ```
 
 ### 13.12 POS
@@ -1892,19 +1906,19 @@ GET    /plan/current             - Get current subscription
 
 ### Appendix A: Complete Page List
 
-All {len(pages)} pages discovered in the system are documented here.
+All TBD pages discovered in the system are documented here.
 
 *(Full page list included in separate document due to length)*
 
 ### Appendix B: Complete Form Fields Reference
 
-Detailed documentation of all {len(form_inputs)} form input fields.
+Detailed documentation of all TBD form input fields.
 
 *(Full field list included in separate document due to length)*
 
 ### Appendix C: Complete Actions List
 
-All {len(actions)} actions and buttons discovered in the system.
+All TBD actions and buttons discovered in the system.
 
 *(Full actions list included in separate document due to length)*
 
@@ -1945,12 +1959,18 @@ Complete glossary of terms used throughout the system.
 ---
 
 **Document Statistics:**
-- Total Pages Documented: {len(pages)}
-- Total Forms: {len(forms)}
-- Total Form Inputs: {len(form_inputs)}
-- Total Actions/Buttons: {len(actions)}
-- Total Data Tables: {len(tables)}
+- Total Pages Documented: TBD
+- Total Forms: TBD
+- Total Form Inputs: TBD
+- Total Actions/Buttons: TBD
+- Total Data Tables: TBD
 - Lines of Documentation: {len(srs_content.split('\n'))}
 
 **Generated By**: Comprehensive Site Crawler & SRS Generator
 **Generation Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+## Non-Functional Requirements (Consolidated — supersedes prior mentions)
+TBD
+
+## Technical Requirements (Consolidated — supersedes prior mentions)
+TBD
