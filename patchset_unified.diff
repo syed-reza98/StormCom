@@ -1,0 +1,109 @@
+*** Begin Patch
+*** Update File: specs/001-multi-tenant-ecommerce/spec.md
+@@ ### Session 2025-10-17
+- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with one‑time recovery codes; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
++ Q: Which MFA method(s) should be supported? → A: TOTP authenticator apps (RFC 6238) as the sole method in Phase 1 (no backup codes). Optional WebAuthn/FIDO2 keys may be added in future phases; SMS fallback is not in scope.
+@@ ### Session 2025-10-20
+- Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes - users must use authenticator app only (TOTP required for MFA-enabled accounts).
+- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: Optional MFA for Super Admins (same as other users) - maintains consistency but may reduce security for privileged accounts.
++ Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes will be issued or stored; users must rely solely on a TOTP authenticator app.
++ Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: MFA is **required** for Admins and Super Admins; optional for other user types.
+@@ ### Security & Compliance Assumptions
+- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10ms validation and immediate invalidation; in-memory Map in local development (no Redis setup required). Session ID embedded in JWT; validated on every API request.
+- **HTTPS**: TLS 1.3 enforced via Vercel; HSTS headers with max-age=31536000 (1 year); automatic certificate renewal via Let's Encrypt.
++ **Session Management**: 30-minute idle timeout and 12-hour absolute expiration; sessions rotate on privilege change; stored in HttpOnly, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10ms validation and immediate invalidation; in-memory Map fallback for local development. Session IDs are embedded in JWTs and validated on every request.
++ **Transport Security (HTTPS)**: TLS 1.3 only. Enforce HSTS headers with `max-age=63072000; includeSubDomains; preload` and automatic certificate renewal via Let's Encrypt.
++ **CSRF Protection**: All state-changing requests MUST include a CSRF token bound to the user session. Idempotent GET/HEAD requests are exempt. CSRF tokens are delivered via secure cookies and validated on POST/PUT/PATCH/DELETE.
++ **Security Headers**: Set strict security headers on all responses: Content-Security-Policy (nonce-based with `frame-ancestors 'none'` for the dashboard), X-Content-Type-Options `nosniff`, Referrer-Policy `strict-origin-when-cross-origin`, and, for legacy clients, X-Frame-Options `DENY`. Configure a 2-year HSTS policy as described above.
+
+*** Update File: specs/001-multi-tenant-ecommerce/plan.md
+@@
+-**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). MFA is optional for all users, including Super Admins, for consistency.
++**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). **MFA is required for Admin and Super Admin**, optional for other roles.
+@@
+-**Session Management**: JWT + server-side session store. Session ID is embedded in JWT and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). JWT tokens have 30-day absolute expiration, 7-day idle timeout (sliding window), stored in HTTP-only, Secure, SameSite=Lax cookies.
++**Session Management**: Sessions have a 30-minute idle timeout and a 12-hour absolute expiration. Session IDs are embedded in JWTs and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10 ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Sessions rotate on privilege change and are stored in HttpOnly, Secure, SameSite=Lax cookies. **State-changing requests** require a valid CSRF token (see CSRF Protection).
+@@
+-| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. MFA is optional for all users, including Super Admins. |
++| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. **MFA is required for Admin and Super Admin, optional for other users.** |
+@@
+  **Session Management**: Sessions have a 30-minute idle timeout and a 12-hour absolute expiration. Session IDs are embedded in JWTs and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10 ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Sessions rotate on privilege change and are stored in HttpOnly, Secure, SameSite=Lax cookies. **State-changing requests** require a valid CSRF token (see CSRF Protection).
++
++### CSRF Protection (NEW)
++All state‑changing requests from browsers require a double‑submit anti‑CSRF token and SameSite=Lax cookies. Exempt idempotent GET/HEAD; enforce the token on POST/PUT/PATCH/DELETE. Provide the CSRF token via secure cookie and meta tag; include a nonce binding for forms.
++
++### Security Headers (NEW)
++Set the following headers at the edge (middleware):
++- Strict‑Transport‑Security: `max‑age=63072000; includeSubDomains; preload`
++- Content‑Security‑Policy: a nonce‑based strict CSP with `frame‑ancestors 'none'` for the dashboard
++- X‑Content‑Type‑Options: `nosniff`
++- Referrer‑Policy: `strict‑origin‑when‑cross‑origin`
++- (Legacy) X‑Frame‑Options: `DENY`
++
++### Incident Response & IP Reputation (NEW)
++Implement anomaly detection and IP reputation checks on authentication‑critical routes. Create an on‑call runbook with triage procedures, communication templates, evidence preservation, and post‑mortem steps.
++
++### Backups & Restore Drills (NEW)
++Nightly database snapshots (retain 30 days) and weekly restore drills. Weekly object storage backup verification. Recovery Point Objective (RPO): 24 hours; Recovery Time Objective (RTO): 4 hours for production.
+
+*** Update File: specs/001-multi-tenant-ecommerce/tasks.md
+@@ ## Phase 10 — User Story 12: Security and access control (P1)
+- Independent Test Criteria:
+- - Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; Super Admin MFA is optional.
++ Independent Test Criteria:
++ - Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; **Super Admin MFA is required**.
+@@
+-[ ] T087 [P] [US12] MFA (TOTP authenticator app only, no backup codes, optional for Super Admins) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
++[ ] T087 [P] [US12] MFA (TOTP authenticator app only; no backup codes; **required for Admins and Super Admins**) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
+@@
+   - [ ] T117c Add rate limit metrics collection (usage per plan tier) at src/services/analytics/rate-limit-metrics.ts
++
++## New Security Hardening Tasks (NEW)
++
++[ ] T190 [SEC] Implement CSRF middleware (double-submit token) and add e2e tests for all POST/PUT/PATCH/DELETE routes.
++[ ] T191 [SEC] Set security headers at edge (HSTS, CSP with nonce, X‑Content‑Type‑Options, Referrer‑Policy, X‑Frame‑Options) and add automated checks.
++[ ] T192 [SEC] Add login-specific rate limiting and account lockout (progressive backoff) with unit tests.
++[ ] T193 [SEC] Expand AuditLog coverage to include auth events, role changes, sensitive configuration changes; verify immutability.
++[ ] T194 [PRIV] Implement DSAR endpoints: export (portable format), erasure, and verification workflow; admin UI to track requests.
++[ ] T195 [PRIV] PII retention jobs per data category; configurable retention policies; deletion logs with AuditLog references.
++[ ] T196 [OPS] Incident response runbook; on-call rotation; tabletop exercise task.
++[ ] T197 [OPS] Integrate IP reputation/threat intel checks on auth routes; instrument anomaly detection metrics.
++[ ] T198 [OPS] Nightly DB snapshots (retain 30 days) + weekly restore drills; blob backup verification; document RPO/RTO in runbook.
++[ ] T199 [ANALYTICS] Normalize analytics endpoints (`/analytics/track`), implement OpenAPI spec, and add tests & auth.
+
+*** Update File: specs/001-multi-tenant-ecommerce/data-model.md
+@@ model User {
+   mfaEnabled    Boolean  @default(false)
+   mfaSecret     String?  // TOTP secret (encrypted)
+-  mfaBackupCodes String? // Comma-separated (encrypted)
+ }
+@@
+-### 44. Attribute (add missing relation)
++### 41. DSARRequest
++
++Data Subject Access Request / Erasure workflow records.
++
++```prisma
++model DSARRequest {
++  id          String   @id @default(cuid())
++  createdAt   DateTime @default(now())
++  updatedAt   DateTime @updatedAt
++  storeId     String
++  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
++  userId      String?
++  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
++  type        DSARType
++  status      DSARStatus @default(PENDING)
++  requestedByEmail String
++  processedAt DateTime?
++  notes       String?
++
++  @@index([storeId])
++  @@index([type, status])
++}
++
++enum DSARType { ACCESS; ERASURE; PORTABILITY }
++enum DSARStatus { PENDING; IN_PROGRESS; COMPLETED; REJECTED }
++
++### 44. Attribute (add missing relation)
+*** End Patch
