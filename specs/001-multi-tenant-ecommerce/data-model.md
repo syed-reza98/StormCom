@@ -93,6 +93,8 @@ model Store {
   logoUrl      String?
   faviconUrl   String?
   primaryColor String @default("#000000")
+  secondaryColor String @default("#FFFFFF")
+  fontFamily    String?  // Optional custom font family override
   
   // Contact and legal
   email        String
@@ -268,7 +270,10 @@ model User {
   // MFA settings
   mfaEnabled    Boolean  @default(false)
   mfaSecret     String?  // TOTP secret (encrypted)
-  mfaBackupCodes String? // Comma-separated (encrypted)
+  mfaBackupCodes String? // JSON array of backup code hashes (bcrypt cost 12) with used status: [{"code": "hash", "used": false, "usedAt": null}]
+  mfaBackupCodesGeneratedAt DateTime? // Timestamp when backup codes were generated (for 1-year expiration)
+  smsPhoneNumber String? // Phone number for SMS fallback (E.164 format)
+  smsEnabled     Boolean  @default(false) // Whether SMS fallback is enabled
   
   // User preferences
   language      String   @default("en")
@@ -1974,6 +1979,33 @@ enum ReviewStatus {
 ---
 
 ## Additional Supporting Entities
+
+### 41. DSARRequest
+
+Data Subject Access Request / Erasure workflow records.
+
+```prisma
+model DSARRequest {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type        DSARType
+  status      DSARStatus @default(PENDING)
+  requestedByEmail String
+  processedAt DateTime?
+  notes       String?
+
+  @@index([storeId])
+  @@index([type, status])
+}
+
+enum DSARType { ACCESS; ERASURE; PORTABILITY }
+enum DSARStatus { PENDING; IN_PROGRESS; COMPLETED; REJECTED }
+```
 
 ### 43. Store (add missing relations)
 

@@ -10,7 +10,7 @@
 ### Session 2025-10-17
 
 - Q: Which SSO standard(s)/provider scope should be supported for enterprise SSO? → A: OIDC + SAML (both)
-- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with one‑time recovery codes; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
+- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with single-use backup codes for account recovery; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
 - Q: External platform sync (scope, direction, frequency)? → A: Real-time bidirectional sync with webhooks for immediate data consistency in both directions, including conflict resolution strategies.
 - Q: What are the scalability targets per store before performance degradation? → A: Mid-market scale - Up to 10K products, 1M orders/year (≈83K orders/month), 250K customers per store.
 - Q: What uptime SLA should StormCom guarantee? → A: 99.9% uptime (≈43 minutes downtime/month) - standard SaaS reliability target.
@@ -21,8 +21,8 @@
 
 - Q: How should the Role/Permission system be modeled in the database to support granular permissions? → A: Predefined roles with fixed permissions (no custom roles in Phase 1)
 - Q: How should user sessions be stored to support fast invalidation (<60s) while maintaining scalability? → A: JWT + Server-side session store with environment-based implementation: Vercel KV (Redis) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Session ID stored in JWT, validated on every request.
-- Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes - users must use authenticator app only (TOTP required for MFA-enabled accounts).
-- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: Optional MFA for Super Admins (same as other users) - maintains consistency but may reduce security for privileged accounts.
+- Q: How should MFA backup codes be stored to balance security and usability? → A: Generate 10 single-use backup codes during MFA enrollment, stored as bcrypt hashes (cost factor 12). Display codes once during enrollment with download/print option. Mark each code as used after consumption. Codes expire after 1 year or when MFA is disabled.
+- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: Optional MFA for all users including Super Admins during initial development phase - maintains consistency and flexibility. MFA can be made required for privileged accounts in future phases based on security requirements.
 
 ## Technical Assumptions
 
@@ -39,6 +39,62 @@
 - **Responsive Breakpoints**: 640px (sm), 768px (md), 1024px (lg), 1280px (xl), 1536px (2xl) - mobile-first approach.
 - **JavaScript**: ES2020+ features; no IE11 support; polyfills only for Safari 14 (Promise.allSettled, String.replaceAll).
 - **Progressive Enhancement**: Core checkout flow works without JavaScript (server-side rendering + forms); enhanced features (autocomplete, real-time validation) require JavaScript.
+
+### Design & Styling Standards
+StormCom's UI follows a unified design system across the admin dashboard and customer storefront. These guidelines ensure consistency, accessibility, and maintainability.
+
+**Design System Overview**
+ - Use **Tailwind CSS 4.1.14+** with custom configuration and **shadcn/ui** (built on top of Radix UI) as the primary component library. Avoid writing custom CSS except for design tokens.
+ - Define reusable design tokens for colors, typography, spacing, and border radius. Store tokens in `tailwind.config.ts` and document them in `docs/design-system.md`.
+
+**Color Palette**
+ - Define a core palette with roles: **primary**, **secondary**, **neutral**, **success**, **warning**, and **danger**. Default values:  
+   - `primary`: `#0f766e` (teal)  
+   - `secondary`: `#7c3aed` (purple)  
+   - `neutral`: `#64748b` (slate)  
+   - `success`: `#16a34a` (green)  
+   - `warning`: `#ca8a04` (amber)  
+   - `danger`: `#dc2626` (red)  
+   Ensure all text/background combinations meet WCAG 2.1 AA contrast (≥ 4.5:1).  
+ - Each store may override the primary color via the `primaryColor` field (and optional `secondaryColor`) in the `Store` model. Use CSS variables to apply dynamic theming based on store configuration.
+
+**Typography**
+ - Use **Inter**, `sans-serif` as the default font family. Provide fallbacks (`ui-sans-serif, system-ui`).  
+ - Heading hierarchy: `h1` → `text-3xl font-semibold`, `h2` → `text-2xl font-semibold`, `h3` → `text-xl font-medium`.  
+ - Body text: `text-base leading-relaxed`.  
+ - Use `text-sm` for form labels, helper text, and table captions.  
+ - Avoid excessive letter-spacing; rely on Tailwind's tracking utilities (e.g., `tracking-tight`).
+
+**Spacing & Layout**
+ - Use a base unit of **4 px** (Tailwind's `0.5` spacing) and multiples thereof. Standard gaps: `4`, `6`, `8`, `12`, `16`.  
+ - Pages use a max width of `1280px` (`max-w-screen-xl`) and center content.  
+ - Employ the **12‑column CSS grid** for complex layouts; otherwise, use Flexbox for simple row/column arrangements.  
+ - Standard border radius: `rounded-lg` for cards, `rounded-md` for buttons/inputs.
+
+**Components & Patterns**
+ - Compose UI using **shadcn/ui** primitives: `Button`, `Input`, `Label`, `Card`, `Dialog`, `Tabs`, `Accordion`, `Table`. Extend only via Tailwind classes or variant props; never modify underlying Radix styles directly.  
+ - All custom components must support dark mode via CSS variables and the `data-theme` attribute.  
+ - Provide global layout wrappers (`DashboardShell`, `StorefrontLayout`) with consistent padding, page titles, and breadcrumbs.
+
+**Dark Mode**
+ - Implement dark mode using CSS variables toggled by a `theme-toggle` component. Store the user's preference in `localStorage`.  
+ - Define dark variants of all palette colors (e.g., `primary-dark`, `neutral-dark`) ensuring contrast requirements.
+
+**Icons & Imagery**
+ - Use **lucide-react** icons for vector icons; maintain consistent stroke width (`1.5 px`).  
+ - Provide descriptive `aria-label` or `title` attributes for icons used without text.  
+ - Optimize images via Next.js `<Image>` component with responsive `sizes` and `priority` flags. All images must include `alt` text.
+
+**Motion & Interaction**
+ - Use **Framer Motion** for enter/exit transitions and interactive feedback (e.g., modal slide-in, dropdown fade).  
+ - Respect user motion preferences (`prefers-reduced-motion`); disable animations when necessary.  
+ - Provide visual feedback on hover, focus, active, and disabled states with subtle transitions (e.g., `transition-colors`, `duration-150`).
+
+**Documentation**
+ - Document all tokens, components, and layout patterns in `docs/design-system.md` with usage guidelines and examples.  
+ - Provide Figma or comparable design source files for designers and developers to reference; include links in the design docs.  
+
+These guidelines supersede any ambiguous terminology (e.g., "centered card layout") and serve as the baseline for all UI/UX decisions.
 
 ### Performance & Scalability Assumptions
 
@@ -58,8 +114,10 @@
 ### Security & Compliance Assumptions
 
 - **Password Policy**: Minimum 8 characters; requires uppercase, lowercase, number, and special character; password history (last 5 passwords) checked; bcrypt cost factor 12.
-- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10ms validation and immediate invalidation; in-memory Map in local development (no Redis setup required). Session ID embedded in JWT; validated on every API request.
-- **HTTPS**: TLS 1.3 enforced via Vercel; HSTS headers with max-age=31536000 (1 year); automatic certificate renewal via Let's Encrypt.
+- **Session Management**: 30-minute idle timeout (sliding window: timeout resets on user activity) and 12-hour absolute expiration; sessions rotate on privilege change; stored in HttpOnly, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10 ms validation and immediate invalidation; in-memory Map fallback for local development. Session IDs are embedded in JWTs and validated on every request.
+- **Transport Security (HTTPS)**: TLS 1.3 only. Enforce HSTS headers with `max-age=63072000; includeSubDomains; preload` and automatic certificate renewal via Let's Encrypt.
+- **CSRF Protection**: All state-changing requests MUST include a CSRF token bound to the user session. Idempotent GET/HEAD requests are exempt. CSRF tokens are delivered via secure cookies and validated on POST/PUT/PATCH/DELETE.
+- **Security Headers**: Set strict security headers on all responses: Content-Security-Policy (nonce-based with `frame-ancestors 'none'` for the dashboard), X-Content-Type-Options `nosniff`, Referrer-Policy `strict-origin-when-cross-origin`, and, for legacy clients, X-Frame-Options `DENY`. Configure a 2-year HSTS policy as described above.
 - **CORS**: Allowed origins configurable per store (default: same-origin only); API endpoints support CORS preflight with credentials.
 - **PCI Compliance**: Level 1 PCI-DSS compliance by never storing card data; relying on payment gateway tokenization (Stripe/SSLCommerz hosted checkout or Elements/JS SDK).
 
@@ -143,8 +201,10 @@ As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate
 4. Given I am on the login page, When I enter valid email but incorrect password, Then I see an error message: "Invalid email or password. Please try again." and the failed attempt is logged.
 5. Given I have entered incorrect credentials 5 times, When I attempt to login again, Then my account is locked for 15 minutes and I see: "Account locked due to too many failed login attempts. Please try again in 15 minutes or use 'Forgot Password' to reset."
 6. Given I have forgotten my password, When I click "Forgot Password" and enter my email, Then I receive a password reset link via email valid for 1 hour.
-7. Given I am a Super Admin with MFA enabled (optional for Super Admins), When I enter correct credentials, Then I am prompted for a 6-digit TOTP code from my authenticator app before being granted access.
-8. Given I am authenticated as Super Admin, When I navigate to any store-specific page, Then I can view and manage data across all stores in the system.
+7. Given I am a Super Admin with MFA enabled (optional for all users including Super Admins during initial development), When I enter correct credentials, Then I am prompted for a 6-digit TOTP code from my authenticator app. If I don't have access to my authenticator app, I can use one of my 10 backup codes or request SMS code (if enabled) to gain access.
+8. Given I am enrolling in MFA for the first time, When I complete TOTP setup by scanning QR code, Then I am shown 10 single-use backup codes with download/print options before access is granted. These codes are displayed only once.
+9. Given I have lost access to my authenticator app and backup codes, When I click "Lost access?" on MFA challenge page, Then I can request email verification link to disable MFA and reset my password.
+10. Given I am authenticated as Super Admin, When I navigate to any store-specific page, Then I can view and manage data across all stores in the system.
 
 **Store Admin/Staff Login**:
 
@@ -407,7 +467,7 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 - **CHK103 - Session hijacking prevention**: JWT tokens include: (a) User ID, (b) Session ID (unique per login), (c) Issued At timestamp, (d) Expiration timestamp, (e) User agent hash (optional, for stricter security). Token signature is verified on every API request. If signature verification fails or token is expired, return HTTP 401 with message: "Session expired or invalid. Please login again."
 - **CHK104 - Password reset token expiration**: Password reset tokens are single-use and expire after 1 hour. If user clicks expired reset link, show: "This password reset link has expired. Please request a new one." If token is already used, show: "This password reset link has already been used. If you need to reset your password again, please request a new link."
 - **CHK105 - Email verification for new accounts**: New user registrations (Store Admins, Staff, Customers) require email verification before account activation. Verification email sent immediately with link valid for 24 hours. User cannot login until email is verified (show message: "Please verify your email address. Check your inbox for verification link."). Resend verification email option available on login page.
-- **CHK106 - MFA recovery without backup codes**: Since no backup codes are provided, users who lose access to their authenticator app must use account recovery workflow: (1) Click "Lost access to authenticator?" link on MFA challenge page, (2) System sends verification email with time-limited recovery link (valid for 1 hour), (3) User clicks link to verify email ownership, (4) After email verification, user can disable MFA and set new password, (5) Audit log records MFA recovery event with timestamp, IP address, and user agent for security review.
+- **CHK106 - MFA recovery with backup codes**: Users have multiple recovery options if they lose access to their authenticator app: (1) **Backup Codes**: Enter one of the 10 single-use backup codes provided during MFA enrollment. System verifies code against bcrypt hashes, marks code as used, and grants access. (2) **SMS Fallback** (if enabled): Request SMS code sent to registered phone number, enter 6-digit code valid for 5 minutes. (3) **Email Recovery** (fallback option): Click "Lost access to authenticator and backup codes?" link, system sends verification email with time-limited recovery link (valid for 1 hour), after email verification user can disable MFA and set new password. All recovery attempts are logged in audit trail with timestamp, IP address, recovery method used, and user agent for security review.
 - **CHK107 - SSO account linking**: When user logs in via SSO (OIDC/SAML) for the first time, system checks if email matches existing account. If match found, prompt: "An account with this email already exists. Link your SSO account to existing account?" with "Link Account" or "Use Different Email" options. If linked, user can login with either SSO or password. If email already linked to different SSO provider, show error: "This email is already linked to another SSO provider."
 - **CHK108 - Role change during active session**: If admin changes user's role or permissions while user is logged in, changes take effect on next API request (no page refresh required). User sees notification: "Your permissions have been updated. Some features may no longer be accessible." If user loses all permissions, redirect to "Access Denied" page with logout option.
 - **CHK109 - Super Admin privilege escalation**: Super Admin login requires additional verification for sensitive actions: (a) Password re-confirmation for creating new Super Admin accounts, (b) MFA challenge for accessing system-wide settings, (c) Audit log entry for every Super Admin action with IP address, user agent, and timestamp. Super Admin cannot delete their own account (requires another Super Admin).
@@ -606,7 +666,7 @@ Security and compliance
 - **FR-090H**: The system MUST implement logout functionality at `/auth/signout` that: (a) Invalidates current session token, (b) Clears authentication cookie, (c) Redirects to login page with message: "You have been logged out successfully.", (d) Logs audit event with user ID, timestamp, and IP address.
 - **FR-090I**: The system MUST provide session management UI in user account settings showing: (a) List of active sessions with device type, browser, IP address, login timestamp, last activity timestamp, (b) "Current Session" indicator for the session user is viewing from, (c) "Sign Out" button for each session to remotely terminate that session, (d) "Sign Out All Other Sessions" button to terminate all sessions except current.
 - **FR-090J**: The system MUST implement IP-based rate limiting for login attempts: 20 attempts per IP address per 5-minute sliding window. When exceeded, return HTTP 429 with message: "Too many login attempts. Please try again in 5 minutes." Log rate limit violations with IP address, timestamp, and attempted email addresses (for security monitoring).
-- **FR-091**: The system MUST support optional multi‑factor authentication (MFA) with TOTP authenticator apps (RFC 6238) as the primary method. The system MAY additionally offer WebAuthn/FIDO2 security keys as an optional method for enterprises. No backup codes are provided - users must use their authenticator app for MFA-enabled accounts.
+- **FR-091**: The system MUST support optional multi‑factor authentication (MFA) with TOTP authenticator apps (RFC 6238) as the primary method. The system MUST provide 10 single-use backup codes for account recovery during MFA enrollment. Backup codes MUST be hashed using bcrypt (cost factor 12) before storage, displayed only once during enrollment with download/print options, marked as used after consumption, and expire after 1 year or when MFA is disabled. The system MAY additionally offer SMS fallback (opt-in per tenant) and WebAuthn/FIDO2 security keys as optional methods for enterprises.
 - **FR-092**: The system MUST support optional SSO for enterprises using OIDC and SAML 2.0 with common identity providers (e.g., Okta, Azure AD, Google, OneLogin).
 - **FR-093**: The system MUST lock accounts after repeated failed login attempts for a configurable duration and notify the user.
 - **FR-094**: The system MUST maintain detailed, immutable audit logs for security‑sensitive actions (auth events, role changes, inventory adjustments, order changes); implement data encryption at rest (AES-256) and in transit (TLS 1.3).
@@ -760,7 +820,7 @@ Data retention and compliance
 - Password History: user reference, bcrypt password hash, created at; stores last 5 passwords to prevent reuse.
 - Failed Login Attempt: user email, IP address, attempted at, success flag; tracks failed logins for account lockout enforcement.
 - Password Reset Token: token, user reference, created at, expires at (1 hour), used flag; single-use tokens for password reset flow.
-- MFA Secret: user reference, secret key (encrypted), enabled at; stores TOTP secret for authenticator app-based MFA. No backup codes stored.
+- MFA Secret: user reference, secret key (encrypted), backup codes (JSON array of bcrypt hashes with usage status), backup codes generated at (for 1-year expiration), SMS phone number (E.164 format), SMS enabled flag, enabled at; stores TOTP secret, backup codes, and SMS configuration for multi-factor authentication.
 - MFA Recovery Token: token, user reference, created at, expires at (1 hour), used flag; single-use tokens for MFA recovery workflow when user loses access to authenticator app.
 - Email Verification Token: token, user reference, created at, expires at (24 hours), verified at; for new account email verification.
 - Role/Permission: **Phase 1 uses predefined enum-based roles** (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with permissions hard-coded in application logic. Role stored as enum field on User model. Permission checking done via direct role comparison (e.g., `user.role === 'SUPER_ADMIN'`). **Predefined permission sets**: (1) SUPER_ADMIN - full platform access across all stores, manage users/stores/plans; (2) STORE_ADMIN - full store management, assign staff, configure settings; (3) STAFF - configurable module access (products, orders, customers, inventory) per store; (4) CUSTOMER - storefront access, account management, order history. Custom roles with granular permissions deferred to Phase 2 as enterprise feature.
