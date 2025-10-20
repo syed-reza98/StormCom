@@ -270,7 +270,10 @@ model User {
   // MFA settings
   mfaEnabled    Boolean  @default(false)
   mfaSecret     String?  // TOTP secret (encrypted)
-  // Removed mfaBackupCodes; no backup codes are stored.
+  mfaBackupCodes String? // JSON array of backup code hashes (bcrypt cost 12) with used status: [{"code": "hash", "used": false, "usedAt": null}]
+  mfaBackupCodesGeneratedAt DateTime? // Timestamp when backup codes were generated (for 1-year expiration)
+  smsPhoneNumber String? // Phone number for SMS fallback (E.164 format)
+  smsEnabled     Boolean  @default(false) // Whether SMS fallback is enabled
   
   // User preferences
   language      String   @default("en")

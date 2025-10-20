@@ -14,7 +14,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)  
 **Primary Framework**: Next.js 15.5.5 (App Router only, React 19.x Server Components)  
 **Primary Dependencies**:
-**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). **MFA is required for Admin and Super Admin**, optional for other roles.
+**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app with backup codes for recovery), optional SMS fallback, OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). **MFA is optional for all users** including Admins and Super Admins during initial development phase - can be made required in future phases.
 
 **UI Requirements:**
 - Login, Register, and Logout UI interfaces for the dashboard must be implemented as per spec.md UI requirements, including:
@@ -101,7 +101,7 @@ Nightly database snapshots (retain 30 days) and weekly restore drills. Weekly ob
 | **Naming Conventions** | ✅ PASS | camelCase (variables), PascalCase (components/types), UPPER_SNAKE_CASE (constants) |
 | **Database Schema** | ✅ PASS | Prisma with cuid() PKs, createdAt/updatedAt timestamps, deletedAt soft deletes, storeId tenant isolation, compound indexes |
 | **API Standards** | ✅ PASS | RESTful conventions, standardized response format, HTTP status codes, tiered rate limiting (FR-128 to FR-132) |
-| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. **MFA is required for Admin and Super Admin, optional for other users.** |
+| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app with backup codes for recovery, optional SMS fallback), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. **MFA is optional for all users** including Admins and Super Admins during initial development phase. |
 | **Multi-tenant Isolation** | ✅ PASS | Prisma middleware auto-injects storeId; all queries filtered by tenant; cross-tenant access prohibited (FR-095) |
 
 **Gate Decision**: ✅ **PROCEED TO PHASE 1**

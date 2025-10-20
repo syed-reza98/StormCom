@@ -295,16 +295,23 @@ Dependencies: US2, US4.
 
 ## Phase 10 — User Story 12: Security and access control (P1)
 
-Goal: Strong passwords, MFA (TOTP authenticator app only, no backup codes), account lockouts, RBAC (predefined roles), audit logs.
+Goal: Strong passwords, MFA (TOTP authenticator app with backup codes for recovery, optional SMS fallback), account lockouts, RBAC (predefined roles), audit logs.
 
 Independent Test Criteria:
-- Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; **Super Admin MFA is required**.
+- Enforce password policy; MFA flow (TOTP with backup codes, optional SMS); backup code generation, storage, and recovery; lockouts after failed attempts; audit capture; **MFA is optional for all users** including Super Admins during initial development phase.
 
 - [ ] T086 [US12] Password policy validators at src/lib/security/password-policy.ts
 - [ ] T086a [US12] Add password history table and validation (CHK009) at prisma/schema.prisma
 - [ ] T086b [US12] Add password history service (last 5 passwords) at src/services/security/password-history-service.ts
 - [ ] T086c [US12] Add password history cleanup job (2-year retention) at src/services/jobs/password-history-cleanup.ts
-- [ ] T087 [P] [US12] MFA (TOTP authenticator app only; no backup codes; **required for Admins and Super Admins**) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
+- [ ] T087 [P] [US12] MFA (TOTP authenticator app with backup codes for recovery; **optional for all users**) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
+- [ ] T087a [US12] Implement backup codes generation service (10 single-use codes, bcrypt hashed) at src/services/security/backup-codes-service.ts
+- [ ] T087b [US12] Implement backup codes recovery API endpoint at src/app/api/auth/mfa/backup-codes/verify/route.ts
+- [ ] T087c [US12] Implement backup codes regeneration API endpoint at src/app/api/auth/mfa/backup-codes/regenerate/route.ts
+- [ ] T087d [US12] Add backup codes UI (display once during enrollment with download/print options) at src/app/(auth)/mfa/backup-codes/page.tsx
+- [ ] T087e [US12] Implement SMS fallback service (optional, Twilio integration) at src/services/security/sms-mfa-service.ts
+- [ ] T087f [US12] Implement SMS MFA API endpoints (send code, verify code) at src/app/api/auth/mfa/sms/route.ts
+- [ ] T087g [US12] Add SMS fallback configuration UI at src/app/(admin)/settings/security/page.tsx
 - [ ] T088 [US12] Account lockout policy at src/services/security/lockout-service.ts
 - [ ] T089 [P] [US12] RBAC policies and guards integration (predefined roles only) at src/lib/rbac.ts
 - [ ] T089a [US12] Add fine-grained permission checks (can_edit_product, can_view_orders, etc.) at src/lib/rbac-permissions.ts
