@@ -10,7 +10,7 @@
 ### Session 2025-10-17
 
 - Q: Which SSO standard(s)/provider scope should be supported for enterprise SSO? → A: OIDC + SAML (both)
-- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with one‑time backup codes for account recovery; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
+- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with single-use backup codes for account recovery; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
 - Q: External platform sync (scope, direction, frequency)? → A: Real-time bidirectional sync with webhooks for immediate data consistency in both directions, including conflict resolution strategies.
 - Q: What are the scalability targets per store before performance degradation? → A: Mid-market scale - Up to 10K products, 1M orders/year (≈83K orders/month), 250K customers per store.
 - Q: What uptime SLA should StormCom guarantee? → A: 99.9% uptime (≈43 minutes downtime/month) - standard SaaS reliability target.
