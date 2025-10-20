@@ -14,7 +14,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)  
 **Primary Framework**: Next.js 15.5.5 (App Router only, React 19.x Server Components)  
 **Primary Dependencies**:
-**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). MFA is optional for all users, including Super Admins, for consistency.
+**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt password hashing, TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO. Role/Permission system uses predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) with fixed permissions (no custom roles in Phase 1). **MFA is required for Admin and Super Admin**, optional for other roles.
 
 **UI Requirements:**
 - Login, Register, and Logout UI interfaces for the dashboard must be implemented as per spec.md UI requirements, including:
@@ -24,6 +24,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
   - Wireframes must be included in design documentation (docs/audit/login-register-wireframes.md) and specify all element positions, spacing, error/loading/empty states, and visual hierarchy.
   - All terms (e.g., "centered card layout", "dashboard branding") must be defined in design docs. Any conflicts between UI, accessibility, and branding must be resolved in favor of accessibility.
   - Dependencies: Next.js App Router, shadcn/ui, Tailwind CSS, and wireframes are required for implementation and review.
+  - **Design System & Styling Standards**: Implement and adhere to the unified design system defined in `spec.md`. Define a core color palette (primary, secondary, neutral, success, warning, danger) with WCAG‑compliant contrast, choose a default font family (Inter) and hierarchy, establish spacing and layout rules (4 px/8 px base units, consistent border radius), and compose UI using shadcn/ui and Tailwind classes. Provide dark mode support, dynamic theming per store, standardized icons via lucide‑react, motion guidelines via Framer Motion, and document tokens and components in `docs/design-system.md` and accompanying design files.
 - **Validation**: Zod for runtime schema validation
 - **Forms**: React Hook Form for form state management
 - **UI**: Tailwind CSS 4.1.14+, Radix UI + shadcn/ui (accessible components)
@@ -35,7 +36,25 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 - **Rate Limiting**: Vercel KV (serverless Redis) for tiered API rate limiting per subscription plan
 - **Monitoring**: Vercel Analytics (performance/Web Vitals) + Sentry (error tracking/logging) + Uptime monitoring (external service like UptimeRobot for availability tracking)
 
-**Session Management**: JWT + server-side session store. Session ID is embedded in JWT and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). JWT tokens have 30-day absolute expiration, 7-day idle timeout (sliding window), stored in HTTP-only, Secure, SameSite=Lax cookies.
+**Session Management**: Sessions have a 30-minute idle timeout and a 12-hour absolute expiration. Session IDs are embedded in JWTs and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10 ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Sessions rotate on privilege change and are stored in HttpOnly, Secure, SameSite=Lax cookies. **State-changing requests** require a valid CSRF token (see CSRF Protection).
+
+### CSRF Protection (NEW)
+All state‑changing requests from browsers require a double‑submit anti‑CSRF token and SameSite=Lax cookies. Exempt idempotent GET/HEAD; enforce the token on POST/PUT/PATCH/DELETE. Provide the CSRF token via secure cookie and meta tag; include a nonce binding for forms.
+
+### Security Headers (NEW)
+Set the following headers at the edge (middleware):
+- Strict‑Transport‑Security: `max‑age=63072000; includeSubDomains; preload`
+- Content‑Security‑Policy: a nonce‑based strict CSP with `frame‑ancestors 'none'` for the dashboard
+- X‑Content‑Type‑Options: `nosniff`
+- Referrer‑Policy: `strict‑origin‑when‑cross‑origin`
+- (Legacy) X‑Frame‑Options: `DENY`
+
+### Incident Response & IP Reputation (NEW)
+Implement anomaly detection and IP reputation checks on authentication‑critical routes. Create an on‑call runbook with triage procedures, communication templates, evidence preservation, and post‑mortem steps.
+
+### Backups & Restore Drills (NEW)
+Nightly database snapshots (retain 30 days) and weekly restore drills. Weekly object storage backup verification. Recovery Point Objective (RPO): 24 hours; Recovery Time Objective (RTO): 4 hours for production.
+
 **Storage**: PostgreSQL (production on Vercel Postgres), SQLite (local development via Prisma file: ./prisma/dev.db)
 
 **Testing**: 
@@ -82,7 +101,7 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 | **Naming Conventions** | ✅ PASS | camelCase (variables), PascalCase (components/types), UPPER_SNAKE_CASE (constants) |
 | **Database Schema** | ✅ PASS | Prisma with cuid() PKs, createdAt/updatedAt timestamps, deletedAt soft deletes, storeId tenant isolation, compound indexes |
 | **API Standards** | ✅ PASS | RESTful conventions, standardized response format, HTTP status codes, tiered rate limiting (FR-128 to FR-132) |
-| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only, no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. MFA is optional for all users, including Super Admins. |
+| **Security** | ✅ PASS | NextAuth v5, bcrypt (cost 12), TOTP MFA (authenticator app only; no backup codes), OIDC/SAML SSO, RBAC with predefined roles, input validation (Zod), XSS prevention, HTTPS only. **MFA is required for Admin and Super Admin, optional for other users.** |
 | **Multi-tenant Isolation** | ✅ PASS | Prisma middleware auto-injects storeId; all queries filtered by tenant; cross-tenant access prohibited (FR-095) |
 
 **Gate Decision**: ✅ **PROCEED TO PHASE 1**

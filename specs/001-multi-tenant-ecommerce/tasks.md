@@ -49,6 +49,10 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 - [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
 - [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
 - [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
+- [ ] T009c [DESIGN] Define global design tokens (color palette, typography, spacing, border radius) in `tailwind.config.ts`, create design system documentation at `docs/design-system.md`, and verify WCAG 2.1 AA contrast for all color combinations.
+- [ ] T009d [DESIGN] Implement base layout and UI kit components (DashboardShell, StorefrontLayout, Card, Button, Input, PageHeader, Badge) using shadcn/ui and Tailwind classes, adhering to the design tokens.
+- [ ] T009e [DESIGN] Add dynamic theming support based on `Store.primaryColor` and `Store.secondaryColor` using CSS variables; update the theme toggle to support light/dark mode tokens; implement tests to verify theme switching.
+- [ ] T009f [DESIGN] Provide comprehensive design documentation, including Figma files or equivalent design sources, usage guidelines, and examples for all components and tokens in `docs/design-system.md`.
 - [x] T010 Add shared types barrel at src/types/index.ts
 - [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
 - [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
@@ -294,13 +298,13 @@ Dependencies: US2, US4.
 Goal: Strong passwords, MFA (TOTP authenticator app only, no backup codes), account lockouts, RBAC (predefined roles), audit logs.
 
 Independent Test Criteria:
-- Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; Super Admin MFA is optional.
+- Enforce password policy; MFA flow (TOTP only, no backup codes); lockouts after failed attempts; audit capture; **Super Admin MFA is required**.
 
 - [ ] T086 [US12] Password policy validators at src/lib/security/password-policy.ts
 - [ ] T086a [US12] Add password history table and validation (CHK009) at prisma/schema.prisma
 - [ ] T086b [US12] Add password history service (last 5 passwords) at src/services/security/password-history-service.ts
 - [ ] T086c [US12] Add password history cleanup job (2-year retention) at src/services/jobs/password-history-cleanup.ts
-- [ ] T087 [P] [US12] MFA (TOTP authenticator app only, no backup codes, optional for Super Admins) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
+- [ ] T087 [P] [US12] MFA (TOTP authenticator app only; no backup codes; **required for Admins and Super Admins**) at src/services/security/mfa-service.ts and src/app/api/auth/mfa/route.ts
 - [ ] T088 [US12] Account lockout policy at src/services/security/lockout-service.ts
 - [ ] T089 [P] [US12] RBAC policies and guards integration (predefined roles only) at src/lib/rbac.ts
 - [ ] T089a [US12] Add fine-grained permission checks (can_edit_product, can_view_orders, etc.) at src/lib/rbac-permissions.ts
@@ -311,6 +315,21 @@ Independent Test Criteria:
 - [ ] T090d [US12] Write E2E test for password history enforcement (CHK009) at tests/e2e/security/password-history.spec.ts
 
 Dependencies: Foundational auth.
+
+---
+
+## New Security Hardening Tasks (NEW)
+
+[ ] T190 [SEC] Implement CSRF middleware (double-submit token) and add e2e tests for all POST/PUT/PATCH/DELETE routes.
+[ ] T191 [SEC] Set security headers at edge (HSTS, CSP with nonce, X‑Content‑Type‑Options, Referrer‑Policy, X‑Frame‑Options) and add automated checks.
+[ ] T192 [SEC] Add login-specific rate limiting and account lockout (progressive backoff) with unit tests.
+[ ] T193 [SEC] Expand AuditLog coverage to include auth events, role changes, sensitive configuration changes; verify immutability.
+[ ] T194 [PRIV] Implement DSAR endpoints: export (portable format), erasure, and verification workflow; admin UI to track requests.
+[ ] T195 [PRIV] PII retention jobs per data category; configurable retention policies; deletion logs with AuditLog references.
+[ ] T196 [OPS] Incident response runbook; on-call rotation; tabletop exercise task.
+[ ] T197 [OPS] Integrate IP reputation/threat intel checks on auth routes; instrument anomaly detection metrics.
+[ ] T198 [OPS] Nightly DB snapshots (retain 30 days) + weekly restore drills; blob backup verification; document RPO/RTO in runbook.
+[ ] T199 [ANALYTICS] Normalize analytics endpoints (`/analytics/track`), implement OpenAPI spec, and add tests & auth.
 
 ---
 

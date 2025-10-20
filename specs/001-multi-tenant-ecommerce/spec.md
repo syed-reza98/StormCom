@@ -10,7 +10,7 @@
 ### Session 2025-10-17
 
 - Q: Which SSO standard(s)/provider scope should be supported for enterprise SSO? → A: OIDC + SAML (both)
-- Q: Which MFA method(s) should be supported? → A: Adopt the recommended stack: TOTP authenticator apps (RFC 6238) as the primary method with one‑time recovery codes; optional SMS fallback (opt‑in per tenant); optional WebAuthn/FIDO2 security keys for enterprises.
+- Q: Which MFA method(s) should be supported? → A: TOTP authenticator apps (RFC 6238) as the sole method in Phase 1 (no backup codes). Optional WebAuthn/FIDO2 keys may be added in future phases; SMS fallback is not in scope.
 - Q: External platform sync (scope, direction, frequency)? → A: Real-time bidirectional sync with webhooks for immediate data consistency in both directions, including conflict resolution strategies.
 - Q: What are the scalability targets per store before performance degradation? → A: Mid-market scale - Up to 10K products, 1M orders/year (≈83K orders/month), 250K customers per store.
 - Q: What uptime SLA should StormCom guarantee? → A: 99.9% uptime (≈43 minutes downtime/month) - standard SaaS reliability target.
@@ -21,8 +21,8 @@
 
 - Q: How should the Role/Permission system be modeled in the database to support granular permissions? → A: Predefined roles with fixed permissions (no custom roles in Phase 1)
 - Q: How should user sessions be stored to support fast invalidation (<60s) while maintaining scalability? → A: JWT + Server-side session store with environment-based implementation: Vercel KV (Redis) in production for <10ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Session ID stored in JWT, validated on every request.
-- Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes - users must use authenticator app only (TOTP required for MFA-enabled accounts).
-- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: Optional MFA for Super Admins (same as other users) - maintains consistency but may reduce security for privileged accounts.
+- Q: How should MFA backup codes be stored to balance security and usability? → A: No backup codes will be issued or stored; users must rely solely on a TOTP authenticator app.
+- Q: Should Super Admins be required to use MFA, or should it be optional like other user types? → A: MFA is **required** for Admins and Super Admins; optional for other user types.
 
 ## Technical Assumptions
 
@@ -39,6 +39,62 @@
 - **Responsive Breakpoints**: 640px (sm), 768px (md), 1024px (lg), 1280px (xl), 1536px (2xl) - mobile-first approach.
 - **JavaScript**: ES2020+ features; no IE11 support; polyfills only for Safari 14 (Promise.allSettled, String.replaceAll).
 - **Progressive Enhancement**: Core checkout flow works without JavaScript (server-side rendering + forms); enhanced features (autocomplete, real-time validation) require JavaScript.
+
+### Design & Styling Standards
+StormCom's UI follows a unified design system across the admin dashboard and customer storefront. These guidelines ensure consistency, accessibility, and maintainability.
+
+**Design System Overview**
+ - Use **Tailwind CSS 4.1.14+** with custom configuration and **shadcn/ui** (built on top of Radix UI) as the primary component library. Avoid writing custom CSS except for design tokens.
+ - Define reusable design tokens for colors, typography, spacing, and border radius. Store tokens in `tailwind.config.ts` and document them in `docs/design-system.md`.
+
+**Color Palette**
+ - Define a core palette with roles: **primary**, **secondary**, **neutral**, **success**, **warning**, and **danger**. Default values:  
+   - `primary`: `#0f766e` (teal)  
+   - `secondary`: `#7c3aed` (purple)  
+   - `neutral`: `#64748b` (slate)  
+   - `success`: `#16a34a` (green)  
+   - `warning`: `#ca8a04` (amber)  
+   - `danger`: `#dc2626` (red)  
+   Ensure all text/background combinations meet WCAG 2.1 AA contrast (≥ 4.5:1).  
+ - Each store may override the primary color via the `primaryColor` field (and optional `secondaryColor`) in the `Store` model. Use CSS variables to apply dynamic theming based on store configuration.
+
+**Typography**
+ - Use **Inter**, `sans-serif` as the default font family. Provide fallbacks (`ui-sans-serif, system-ui`).  
+ - Heading hierarchy: `h1` → `text-3xl font-semibold`, `h2` → `text-2xl font-semibold`, `h3` → `text-xl font-medium`.  
+ - Body text: `text-base leading-relaxed`.  
+ - Use `text-sm` for form labels, helper text, and table captions.  
+ - Avoid excessive letter-spacing; rely on Tailwind's tracking utilities (e.g., `tracking-tight`).
+
+**Spacing & Layout**
+ - Use a base unit of **4 px** (Tailwind's `0.5` spacing) and multiples thereof. Standard gaps: `4`, `6`, `8`, `12`, `16`.  
+ - Pages use a max width of `1280px` (`max-w-screen-xl`) and center content.  
+ - Employ the **12‑column CSS grid** for complex layouts; otherwise, use Flexbox for simple row/column arrangements.  
+ - Standard border radius: `rounded-lg` for cards, `rounded-md` for buttons/inputs.
+
+**Components & Patterns**
+ - Compose UI using **shadcn/ui** primitives: `Button`, `Input`, `Label`, `Card`, `Dialog`, `Tabs`, `Accordion`, `Table`. Extend only via Tailwind classes or variant props; never modify underlying Radix styles directly.  
+ - All custom components must support dark mode via CSS variables and the `data-theme` attribute.  
+ - Provide global layout wrappers (`DashboardShell`, `StorefrontLayout`) with consistent padding, page titles, and breadcrumbs.
+
+**Dark Mode**
+ - Implement dark mode using CSS variables toggled by a `theme-toggle` component. Store the user's preference in `localStorage`.  
+ - Define dark variants of all palette colors (e.g., `primary-dark`, `neutral-dark`) ensuring contrast requirements.
+
+**Icons & Imagery**
+ - Use **lucide-react** icons for vector icons; maintain consistent stroke width (`1.5 px`).  
+ - Provide descriptive `aria-label` or `title` attributes for icons used without text.  
+ - Optimize images via Next.js `<Image>` component with responsive `sizes` and `priority` flags. All images must include `alt` text.
+
+**Motion & Interaction**
+ - Use **Framer Motion** for enter/exit transitions and interactive feedback (e.g., modal slide-in, dropdown fade).  
+ - Respect user motion preferences (`prefers-reduced-motion`); disable animations when necessary.  
+ - Provide visual feedback on hover, focus, active, and disabled states with subtle transitions (e.g., `transition-colors`, `duration-150`).
+
+**Documentation**
+ - Document all tokens, components, and layout patterns in `docs/design-system.md` with usage guidelines and examples.  
+ - Provide Figma or comparable design source files for designers and developers to reference; include links in the design docs.  
+
+These guidelines supersede any ambiguous terminology (e.g., "centered card layout") and serve as the baseline for all UI/UX decisions.
 
 ### Performance & Scalability Assumptions
 
@@ -58,8 +114,10 @@
 ### Security & Compliance Assumptions
 
 - **Password Policy**: Minimum 8 characters; requires uppercase, lowercase, number, and special character; password history (last 5 passwords) checked; bcrypt cost factor 12.
-- **Session Management**: JWT tokens with 30-day absolute expiration, 7-day idle timeout (sliding window); stored in HTTP-only, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10ms validation and immediate invalidation; in-memory Map in local development (no Redis setup required). Session ID embedded in JWT; validated on every API request.
-- **HTTPS**: TLS 1.3 enforced via Vercel; HSTS headers with max-age=31536000 (1 year); automatic certificate renewal via Let's Encrypt.
+- **Session Management**: 30-minute idle timeout and 12-hour absolute expiration; sessions rotate on privilege change; stored in HttpOnly, Secure, SameSite=Lax cookies. **Session storage**: Vercel KV (Redis-compatible) in production for <10 ms validation and immediate invalidation; in-memory Map fallback for local development. Session IDs are embedded in JWTs and validated on every request.
+- **Transport Security (HTTPS)**: TLS 1.3 only. Enforce HSTS headers with `max-age=63072000; includeSubDomains; preload` and automatic certificate renewal via Let's Encrypt.
+- **CSRF Protection**: All state-changing requests MUST include a CSRF token bound to the user session. Idempotent GET/HEAD requests are exempt. CSRF tokens are delivered via secure cookies and validated on POST/PUT/PATCH/DELETE.
+- **Security Headers**: Set strict security headers on all responses: Content-Security-Policy (nonce-based with `frame-ancestors 'none'` for the dashboard), X-Content-Type-Options `nosniff`, Referrer-Policy `strict-origin-when-cross-origin`, and, for legacy clients, X-Frame-Options `DENY`. Configure a 2-year HSTS policy as described above.
 - **CORS**: Allowed origins configurable per store (default: same-origin only); API endpoints support CORS preflight with credentials.
 - **PCI Compliance**: Level 1 PCI-DSS compliance by never storing card data; relying on payment gateway tokenization (Stripe/SSLCommerz hosted checkout or Elements/JS SDK).
 
