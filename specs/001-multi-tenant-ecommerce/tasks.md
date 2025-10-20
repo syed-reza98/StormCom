@@ -540,6 +540,66 @@ Independent Test Criteria:
 
 ---
 
+## Phase 20 — Data Retention and Compliance (P1)
+
+Goal: Implement automated data retention policies to meet compliance requirements (FR-121 to FR-127) with 3-year order retention, 1-year audit logs, 90-day backups, GDPR data deletion/export, and configurable retention policies per store.
+
+Independent Test Criteria:
+- Orders/invoices retained for 3 years with automated cleanup, audit logs stored immutably for 1 year, backups auto-deleted after 90 days, GDPR data deletion requests complete within 30 days, data export generates complete JSON/CSV, retention policies configurable per store, all retention events logged to audit trail.
+
+- [ ] T157 [US14] [Data Retention] Add retention metadata to Prisma schema (archivedAt, retentionExpiresAt fields) for Order, AuditLog, Backup models at prisma/schema.prisma
+- [ ] T158 [US14] [Data Retention] Implement data retention service with policy enforcement logic at src/services/compliance/data-retention-service.ts
+- [ ] T159 [US14] [Data Retention] Create order/invoice archival job (3-year retention, FR-121) at src/services/jobs/archive-orders-job.ts
+- [ ] T160 [US14] [Data Retention] Create audit log cleanup job (1-year retention, immutable storage, FR-122) at src/services/jobs/cleanup-audit-logs-job.ts
+- [ ] T161 [US14] [Data Retention] Create backup cleanup job (90-day retention, FR-123) at src/services/jobs/cleanup-backups-job.ts
+- [ ] T162 [US14] [GDPR] Implement GDPR data deletion service (30-day SLA, FR-124) at src/services/compliance/gdpr-deletion-service.ts
+- [ ] T163 [US14] [GDPR] Implement GDPR data export service (48-hour SLA, JSON/CSV, FR-125) at src/services/compliance/gdpr-export-service.ts
+- [ ] T164 [US14] [Data Retention] Create retention policy executor job (scheduled, FR-126) with Inngest at src/services/jobs/execute-retention-policies-job.ts
+- [ ] T165 [US14] [Data Retention] Admin retention policy configuration page (per-store, FR-127) at src/app/(admin)/settings/compliance/retention/page.tsx
+- [ ] T166 [US14] [GDPR] Customer data deletion request page at src/app/(storefront)/account/privacy/page.tsx
+- [ ] T167 [US14] [GDPR] Customer data export request page at src/app/(storefront)/account/data-export/page.tsx
+- [ ] T168 [US14] [Data Retention] Admin GDPR requests queue page (approve/process deletion requests) at src/app/(admin)/settings/compliance/gdpr-requests/page.tsx
+- [ ] T169 [US14] [Data Retention] API endpoint for retention policy CRUD at src/app/api/compliance/retention-policies/route.ts
+- [ ] T170 [US14] [GDPR] API endpoint for GDPR deletion requests at src/app/api/compliance/gdpr-deletion/route.ts
+- [ ] T171 [US14] [GDPR] API endpoint for GDPR data export at src/app/api/compliance/gdpr-export/route.ts
+- [ ] T172 [US14] [Data Retention] Add retention policy audit trail with failure handling (job crashes, rollback) to audit log service
+- [ ] T173 [US14] [Data Retention] Add retention policy monitoring dashboard (metrics: records archived, errors, policy execution status) at src/app/(admin)/settings/compliance/monitoring/page.tsx
+- [ ] T173a [US14] [Data Retention] Write unit tests for data retention service (>80% coverage) at src/services/compliance/__tests__/data-retention-service.test.ts
+- [ ] T173b [US14] [Data Retention] Write unit tests for GDPR deletion service (>80% coverage) at src/services/compliance/__tests__/gdpr-deletion-service.test.ts
+- [ ] T173c [US14] [Data Retention] Write unit tests for GDPR export service (>80% coverage) at src/services/compliance/__tests__/gdpr-export-service.test.ts
+- [ ] T173d [US14] [Data Retention] Write integration tests for retention policy APIs at src/app/api/compliance/__tests__/
+- [ ] T173e [US14] [Data Retention] Write E2E test for GDPR data deletion workflow at tests/e2e/compliance/gdpr-deletion.spec.ts
+- [ ] T173f [US14] [Data Retention] Write E2E test for GDPR data export workflow at tests/e2e/compliance/gdpr-export.spec.ts
+- [ ] T173g [US14] [Data Retention] Write E2E test for automated retention policy execution at tests/e2e/compliance/retention-policies.spec.ts
+
+---
+
+## Phase 21 — Scalability Monitoring and Performance (P1)
+
+Goal: Implement scalability monitoring (FR-113 to FR-115) to maintain performance targets (10K products, 83K orders/month, 250K customers) with real-time metrics dashboard, alerting, query optimization, and caching strategies.
+
+Independent Test Criteria:
+- Performance metrics collected in real-time, dashboard displays per-store resource usage, alerts triggered at 80% of plan limits, query times <100ms (p95), caching reduces API response times by 40%, all metrics stored for 90 days retention.
+
+- [ ] T174 [Infrastructure] Implement scalability metrics collection service at src/services/monitoring/scalability-metrics-service.ts
+- [ ] T175 [Infrastructure] Create performance monitoring middleware (track API response times, query counts) at src/lib/middleware/performance-monitoring.ts
+- [ ] T176 [Infrastructure] Admin scalability monitoring dashboard (FR-114: per-store resource usage) at src/app/(admin)/monitoring/scalability/page.tsx
+- [ ] T177 [Infrastructure] Implement alerting service (FR-114: 80% plan limits, query time >200ms) at src/services/monitoring/alerting-service.ts
+- [ ] T178 [Infrastructure] Add query optimization layer with Prisma query analysis at src/lib/database/query-optimizer.ts
+- [ ] T179 [Infrastructure] Implement caching strategy with Vercel KV (FR-115: 5-min TTL for analytics/reports) at src/lib/caching/cache-manager.ts
+- [ ] T180 [Infrastructure] Add database performance monitoring (FR-113: track query times, connection pool usage) at src/services/monitoring/database-monitoring-service.ts
+- [ ] T181 [Infrastructure] Create scalability metrics aggregation job (hourly aggregation) at src/services/jobs/aggregate-scalability-metrics-job.ts
+- [ ] T182 [Infrastructure] Add metrics retention policy (90 days for historical data) at src/services/monitoring/metrics-retention-service.ts
+- [ ] T183 [Infrastructure] API endpoint for scalability metrics retrieval at src/app/api/monitoring/scalability/route.ts
+- [ ] T184 [Infrastructure] Real-time metrics dashboard component with auto-refresh at src/components/admin/scalability-dashboard.tsx
+- [ ] T185 [Infrastructure] Alert notification service (email admins when thresholds exceeded) at src/services/notifications/alert-notifier.ts
+- [ ] T185a [Infrastructure] Write unit tests for scalability metrics service (>80% coverage) at src/services/monitoring/__tests__/scalability-metrics-service.test.ts
+- [ ] T185b [Infrastructure] Write unit tests for alerting service (>80% coverage) at src/services/monitoring/__tests__/alerting-service.test.ts
+- [ ] T185c [Infrastructure] Write integration tests for monitoring APIs at src/app/api/monitoring/__tests__/
+- [ ] T185d [Infrastructure] Write E2E test for scalability monitoring dashboard at tests/e2e/monitoring/scalability-dashboard.spec.ts
+
+---
+
 ## Parallel Execution Examples
 
 - US2 Product services (T035–T038) can be built in parallel with APIs (T040–T043) and admin pages (T044–T046).

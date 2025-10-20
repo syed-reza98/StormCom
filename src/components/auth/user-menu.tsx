@@ -26,7 +26,7 @@ export function UserMenu() {
         redirect: false,
       });
       // Redirect to login with logout message
-      router.push('/auth/login?logout=true');
+      router.push('/login?logout=true');
     } catch (error) {
       console.error('Logout error:', error);
       setIsLoggingOut(false);
@@ -53,7 +53,9 @@ export function UserMenu() {
         <Button
           variant="ghost"
           className="relative h-10 w-10 rounded-full"
-          aria-label={`User menu for ${session.user.name || session.user.email}`}
+          aria-label={`User menu for ${
+            session.user.name || session.user.email || 'account'
+          }`}
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <span className="text-sm font-medium">
@@ -68,9 +70,11 @@ export function UserMenu() {
             {session.user.name && (
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
             )}
-            <p className="text-xs leading-none text-muted-foreground">
-              {session.user.email}
-            </p>
+            {session.user.email && (
+              <p className="text-xs leading-none text-muted-foreground">
+                {session.user.email}
+              </p>
+            )}
             {session.user.stores?.[0]?.roleName && (
               <p className="text-xs leading-none text-muted-foreground capitalize">
                 Role: {session.user.stores[0].roleName}
@@ -81,6 +85,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <button
+            type="button"
             className="w-full cursor-pointer"
             onClick={() => router.push('/admin/account')}
             onKeyDown={(e) => {
@@ -97,6 +102,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <button
+            type="button"
             className="w-full cursor-pointer text-destructive focus:text-destructive"
             onClick={handleLogout}
             disabled={isLoggingOut}
