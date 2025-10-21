@@ -141,6 +141,49 @@ These guidelines supersede any ambiguous terminology (e.g., "centered card layou
 - **Currency Display**: Store base currency only in Phase 1; Phase 2 adds multi-currency with manual exchange rates updated daily.
 - **Date/Time Format**: ISO 8601 in API; localized display in UI (YYYY-MM-DD for en-US, DD/MM/YYYY for en-GB based on user locale).
 
+### Design System & UI/UX Principles
+
+StormCom adopts a comprehensive, token-driven design system to ensure consistency, accessibility, and performance across **SMB dashboards**, **B2B admin portals**, and **consumer storefronts**:
+
+**Framework & Libraries**
+- **Next.js App Router + React 19** (RSC-first), **TypeScript (strict)**.
+- **Tailwind CSS v4** with **CSS variables** for semantic tokens.
+- **Radix UI** primitives + **shadcn/ui** components (copy-in) for accessible building blocks.
+- **Storybook** is the source of truth for component specs, states, and a11y checks.
+
+**Tokens & Theming**
+- Colors: `--color-bg`, `--color-fg`, `--color-muted`, `--color-border`, `--color-ring`, semantic `--color-primary|secondary|success|warning|danger|info` (+ on-color for text).
+- Typography: `--font-sans`, `--font-mono`, optical sizes from **body/sm..lg** to **h1..h6**; tabular numerals for data views.
+- Spacing: 4/8-pt ramp; radii `sm|md|lg|xl`; elevations `e1..e5`; z-index map for header/drawer/modal/toast/tooltip.
+- Dark mode via `.dark` on `<html>`; set `color-scheme: dark` to style native UI.
+- Per-tenant branding from **Store.primaryColor / secondaryColor / fontFamily** injected as CSS variables at runtime.
+
+**Layout & Responsiveness**
+- 12-col grid on desktop; fluid single-column on mobile; breakpoints: `sm(640)`, `md(768)`, `lg(1024)`, `xl(1280)`, `2xl(1536)`.
+- Content max-widths to maintain readable line lengths; adaptive tables/cards; mobile bottom-sheet patterns for menus/filters.
+
+**Components & Patterns**
+- Buttons (primary/secondary/tertiary/destructive), inputs (text/textarea/select/combobox), dialogs/drawers, tabs/accordion, table (sort/filter/paginate), toasts/alerts, skeletons.
+- Auth pages (login/register/mfa), dashboard shells, storefront product cards, PDP, cart, checkout, order timeline.
+- Charts follow accessible palettes; KPI tiles with deltas and consistent number formatting.
+
+**Accessibility (AA)**
+- Semantic HTML first; ARIA only where necessary. Keyboard support (Tab/Shift+Tab, arrow keys), visible `:focus-visible` ring.
+- **Hit targets ≥44×44** on touch; APCA-based contrast for rest/hover/focus/active in light & dark themes.
+- Live regions for async updates; skip-to-content link; reduced-motion support.
+
+**Documentation & Quality Gates**
+- Each component has Storybook stories (light/dark/RTL/reduced-motion) + a11y checks.
+- Playwright E2E a11y smoke tests for: Auth, Product List, PDP, Cart/Checkout.
+
+### Theming & Multi-Tenant Overrides
+- Inject tenant branding via CSS variables on `<html data-tenant="...">`; Tailwind utilities read vars (e.g., `bg-primary`).
+- Contrast is validated at runtime for custom tenant colors; fall back to safe palette on failure.
+
+### Design Ops & Governance
+- Any UI change must update Storybook stories and pass a11y checks in CI.
+- New components include usage notes and do/don’t examples in `docs/design-system.md`.
+
 ## User Scenarios & Testing (mandatory)
 
 

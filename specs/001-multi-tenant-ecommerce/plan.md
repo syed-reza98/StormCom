@@ -25,6 +25,26 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
   - All terms (e.g., "centered card layout", "dashboard branding") must be defined in design docs. Any conflicts between UI, accessibility, and branding must be resolved in favor of accessibility.
   - Dependencies: Next.js App Router, shadcn/ui, Tailwind CSS, and wireframes are required for implementation and review.
   - **Design System & Styling Standards**: Implement and adhere to the unified design system defined in `spec.md`. Define a core color palette (primary, secondary, neutral, success, warning, danger) with WCAG‑compliant contrast, choose a default font family (Inter) and hierarchy, establish spacing and layout rules (4 px/8 px base units, consistent border radius), and compose UI using shadcn/ui and Tailwind classes. Provide dark mode support, dynamic theming per store, standardized icons via lucide‑react, motion guidelines via Framer Motion, and document tokens and components in `docs/design-system.md` and accompanying design files.
+
+## Design System Implementation Plan
+
+### Phase 1 — Foundations
+1) **Tailwind v4 tokenization** — define semantic tokens in `tailwind.config.ts` (colors/typography/radii/elevations/z-index).
+2) **Global CSS** — `app/styles/globals.css` declares light/dark variables; `data-theme` switch with persisted preference.
+3) **Storybook setup** — `@storybook/nextjs` with a11y, interactions, viewport, docs; decorators for theme, locale, and layout shells.
+
+### Phase 2 — Primitives & Patterns
+1) **Radix + shadcn wiring** — Button, Input, Label, Select, Dialog, Toast, Tabs, Accordion, Table; tokenized states.
+2) **Layout shells** — `DashboardShell` / `StorefrontLayout` (12-col grid, page header, breadcrumbs, toolbar slot).
+3) **A11y & quality** — keyboard coverage, APCA contrast verification, Playwright a11y smoke tests for core flows.
+
+### Phase 3 — Tenant Theming & Docs
+1) **Per-tenant branding** — load Store branding and inject CSS variables; verify contrast for both themes.
+2) **Docs & governance** — `docs/design-system.md` + Storybook as living contract; token changes gated via changesets.
+
+### Deliverables
+- Tailwind config + `globals.css`, Storybook with theming toggles, baseline component library wired to Radix/shadcn.
+- CI gates: Storybook build, a11y checks, visual regression threshold.
 - **Validation**: Zod for runtime schema validation
 - **Forms**: React Hook Form for form state management
 - **UI**: Tailwind CSS 4.1.14+, Radix UI + shadcn/ui (accessible components)
