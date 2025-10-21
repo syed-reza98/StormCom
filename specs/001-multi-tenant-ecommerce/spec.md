@@ -153,7 +153,7 @@ StormCom adopts a comprehensive, token-driven design system to ensure consistenc
 
 **Tokens & Theming**
 - Colors: `--color-bg`, `--color-fg`, `--color-muted`, `--color-border`, `--color-ring`, semantic `--color-primary|secondary|success|warning|danger|info`, each with a corresponding on-color for text contrast (e.g., `--color-on-primary`, `--color-on-secondary`, etc.).
-- Typography: `--font-sans`, `--font-mono`, optical sizes from **body/sm..lg** to **h1..h6**; tabular numerals for data views.
+- Typography: `--font-sans`, `--font-mono`, optical sizes from **body-sm**, **body-md**, **body-lg** to **h1** through **h6**; tabular numerals for data views.
 - Spacing: 4/8-pt ramp; radii `sm|md|lg|xl`; elevations `e1..e5`; z-index map for header/drawer/modal/toast/tooltip.
 - Dark mode via `.dark` on `<html>`; set `color-scheme: dark` to style native UI.
 - Per-tenant branding from **Store.primaryColor / secondaryColor / fontFamily** injected as CSS variables at runtime.
