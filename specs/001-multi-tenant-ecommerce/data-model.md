@@ -90,11 +90,11 @@ model Store {
   language  String   @default("en")
   
   // Theme and branding
-  logoUrl      String?
-  faviconUrl   String?
-  primaryColor String @default("#000000")
-  secondaryColor String @default("#FFFFFF")
-  fontFamily    String?  // Optional custom font family override
+  logoUrl        String?
+  faviconUrl     String?
+  primaryColor   String @default("#000000")  // semantic --color-primary
+  secondaryColor String @default("#FFFFFF")  // semantic --color-secondary
+  fontFamily     String?                     // optional font override (CSS var)
   
   // Contact and legal
   email        String
@@ -1979,6 +1979,34 @@ enum ReviewStatus {
 ---
 
 ## Additional Supporting Entities
+
+### ConsentEvent
+Records changes to user consent (e.g., marketing opt in/out) for auditability and DSAR responses.
+
+```prisma
+model ConsentEvent {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  storeId      String
+  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customerId   String?
+  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  subjectEmail String
+  type         ConsentType
+  source       String?   // "ui", "import", "api"
+  userAgent    String?
+  ipAddress    String?
+  note         String?
+
+  @@index([storeId, subjectEmail, type])
+}
+
+enum ConsentType {
+  MARKETING_OPT_IN
+  MARKETING_OPT_OUT
+  TRACKING_OPT_OUT
+}
+```
 
 ### 41. DSARRequest
 

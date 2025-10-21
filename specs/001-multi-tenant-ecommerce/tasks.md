@@ -47,14 +47,30 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 - [x] T007 Create Zod validation base helpers at src/lib/validation/index.ts
 - [x] T008 Add rate limit utility (Upstash) at src/lib/rate-limit.ts
 - [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
-- [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
-- [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
-- [ ] T009c [DESIGN] Define global design tokens (color palette, typography, spacing, border radius) in `tailwind.config.ts`.
-- [ ] T009d [DESIGN] Create design system documentation for tokens in `docs/design-system.md`.
-- [ ] T009e [DESIGN] Verify WCAG 2.1 AA contrast for all color combinations defined in the design tokens.
-- [ ] T009f [DESIGN] Implement base layout and UI kit components (DashboardShell, StorefrontLayout, Card, Button, Input, PageHeader, Badge) using shadcn/ui and Tailwind classes, adhering to the design tokens.
-- [ ] T009g [DESIGN] Add dynamic theming support based on `Store.primaryColor` and `Store.secondaryColor` using CSS variables; update the theme toggle to support light/dark mode tokens; implement tests to verify theme switching.
-- [ ] T009h [DESIGN] Provide comprehensive design documentation, including Figma files or equivalent design sources, usage guidelines, and examples for all components and tokens in `docs/design-system.md`.
+- [ ] T009a — Tailwind v4 config with semantic tokens
+      **Acceptance**: tokens available as CSS vars; Tailwind theme extended for colors/typography/radii/elevations/z-index.
+- [ ] T009b — `globals.css` with light/dark variables
+      **Acceptance**: `.dark` + `color-scheme: dark`; base styles apply tokens; focus ring utility present.
+- [ ] T009c — Wire Radix/shadcn primitives to tokens
+      **Acceptance**: Button/Input/Select/Dialog/Tabs/Table consume tokens; states use tokenized vars.
+- [ ] T009d — Storybook & docs for components
+      **Acceptance**: a11y, interactions, viewport addons; stories include light/dark/RTL/reduced-motion; MDX usage notes.
+- [ ] T009e — Dark mode toggle & persistence
+      **Acceptance**: `data-theme` persisted; SSR hydration safe; native UI follows `color-scheme`.
+- [ ] T009f — Keyboard navigation patterns
+      **Acceptance**: visible `:focus-visible`; skip-to-content link; menus/dialogs follow ARIA patterns.
+- [ ] T009g — APCA contrast verification
+      **Acceptance**: rest/hover/focus/active contrast pass in both themes; failures fail CI.
+- [ ] T009h — Tenant branding hook
+      **Acceptance**: Store `primaryColor`/`secondaryColor`/`fontFamily` inject to CSS vars at runtime; reflected without rebuild.
+
+### New tasks
+- [ ] T010 — Layout shells (`DashboardShell`, `StorefrontLayout`)
+      **Acceptance**: 12-col grid, page header, breadcrumb, toolbar slot; examples in Storybook.
+- [ ] T011 — Playwright a11y smoke tests
+      **Acceptance**: Auth, Product List, PDP, Cart/Checkout pass axe; CI job green.
+- [ ] T012 — Tokens export & governance
+      **Acceptance**: `tokens.json` published; changesets gate token changes; `docs/design-system.md` updated.
 - [x] T010 Add shared types barrel at src/types/index.ts
 - [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
 - [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
