@@ -49,19 +49,37 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 - [x] T009 Configure Tailwind + shadcn/ui base styles at src/app/globals.css and tailwind.config.ts
 - [x] T009a Add dark mode support with theme toggle at src/components/theme-toggle.tsx
 - [x] T009b Configure responsive breakpoints and container queries at tailwind.config.ts
-- [ ] T009c [DESIGN] Define global design tokens (color palette, typography, spacing, border radius) in `tailwind.config.ts`.
-- [ ] T009d [DESIGN] Create design system documentation for tokens in `docs/design-system.md`.
-- [ ] T009e [DESIGN] Verify WCAG 2.1 AA contrast for all color combinations defined in the design tokens.
-- [ ] T009f [DESIGN] Implement base layout and UI kit components (DashboardShell, StorefrontLayout, Card, Button, Input, PageHeader, Badge) using shadcn/ui and Tailwind classes, adhering to the design tokens.
-- [ ] T009g [DESIGN] Add dynamic theming support based on `Store.primaryColor` and `Store.secondaryColor` using CSS variables; update the theme toggle to support light/dark mode tokens; implement tests to verify theme switching.
-- [ ] T009h [DESIGN] Provide comprehensive design documentation, including Figma files or equivalent design sources, usage guidelines, and examples for all components and tokens in `docs/design-system.md`.
-- [x] T010 Add shared types barrel at src/types/index.ts
-- [x] T011 Add constants (roles, statuses, limits) at src/lib/constants.ts
-- [x] T012 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
-- [x] T012a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
-- [x] T012b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
-- [x] T012c Add Sentry error boundary components at src/components/error-boundary.tsx
-- [x] T012d Configure Sentry source map upload for production debugging at sentry.config.js
+- [ ] T009a – Tailwind v4 config with semantic tokens  
+      **Acceptance**: tokens available as CSS vars; Tailwind theme extended for colors/typography/radii/elevations/z-index.
+- [ ] T009b – `globals.css` with light/dark variables  
+      **Acceptance**: `.dark` + `color-scheme: dark`; base styles apply tokens; focus ring utility present.
+- [ ] T009c – Wire Radix/shadcn primitives to tokens  
+      **Acceptance**: Button/Input/Select/Dialog/Tabs/Table consume tokens; states use tokenized vars.
+- [ ] T009d – Storybook & docs for components  
+      **Acceptance**: a11y, interactions, viewport addons; stories include light/dark/RTL/reduced-motion; MDX usage notes.
+- [ ] T009e – Dark mode toggle & persistence  
+      **Acceptance**: `data-theme` persisted; SSR hydration safe; native UI follows `color-scheme`.
+- [ ] T009f – Keyboard navigation patterns  
+      **Acceptance**: visible `:focus-visible`; skip-to-content link; menus/dialogs follow ARIA patterns.
+- [ ] T009g – APCA contrast verification  
+      **Acceptance**: rest/hover/focus/active contrast pass in both themes; failures fail CI.
+- [ ] T009h – Tenant branding hook  
+      **Acceptance**: Store `primaryColor`/`secondaryColor`/`fontFamily` inject to CSS vars at runtime; reflected without rebuild.
+
+### New tasks
+- [ ] T010 – Layout shells (`DashboardShell`, `StorefrontLayout`)  
+      **Acceptance**: 12-col grid, page header, breadcrumb, toolbar slot; examples in Storybook.
+- [ ] T011 – Playwright a11y smoke tests  
+      **Acceptance**: Auth, Product List, PDP, Cart/Checkout pass axe; CI job green.
+- [ ] T012 – Tokens export & governance  
+      **Acceptance**: `tokens.json` published; changesets gate token changes; `docs/design-system.md` updated.
+- [x] T013 Add shared types barrel at src/types/index.ts
+- [x] T014 Add constants (roles, statuses, limits) at src/lib/constants.ts
+- [x] T015 Configure Sentry client/server initialization at src/lib/monitoring/sentry.ts
+- [x] T015a Add custom Sentry breadcrumbs for multi-tenant context at src/lib/monitoring/sentry.ts
+- [x] T015b Configure Sentry performance monitoring with transaction tracing at src/lib/monitoring/sentry.ts
+- [x] T015c Add Sentry error boundary components at src/components/error-boundary.tsx
+- [x] T015d Configure Sentry source map upload for production debugging at sentry.config.js
 
 ---
 
@@ -69,25 +87,25 @@ Objective: Initialize repo tooling, environment, and baseline scaffolding requir
 
 Objective: Core foundations required before user stories. Complete these first.
 
-- [x] T013 [US12] Implement Prisma schema per data-model (initial models, including predefined roles: SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) at prisma/schema.prisma
-- [x] T013a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
-- [x] T013b [US12] Add database triggers for soft delete validation at prisma/migrations/
-- [x] T013c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
-- [x] T013d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
-- [x] T013e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
-- [x] T013f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
-- [x] T014 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
-- [x] T015 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
-- [x] T015a Implement session store abstraction: Vercel KV (Redis) in production, in-memory Map fallback for local dev at src/lib/session-store.ts
-- [x] T016 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
-- [x] T017 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
-- [x] T018 Implement RBAC guard utility (fixed roles, no custom roles) at src/lib/rbac.ts
-- [x] T019 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
-- [x] T020 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
-- [ ] T020a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
-- [ ] T020b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
-- [ ] T021 Add email sender (Resend) at src/lib/email/resend.ts
-- [ ] T022 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
+- [x] T016 [US12] Implement Prisma schema per data-model (initial models, including predefined roles: SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) at prisma/schema.prisma
+- [x] T016a [US12] Add compound indexes for multi-tenant queries (storeId + createdAt, storeId + slug) at prisma/schema.prisma
+- [x] T016b [US12] Add database triggers for soft delete validation at prisma/migrations/
+- [x] T016c [US12] Document schema relationships and migration strategy at docs/database/schema-guide.md
+- [x] T016d [US12] Add PasswordHistory model to schema (CHK009) at prisma/schema.prisma
+- [x] T016e [US12] Add TaxExemption model to schema (CHK091) at prisma/schema.prisma
+- [x] T016f [US12] Add allowCouponsWithFlashSale and onboardingCompleted to Store model at prisma/schema.prisma
+- [x] T017 [US12] Add Prisma multi-tenant middleware to auto-inject storeId at src/lib/middleware/tenantIsolation.ts
+- [x] T018 Add request context helper to extract user + store from JWT at src/lib/request-context.ts
+- [x] T018a Implement session store abstraction: Vercel KV (Redis) in production, in-memory Map fallback for local dev at src/lib/session-store.ts
+- [x] T019 Implement authentication route for NextAuth at src/app/api/auth/[...nextauth]/route.ts
+- [x] T020 Implement login/logout helpers for API at src/app/api/auth/_helpers.ts
+- [x] T021 Implement RBAC guard utility (fixed roles, no custom roles) at src/lib/rbac.ts
+- [x] T022 Implement standard API route wrapper (error/rate-limit/tenant scope) at src/lib/api-wrapper.ts
+- [x] T023 Add Stripe + SSLCommerz gateway clients at src/lib/payments/stripe.ts and src/lib/payments/sslcommerz.ts
+- [ ] T023a Add payment webhook signature verification at src/lib/payments/webhook-verification.ts
+- [ ] T023b Add idempotency key handling for payment retry safety at src/lib/payments/idempotency.ts
+- [ ] T024 Add email sender (Resend) at src/lib/email/resend.ts
+- [ ] T025 Add background jobs client (Inngest) at src/lib/jobs/inngest.ts
 - [x] T023 Seed default roles/permissions and subscription plans at prisma/seed.ts
 - [x] T024 [P] Create super admin bootstrap script at scripts/create-super-admin.ts
 - [ ] T025 Align OpenAPI with SSLCommerz + endpoints at specs/001-multi-tenant-ecommerce/contracts/openapi.yaml

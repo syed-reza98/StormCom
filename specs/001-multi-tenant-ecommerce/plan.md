@@ -36,6 +36,26 @@ StormCom is a comprehensive multi-tenant e-commerce SaaS platform enabling busin
 - **Rate Limiting**: Vercel KV (serverless Redis) for tiered API rate limiting per subscription plan
 - **Monitoring**: Vercel Analytics (performance/Web Vitals) + Sentry (error tracking/logging) + Uptime monitoring (external service like UptimeRobot for availability tracking)
 
+## Design System Implementation Plan
+
+### Phase 1 – Foundations
+1) **Tailwind v4 tokenization** – define semantic tokens in `tailwind.config.ts` (colors/typography/radii/elevations/z-index).
+2) **Global CSS** – `app/styles/globals.css` declares light/dark variables; `data-theme` switch with persisted preference.
+3) **Storybook setup** – `@storybook/nextjs` with a11y, interactions, viewport, docs; decorators for theme, locale, and layout shells.
+
+### Phase 2 – Primitives & Patterns
+1) **Radix + shadcn wiring** – Button, Input, Label, Select, Dialog, Toast, Tabs, Accordion, Table; tokenized states.
+2) **Layout shells** – `DashboardShell` / `StorefrontLayout` (12-col grid, page header, breadcrumbs, toolbar slot).
+3) **A11y & quality** – keyboard coverage, APCA contrast verification, Playwright a11y smoke tests for core flows.
+
+### Phase 3 – Tenant Theming & Docs
+1) **Per-tenant branding** – load Store branding and inject CSS variables; verify contrast for both themes.
+2) **Docs & governance** – `docs/design-system.md` + Storybook as living contract; token changes gated via changesets.
+
+### Deliverables
+- Tailwind config + `globals.css`, Storybook with theming toggles, baseline component library wired to Radix/shadcn.
+- CI gates: Storybook build, a11y checks, visual regression threshold.
+
 **Session Management**: Sessions have a 30-minute idle timeout and a 12-hour absolute expiration. Session IDs are embedded in JWTs and validated on every request. Session storage uses Vercel KV (Redis-compatible) in production for <10 ms lookups and immediate invalidation; in-memory Map fallback for local development (no Redis dependency). Sessions rotate on privilege change and are stored in HttpOnly, Secure, SameSite=Lax cookies. **State-changing requests** require a valid CSRF token (see CSRF Protection).
 
 ### CSRF Protection (NEW)

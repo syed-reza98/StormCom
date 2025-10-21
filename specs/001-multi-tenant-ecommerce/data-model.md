@@ -90,11 +90,11 @@ model Store {
   language  String   @default("en")
   
   // Theme and branding
-  logoUrl      String?
-  faviconUrl   String?
-  primaryColor String @default("#000000")
-  secondaryColor String @default("#FFFFFF")
-  fontFamily    String?  // Optional custom font family override
+  logoUrl        String?
+  faviconUrl     String?
+  primaryColor   String @default("#000000")  // semantic --color-primary token for CSS variable injection
+  secondaryColor String @default("#FFFFFF")  // semantic --color-secondary token for CSS variable injection
+  fontFamily     String?                     // optional CSS var for --font-sans override (e.g., "Georgia")
   
   // Contact and legal
   email        String
@@ -2005,6 +2005,36 @@ model DSARRequest {
 
 enum DSARType { ACCESS; ERASURE; PORTABILITY }
 enum DSARStatus { PENDING; IN_PROGRESS; COMPLETED; REJECTED }
+```
+
+### 42. ConsentEvent
+
+Tracks user consent decisions for marketing, tracking, and GDPR/DSAR compliance.
+
+```prisma
+model ConsentEvent {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  storeId       String
+  store         Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  subjectEmail  String       // Email of consent subject (for untracked/anonymous customers)
+  type          ConsentType
+  source        String       // "api", "form", "widget", "import"
+  userAgent     String?
+  ipAddress     String?
+  note          String?
+
+  @@index([storeId, subjectEmail, type])
+  @@index([storeId, createdAt])
+}
+
+enum ConsentType { 
+  MARKETING_OPT_IN
+  MARKETING_OPT_OUT
+  TRACKING_OPT_OUT
+}
 ```
 
 ### 43. Store (add missing relations)
