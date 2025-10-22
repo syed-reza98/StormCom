@@ -486,3 +486,1000 @@ No constitution violations detected. All requirements satisfied:
 - ✅ Following architecture patterns (Server Components first, REST API, Prisma ORM only)
 - ✅ Meeting performance budgets and test coverage requirements
 - ✅ Implementing security standards (NextAuth v5, RBAC, input validation, multi-tenant isolation)
+
+---
+
+## Testing Strategy
+
+Comprehensive testing framework aligned with `docs/testing-strategy.md` covering unit, integration, E2E, performance, accessibility, and visual regression testing.
+
+### Testing Pyramid (60/30/10 Split)
+
+**Unit Tests (60%)**: Fast, isolated tests for business logic and utilities
+- **Coverage Targets**: 80% global, 90% services, 100% utilities
+- **Tools**: Vitest 3.2.4 + Testing Library
+- **Co-located**: Tests live alongside source files in `__tests__/` subdirectories
+
+**Integration Tests (30%)**: API routes, database queries, service interactions
+- **Coverage Targets**: 100% API routes, database query performance validation
+- **Tools**: Vitest + Prisma with SQLite in-memory database
+- **Location**: `tests/integration/`
+
+**E2E Tests (10%)**: Critical user paths with Page Object Model architecture
+- **Coverage Targets**: 100% critical paths (auth, checkout, orders, payments)
+- **Tools**: Playwright 1.56.0 with cross-browser support (Chromium, Firefox, WebKit, Mobile)
+- **Location**: `tests/e2e/`
+
+### Unit Testing Structure
+
+**Test Organization** (Co-located with source):
+```
+src/
+├── lib/
+│   └── utils/
+│       ├── format.ts
+│       └── __tests__/
+│           └── format.test.ts          # 100% coverage required
+├── services/
+│   └── products/
+│       ├── product-service.ts
+│       └── __tests__/
+│           └── product-service.test.ts # 90% coverage required
+└── components/
+    └── ui/
+        ├── button.tsx
+        └── __tests__/
+            └── button.test.tsx         # Test all variants/states
+```
+
+**Vitest Configuration** (`vitest.config.ts`):
+```typescript
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./tests/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'tests/',
+        '**/*.config.{js,ts}',
+        '**/*.d.ts',
+        '**/index.ts',
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+        'src/services/**': {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+        'src/lib/utils/**': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+```
+
+**Example Tests**:
+
+*Utility Function Test* (`src/lib/utils/__tests__/format.test.ts`):
+```typescript
+import { describe, it, expect } from 'vitest';
+import { formatCurrency, formatDate } from '../format';
+
+describe('formatCurrency', () => {
+  it('should format USD currency', () => {
+    expect(formatCurrency(1299, 'USD')).toBe('$12.99');
+  });
+
+  it('should handle zero', () => {
+    expect(formatCurrency(0, 'USD')).toBe('$0.00');
+  });
+
+  it('should handle negative amounts', () => {
+    expect(formatCurrency(-1299, 'USD')).toBe('-$12.99');
+  });
+});
+```
+
+*Service Test* (`src/services/products/__tests__/product-service.test.ts`):
+```typescript
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { createProduct, validateSKU } from '../product-service';
+import { prisma } from '@/lib/prisma';
+
+describe('Product Service', () => {
+  beforeEach(async () => {
+    await prisma.$executeRaw`DELETE FROM products`;
+  });
+
+  describe('validateSKU', () => {
+    it('should validate unique SKU per store (SC-001)', async () => {
+      await createProduct({
+        storeId: 'store_1',
+        name: 'Test Product',
+        sku: 'TEST-001',
+      });
+
+      const result = await validateSKU('store_1', 'TEST-001');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('SKU already exists in this store');
+    });
+
+    it('should allow same SKU in different stores', async () => {
+      await createProduct({
+        storeId: 'store_1',
+        name: 'Test Product',
+        sku: 'TEST-001',
+      });
+
+      const result = await validateSKU('store_2', 'TEST-001');
+      expect(result.isValid).toBe(true);
+    });
+  });
+});
+```
+
+*Component Test* (`src/components/ui/__tests__/button.test.tsx`):
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Button } from '../button';
+
+describe('Button Component', () => {
+  it('should render with text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+  });
+
+  it('should call onClick handler', async () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    
+    await userEvent.click(screen.getByRole('button'));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be disabled when disabled prop is true', () => {
+    render(<Button disabled>Click me</Button>);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
+
+  it('should apply variant styles', () => {
+    const { rerender } = render(<Button variant="primary">Primary</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-primary');
+
+    rerender(<Button variant="secondary">Secondary</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-secondary');
+  });
+});
+```
+
+### Integration Testing
+
+**Test Structure** (`tests/integration/`):
+```
+tests/integration/
+├── api/
+│   ├── products.test.ts       # Product API routes
+│   ├── orders.test.ts         # Order API routes
+│   └── auth.test.ts           # Auth API routes
+├── services/
+│   └── checkout-service.test.ts
+└── database/
+    └── query-performance.test.ts
+```
+
+**Database Setup** (SQLite in-memory for speed):
+```typescript
+// tests/setup.ts
+import { PrismaClient } from '@prisma/client';
+import { execSync } from 'child_process';
+
+export const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: 'file:./test.db',
+    },
+  },
+});
+
+beforeAll(async () => {
+  // Push schema to test database
+  execSync('npx prisma db push --skip-generate', {
+    env: { ...process.env, DATABASE_URL: 'file:./test.db' },
+  });
+  
+  // Seed test data
+  await seedTestData();
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+```
+
+**Example Integration Test** (`tests/integration/api/products.test.ts`):
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { GET, POST } from '@/app/api/products/route';
+import { NextRequest } from 'next/server';
+
+describe('Products API', () => {
+  beforeEach(async () => {
+    await prisma.product.deleteMany();
+  });
+
+  describe('GET /api/products', () => {
+    it('should return paginated products (SC-007)', async () => {
+      // Seed 30 products
+      await Promise.all(
+        Array.from({ length: 30 }, (_, i) =>
+          prisma.product.create({
+            data: {
+              storeId: 'store_1',
+              name: `Product ${i + 1}`,
+              sku: `SKU-${i + 1}`,
+              price: 1000,
+            },
+          })
+        )
+      );
+
+      const request = new NextRequest('http://localhost:3000/api/products?page=1&perPage=20');
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.data).toHaveLength(20);
+      expect(data.meta.total).toBe(30);
+      expect(data.meta.page).toBe(1);
+      expect(data.meta.perPage).toBe(20);
+    });
+
+    it('should return in <500ms for 10K products (SC-003)', async () => {
+      const start = Date.now();
+      await GET(new NextRequest('http://localhost:3000/api/products'));
+      const duration = Date.now() - start;
+
+      expect(duration).toBeLessThan(500);
+    });
+  });
+
+  describe('POST /api/products', () => {
+    it('should enforce unique SKU per store', async () => {
+      await POST(
+        new NextRequest('http://localhost:3000/api/products', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: 'Product 1',
+            sku: 'TEST-001',
+            price: 1000,
+          }),
+        })
+      );
+
+      const response = await POST(
+        new NextRequest('http://localhost:3000/api/products', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: 'Product 2',
+            sku: 'TEST-001',
+            price: 2000,
+          }),
+        })
+      );
+
+      expect(response.status).toBe(400);
+      const data = await response.json();
+      expect(data.error.code).toBe('DUPLICATE_SKU');
+    });
+  });
+});
+```
+
+**Database Performance Test** (`tests/integration/database/query-performance.test.ts`):
+```typescript
+import { describe, it, expect } from 'vitest';
+import { prisma } from '@/lib/prisma';
+
+describe('Database Query Performance', () => {
+  it('should query order with items in <100ms (SC-023)', async () => {
+    const order = await prisma.order.create({
+      data: {
+        storeId: 'store_1',
+        customerId: 'customer_1',
+        total: 5000,
+        items: {
+          create: Array.from({ length: 10 }, (_, i) => ({
+            productId: `product_${i}`,
+            quantity: 1,
+            price: 500,
+          })),
+        },
+      },
+    });
+
+    const start = Date.now();
+    await prisma.order.findUnique({
+      where: { id: order.id },
+      include: { items: true, customer: true },
+    });
+    const duration = Date.now() - start;
+
+    expect(duration).toBeLessThan(100);
+  });
+});
+```
+
+### E2E Testing (Playwright)
+
+**Test Structure** with Page Object Model:
+```
+tests/e2e/
+├── pages/                     # Page Object Models
+│   ├── login-page.ts
+│   ├── dashboard-page.ts
+│   ├── products-page.ts
+│   └── checkout-page.ts
+├── fixtures/                  # Test data fixtures
+│   ├── users.ts
+│   ├── products.ts
+│   └── stores.ts
+├── auth.spec.ts              # Authentication flows (US0)
+├── products.spec.ts          # Product management (US2)
+├── checkout.spec.ts          # Checkout flow (US3)
+└── orders.spec.ts            # Order management (US4)
+```
+
+**Playwright Configuration** (`playwright.config.ts`):
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
+    },
+  ],
+
+  webServer: {
+    command: 'npm run start',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
+});
+```
+
+**Page Object Model Example** (`tests/e2e/pages/login-page.ts`):
+```typescript
+import { Page, Locator } from '@playwright/test';
+
+export class LoginPage {
+  readonly page: Page;
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly mfaCodeInput: Locator;
+  readonly loginButton: Locator;
+  readonly errorMessage: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.emailInput = page.getByLabel('Email');
+    this.passwordInput = page.getByLabel('Password');
+    this.mfaCodeInput = page.getByLabel('MFA Code');
+    this.loginButton = page.getByRole('button', { name: 'Login' });
+    this.errorMessage = page.getByRole('alert');
+  }
+
+  async goto() {
+    await this.page.goto('/auth/login');
+  }
+
+  async login(email: string, password: string, mfaCode?: string) {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    
+    if (mfaCode) {
+      await this.mfaCodeInput.fill(mfaCode);
+    }
+    
+    await this.loginButton.click();
+  }
+
+  async waitForRedirect() {
+    await this.page.waitForURL('/dashboard');
+  }
+}
+```
+
+**E2E Test Example** (`tests/e2e/auth.spec.ts`):
+```typescript
+import { test, expect } from '@playwright/test';
+import { LoginPage } from './pages/login-page';
+import { seedUser } from './fixtures/users';
+
+test.describe('Authentication Flow (US0)', () => {
+  test('should login with valid credentials', async ({ page }) => {
+    const user = await seedUser({ email: 'test@example.com', password: 'SecurePass123!' });
+    
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(user.email, 'SecurePass123!');
+    await loginPage.waitForRedirect();
+
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.getByText(`Welcome, ${user.name}`)).toBeVisible();
+  });
+
+  test('should show error for invalid password', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login('test@example.com', 'wrong password');
+
+    await expect(loginPage.errorMessage).toContainText('Invalid email or password');
+  });
+
+  test('should require MFA code when enabled', async ({ page }) => {
+    const user = await seedUser({ mfaEnabled: true });
+    
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(user.email, 'SecurePass123!');
+
+    await expect(loginPage.mfaCodeInput).toBeVisible();
+  });
+});
+```
+
+### Test Fixtures
+
+**Centralized Fixture Strategy** (`tests/fixtures/`):
+```typescript
+// tests/fixtures/stores.ts
+export async function seedStore(overrides = {}) {
+  return prisma.store.create({
+    data: {
+      name: 'Test Store',
+      slug: 'test-store',
+      email: 'test@store.com',
+      plan: 'PRO',
+      status: 'ACTIVE',
+      ...overrides,
+    },
+  });
+}
+
+// tests/fixtures/products.ts
+export async function seedProducts(storeId: string, count: number) {
+  return Promise.all(
+    Array.from({ length: count }, (_, i) =>
+      prisma.product.create({
+        data: {
+          storeId,
+          name: `Product ${i + 1}`,
+          sku: `SKU-${i + 1}`,
+          price: Math.floor(Math.random() * 10000) + 1000,
+          stock: Math.floor(Math.random() * 100),
+          isActive: true,
+        },
+      })
+    )
+  );
+}
+
+// tests/fixtures/users.ts
+export async function seedUser(overrides = {}) {
+  const password = await hashPassword('SecurePass123!');
+  
+  return prisma.user.create({
+    data: {
+      email: 'test@example.com',
+      password,
+      name: 'Test User',
+      role: 'STORE_ADMIN',
+      ...overrides,
+    },
+  });
+}
+```
+
+**Database Seeding Script** (`prisma/seed.ts`):
+```typescript
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  // Seed subscription plans
+  await prisma.subscriptionPlan.createMany({
+    data: [
+      { name: 'FREE', price: 0, maxProducts: 50, maxOrders: 100 },
+      { name: 'BASIC', price: 2900, maxProducts: 500, maxOrders: 1000 },
+      { name: 'PRO', price: 9900, maxProducts: 10000, maxOrders: 10000 },
+    ],
+    skipDuplicates: true,
+  });
+
+  // Seed test store
+  const store = await prisma.store.upsert({
+    where: { email: 'demo@stormcom.io' },
+    update: {},
+    create: {
+      name: 'Demo Store',
+      slug: 'demo-store',
+      email: 'demo@stormcom.io',
+      plan: 'PRO',
+      status: 'ACTIVE',
+    },
+  });
+
+  // Seed admin user
+  await prisma.user.upsert({
+    where: { email: 'admin@demo.com' },
+    update: {},
+    create: {
+      email: 'admin@demo.com',
+      password: await hashPassword('Admin123!'),
+      name: 'Demo Admin',
+      role: 'STORE_ADMIN',
+      storeId: store.id,
+    },
+  });
+
+  console.log('✅ Database seeded successfully');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+### Performance Testing (k6)
+
+**Load Test Script** (`tests/performance/load-test.js`):
+```javascript
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '2m', target: 100 }, // Ramp up to 100 users
+    { duration: '5m', target: 100 }, // Stay at 100 users
+    { duration: '2m', target: 0 },   // Ramp down to 0
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% of requests < 500ms
+    http_req_failed: ['rate<0.01'],    // Error rate < 1%
+  },
+};
+
+export default function () {
+  const res = http.get('http://localhost:3000/api/products');
+  
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 500ms': (r) => r.timings.duration < 500,
+  });
+  
+  sleep(1);
+}
+```
+
+**Run Command**:
+```bash
+k6 run tests/performance/load-test.js
+```
+
+### Test Commands (package.json)
+
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:firefox": "playwright test --project=firefox",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "test:e2e:mobile": "playwright test --project='Mobile Chrome'",
+    "test:e2e:ui": "playwright test --ui",
+    "test:performance": "k6 run tests/performance/load-test.js",
+    "test:all": "npm run test:coverage && npm run test:integration && npm run test:e2e"
+  }
+}
+```
+
+### CI Integration
+
+Tests run automatically in GitHub Actions on every push/PR (see CI/CD Configuration section below).
+
+---
+
+## CI/CD Configuration
+
+Comprehensive continuous integration and deployment pipeline aligned with `docs/ci-cd-configuration.md` enforcing quality gates at every stage.
+
+### GitHub Actions Workflows
+
+**Main CI Pipeline** (`.github/workflows/ci.yml`):
+
+```yaml
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+  DATABASE_URL: 'file:./test.db'
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:coverage
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run test:integration
+
+  build:
+    name: Build & Bundle Analysis
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+      - name: Check bundle size
+        run: |
+          SIZE=$(du -sb .next | cut -f1)
+          SIZE_KB=$((SIZE / 1024))
+          echo "Bundle size: ${SIZE_KB} KB"
+          if [ $SIZE_KB -gt 204800 ]; then
+            echo "❌ Bundle exceeds 200 KB limit"
+            exit 1
+          elif [ $SIZE_KB -gt 184320 ]; then
+            echo "⚠️ Bundle exceeds 180 KB warning threshold"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: .next
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .next
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  lighthouse:
+    name: Performance Tests (Lighthouse CI)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .next
+      - run: npm run start &
+      - run: npx wait-on http://localhost:3000
+      - run: npx @lhci/cli@0.14.x autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  accessibility:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:a11y
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm audit --audit-level=moderate
+      - uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, lighthouse, accessibility, security]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+```
+
+### Quality Gates
+
+All deployments **MUST PASS** the following gates:
+
+1. **✅ Linting**: ESLint with no errors
+2. **✅ Type Checking**: TypeScript strict mode with no errors
+3. **✅ Unit Tests**: 80% coverage minimum, all tests passing
+4. **✅ Integration Tests**: All API/database tests passing
+5. **✅ Build**: Next.js build succeeds, bundle < 200 KB
+6. **✅ E2E Tests**: Critical paths passing (auth, checkout, orders)
+7. **✅ Performance**: Lighthouse CI budgets met (LCP < 2s, CLS < 0.1, TBT < 300ms)
+8. **✅ Accessibility**: axe-core WCAG 2.1 Level AA with 0 violations
+9. **✅ Security**: No critical/high vulnerabilities
+
+### Performance Budgets (Lighthouse CI)
+
+**Configuration** (`lighthouserc.json`):
+```json
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/products",
+        "http://localhost:3000/checkout"
+      ],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", {"minScore": 0.9}],
+        "categories:accessibility": ["error", {"minScore": 1.0}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 2000}],
+        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}],
+        "total-blocking-time": ["error", {"maxNumericValue": 300}]
+      }
+    }
+  }
+}
+```
+
+### Monitoring Setup
+
+**Vercel Analytics** (Built-in):
+```typescript
+// src/app/layout.tsx
+import { Analytics } from '@vercel/analytics/react';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+```
+
+**Sentry Error Tracking** (`sentry.client.config.ts`):
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NEXT_PUBLIC_VERCEL_ENV,
+  tracesSampleRate: 1.0,
+  integrations: [
+    new Sentry.BrowserTracing(),
+    new Sentry.Replay({ maskAllText: true, blockAllMedia: true }),
+  ],
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+});
+```
+
+**Slow Query Monitoring** (`src/lib/prisma.ts`):
+```typescript
+import { PrismaClient } from '@prisma/client';
+import * as Sentry from '@sentry/nextjs';
+
+const prisma = new PrismaClient({
+  log: [{ emit: 'event', level: 'query' }],
+});
+
+prisma.$on('query', (e) => {
+  if (e.duration > 100) {
+    console.warn('[SLOW_QUERY]', { query: e.query, duration: e.duration });
+    Sentry.captureMessage('Slow database query', {
+      level: 'warning',
+      extra: { query: e.query, duration: e.duration },
+    });
+  }
+});
+
+export { prisma };
+```
+
+### Deployment Strategy
+
+| Environment | Branch | Auto-Deploy | Database | URL |
+|-------------|--------|-------------|----------|-----|
+| **Production** | `main` | ✅ Yes | Vercel Postgres | https://stormcom.vercel.app |
+| **Staging** | `develop` | ✅ Yes | Vercel Postgres (staging) | https://stormcom-staging.vercel.app |
+| **Preview** | PR branches | ✅ Yes | Vercel Postgres (preview) | https://stormcom-pr-123.vercel.app |
+
+**Health Check Endpoint** (`src/app/api/health/route.ts`):
+```typescript
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    
+    return NextResponse.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 503 }
+    );
+  }
+}
+```
+
+---
+
+## Implementation References
+
+For complete implementation details, see:
+- **Testing Strategy**: `docs/testing-strategy.md`
+- **CI/CD Configuration**: `docs/ci-cd-configuration.md`
+- **Design System**: `docs/design-system.md`
+- **Webhook Standards**: `docs/webhook-standards.md`
+- **API Contracts**: `specs/001-multi-tenant-ecommerce/contracts/openapi.yaml`
+- **API Enhancement Plan**: `specs/001-multi-tenant-ecommerce/contracts/openapi-enhancement-plan.md`

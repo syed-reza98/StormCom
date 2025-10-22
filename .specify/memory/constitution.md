@@ -45,7 +45,11 @@ Testing is mandatory. All features must include unit, integration, and end-to-en
 **Testing Tools**
 - **Unit/Integration**: Vitest 3.2.4 + Testing Library.
 - **E2E**: Playwright 1.56.0 with MCP support.
-- **Coverage**: Vitest coverage (c8/istanbul).
+- **Visual Regression**: Percy (BrowserStack) with 0.1% difference threshold.
+- **Accessibility**: axe-core with WCAG 2.1 Level AA enforcement.
+- **Performance**: k6 (Grafana) for load testing + Lighthouse CI for Web Vitals.
+- **Cross-Browser**: BrowserStack (Chromium, Firefox, WebKit, Mobile Safari, Mobile Chrome).
+- **Coverage**: Vitest coverage (v8 provider).
 - **Mocking**: Vitest mocking utilities + MSW for API mocking.
 
 **Test Quality**
@@ -54,6 +58,36 @@ Testing is mandatory. All features must include unit, integration, and end-to-en
 - Follow the AAA pattern (Arrange, Act, Assert).
 - Mock external dependencies (database, APIs).
 - Clean up after tests (reset state, close connections).
+
+**E2E Testing Requirements**
+- **Page Object Model**: All E2E tests must use POM pattern for maintainability.
+- **Critical Path Coverage**: 100% coverage for authentication, checkout, order management, payment flows.
+- **Cross-Browser**: Test on Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari.
+- **Test Data Isolation**: Use fixture functions to seed test data (no shared state between tests).
+- **Retry Logic**: Maximum 2 retries in CI for flaky network/timing issues.
+- **Screenshots**: Capture screenshots on failure for debugging.
+- **Trace Files**: Enable Playwright traces on first retry.
+
+**Visual Regression Testing Requirements**
+- **Percy Integration**: All UI components must have Percy snapshots.
+- **Threshold**: 0.1% difference threshold (blocking deployment if exceeded).
+- **Viewports**: Test on mobile (375px), tablet (768px), desktop (1280px).
+- **Approval Workflow**: Visual changes require manual approval before merging PR.
+- **Critical Pages**: Dashboard, product list, checkout flow, admin settings.
+
+**Accessibility Testing Requirements**
+- **axe-core Integration**: Run axe checks on all pages during E2E tests.
+- **WCAG 2.1 Level AA**: Zero violations blocking deployment (errors must be fixed).
+- **Manual Testing**: Quarterly screen reader testing with NVDA/JAWS/VoiceOver.
+- **Keyboard Navigation**: All interactive elements must be keyboard accessible (Tab, Enter, Escape).
+- **Focus Management**: Visible focus indicators on all elements (2px solid ring).
+
+**Performance Testing Requirements**
+- **Load Testing**: Use k6 to simulate 100 concurrent users for 5 minutes.
+- **Thresholds**: 95% of requests < 500ms, error rate < 1%.
+- **Lighthouse CI**: Performance score ≥ 90, LCP < 2s, CLS < 0.1, TBT < 300ms.
+- **Bundle Analysis**: JavaScript bundle < 200KB (blocking), warn at 180KB.
+- **Database Performance**: Slow query monitoring (> 100ms threshold).
 
 ### III. User Experience Consistency
 Ensure a seamless and intuitive user experience. All user-facing components must comply with WCAG 2.1 Level AA accessibility standards. Maintain consistency in design and interaction patterns across features.
@@ -130,6 +164,10 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **React Hook Form** (form state management).
 - ✅ **Vitest** `3.2.4+` (unit/integration testing).
 - ✅ **Playwright** `1.56.0+` with MCP (E2E testing).
+- ✅ **BrowserStack** (cross-browser E2E testing + Percy visual regression).
+- ✅ **k6** (Grafana - performance/load testing).
+- ✅ **Lighthouse CI** (performance budgets and auditing).
+- ✅ **axe-core** (accessibility testing - WCAG 2.1 Level AA).
 - ✅ **Vercel** (deployment platform).
 
 ### Prohibited Technologies
