@@ -395,6 +395,92 @@ As a Store Admin, I maintain accurate stock per product/variant with audit trail
 
 ---
 
+### User Story 7 - Dashboard analytics and reporting (Priority: P1)
+
+As a Store Admin, I view real-time KPI cards, generate sales/inventory/customer reports, and export data to CSV for business analysis.
+
+**Why this priority**: Data-driven decision making requires comprehensive analytics and reporting capabilities with near real-time updates.
+
+**Independent Test**: View dashboard KPIs (total sales, active orders, low stock items, customer count), generate sales report filtered by date range, export report to CSV, verify data accuracy against order records.
+
+**Acceptance Scenarios**:
+
+1. Given the dashboard, When I view KPI cards, Then I see total sales, order count, low stock alerts, and customer count updated within 10 minutes of data changes (SC-020).
+2. Given the reports section, When I generate a sales report for last month, Then I see order totals, revenue, and top products with filters for date range, status, and customer segments.
+3. Given a generated report, When I export to CSV, Then the downloaded file matches on-screen data within 0.5% variance (SC-008).
+4. Given threshold configuration, When sales exceed target or stock falls below minimum, Then alert badges appear on dashboard within 1 minute (SC-005).
+
+---
+
+### User Story 8 - Theme customization and preview (Priority: P1)
+
+As a Store Admin, I customize my storefront theme (logo, colors, typography, layout) using a preview mode before publishing changes atomically to customers.
+
+**Why this priority**: Brand consistency and visual identity are critical for customer trust; preview mode prevents accidental broken layouts.
+
+**Independent Test**: Upload store logo, change primary/secondary colors, modify typography settings, preview changes in isolated session, publish atomically, verify no partial updates visible to customers during publish.
+
+**Acceptance Scenarios**:
+
+1. Given theme customization settings, When I upload a logo and change brand colors, Then preview mode displays changes accurately without affecting live storefront (SC-018).
+2. Given preview mode, When I navigate storefront pages, Then I see all theme changes applied consistently (header, footer, buttons, links).
+3. Given customization complete, When I click "Publish", Then changes go live atomically with 0 downtime and no partial updates visible (SC-018).
+4. Given published theme, When customers visit storefront, Then they see new branding immediately on next page load with CDN cache invalidation.
+
+---
+
+### User Story 9 - Email template management (Priority: P1)
+
+As a Store Admin, I customize email templates for notifications (order confirmation, shipping updates, password reset) with template variables and preview/test sending capabilities.
+
+**Why this priority**: Professional branded communication builds customer trust; template variables enable dynamic personalization.
+
+**Independent Test**: Customize "Order Confirmation" email template with store logo and brand colors, add custom message, preview with sample order data, send test email to admin address, verify variables render correctly ({{orderNumber}}, {{customerName}}, {{orderTotal}}).
+
+**Acceptance Scenarios**:
+
+1. Given email template editor, When I customize subject and body with HTML/plain text and template variables ({{storeName}}, {{orderNumber}}, {{customerName}}), Then preview shows rendered output with sample data.
+2. Given template variables, When required variable is missing from template (e.g., {{orderTotal}}), Then fallback behavior displays placeholder text "N/A" instead of empty field.
+3. Given customized template, When I send test email, Then it arrives within 60 seconds with all variables replaced and formatting intact.
+4. Given saved template, When triggering event occurs (order placed), Then email uses customized template and is queued within 5 minutes (SC-017).
+
+---
+
+### User Story 10 - Notification preferences (Priority: P2)
+
+As a Customer or Staff member, I configure my notification preferences (email, push, SMS) per notification type to reduce irrelevant communications while staying informed about critical events.
+
+**Why this priority**: Respects user communication preferences and reduces email fatigue; improves engagement by allowing opt-in for relevant notifications only.
+
+**Independent Test**: Access notification preferences page, disable "Marketing emails", keep "Order updates" enabled, place test order, verify order confirmation email received but no marketing emails arrive, verify preference changes save immediately.
+
+**Acceptance Scenarios**:
+
+1. Given notification preferences page, When I view available notification types (order updates, shipping notifications, marketing emails, low stock alerts, plan expiration warnings), Then I see toggle controls for each type per channel (email, SMS, push).
+2. Given notification toggles, When I disable "Marketing emails", Then no promotional/newsletter emails are sent to me but transactional emails (order confirmation, password reset) still arrive.
+3. Given preference changes, When I save settings, Then changes apply immediately and are reflected in next notification trigger within 1 minute.
+4. Given critical notifications (account lockout, password reset, payment failure), When these events occur, Then notifications are sent regardless of user preferences (cannot be disabled for security reasons).
+
+---
+
+### User Story 11 - Audit log review and security monitoring (Priority: P1)
+
+As a Security Admin or Store Admin, I review immutable audit logs of security-sensitive actions (login, logout, permission changes, data access, configuration updates) to investigate incidents and ensure compliance.
+
+**Why this priority**: Security incident investigation and compliance auditing require complete immutable trails; early detection of suspicious activity prevents breaches.
+
+**Independent Test**: Perform security-sensitive actions (login as admin, change user permissions, update payment gateway config, export customer data), view audit log with filters for actor/action/entity/timestamp, verify all actions logged within 5 seconds (SC-010H), attempt to modify log entries (should fail - immutability).
+
+**Acceptance Scenarios**:
+
+1. Given audit log viewer, When I filter by actor (user email) and date range, Then I see all actions performed by that user with timestamps, IP addresses, user agents, and outcomes (SC-009).
+2. Given security-sensitive action (permission change, data export, gateway config update), When action completes, Then audit entry is created within 5 seconds with before/after snapshots, actor ID, timestamp, and encrypted sensitive fields (SC-010H).
+3. Given audit log entries, When I attempt to edit or delete an entry via API or database, Then operation fails with "Audit logs are immutable" error (append-only storage).
+4. Given audit log retention policy, When logs exceed 1-year retention period, Then older entries are archived to cold storage but remain accessible for compliance queries (FR-122).
+5. Given suspicious activity detection, When multiple failed login attempts or permission escalations occur, Then alert appears on security dashboard and email notification sent to Security Admins within 1 minute.
+
+---
+
 ### User Story 12 - Security and access control (Priority: P1)
 
 As a Security Admin, I enforce strong passwords, MFA, account lockouts, RBAC, and audit logs.
@@ -438,6 +524,505 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 3. Given a customer data deletion request, When I confirm the deletion, Then all personal data is anonymized (replaced with "Deleted User" placeholders) while preserving order history for accounting compliance, and the deletion is logged in the audit trail.
 4. Given consent management, When a customer updates consent preferences, Then the changes are applied immediately and marketing communications respect the updated preferences.
 5. Given data retention policies, When retention periods expire, Then the system automatically anonymizes or deletes data according to configured policies and logs the action.
+
+---
+
+## End-to-End Test Scenarios
+
+This section documents comprehensive E2E test scenarios for all user stories using Playwright with Page Object Model (POM) architecture. These scenarios ensure complete feature coverage from user perspective and serve as acceptance criteria for development completion.
+
+### E2E Testing Strategy
+
+**Framework**: Playwright 1.56.0 with TypeScript
+**Architecture**: Page Object Model (POM) pattern with shared fixtures
+**Test Data**: Seeded database fixtures with isolated test stores
+**Browsers**: Chromium (primary), Firefox, WebKit via BrowserStack Automate
+**Visual Regression**: BrowserStack Percy with 0.1% threshold
+**Accessibility**: axe-core/playwright for WCAG 2.1 AA validation
+**Performance**: Lighthouse CI integrated in test runs
+
+**Page Object Model Structure**:
+```
+tests/e2e/
+├── pages/
+│   ├── auth/
+│   │   ├── LoginPage.ts
+│   │   ├── RegisterPage.ts
+│   │   ├── MFAEnrollmentPage.ts
+│   │   └── PasswordResetPage.ts
+│   ├── admin/
+│   │   ├── DashboardPage.ts
+│   │   ├── StorePage.ts
+│   │   ├── ProductPage.ts
+│   │   ├── OrderPage.ts
+│   │   └── SettingsPage.ts
+│   └── storefront/
+│       ├── HomePage.ts
+│       ├── ProductListPage.ts
+│       ├── ProductDetailPage.ts
+│       ├── CartPage.ts
+│       └── CheckoutPage.ts
+├── fixtures/
+│   ├── test-stores.ts
+│   ├── test-users.ts
+│   └── test-products.ts
+└── scenarios/
+    ├── us0-authentication.spec.ts
+    ├── us1-store-management.spec.ts
+    └── ... (one file per user story)
+```
+
+### US0 - Authentication and Authorization E2E Scenarios
+
+**Test File**: `tests/e2e/scenarios/us0-authentication.spec.ts`
+
+**Scenario 1: Complete user registration flow**
+```typescript
+test('US0-E2E-001: New user registers, verifies email, and logs in', async ({ page }) => {
+  const registerPage = new RegisterPage(page);
+  const loginPage = new LoginPage(page);
+  
+  // Navigate to registration
+  await registerPage.goto();
+  
+  // Fill registration form
+  await registerPage.fillRegistrationForm({
+    fullName: 'John Doe',
+    email: 'john.doe@example.com',
+    password: 'SecurePass123!',
+    confirmPassword: 'SecurePass123!'
+  });
+  
+  // Submit and verify success message
+  await registerPage.submitForm();
+  await expect(page.locator('[data-testid="success-message"]')).toContainText(
+    'Registration successful! Please check your email to verify your account.'
+  );
+  
+  // Simulate email verification (click verification link)
+  const verificationToken = await getVerificationToken('john.doe@example.com');
+  await page.goto(`/auth/verify-email?token=${verificationToken}`);
+  await expect(page.locator('[data-testid="verification-success"]')).toBeVisible();
+  
+  // Login with verified account
+  await loginPage.goto();
+  await loginPage.login('john.doe@example.com', 'SecurePass123!');
+  await expect(page).toHaveURL(/\/dashboard/);
+});
+```
+
+**Scenario 2: MFA enrollment and login with TOTP**
+```typescript
+test('US0-E2E-002: User enables MFA and logs in with TOTP code', async ({ page, authenticatedUser }) => {
+  const settingsPage = new SettingsPage(page);
+  const mfaPage = new MFAEnrollmentPage(page);
+  const loginPage = new LoginPage(page);
+  
+  // Navigate to security settings
+  await settingsPage.goto();
+  await settingsPage.clickSecurityTab();
+  
+  // Enable MFA
+  await settingsPage.clickEnableMFA();
+  
+  // Scan QR code and get secret
+  const totpSecret = await mfaPage.getTOTPSecret();
+  const backupCodes = await mfaPage.getBackupCodes();
+  expect(backupCodes).toHaveLength(10);
+  
+  // Enter verification code
+  const verificationCode = generateTOTP(totpSecret);
+  await mfaPage.enterVerificationCode(verificationCode);
+  await mfaPage.confirm();
+  
+  await expect(page.locator('[data-testid="mfa-enabled-badge"]')).toBeVisible();
+  
+  // Logout and login with MFA
+  await settingsPage.logout();
+  await loginPage.login(authenticatedUser.email, authenticatedUser.password);
+  
+  // MFA challenge appears
+  await expect(page).toHaveURL(/\/auth\/mfa-challenge/);
+  const mfaCode = generateTOTP(totpSecret);
+  await page.fill('[data-testid="mfa-code-input"]', mfaCode);
+  await page.click('[data-testid="verify-mfa-button"]');
+  
+  // Successfully logged in
+  await expect(page).toHaveURL(/\/dashboard/);
+});
+```
+
+**Scenario 3: Account lockout after failed login attempts**
+```typescript
+test('US0-E2E-003: Account locks after 5 failed login attempts', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  
+  // Attempt 5 failed logins
+  for (let i = 0; i < 5; i++) {
+    await loginPage.login('valid.user@example.com', 'WrongPassword123!');
+    await expect(page.locator('[data-testid="error-message"]')).toContainText('Invalid credentials');
+  }
+  
+  // 6th attempt shows lockout message
+  await loginPage.login('valid.user@example.com', 'WrongPassword123!');
+  await expect(page.locator('[data-testid="error-message"]')).toContainText(
+    'Account locked due to multiple failed login attempts. Please try again in 15 minutes or reset your password.'
+  );
+  
+  // Even correct password won't work during lockout
+  await loginPage.login('valid.user@example.com', 'CorrectPassword123!');
+  await expect(page.locator('[data-testid="error-message"]')).toContainText('Account locked');
+});
+```
+
+**Scenario 4: Password reset flow**
+```typescript
+test('US0-E2E-004: User resets forgotten password', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const resetPage = new PasswordResetPage(page);
+  
+  // Click "Forgot Password" link
+  await loginPage.goto();
+  await loginPage.clickForgotPassword();
+  
+  // Request reset
+  await resetPage.requestReset('user@example.com');
+  await expect(page.locator('[data-testid="success-message"]')).toContainText(
+    'Password reset link sent to your email'
+  );
+  
+  // Simulate clicking reset link from email
+  const resetToken = await getPasswordResetToken('user@example.com');
+  await page.goto(`/auth/reset-password?token=${resetToken}`);
+  
+  // Set new password
+  await resetPage.setNewPassword('NewSecurePass123!', 'NewSecurePass123!');
+  await resetPage.submitReset();
+  
+  await expect(page.locator('[data-testid="success-message"]')).toContainText(
+    'Password reset successful. You can now login with your new password.'
+  );
+  
+  // Login with new password
+  await loginPage.login('user@example.com', 'NewSecurePass123!');
+  await expect(page).toHaveURL(/\/dashboard/);
+});
+```
+
+### US1 - Store Management E2E Scenarios
+
+**Test File**: `tests/e2e/scenarios/us1-store-management.spec.ts`
+
+**Scenario 1: Super Admin creates new store and assigns admin**
+```typescript
+test('US1-E2E-001: Super Admin creates store in under 5 minutes (SC-001)', async ({ page, superAdmin }) => {
+  const storePage = new StorePage(page);
+  
+  const startTime = Date.now();
+  
+  // Navigate to store creation
+  await storePage.goto();
+  await storePage.clickCreateStore();
+  
+  // Fill store details
+  await storePage.fillStoreForm({
+    name: 'Test Store',
+    subdomain: 'test-store',
+    adminEmail: 'admin@teststore.com',
+    adminName: 'Store Admin',
+    subscriptionPlan: 'Basic'
+  });
+  
+  await storePage.submitForm();
+  
+  const endTime = Date.now();
+  const duration = (endTime - startTime) / 1000; // seconds
+  
+  // Verify creation success and timing (SC-001: < 5 minutes = 300 seconds)
+  await expect(page.locator('[data-testid="success-message"]')).toContainText('Store created successfully');
+  expect(duration).toBeLessThan(300);
+  
+  // Verify store appears in list
+  await expect(storePage.getStoreCard('Test Store')).toBeVisible();
+});
+```
+
+### US2 - Product Catalog Management E2E Scenarios
+
+**Test File**: `tests/e2e/scenarios/us2-product-catalog.spec.ts`
+
+**Scenario 1: Create product with variants and verify SKU uniqueness**
+```typescript
+test('US2-E2E-001: Create product with variants, enforce SKU uniqueness (SC-002)', async ({ page, storeAdmin }) => {
+  const productPage = new ProductPage(page);
+  
+  await productPage.goto();
+  await productPage.clickAddProduct();
+  
+  // Fill product details
+  await productPage.fillProductForm({
+    name: 'Classic T-Shirt',
+    description: 'Comfortable cotton t-shirt',
+    category: 'Apparel',
+    brand: 'TestBrand'
+  });
+  
+  // Add variants with unique SKUs
+  await productPage.addVariant({ size: 'Small', color: 'Red', sku: 'TS-RED-S', price: 19.99, stock: 100 });
+  await productPage.addVariant({ size: 'Medium', color: 'Red', sku: 'TS-RED-M', price: 19.99, stock: 150 });
+  
+  await productPage.saveProduct();
+  await expect(page.locator('[data-testid="success-message"]')).toContainText('Product created');
+  
+  // Attempt to create another product with duplicate SKU
+  await productPage.clickAddProduct();
+  await productPage.fillProductForm({ name: 'Another Product' });
+  await productPage.addVariant({ sku: 'TS-RED-S', price: 29.99, stock: 50 }); // Duplicate SKU
+  
+  await productPage.saveProduct();
+  
+  // Verify uniqueness validation (SC-002)
+  await expect(page.locator('[data-testid="error-message"]')).toContainText(
+    'SKU "TS-RED-S" already exists in this store'
+  );
+});
+```
+
+### US3 - Checkout with Shipping and Tax E2E Scenarios
+
+**Test File**: `tests/e2e/scenarios/us3-checkout.spec.ts`
+
+**Scenario 1: Complete checkout flow with shipping and tax calculation**
+```typescript
+test('US3-E2E-001: Customer completes checkout under 3 minutes (SC-016)', async ({ page, storefront }) => {
+  const homePage = new HomePage(page, storefront.subdomain);
+  const productPage = new ProductDetailPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutPage = new CheckoutPage(page);
+  
+  const startTime = Date.now();
+  
+  // Add product to cart
+  await homePage.goto();
+  await homePage.clickProduct('Test Product');
+  await productPage.selectVariant({ size: 'Medium', color: 'Blue' });
+  await productPage.addToCart();
+  
+  // Navigate to cart
+  await productPage.clickCartIcon();
+  await expect(cartPage.getCartItem('Test Product')).toBeVisible();
+  
+  // Proceed to checkout
+  await cartPage.clickCheckout();
+  
+  // Fill shipping address
+  await checkoutPage.fillShippingAddress({
+    fullName: 'John Doe',
+    email: 'john@example.com',
+    address: '123 Main St',
+    city: 'New York',
+    state: 'NY',
+    zipCode: '10001',
+    country: 'US'
+  });
+  
+  // Select shipping method (SC-011: < 3 seconds)
+  const shippingStart = Date.now();
+  await checkoutPage.selectShippingMethod('Standard Shipping');
+  await expect(checkoutPage.getShippingCost()).toBeVisible({ timeout: 3000 });
+  const shippingDuration = Date.now() - shippingStart;
+  expect(shippingDuration).toBeLessThan(3000);
+  
+  // Verify tax calculation (SC-012: < 2 seconds)
+  const taxStart = Date.now();
+  const taxAmount = await checkoutPage.getTaxAmount();
+  const taxDuration = Date.now() - taxStart;
+  expect(taxDuration).toBeLessThan(2000);
+  expect(parseFloat(taxAmount)).toBeGreaterThan(0);
+  
+  // Fill payment details
+  await checkoutPage.selectPaymentMethod('Stripe');
+  await checkoutPage.fillStripeCard({
+    cardNumber: '4242424242424242',
+    expiry: '12/25',
+    cvc: '123'
+  });
+  
+  // Place order
+  await checkoutPage.placeOrder();
+  
+  // Verify order confirmation
+  await expect(page).toHaveURL(/\/order\/confirmation/);
+  await expect(page.locator('[data-testid="order-success-message"]')).toContainText('Order placed successfully');
+  
+  const endTime = Date.now();
+  const totalDuration = (endTime - startTime) / 1000 / 60; // minutes
+  
+  // Verify total time under 3 minutes (SC-016)
+  expect(totalDuration).toBeLessThan(3);
+});
+```
+
+### US7 - Dashboard Analytics E2E Scenarios
+
+**Test File**: `tests/e2e/scenarios/us7-dashboard-analytics.spec.ts`
+
+**Scenario 1: View dashboard KPIs and verify data accuracy**
+```typescript
+test('US7-E2E-001: Dashboard KPIs update within 10 minutes (SC-020)', async ({ page, storeAdmin, testData }) => {
+  const dashboardPage = new DashboardPage(page);
+  
+  // Create test order
+  await createTestOrder(testData.store.id, { total: 150.00 });
+  
+  // Wait up to 10 minutes for dashboard update (SC-020)
+  await dashboardPage.goto();
+  await expect(dashboardPage.getTotalSalesCard()).toContainText('$150.00', { timeout: 600000 });
+  
+  // Verify all KPI cards visible
+  await expect(dashboardPage.getTotalOrdersCard()).toBeVisible();
+  await expect(dashboardPage.getLowStockAlertsCard()).toBeVisible();
+  await expect(dashboardPage.getCustomerCountCard()).toBeVisible();
+});
+```
+
+**Scenario 2: Generate sales report and export to CSV**
+```typescript
+test('US7-E2E-002: Export report matches on-screen data within 0.5% (SC-008)', async ({ page, storeAdmin }) => {
+  const reportsPage = new ReportsPage(page);
+  
+  await reportsPage.goto();
+  await reportsPage.selectReportType('Sales Report');
+  await reportsPage.setDateRange('2025-01-01', '2025-01-31');
+  await reportsPage.applyFilters();
+  
+  // Get on-screen total
+  const onScreenTotal = await reportsPage.getTotalRevenue();
+  
+  // Export to CSV
+  await reportsPage.clickExport('CSV');
+  const downloadPath = await reportsPage.waitForDownload();
+  
+  // Parse CSV and calculate total
+  const csvData = parseCSV(downloadPath);
+  const csvTotal = csvData.reduce((sum, row) => sum + parseFloat(row.revenue), 0);
+  
+  // Verify variance within 0.5% (SC-008)
+  const variance = Math.abs((csvTotal - onScreenTotal) / onScreenTotal);
+  expect(variance).toBeLessThan(0.005); // 0.5%
+});
+```
+
+### Cross-Cutting E2E Scenarios
+
+**Performance Testing (SC-021 to SC-025)**
+```typescript
+test('E2E-PERF-001: Storefront page load times meet targets', async ({ page, storefront }) => {
+  // SC-021: Home page loads in < 2s desktop, < 3s mobile
+  const homePage = new HomePage(page, storefront.subdomain);
+  const homeMetrics = await homePage.gotoWithMetrics();
+  expect(homeMetrics.lcp).toBeLessThan(2000); // 2 seconds
+  
+  // SC-022: Product listing loads in < 2.5s
+  const productListPage = new ProductListPage(page);
+  const listMetrics = await productListPage.gotoWithMetrics();
+  expect(listMetrics.lcp).toBeLessThan(2500);
+  
+  // SC-023: Search returns results in < 1s
+  const searchStart = Date.now();
+  await productListPage.search('shirt');
+  await expect(productListPage.getSearchResults()).toBeVisible();
+  const searchDuration = Date.now() - searchStart;
+  expect(searchDuration).toBeLessThan(1000);
+  
+  // SC-024: Product detail page loads in < 2s
+  const productDetailPage = new ProductDetailPage(page);
+  const detailMetrics = await productDetailPage.gotoWithMetrics('test-product');
+  expect(detailMetrics.lcp).toBeLessThan(2000);
+});
+```
+
+**Accessibility Testing (SC-027)**
+```typescript
+test('E2E-A11Y-001: Storefront meets WCAG 2.1 AA standards', async ({ page, storefront }) => {
+  const homePage = new HomePage(page, storefront.subdomain);
+  await homePage.goto();
+  
+  // Run axe accessibility scan
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
+  
+  expect(accessibilityScanResults.violations).toHaveLength(0);
+  
+  // Test keyboard navigation
+  await page.keyboard.press('Tab');
+  await expect(page.locator(':focus')).toHaveAttribute('data-testid', 'skip-to-content');
+  
+  // Navigate to product via keyboard only
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press('Tab');
+  }
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/products\//);
+});
+```
+
+**Visual Regression Testing with BrowserStack Percy**
+```typescript
+test('E2E-VIS-001: No visual regressions in storefront', async ({ page, storefront, percySnapshot }) => {
+  // Home page
+  await page.goto(`https://${storefront.subdomain}.example.com`);
+  await percySnapshot(page, 'Storefront Homepage', { widths: [375, 1280] });
+  
+  // Product listing
+  await page.goto(`https://${storefront.subdomain}.example.com/products`);
+  await percySnapshot(page, 'Product Listing Page', { widths: [375, 1280] });
+  
+  // Product detail
+  await page.goto(`https://${storefront.subdomain}.example.com/products/test-product`);
+  await percySnapshot(page, 'Product Detail Page', { widths: [375, 1280] });
+  
+  // Cart
+  await page.goto(`https://${storefront.subdomain}.example.com/cart`);
+  await percySnapshot(page, 'Shopping Cart', { widths: [375, 1280] });
+  
+  // Percy automatically compares with baseline and highlights differences > 0.1% threshold
+});
+```
+
+### Test Data Fixtures
+
+**Fixture Example**: `tests/e2e/fixtures/test-stores.ts`
+```typescript
+export const testStores = {
+  basicStore: {
+    name: 'E2E Test Store',
+    subdomain: 'e2e-test',
+    plan: 'Basic',
+    adminEmail: 'admin@e2etest.com',
+    settings: {
+      currency: 'USD',
+      timezone: 'America/New_York',
+      taxRate: 0.08
+    }
+  },
+  proStore: {
+    name: 'E2E Pro Store',
+    subdomain: 'e2e-pro',
+    plan: 'Pro',
+    adminEmail: 'admin@e2epro.com'
+  }
+};
+
+export async function seedTestStore(storeName: keyof typeof testStores) {
+  const storeData = testStores[storeName];
+  // Seed database via Prisma
+  const store = await prisma.store.create({ data: storeData });
+  return store;
+}
+```
 
 ---
 
@@ -515,6 +1100,15 @@ As a Store Owner, I comply with GDPR regulations by managing customer consent, h
 - **CHK108 - Role change during active session**: If admin changes user's role or permissions while user is logged in, changes take effect on next API request (no page refresh required). User sees notification: "Your permissions have been updated. Some features may no longer be accessible." If user loses all permissions, redirect to "Access Denied" page with logout option.
 - **CHK109 - Super Admin privilege escalation**: Super Admin login requires additional verification for sensitive actions: (a) Password re-confirmation for creating new Super Admin accounts, (b) MFA challenge for accessing system-wide settings, (c) Audit log entry for every Super Admin action with IP address, user agent, and timestamp. Super Admin cannot delete their own account (requires another Super Admin).
 - **CHK110 - Login rate limiting per IP**: In addition to account-level lockout, implement IP-based rate limiting: 20 login attempts per IP address per 5-minute window. If exceeded, return HTTP 429 with message: "Too many login attempts from your IP address. Please try again in 5 minutes." This prevents distributed brute force attacks across multiple accounts from same IP.
+
+**File upload and storage edge cases**:
+- **CHK111 - File upload edge cases**: Handle various file upload failure scenarios: (1) **Maximum file size enforcement**: Reject uploads exceeding 100MB (configurable per store plan) with HTTP 413 and message: "File size exceeds maximum allowed ({maxSizeMB}MB). Please reduce file size and try again." Client-side validation shows warning before upload starts. (2) **Unsupported file type handling**: Reject files with MIME types not in allowlist (images: jpg/jpeg/png/gif/webp/svg, documents: pdf/doc/docx/xls/xlsx, archives: zip) with HTTP 415 and message: "File type '{fileType}' not supported. Allowed types: {allowedTypesList}". Validate both file extension AND MIME type (prevent .jpg.exe bypass). (3) **Virus scanning integration**: All uploaded files scanned via ClamAV (self-hosted) or VirusTotal API before storage; infected files quarantined and deleted with notification: "File '{fileName}' failed security scan and was not uploaded. Please scan your device for malware." Scan results logged to audit trail with file hash (SHA-256) for forensics. (4) **Upload progress tracking**: For files >10MB, show upload progress bar with percentage, estimated time remaining, and cancel button; canceled uploads immediately abort and clean up temporary storage. (5) **Concurrent upload limit**: Maximum 5 simultaneous uploads per user session; attempting 6th upload queues with message: "Maximum 5 uploads at once. Please wait for current uploads to complete." (6) **Duplicate file detection**: Before upload, compute SHA-256 hash of file; if identical file already exists in store storage, deduplicate by creating reference to existing file instead of uploading duplicate (saves storage quota). Show notification: "File already exists. Using existing copy." (7) **Corrupted file handling**: If file upload completes but file is corrupted (e.g., truncated, invalid header), detect via integrity check (file size mismatch, magic number validation) and reject with HTTP 422 and message: "File upload corrupted. Please try again." Automatically retry corrupted uploads up to 3 times with exponential backoff. (8) **Storage quota enforcement**: Track per-store storage usage; reject uploads exceeding plan quota (Free: 100MB, Basic: 1GB, Pro: 10GB, Enterprise: unlimited) with HTTP 507 and message: "Storage quota exceeded ({usedMB}/{quotaMB}MB). Please upgrade plan or delete unused files." Display storage usage meter on upload UI. (9) **Temporary file cleanup**: Incomplete/abandoned uploads older than 24 hours automatically deleted from temporary storage via scheduled job; prevents storage bloat from interrupted uploads.
+
+**Database and infrastructure edge cases**:
+- **CHK112 - Database connection pool exhaustion**: Handle scenarios where all Prisma connection pool slots (default: 5 connections per serverless function) are occupied: (1) **Connection request queuing**: When pool exhausted, queue new database queries with 10-second timeout; if connection becomes available within timeout, execute query normally. (2) **Timeout handling**: If no connection available after 10 seconds, return HTTP 503 with message: "Service temporarily unavailable due to high load. Please try again in a few seconds." Client should implement exponential backoff retry (1s, 2s, 4s intervals). (3) **Connection leak detection**: Monitor connection usage patterns; if connection held >30 seconds without activity, log warning with query details and caller stack trace for debugging. Forcefully close leaked connections after 60 seconds to prevent permanent pool exhaustion. (4) **Pool size monitoring**: Track real-time pool usage metrics (active connections, queued requests, average wait time); alert Super Admins when pool utilization exceeds 80% sustained for >5 minutes with message: "Database connection pool nearing capacity for store '{storeName}'. Consider optimizing queries or upgrading plan." (5) **Graceful degradation**: For non-critical operations (analytics refresh, report generation, background jobs), skip database access if pool exhausted and retry later; prioritize customer-facing operations (product browsing, checkout, order placement) for connection allocation. (6) **Connection pool configuration**: Enterprise plans can request increased pool size (up to 20 connections) for high-traffic stores; configuration change requires database restart with zero-downtime rolling deployment. (7) **Read replica failover**: For read-heavy operations (product search, report generation), use read replica pool (separate 5-connection pool); if read replica unavailable, automatically failover to primary database with degraded performance warning logged.
+
+**Rate limiting and quota edge cases**:
+- **CHK113 - Rate limit edge cases**: Handle complex rate limiting scenarios: (1) **Authenticated vs unauthenticated limits**: Authenticated API requests use per-user rate limits (based on subscription plan: Free 60/min, Basic 120/min, Pro 300/min, Enterprise 1000/min); unauthenticated requests use per-IP limits (100 req/min per IP address) to prevent abuse while allowing public browsing. If user logs in mid-session, immediately switch from IP-based to user-based limit; do NOT carry over IP limit consumption to user limit (fresh start). (2) **Rate limit sharing across sessions**: User's rate limit is shared across ALL active sessions (web, mobile app, API clients); total requests from all sessions count toward single user limit. Display current usage in API response headers: `X-RateLimit-User: 120/300 (40% used)`. (3) **Burst allowance for legitimate spikes**: Allow short-term bursts up to 2× normal rate limit for 10-second window to handle legitimate traffic spikes (e.g., page load triggers 20 parallel API calls); sustained requests above base limit trigger throttling with HTTP 429. Token bucket algorithm implementation: refill rate matches plan limit, bucket capacity is 2× plan limit. (4) **Rate limit bypass for internal operations**: Background jobs, scheduled tasks, and internal service-to-service calls bypass rate limits; authenticated via internal service token (separate from user API keys); internal calls include header `X-Internal-Service: true` with HMAC signature for validation. (5) **Rate limit reset timing**: Rate limit windows use sliding window algorithm (not fixed windows) to prevent "double dipping" exploit (e.g., 59 requests at 11:59:59 + 60 requests at 12:00:01 = 119 requests in 2 seconds). Sliding window tracks request timestamps for past 60 seconds; oldest requests drop off as window slides. (6) **Rate limit exceeded response details**: HTTP 429 responses include headers: `X-RateLimit-Limit: {limit}`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset: {unix_timestamp}`, `Retry-After: {seconds}`. Response body includes upgrade CTA for Free/Basic users: "Rate limit exceeded. Upgrade to Pro for 300 req/min. [Upgrade Now]". (7) **Distributed rate limiting (multi-region)**: For multi-region deployments, use centralized Redis for rate limit state (Vercel KV with global replication); ensures rate limits enforced consistently regardless of which region handles request. Fallback to local memory-based limiting if Redis unavailable (per-region limits instead of global).
 
 **Subscription and billing edge cases**:
 - **CHK056 - Order at plan expiration**: Orders submitted within 60 seconds of plan expiration are allowed to complete if initiated before expiration; use order creation timestamp (server UTC time) as authoritative. New orders blocked after grace period (default 7 days); display message: "Your subscription has expired. Please renew to continue accepting orders." Boundary edge cases: (1) **Race condition at exact expiration**: If order creation timestamp equals plan expirationAt timestamp (same second), order is ALLOWED (inclusive boundary, favoring customer); (2) **Timezone confusion**: All timestamps stored in UTC; client-side timezone used only for display; validation always compares UTC timestamps; (3) **Server clock drift**: Assumes NTP-synchronized servers (<1 second drift); if drift detected (>5 seconds from NTP time), log warning and use NTP time for authorization decisions; (4) **Grace period calculation**: 7-day grace period starts from plan expirationAt timestamp (not last payment date); grace period applies to new order creation only (existing orders can be fulfilled regardless of plan status); (5) **Auto-renewal timing**: If auto-renewal scheduled within 60-second grace window, order processing paused for up to 30 seconds waiting for renewal confirmation; if renewal fails, order blocked with message: "Payment renewal in progress. Please try again in 1 minute."
@@ -826,6 +1420,13 @@ Integrations
  - **FR-104**: External platform integration MUST maintain a real-time sync status monitoring dashboard per store showing: last successful sync timestamp, sync health status, pending sync items count, failed sync items with error details, and data discrepancy alerts.
  - **FR-105**: External platform integration MUST provide entity-level sync direction overrides allowing stores to configure bidirectional sync for products/inventory but inbound-only for orders (or other combinations per business needs).
  - **FR-106**: External platform integration MUST support initial bulk import/export for onboarding existing stores with large catalogs (1000+ products), including progress tracking and validation reporting.
+
+Webhook security and reliability
+ - **FR-10X - Webhook signature verification**: All incoming webhook requests (payment gateways, external platforms) MUST be cryptographically verified before processing to prevent unauthorized requests and replay attacks. Implementation requirements: (1) **Algorithm**: Use HMAC-SHA256 for signature generation and verification; other algorithms (SHA1, MD5) are NOT allowed for security reasons. (2) **Header name**: Signature transmitted in HTTP header `X-Webhook-Signature` (or gateway-specific header names: Stripe uses `Stripe-Signature`, SSLCommerz uses `Verify-Sign`, Shopify uses `X-Shopify-Hmac-Sha256`). (3) **Signature format**: `{algorithm}={hexadecimal_signature}` (e.g., `sha256=a3c7f9b2e1d5...`) or raw hexadecimal string depending on gateway convention. (4) **Signing payload**: Compute HMAC using raw request body (NOT parsed JSON) to prevent canonicalization issues; include timestamp if provided by gateway to prevent replay attacks. (5) **Secret management**: Webhook secrets stored encrypted in `PaymentGatewayConfig` table per store; accessed via secure environment variable or key management service; rotated every 90 days with zero-downtime secret migration (accept both old and new secrets for 24-hour overlap period). (6) **Verification logic**: For each webhook request: (a) Extract signature from header, (b) Retrieve webhook secret for store/gateway from encrypted config, (c) Compute expected signature using HMAC-SHA256(secret, raw_body), (d) Compare computed signature with received signature using constant-time comparison (prevent timing attacks - use `crypto.timingSafeEqual()` in Node.js), (e) If signatures match, proceed to webhook processing; if mismatch, reject with HTTP 401 Unauthorized and log security event to audit trail with IP address, user agent, and failed signature. (7) **Timestamp validation** (if provided by gateway): Verify webhook timestamp is within 5-minute window (past or future) to prevent replay attacks; reject webhooks with timestamp outside window even if signature valid. (8) **Response codes**: Return HTTP 401 for invalid signature, HTTP 400 for missing signature header, HTTP 200 for successfully verified and processed webhook, HTTP 500 for processing errors after successful verification. (9) **Testing support**: Provide webhook testing UI in admin dashboard allowing stores to send test webhooks with valid signatures for development/debugging; include signature validation logs showing computed vs received signatures for troubleshooting. (10) **Security monitoring**: Alert Super Admins when webhook signature failure rate exceeds 5% for any store (potential attack or misconfiguration); include recent failure samples in alert email.
+
+ - **FR-10Y - Webhook idempotency standards**: All webhook handlers MUST implement idempotency to safely handle duplicate webhook deliveries without side effects (duplicate charges, inventory double-deduction, multiple notification emails). Implementation requirements: (1) **Idempotency key format**: Use composite key `webhook:{source}:{entity}:{identifier}` where `source` is gateway/platform name (e.g., `stripe`, `sslcommerz`, `shopify`), `entity` is event type (e.g., `payment`, `order`, `inventory`), `identifier` is unique transaction/event ID from source system (e.g., Stripe payment intent ID `pi_3abc123`, SSLCommerz transaction ID `tx_987xyz`). Examples: `webhook:stripe:payment:pi_3NRnMZ2eZvKYlo2C0qytxKx1`, `webhook:sslcommerz:payment:tx_64f89a3b2c1e5`, `webhook:shopify:order:gid://shopify/Order/123456789`. (2) **Storage backend**: Use Vercel KV (Redis-compatible) for production (sub-10ms read/write, global replication, automatic eviction); fallback to in-memory cache for local development. (3) **TTL (Time-To-Live)**: Store idempotency keys with 24-hour expiration (86400 seconds); after 24 hours, key auto-deleted and webhook can be reprocessed if received again (handles extreme delayed retry scenarios). (4) **Processing workflow**: For each webhook request: (a) After signature verification passes (FR-10X), generate idempotency key, (b) Check if key exists in Redis using `EXISTS webhook:{source}:{entity}:{identifier}`, (c) **If key exists (duplicate)**: Log duplicate webhook detection to audit trail with original processing timestamp, return HTTP 200 OK with response body `{"status": "duplicate", "message": "Webhook already processed", "originalProcessedAt": "{timestamp}"}` (success response prevents gateway retries), skip all business logic processing, (d) **If key does NOT exist (first delivery)**: Proceed with webhook business logic processing (update order status, capture payment, adjust inventory, send notifications), (e) **After successful processing**: Set idempotency key in Redis with `SET webhook:{source}:{entity}:{identifier} {processing_timestamp} EX 86400`, commit database transaction, (f) Return HTTP 200 OK with response body `{"status": "success", "message": "Webhook processed", "processedAt": "{timestamp}"}`. (5) **Atomic operations**: Use Redis transactions or Lua scripts to ensure check-and-set atomicity for idempotency key to prevent race conditions when same webhook delivered concurrently to multiple serverless function instances. (6) **Failed processing handling**: If webhook processing fails after idempotency key set, delete the key (allow retry) OR store key with `status:failed` value and include failure reason; gateway retry will reprocess (new attempt) instead of returning duplicate response. (7) **Idempotency key metadata**: Store additional metadata with key: `{ processedAt: timestamp, orderId: string, amountProcessed: number, status: 'success'|'failed', errorMessage?: string }` using JSON value in Redis; enables debugging and reconciliation. (8) **Monitoring**: Track idempotency hit rate (duplicate deliveries) per gateway; alert if hit rate exceeds 10% (indicates gateway retry issues or misconfiguration); dashboard shows per-gateway duplicate rates and recent duplicate events. (9) **Manual replay**: Provide admin UI to manually replay failed webhooks (deletes idempotency key, resends webhook to handler); useful for resolving payment/order status discrepancies during incident recovery.
+
+ - **FR-10Z - Webhook event ordering**: Webhook handlers MUST handle out-of-order event delivery gracefully to prevent data inconsistencies (e.g., "payment_captured" webhook arriving before "payment_authorized" due to network delays). Implementation requirements: (1) **Sequence numbers**: If external system provides event sequence numbers (e.g., Shopify includes `X-Shopify-Order-Sequence-Number` header), store last processed sequence number per entity in database (e.g., `Order.lastWebhookSequence`); reject events with sequence number ≤ last processed with HTTP 409 Conflict response: `{"status": "stale", "message": "Event sequence {receivedSeq} already processed. Last processed: {lastSeq}"}`. (2) **Timestamp fallback**: If sequence numbers unavailable, use event timestamp as ordering signal; compare received event timestamp with last processed event timestamp stored in entity (e.g., `Order.lastWebhookTimestamp`); if received timestamp is older, log warning but process anyway (timestamps less reliable due to clock skew). (3) **State machine validation**: For entities with defined state transitions (e.g., Order status: pending → processing → shipped → delivered), validate that incoming event's target state is a valid transition from current state; reject invalid transitions (e.g., cannot go from "delivered" back to "processing") with HTTP 422 Unprocessable Entity and message: `{"status": "invalid_transition", "message": "Cannot transition from {currentState} to {targetState}"}`. Store rejected events in `WebhookFailure` table for manual review. (4) **Gap detection**: If sequence number gaps detected (e.g., received sequence 105 but last processed was 103, missing 104), pause processing and trigger alert to admin: "Missing webhook event detected for Order #{orderNumber}. Sequence gap: {lastSeq} → {receivedSeq}. Manual intervention required." Provide admin UI to manually fetch missing events via gateway API or mark gap as resolved. (5) **Concurrent event handling**: Use database row-level locking (`SELECT ... FOR UPDATE`) when processing webhooks that modify same entity to prevent race conditions; if lock cannot be acquired within 10 seconds (indicates another webhook processing same entity), return HTTP 409 Conflict: `{"status": "concurrent_processing", "message": "Another webhook is currently processing this entity. Please retry in a few seconds."}` to trigger gateway retry. (6) **Delayed event queue**: If event arrives out-of-order (sequence number too high), queue event in `WebhookDelayedQueue` table with retry logic: check every 30 seconds if gap filled, process when previous events arrive, expire after 1 hour if gap never fills (log to admin dashboard for manual resolution). (7) **Event deduplication + ordering**: Combine FR-10Y idempotency with FR-10Z ordering checks in this order: (a) Signature verification (FR-10X), (b) Idempotency check (FR-10Y - return if duplicate), (c) Sequence number validation (FR-10Z - reject if stale), (d) State transition validation, (e) Business logic processing, (f) Set idempotency key and update sequence number atomically. (8) **Monitoring and alerting**: Track per-gateway metrics: out-of-order event rate (%), sequence gaps detected (count), delayed queue size, average gap resolution time; alert Super Admins if queue size exceeds 50 events or gaps unresolved for >1 hour. (9) **Testing scenarios**: Provide webhook replay tool in admin dashboard with sequence number override capability to test out-of-order handling during development; include pre-built test scenarios (duplicate delivery, out-of-order events, sequence gaps, concurrent updates, invalid state transitions).
 
 Defaults and policies
 - **FR-110**: The system MUST allow configuration of thresholds (low stock, KPI highlights) at the store level.
