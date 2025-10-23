@@ -1,8 +1,8 @@
 # StormCom - Multi-Tenant E-commerce SaaS Platform
 
-**A comprehensive full-stack e-commerce management system built with Next.js 15, TypeScript, Prisma ORM, and Spec-Driven Development**
+**A comprehensive full-stack e-commerce management system built with Next.js 16 (Including Next.js MCP Server), TypeScript, Prisma ORM, and Spec-Driven Development**
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5.5-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0.0-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-Latest-2D3748?logo=prisma)](https://www.prisma.io/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1.14-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
@@ -30,8 +30,8 @@ Built using **Spec-Driven Development** methodology with [GitHub Specs Kit](http
 - 🎯 **Marketing Tools** - Coupons (volume/value/tiered), flash sales, email newsletters, abandoned cart recovery
 - 📝 **Content Management** - Pages, blog posts, menus, FAQs, dynamic content blocks
 - 🏪 **POS (Point of Sale)** - In-store transactions, offline support, stock sync
-- 🔐 **Enterprise Security** - NextAuth.js v5 with TOTP MFA, OIDC/SAML SSO, RBAC (predefined roles), bcrypt password hashing
-- � **Performance** - Server Components (70% less JS), optimized queries, <2s LCP, 99.9% uptime SLA
+- 🔐 **Enterprise Security** - NextAuth.js v4+ with TOTP MFA, OIDC/SAML SSO, RBAC (predefined roles), bcrypt password hashing
+- ⚡ **Performance** - Server Components (70% less JS), optimized queries, <2s LCP, 99.9% uptime SLA
 - ♿ **Accessibility** - WCAG 2.1 Level AA compliance, keyboard navigation, semantic HTML
 - 🎨 **Design System** - Token-driven Tailwind CSS v4, dark mode, per-tenant branding with CSS variable injection
 
@@ -40,7 +40,7 @@ Built using **Spec-Driven Development** methodology with [GitHub Specs Kit](http
 ## 🛠️ Tech Stack (Current Versions)
 
 ### Framework & Language
-- **Next.js** `15.5.5` - App Router with React Server Components (RSC-first architecture)
+- **Next.js** `16` - App Router with React Server Components (RSC-first architecture)
 - **TypeScript** `5.9.3` - Strict mode enforced for type safety
 - **React** `19.x` - Latest React features with Server Components
 
@@ -59,7 +59,7 @@ Built using **Spec-Driven Development** methodology with [GitHub Specs Kit](http
 - **Connection Pooling** - Serverless-optimized via Prisma
 
 ### Authentication & Security
-- **NextAuth.js** `v5` - Modern authentication with JWT sessions
+- **NextAuth.js** `v4+` - Modern authentication with JWT sessions
 - **bcrypt** - Password hashing (cost factor 12)
 - **TOTP (RFC 6238)** - MFA via authenticator apps with backup codes
 - **OIDC/SAML** - Enterprise SSO support
@@ -378,7 +378,7 @@ npm run docs:serve          # Serve documentation locally
 | **Data Model** | ✅ Complete | 42+ Prisma models with full ER diagram |
 | **API Specification** | ✅ Complete | OpenAPI 3.1 with 100+ endpoints |
 | **Design System** | ✅ Complete | Token-driven with 3-phase implementation plan |
-| **Authentication** | 📋 Planned | NextAuth v5, TOTP MFA, OIDC/SAML SSO |
+| **Authentication** | 📋 Planned | NextAuth v4+, TOTP MFA, OIDC/SAML SSO |
 | **Multi-tenant Isolation** | 📋 Planned | Prisma middleware, automatic storeId filtering |
 | **RBAC & Permissions** | 📋 Planned | 4 predefined roles (SUPER_ADMIN, STORE_ADMIN, STAFF, CUSTOMER) |
 
@@ -611,13 +611,13 @@ MIT License - see [LICENSE](LICENSE) file
 
 ### Technical Stack Learning
 
-- **Next.js 15 with App Router**: https://nextjs.org/docs
+- **Next.js 16 with App Router**: https://nextjs.org/docs
 - **TypeScript Strict Mode**: https://www.typescriptlang.org/tsconfig
 - **Prisma ORM**: https://www.prisma.io/docs
 - **Tailwind CSS v4**: https://tailwindcss.com/docs
 - **Radix UI**: https://www.radix-ui.com/docs
 - **shadcn/ui**: https://ui.shadcn.com/
-- **NextAuth.js v5**: https://next-auth.js.org/
+- **NextAuth.js v4+**: https://next-auth.js.org/
 - **Vitest**: https://vitest.dev/
 - **Playwright**: https://playwright.dev/
 
@@ -640,7 +640,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 ### Phase 2: Foundation (Current - In Progress)
 - 📋 Design system implementation (Tailwind v4, tokens, Storybook)
-- 📋 Authentication setup (NextAuth.js v5, TOTP MFA, OIDC/SAML)
+- 📋 Authentication setup (NextAuth.js v4+, TOTP MFA, OIDC/SAML)
 - 📋 Multi-tenant middleware (Prisma auto-injection)
 - 📋 RBAC implementation (4 predefined roles)
 - 📋 API wrapper & rate limiting (Vercel KV)
@@ -657,4 +657,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Next.js 15, TypeScript 5.9, Prisma, and Spec-Driven Development**
+**Built with ❤️ using Next.js 16 (Including), TypeScript 5.9, Prisma, and Spec-Driven Development**

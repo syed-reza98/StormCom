@@ -77,8 +77,8 @@ Or grab individual patches:
 --- a/plan.md
 +++ b/plan.md
 @@ -14,9 +14,9 @@
--**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt ... MFA is optional for all users, including Super Admins, for consistency.
-+**Authentication**: NextAuth.js v5 with JWT sessions, bcrypt ... **MFA is required for Admin and Super Admin**; optional for other roles.
+-**Authentication**: NextAuth.js v4+ with JWT sessions, bcrypt ... MFA is optional for all users, including Super Admins, for consistency.
++**Authentication**: NextAuth.js v4+ with JWT sessions, bcrypt ... **MFA is required for Admin and Super Admin**; optional for other roles.
 @@
 -**Session Management**: JWT + server-side session store. Session...ding window), stored in HTTP-only, Secure, SameSite=Lax cookies.
 +**Session Management**: 30-minute idle timeout + 12-hour absolute; rotate on privilege change; revoke on logout. Cookies: HttpOnly, Secure, SameSite=Lax; **per-request CSRF token** on POST/PUT/PATCH/DELETE.

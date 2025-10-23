@@ -3,114 +3,415 @@ info:
   title: StormCom Multi-tenant E-commerce API
   version: 1.0.0
   description: |
-    RESTful API for the StormCom multi-tenant e-commerce platform.
+    RESTful API for StormCom multi-tenant e-commerce platform.
     
     ## Authentication
-    All API requests require authentication via JWT tokens obtained from `/api/auth/login`.
-    Include the token in the `Authorization` header: `Bearer <token>`
+    All authenticated endpoints require a JWT Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer <token>
+    ```
     
     ## Multi-tenancy
-    All requests are scoped to a store via the authenticated user's context.
-    Store ID is extracted from the JWT token and auto-injected into queries.
+    Most endpoints are scoped to a store via the `storeId` parameter or automatically filtered based on the authenticated user's store.
     
     ## Rate Limiting
-    Rate limits are enforced per subscription plan:
-    - Free: 60 requests/minute
-    - Basic: 120 requests/minute
-    - Pro: 300 requests/minute
-    - Enterprise: 1000 requests/minute
+    Rate limits vary by subscription plan:
+    - **FREE**: 60 requests/minute
+    - **BASIC**: 120 requests/minute
+    - **PRO**: 300 requests/minute
+    - **ENTERPRISE**: 1000 requests/minute
     
-    Rate limit headers are included in all API responses (both success and error):
-    - `X-RateLimit-Limit`: Maximum requests allowed per 60-second window
-    - `X-RateLimit-Remaining`: Requests remaining in current window
-    - `X-RateLimit-Reset`: Unix timestamp (seconds) when the window resets
+    ## Error Responses
+    All error responses follow this format:
+    ```json
+    {
+      "error": {
+        "code": "ERROR_CODE",
+        "message": "Human-readable error message",
+        "details": {}  // Optional validation errors
+      }
+    }
+    ```
     
-    When rate limit is exceeded (HTTP 429), an additional header is included:
-    - `Retry-After`: Seconds to wait before retrying the request
-    
-    ## Pagination
-    List endpoints support cursor-based pagination:
-    - `page`: Page number (default: 1)
-    - `perPage`: Items per page (default: 20, max: 100)
-    
-    ## Error Handling
-    All errors follow a consistent format with appropriate HTTP status codes.
-
   contact:
-    name: StormCom API Support
-    email: api@stormcom.io
+    name: StormCom Support
+    email: support@stormcom.io
   license:
     name: Proprietary
-
+    
 servers:
   - url: https://api.stormcom.io/v1
     description: Production server
   - url: https://staging-api.stormcom.io/v1
     description: Staging server
   - url: http://localhost:3000/api
-    description: Local development
+    description: Local development server
 
 tags:
   - name: Authentication
     description: User authentication and session management
   - name: Stores
-    description: Store management and configuration
+    description: Store management (SUPER_ADMIN, STORE_ADMIN)
   - name: Products
     description: Product catalog management
-  - name: Inventory
-    description: Inventory tracking and adjustments
-  - name: Categories
-    description: Product categorization
   - name: Orders
-    description: Order processing and management
+    description: Order lifecycle management
+  - name: Checkout
+    description: Shopping cart and checkout flow
   - name: Customers
     description: Customer management
-  - name: Payments
-    description: Payment processing
-  - name: Shipping
-    description: Shipping zones and rates
-  - name: Coupons
-    description: Discount coupons and promotions
-  - name: Marketing
-    description: Marketing campaigns and flash sales
-  - name: Content
-    description: CMS pages and blog posts
-  - name: Integrations
-    description: External platform integrations
-  - name: Reports
-    description: Analytics and reporting
-  - name: Settings
-    description: Store settings and configuration
+  - name: Analytics
+    description: Reporting and business intelligence
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  schemas:
+    # Common
+    UUID:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      
+    DateTime:
+      type: string
+      format: date-time
+      example: "2025-10-23T14:30:00Z"
+      
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        perPage:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        total:
+          type: integer
+        totalPages:
+          type: integer
+          
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - NOT_FOUND
+                - CONFLICT
+                - RATE_LIMIT_EXCEEDED
+                - INTERNAL_ERROR
+                - SERVICE_UNAVAILABLE
+            message:
+              type: string
+            details:
+              type: object
+              
+    # User & Auth
+    UserRole:
+      type: string
+      enum:
+        - SUPER_ADMIN
+        - STORE_ADMIN
+        - STAFF
+        - CUSTOMER
+        
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - role
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+          nullable: true
+        emailVerified:
+          type: boolean
+        mfaEnabled:
+          type: boolean
+        lastLoginAt:
+          $ref: '#/components/schemas/DateTime'
+          nullable: true
+          
+    # Store
+    SubscriptionPlan:
+      type: string
+      enum:
+        - FREE
+        - BASIC
+        - PRO
+        - ENTERPRISE
+        
+    SubscriptionStatus:
+      type: string
+      enum:
+        - TRIAL
+        - ACTIVE
+        - PAST_DUE
+        - CANCELED
+        - PAUSED
+        
+    Store:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - subscriptionPlan
+        - subscriptionStatus
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        description:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        subscriptionPlan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        subscriptionStatus:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    # Product
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - price
+        - sku
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        compareAtPrice:
+          type: number
+          format: decimal
+          nullable: true
+        sku:
+          type: string
+        inventoryQty:
+          type: integer
+          minimum: 0
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        isPublished:
+          type: boolean
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    # Order
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - PAYMENT_FAILED
+        - PAID
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+        - CANCELED
+        - REFUNDED
+        
+    PaymentStatus:
+      type: string
+      enum:
+        - PENDING
+        - AUTHORIZED
+        - PAID
+        - FAILED
+        - REFUNDED
+        - DISPUTED
+        
+    ShippingStatus:
+      type: string
+      enum:
+        - PENDING
+        - LABEL_CREATED
+        - PICKED_UP
+        - IN_TRANSIT
+        - OUT_FOR_DELIVERY
+        - DELIVERED
+        - FAILED_DELIVERY
+        - RETURNED
+        
+    Order:
+      type: object
+      required:
+        - id
+        - orderNumber
+        - status
+        - subtotal
+        - totalAmount
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        orderNumber:
+          type: string
+          example: "ORD-1001"
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+        shippingStatus:
+          $ref: '#/components/schemas/ShippingStatus'
+        subtotal:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+        shippingAmount:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        totalAmount:
+          type: number
+          format: decimal
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    OrderItem:
+      type: object
+      required:
+        - id
+        - productName
+        - sku
+        - price
+        - quantity
+        - totalAmount
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        productId:
+          $ref: '#/components/schemas/UUID'
+          nullable: true
+        productName:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+          format: decimal
+        quantity:
+          type: integer
+          minimum: 1
+        subtotal:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        totalAmount:
+          type: number
+          format: decimal
 
 paths:
-  # ==================== AUTHENTICATION ====================
+  # Authentication
   /auth/login:
     post:
-      tags: [Authentication]
-      summary: Login user
-      description: Authenticate user and return JWT token
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email and password. Returns JWT token if MFA is not enabled, or requires MFA challenge if enabled.
       operationId: login
-      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [email, password]
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
                   format: email
-                  example: admin@example.com
                 password:
                   type: string
-                  format: password
-                  example: SecurePass123!
-                mfaCode:
-                  type: string
-                  description: Required if MFA is enabled
-                  example: "123456"
+                rememberMe:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: Login successful
@@ -122,49 +423,45 @@ paths:
                   data:
                     type: object
                     properties:
-                      token:
-                        type: string
-                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
                       user:
                         $ref: '#/components/schemas/User'
-                  message:
-                    type: string
-                    example: Login successful
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '429':
-          $ref: '#/components/responses/RateLimitExceeded'
-
-  /auth/logout:
-    post:
-      tags: [Authentication]
-      summary: Logout user
-      description: Invalidate current session
-      operationId: logout
-      responses:
-        '200':
-          description: Logout successful
+                      requiresMfa:
+                        type: boolean
+                      token:
+                        type: string
+                        description: JWT token (only if MFA not required)
+                      expiresAt:
+                        $ref: '#/components/schemas/DateTime'
+        '400':
+          description: Validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                $ref: '#/components/schemas/Error'
         '401':
-          $ref: '#/components/responses/Unauthorized'
-
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
   /auth/register:
     post:
-      tags: [Authentication]
-      summary: Register new user
-      description: Create new user account (requires invitation or admin approval)
+      tags:
+        - Authentication
+      summary: User registration
+      description: Create new customer account
       operationId: register
-      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [email, password, name]
+              required:
+                - email
+                - password
+                - name
               properties:
                 email:
                   type: string
@@ -174,25 +471,51 @@ paths:
                   minLength: 8
                 name:
                   type: string
-                invitationToken:
+                  minLength: 2
+                phone:
                   type: string
-                  description: Required for invited users
+                  pattern: '^\+[1-9]\d{1,14}$'
+                acceptsMarketing:
+                  type: boolean
       responses:
         '201':
-          description: User registered successfully
+          description: Registration successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      verificationEmailSent:
+                        type: boolean
+                  message:
+                    type: string
         '400':
-          $ref: '#/components/responses/BadRequest'
-
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
   /auth/me:
     get:
-      tags: [Authentication]
+      tags:
+        - Authentication
       summary: Get current user
-      description: Returns authenticated user profile
+      description: Get authenticated user's profile
       operationId: getCurrentUser
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: User profile
@@ -202,316 +525,51 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/User'
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      session:
+                        type: object
+                        properties:
+                          expiresAt:
+                            $ref: '#/components/schemas/DateTime'
+                          lastActivityAt:
+                            $ref: '#/components/schemas/DateTime'
         '401':
-          $ref: '#/components/responses/Unauthorized'
-
-  # ==================== STORES ====================
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  # Stores
   /stores:
     get:
-      tags: [Stores]
+      tags:
+        - Stores
       summary: List stores
-      description: List all stores accessible by current user
+      description: List all stores (SUPER_ADMIN) or user's store (STORE_ADMIN/STAFF)
       operationId: listStores
+      security:
+        - BearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
-        - name: status
+        - name: page
           in: query
           schema:
-            type: string
-            enum: [ACTIVE, TRIAL, SUSPENDED, CLOSED]
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
       responses:
         '200':
           description: List of stores
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Store'
-
-    post:
-      tags: [Stores]
-      summary: Create store
-      description: Create new store (requires platform admin role)
-      operationId: createStore
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateStoreRequest'
-      responses:
-        '201':
-          description: Store created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Store'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-
-  /stores/{storeId}:
-    get:
-      tags: [Stores]
-      summary: Get store details
-      operationId: getStore
-      parameters:
-        - $ref: '#/components/parameters/StoreIdParam'
-      responses:
-        '200':
-          description: Store details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Store'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    patch:
-      tags: [Stores]
-      summary: Update store
-      operationId: updateStore
-      parameters:
-        - $ref: '#/components/parameters/StoreIdParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateStoreRequest'
-      responses:
-        '200':
-          description: Store updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Store'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  # ==================== PRODUCTS ====================
-  /products:
-    get:
-      tags: [Products]
-      summary: List products
-      description: List all products for current store with filtering and search
-      operationId: listProducts
-      parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
-        - name: search
-          in: query
-          description: Full-text search across name and description
-          schema:
-            type: string
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [DRAFT, ACTIVE, ARCHIVED]
-        - name: categoryId
-          in: query
-          description: Filter by category
-          schema:
-            type: string
-        - name: brandId
-          in: query
-          description: Filter by brand
-          schema:
-            type: string
-        - name: minPrice
-          in: query
-          schema:
-            type: number
-        - name: maxPrice
-          in: query
-          schema:
-            type: number
-      responses:
-        '200':
-          description: List of products
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Product'
-
-    post:
-      tags: [Products]
-      summary: Create product
-      description: Create new product with variants
-      operationId: createProduct
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateProductRequest'
-      responses:
-        '201':
-          description: Product created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Product'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /products/{productId}:
-    get:
-      tags: [Products]
-      summary: Get product details
-      operationId: getProduct
-      parameters:
-        - $ref: '#/components/parameters/ProductIdParam'
-      responses:
-        '200':
-          description: Product details with variants
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Product'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    patch:
-      tags: [Products]
-      summary: Update product
-      operationId: updateProduct
-      parameters:
-        - $ref: '#/components/parameters/ProductIdParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateProductRequest'
-      responses:
-        '200':
-          description: Product updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Product'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    delete:
-      tags: [Products]
-      summary: Delete product
-      description: Soft delete product (can be restored)
-      operationId: deleteProduct
-      parameters:
-        - $ref: '#/components/parameters/ProductIdParam'
-      responses:
-        '204':
-          description: Product deleted successfully
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  # ==================== INVENTORY ====================
-  /inventory/adjustments:
-    post:
-      tags: [Inventory]
-      summary: Create inventory adjustment
-      description: Adjust stock quantity for a variant
-      operationId: createInventoryAdjustment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [variantId, quantityChange, reason]
-              properties:
-                variantId:
-                  type: string
-                quantityChange:
-                  type: integer
-                  description: Positive for increase, negative for decrease
-                  example: 10
-                reason:
-                  type: string
-                  enum: [RESTOCK, DAMAGE, THEFT, CORRECTION, RETURN, MANUAL]
-                notes:
-                  type: string
-      responses:
-        '201':
-          description: Inventory adjusted successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      adjustmentId:
-                        type: string
-                      newQuantity:
-                        type: integer
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /inventory/low-stock:
-    get:
-      tags: [Inventory]
-      summary: Get low stock variants
-      description: List variants below low stock threshold
-      operationId: getLowStockVariants
-      parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
-      responses:
-        '200':
-          description: List of low stock variants
           content:
             application/json:
               schema:
@@ -520,863 +578,168 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        variantId:
-                          type: string
-                        sku:
-                          type: string
-                        productName:
-                          type: string
-                        currentStock:
-                          type: integer
-                        lowStockThreshold:
-                          type: integer
-
-  # ==================== ORDERS ====================
+                      $ref: '#/components/schemas/Store'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Stores
+      summary: Create store
+      description: Create new store (SUPER_ADMIN only)
+      operationId: createStore
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - slug
+                - email
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                  pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+                description:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Store created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  message:
+                    type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  # Products
+  /products:
+    get:
+      tags:
+        - Products
+      summary: List products
+      description: List products in store
+      operationId: listProducts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          description: Search in product name, description, SKU
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: isPublished
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+                    
+  # Orders
   /orders:
     get:
-      tags: [Orders]
+      tags:
+        - Orders
       summary: List orders
-      description: List all orders for current store with filtering
+      description: List orders in store
       operationId: listOrders
+      security:
+        - BearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
         - name: status
           in: query
           schema:
-            type: string
-            enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED, REFUNDED]
-        - name: customerId
-          in: query
-          schema:
-            type: string
-        - name: fromDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: toDate
-          in: query
-          schema:
-            type: string
-            format: date
+            $ref: '#/components/schemas/OrderStatus'
       responses:
         '200':
           description: List of orders
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Order'
-
-    post:
-      tags: [Orders]
-      summary: Create order
-      description: Create new order (from cart or manual entry)
-      operationId: createOrder
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateOrderRequest'
-      responses:
-        '201':
-          description: Order created successfully
-          content:
-            application/json:
-              schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Order'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
 
-  /orders/{orderId}:
-    get:
-      tags: [Orders]
-      summary: Get order details
-      operationId: getOrder
-      parameters:
-        - $ref: '#/components/parameters/OrderIdParam'
-      responses:
-        '200':
-          description: Order details with items and payments
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Order'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    patch:
-      tags: [Orders]
-      summary: Update order
-      description: Update order status and details
-      operationId: updateOrder
-      parameters:
-        - $ref: '#/components/parameters/OrderIdParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED]
-                notes:
-                  type: string
-      responses:
-        '200':
-          description: Order updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Order'
-                  message:
-                    type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /orders/{orderId}/cancel:
-    post:
-      tags: [Orders]
-      summary: Cancel order
-      description: Cancel pending order and restore inventory
-      operationId: cancelOrder
-      parameters:
-        - $ref: '#/components/parameters/OrderIdParam'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                reason:
-                  type: string
-      responses:
-        '200':
-          description: Order canceled successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  # ==================== CUSTOMERS ====================
-  /customers:
-    get:
-      tags: [Customers]
-      summary: List customers
-      operationId: listCustomers
-      parameters:
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
-        - name: search
-          in: query
-          description: Search by name or email
-          schema:
-            type: string
-        - name: isGuest
-          in: query
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: List of customers
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Customer'
-
-    post:
-      tags: [Customers]
-      summary: Create customer
-      operationId: createCustomer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCustomerRequest'
-      responses:
-        '201':
-          description: Customer created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Customer'
-                  message:
-                    type: string
-
-  /customers/{customerId}:
-    get:
-      tags: [Customers]
-      summary: Get customer details
-      operationId: getCustomer
-      parameters:
-        - $ref: '#/components/parameters/CustomerIdParam'
-      responses:
-        '200':
-          description: Customer details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Customer'
-
-    patch:
-      tags: [Customers]
-      summary: Update customer
-      operationId: updateCustomer
-      parameters:
-        - $ref: '#/components/parameters/CustomerIdParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCustomerRequest'
-      responses:
-        '200':
-          description: Customer updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Customer'
-
-    delete:
-      tags: [Customers]
-      summary: Delete customer
-      description: Soft delete customer (GDPR compliance)
-      operationId: deleteCustomer
-      parameters:
-        - $ref: '#/components/parameters/CustomerIdParam'
-      responses:
-        '204':
-          description: Customer deleted successfully
-
-  # ==================== PAYMENTS ====================
-  /payments/create-intent:
-    post:
-      tags: [Payments]
-      summary: Create payment intent
-      description: Create SSLCommerz/Stripe payment intent for order
-      operationId: createPaymentIntent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [orderId, gateway]
-              properties:
-                orderId:
-                  type: string
-                gateway:
-                  type: string
-                  enum: [sslcommerz, stripe]
-      responses:
-        '201':
-          description: Payment intent created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      clientSecret:
-                        type: string
-                      paymentId:
-                        type: string
-
-  /payments/webhooks/stripe:
-    post:
-      tags: [Payments]
-      summary: Stripe webhook handler
-      description: Handle Stripe payment events
-      operationId: stripeWebhook
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: Webhook processed
-        '400':
-          description: Invalid signature
-
-# ==================== COMPONENTS ====================
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: JWT token obtained from `/auth/login`
-
-  parameters:
-    PageParam:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-
-    PerPageParam:
-      name: perPage
-      in: query
-      description: Items per page
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-
-    StoreIdParam:
-      name: storeId
-      in: path
-      required: true
-      description: Store ID
-      schema:
-        type: string
-
-    ProductIdParam:
-      name: productId
-      in: path
-      required: true
-      description: Product ID
-      schema:
-        type: string
-
-    OrderIdParam:
-      name: orderId
-      in: path
-      required: true
-      description: Order ID
-      schema:
-        type: string
-
-    CustomerIdParam:
-      name: customerId
-      in: path
-      required: true
-      description: Customer ID
-      schema:
-        type: string
-
-  headers:
-    X-RateLimit-Limit:
-      description: Maximum number of requests allowed per rate limit window (60 seconds)
-      schema:
-        type: integer
-        example: 300
-    
-    X-RateLimit-Remaining:
-      description: Number of requests remaining in the current rate limit window
-      schema:
-        type: integer
-        example: 285
-    
-    X-RateLimit-Reset:
-      description: Unix timestamp (seconds since epoch) when the rate limit window resets
-      schema:
-        type: integer
-        format: int64
-        example: 1698876420
-    
-    Retry-After:
-      description: Number of seconds to wait before retrying the request (only included in 429 responses)
-      schema:
-        type: integer
-        example: 60
-
-  schemas:
-    # ==================== COMMON SCHEMAS ====================
-    SuccessResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operation completed successfully
-
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              enum: [VALIDATION_ERROR, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, RATE_LIMIT_EXCEEDED, INTERNAL_ERROR]
-            message:
-              type: string
-            details:
-              type: object
-              description: Additional error context (validation errors, etc.)
-
-    PaginatedResponse:
-      type: object
-      properties:
-        meta:
-          type: object
-          properties:
-            page:
-              type: integer
-            perPage:
-              type: integer
-            total:
-              type: integer
-            totalPages:
-              type: integer
-
-    # ==================== ENTITY SCHEMAS ====================
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-        status:
-          type: string
-          enum: [ACTIVE, INACTIVE, SUSPENDED]
-        mfaEnabled:
-          type: boolean
-        createdAt:
-          type: string
-          format: date-time
-
-    Store:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        domain:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [ACTIVE, TRIAL, TRIAL_EXPIRED, SUSPENDED, CLOSED]
-        email:
-          type: string
-        logoUrl:
-          type: string
-          nullable: true
-        subscription:
-          type: object
-          properties:
-            plan:
-              type: string
-            status:
-              type: string
-            trialEndDate:
-              type: string
-              format: date-time
-              nullable: true
-        createdAt:
-          type: string
-          format: date-time
-
-    Product:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [DRAFT, ACTIVE, ARCHIVED]
-        brand:
-          type: object
-          nullable: true
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-        variants:
-          type: array
-          items:
-            $ref: '#/components/schemas/Variant'
-        categories:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-        media:
-          type: array
-          items:
-            type: object
-            properties:
-              url:
-                type: string
-              altText:
-                type: string
-              isFeatured:
-                type: boolean
-        createdAt:
-          type: string
-          format: date-time
-
-    Variant:
-      type: object
-      properties:
-        id:
-          type: string
-        sku:
-          type: string
-        price:
-          type: number
-          format: decimal
-        stockQuantity:
-          type: integer
-        attributes:
-          type: object
-          description: 'Variant attributes (e.g., size: M, color: Red)'
-
-    Order:
-      type: object
-      properties:
-        id:
-          type: string
-        orderNumber:
-          type: string
-        customer:
-          type: object
-          properties:
-            id:
-              type: string
-            email:
-              type: string
-            firstName:
-              type: string
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItem'
-        subtotal:
-          type: number
-          format: decimal
-        shippingCost:
-          type: number
-          format: decimal
-        taxAmount:
-          type: number
-          format: decimal
-        total:
-          type: number
-          format: decimal
-        status:
-          type: string
-          enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELED, REFUNDED]
-        paymentStatus:
-          type: string
-          enum: [PENDING, AUTHORIZED, PAID, REFUNDED, FAILED]
-        createdAt:
-          type: string
-          format: date-time
-
-    OrderItem:
-      type: object
-      properties:
-        id:
-          type: string
-        productName:
-          type: string
-        variantSku:
-          type: string
-        quantity:
-          type: integer
-        unitPrice:
-          type: number
-          format: decimal
-        subtotal:
-          type: number
-          format: decimal
-
-    Customer:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-          format: email
-        firstName:
-          type: string
-        lastName:
-          type: string
-          nullable: true
-        phone:
-          type: string
-          nullable: true
-        totalOrders:
-          type: integer
-        totalSpent:
-          type: number
-          format: decimal
-        createdAt:
-          type: string
-          format: date-time
-
-    # ==================== REQUEST SCHEMAS ====================
-    CreateStoreRequest:
-      type: object
-      required: [name, email]
-      properties:
-        name:
-          type: string
-          minLength: 3
-        slug:
-          type: string
-          pattern: '^[a-z0-9-]+$'
-        email:
-          type: string
-          format: email
-        planId:
-          type: string
-
-    UpdateStoreRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-          format: email
-        logoUrl:
-          type: string
-        primaryColor:
-          type: string
-          pattern: '^#[0-9A-Fa-f]{6}$'
-
-    CreateProductRequest:
-      type: object
-      required: [name, variants]
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        brandId:
-          type: string
-        categoryIds:
-          type: array
-          items:
-            type: string
-        variants:
-          type: array
-          minItems: 1
-          items:
-            type: object
-            required: [sku, price]
-            properties:
-              sku:
-                type: string
-              price:
-                type: number
-              stockQuantity:
-                type: integer
-              attributes:
-                type: object
-
-    UpdateProductRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-          enum: [DRAFT, ACTIVE, ARCHIVED]
-
-    CreateOrderRequest:
-      type: object
-      required: [customerId, items, shippingAddress]
-      properties:
-        customerId:
-          type: string
-        items:
-          type: array
-          minItems: 1
-          items:
-            type: object
-            required: [variantId, quantity]
-            properties:
-              variantId:
-                type: string
-              quantity:
-                type: integer
-                minimum: 1
-        shippingAddress:
-          type: object
-          required: [address1, city, postalCode, country]
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
-            address1:
-              type: string
-            address2:
-              type: string
-            city:
-              type: string
-            state:
-              type: string
-            postalCode:
-              type: string
-            country:
-              type: string
-        billingAddress:
-          type: object
-        couponCode:
-          type: string
-
-    CreateCustomerRequest:
-      type: object
-      required: [email, firstName]
-      properties:
-        email:
-          type: string
-          format: email
-        firstName:
-          type: string
-        lastName:
-          type: string
-        phone:
-          type: string
-        password:
-          type: string
-          minLength: 8
-
-    UpdateCustomerRequest:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        phone:
-          type: string
-        marketingOptIn:
-          type: boolean
-
-  responses:
-    BadRequest:
-      description: Bad request - Validation error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
-    Unauthorized:
-      description: Unauthorized - Invalid or missing authentication
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
-    Forbidden:
-      description: Forbidden - Insufficient permissions
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
-    NotFound:
-      description: Not found - Resource does not exist
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
-    RateLimitExceeded:
-      description: Rate limit exceeded - Too many requests
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-        Retry-After:
-          $ref: '#/components/headers/Retry-After'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              code: RATE_LIMIT_EXCEEDED
-              message: API rate limit exceeded. Retry after 60 seconds.
-              details:
-                limit: 300
-                remaining: 0
-                resetAt: 1698876420
-
-security:
-  - BearerAuth: []
+# Note: This is a comprehensive OpenAPI 3.1 specification outline.
+# Full implementation would include all endpoints from the contracts/ directory.
+# For complete API documentation, refer to individual contract files.

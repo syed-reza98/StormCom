@@ -98,8 +98,8 @@ This SRS was generated through:
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
 │               Application Layer                             │
-│  - Next.js 15 App Router (React Server Components)          │
-│  - Authentication & Authorization (NextAuth.js v5)          │
+│  - Next.js 16 App Router (React Server Components)          │
+│  - Authentication & Authorization (NextAuth.js v4+)          │
 │  - Business Logic (Server Actions & Route Handlers)         │
 │  - RESTful API (Next.js API Routes)                         │
 │  - TypeScript 5.9.3 (Strict Mode)                           │
@@ -156,11 +156,11 @@ The system supports multiple user roles with hierarchical permissions:
 
 ### 2.3 Technology Stack (StormCom Implementation)
 
-- **Framework**: Next.js 15.5.5 (App Router with React Server Components)
+- **Framework**: Next.js 16 (App Router with React Server Components)
 - **Language**: TypeScript 5.9.3 (Strict Mode)
 - **Styling**: Tailwind CSS 4.1.14 with Radix UI components
 - **Database**: Prisma ORM with PostgreSQL (production) / SQLite (local dev)
-- **Authentication**: NextAuth.js v5 with RBAC
+- **Authentication**: NextAuth.js v4+ with RBAC
 - **Session**: Server-side session management (NextAuth.js)
 - **File Storage**: Vercel Blob Storage (production) / Local (development)
 - **Testing**: Vitest 3.2.4 + Playwright 1.56.0 (MCP)

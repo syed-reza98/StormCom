@@ -1,2409 +1,1418 @@
-# Data Model: StormCom Multi-tenant E-commerce Platform
+# Data Model: StormCom Multi-tenant E-commerce
 
-**Feature**: StormCom Multi-tenant E-commerce  
-**Date**: 2025-10-18  
-**Phase**: 1 - Database Schema Design
+**Feature**: 001-multi-tenant-ecommerce  
+**Last Updated**: 2025-10-23  
+**Database**: PostgreSQL 15+ (production), SQLite (local dev)
 
 ## Overview
 
-This document defines the complete database schema for the StormCom platform using Prisma ORM. The schema enforces strict multi-tenant isolation, supports soft deletes for user data, and includes comprehensive auditing.
+This document defines the complete database schema for StormCom using Prisma ORM. The architecture uses **Row-Level Security (RLS)** for multi-tenancy, where all tenant-scoped tables include a `storeId` foreign key to enforce data isolation.
 
-**Key Principles**:
-- **Multi-tenant isolation**: All tenant-scoped tables include `storeId` field with compound indexes
-- **Soft deletes**: User data uses `deletedAt` for GDPR compliance and data recovery
-- **Audit trail**: Timestamps (`createdAt`, `updatedAt`) on all tables
-- **Primary keys**: CUID format (`@id @default(cuid())`)
-- **Naming convention**: PascalCase models, camelCase fields (auto-mapped to snake_case in database)
+## Core Principles
 
----
+1. **Multi-tenant Isolation**: All tenant-scoped tables include `storeId` with composite unique constraints
+2. **Soft Deletes**: User-facing data uses `deletedAt DateTime?` for soft deletion
+3. **Audit Trail**: All state changes tracked in `AuditLog` table
+4. **Standard Fields**: All tables include `id` (UUID), `createdAt`, `updatedAt`
+5. **Type Safety**: Enums for status fields, roles, and categories
 
-## Entity Relationship Diagram
-
-```mermaid
-erDiagram
-    Store ||--o{ User : "has staff"
-    Store ||--o{ Product : "manages"
-    Store ||--o{ Order : "receives"
-    Store ||--o{ Customer : "serves"
-    Store ||--|{ StoreSubscription : "has"
-    Store ||--o{ Category : "organizes"
-    Store ||--o{ Brand : "features"
-    Store ||--o{ TaxRate : "applies"
-    Store ||--o{ ShippingZone : "ships to"
-    Store ||--o{ Coupon : "offers"
-    Store ||--o{ Page : "publishes"
-    Store ||--o{ AuditLog : "tracks"
-    
-    SubscriptionPlan ||--o{ StoreSubscription : "used by"
-    
-    User }o--o{ Store : "works in (many-to-many)"
-    User ||--o{ Role : "has"
-    
-    Product ||--o{ Variant : "has variations"
-    Product }o--o{ Category : "categorized (many-to-many)"
-    Product }o--|{ Brand : "branded by"
-    Product }o--o{ Attribute : "has (many-to-many)"
-    Product ||--o{ Media : "has images"
-    Product ||--o{ ProductReview : "receives"
-    
-    Variant ||--o{ InventoryAdjustment : "tracks stock changes"
-    Variant ||--o{ OrderItem : "sold in"
-    
-    Customer ||--o{ Address : "has"
-    Customer ||--o{ Order : "places"
-    Customer ||--o{ Cart : "shops with"
-    Customer ||--o{ Wishlist : "curates"
-    Customer ||--o{ ProductReview : "writes"
-    
-    Order ||--o{ OrderItem : "contains"
-    Order ||--o{ Payment : "paid via"
-    Order ||--o{ Shipment : "ships via"
-    Order ||--o{ Refund : "refunded by"
-    
-    ShippingZone ||--o{ ShippingRate : "has rates"
-```
-
----
-
-## Core Entities
-
-### 1. Store (Tenant)
-
-Primary tenant entity. All store-scoped data references this via `storeId`.
+## Prisma Schema
 
 ```prisma
-model Store {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime? // Soft delete
-  
-  // Store identification
-  name      String
-  slug      String   @unique // Used in subdomain: {slug}.stormcom.io
-  domain    String?  @unique // Custom domain (optional)
-  
-  // Status and configuration
-  status    StoreStatus @default(ACTIVE) // ACTIVE, SUSPENDED, TRIAL_EXPIRED, CLOSED
-  timezone  String   @default("UTC")
-  currency  String   @default("USD") // ISO 4217 code
-  language  String   @default("en")
-  
-  // Theme and branding
-  logoUrl        String?
-  faviconUrl     String?
-  primaryColor   String @default("#000000")  // semantic --color-primary token for CSS variable injection
-  secondaryColor String @default("#FFFFFF")  // semantic --color-secondary token for CSS variable injection
-  fontFamily     String?                     // optional CSS var for --font-sans override (e.g., "Georgia")
-  
-  // Contact and legal
-  email        String
-  phone        String?
-  address      String?
-  taxId        String? // VAT/GST/EIN number
-  
-  // Onboarding and configuration
-  onboardingCompleted Boolean @default(false) // Track first-time setup completion (CHK054)
-  allowCouponsWithFlashSale Boolean @default(true) // Allow coupon stacking during flash sales (CHK060)
-  
-  // Settings (JSON for flexibility)
-  settings  Json @default("{}")  // Auto-cancel timeout, email from address, etc.
-  
-  // Relationships
-  subscription   StoreSubscription?
-  users          UserStore[]
-  products       Product[]
-  categories     Category[]
-  brands         Brand[]
-  customers      Customer[]
-  orders         Order[]
-  coupons        Coupon[]
-  shippingZones  ShippingZone[]
-  taxRates       TaxRate[]
-  taxExemptions  TaxExemption[]
-  pages          Page[]
-  blogs          Blog[]
-  auditLogs      AuditLog[]
-  paymentGateways PaymentGatewayConfig[]
-  integrations   ExternalPlatformIntegration[]
-  
-  @@index([slug])
-  @@index([status])
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
 }
 
-enum StoreStatus {
-  ACTIVE
-  TRIAL
-  TRIAL_EXPIRED
-  SUSPENDED
-  CLOSED
-}
-```
-
----
-
-## Subscription Management
-
-### 2. SubscriptionPlan
-
-Defines available subscription tiers with feature limits.
-
-```prisma
-model SubscriptionPlan {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Plan details
-  name         String   @unique // Free, Basic, Pro, Enterprise
-  slug         String   @unique
-  tier         Int      // 0=Free, 1=Basic, 2=Pro, 3=Enterprise
-  description  String?
-  
-  // Pricing
-  price         Decimal  @db.Decimal(10, 2) // Monthly price in USD
-  billingCycle  BillingCycle @default(MONTHLY) // MONTHLY, YEARLY
-  trialDays     Int      @default(14)
-  
-  // Feature limits
-  maxProducts   Int      @default(10)
-  maxOrders     Int      @default(50)    // Per month
-  maxStaff      Int      @default(1)
-  maxStorage    Int      @default(100)   // MB
-  apiRateLimit  Int      @default(60)    // Requests per minute
-  
-  // Features (boolean flags)
-  hasAdvancedReports Boolean @default(false)
-  hasAbandonedCart   Boolean @default(false)
-  hasPosAccess       Boolean @default(false)
-  hasApiAccess       Boolean @default(false)
-  hasPrioritySupport Boolean @default(false)
-  
-  // Status
-  isActive     Boolean @default(true)
-  isPublic     Boolean @default(true) // Public plans shown on pricing page
-  
-  // Relationships
-  subscriptions StoreSubscription[]
-  
-  @@index([tier])
-  @@index([isActive, isPublic])
+datasource db {
+  provider = "postgresql" // Use "sqlite" for local dev
+  url      = env("DATABASE_URL")
 }
 
-enum BillingCycle {
-  MONTHLY
-  YEARLY
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  SUPER_ADMIN  // Cross-store access, system settings
+  STORE_ADMIN  // Full store access, admin creation
+  STAFF        // Limited store access based on permissions
+  CUSTOMER     // Storefront access only
 }
-```
 
-### 3. StoreSubscription
-
-Tracks active subscription for each store with usage metrics.
-
-```prisma
-model StoreSubscription {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // References
-  storeId String @unique
-  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  planId  String
-  plan    SubscriptionPlan @relation(fields: [planId], references: [id])
-  
-  // Subscription lifecycle
-  status       SubscriptionStatus @default(TRIAL)
-  startDate    DateTime @default(now())
-  endDate      DateTime? // Null = active subscription
-  trialEndDate DateTime?
-  
-  // Billing
-  lastBillingDate   DateTime?
-  nextBillingDate   DateTime?
-  paymentMethod     String? // SSLCommerz/bKash/Stripe payment method ID
-  
-  // Usage tracking (reset monthly)
-  currentProducts Int @default(0)
-  currentOrders   Int @default(0)  // This month
-  currentStaff    Int @default(0)
-  currentStorage  Int @default(0)  // MB used
-  usageResetAt    DateTime @default(now())
-  
-  @@index([storeId])
-  @@index([status])
-  @@index([nextBillingDate])
+enum SubscriptionPlan {
+  FREE        // 10 products, 100 orders/month
+  BASIC       // 100 products, 1K orders/month
+  PRO         // 1K products, 10K orders/month
+  ENTERPRISE  // Unlimited products/orders
 }
 
 enum SubscriptionStatus {
-  TRIAL
-  ACTIVE
-  PAST_DUE
-  CANCELED
-  EXPIRED
+  TRIAL       // 14-day free trial
+  ACTIVE      // Paid and active
+  PAST_DUE    // Payment failed, grace period
+  CANCELED    // User canceled, ends at period_end
+  PAUSED      // Temporarily suspended
 }
-```
 
----
+enum OrderStatus {
+  PENDING         // Order placed, awaiting payment
+  PAYMENT_FAILED  // Payment attempt failed
+  PAID            // Payment confirmed
+  PROCESSING      // Being prepared for shipment
+  SHIPPED         // In transit
+  DELIVERED       // Successfully delivered
+  CANCELED        // Canceled by customer/admin
+  REFUNDED        // Payment refunded
+}
 
-## User Management & Authentication
+enum PaymentStatus {
+  PENDING    // Payment initiated
+  AUTHORIZED // Payment authorized (not captured)
+  PAID       // Payment captured
+  FAILED     // Payment attempt failed
+  REFUNDED   // Payment refunded (full or partial)
+  DISPUTED   // Chargeback/dispute filed
+}
 
-### 4. User
+enum PaymentMethod {
+  CREDIT_CARD     // Stripe credit card
+  DEBIT_CARD      // Stripe debit card
+  MOBILE_BANKING  // SSLCommerz mobile banking (bKash, Rocket, Nagad)
+  BANK_TRANSFER   // SSLCommerz bank transfer
+  CASH_ON_DELIVERY // Pay on delivery
+}
 
-Platform users (store staff, admins). Uses NextAuth.js schema.
+enum PaymentGateway {
+  STRIPE      // International credit/debit cards
+  SSLCOMMERZ  // Bangladesh payment methods
+  MANUAL      // Cash on delivery, bank transfer
+}
 
-```prisma
+enum ShippingStatus {
+  PENDING         // Awaiting shipment
+  LABEL_CREATED   // Shipping label printed
+  PICKED_UP       // Picked up by carrier
+  IN_TRANSIT      // En route to customer
+  OUT_FOR_DELIVERY // Out for final delivery
+  DELIVERED       // Successfully delivered
+  FAILED_DELIVERY // Delivery attempt failed
+  RETURNED        // Returned to sender
+}
+
+enum DiscountType {
+  PERCENTAGE  // e.g., 20% off
+  FIXED       // e.g., $10 off
+  FREE_SHIPPING
+}
+
+enum InventoryStatus {
+  IN_STOCK
+  LOW_STOCK      // Below reorder point
+  OUT_OF_STOCK
+  DISCONTINUED
+}
+
+enum MFAMethod {
+  TOTP  // Time-based OTP (RFC 6238) - primary method
+  SMS   // SMS OTP - optional fallback
+}
+
+enum ThemeMode {
+  LIGHT
+  DARK
+  AUTO  // Respects user's system preference
+}
+
+// ============================================================================
+// AUTHENTICATION & USERS
+// ============================================================================
+
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // bcrypt hash, cost factor 12
+  name      String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+
+  // Multi-tenant association (null for SUPER_ADMIN)
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // MFA
+  mfaEnabled       Boolean   @default(false)
+  mfaMethod        MFAMethod?
+  totpSecret       String?   // Encrypted TOTP secret (AES-256)
+  mfaBackupCodes   MFABackupCode[]
+
+  // Security
+  emailVerified    Boolean   @default(false)
+  emailVerifiedAt  DateTime?
+  lastLoginAt      DateTime?
+  lastLoginIP      String?
+  failedLoginAttempts Int    @default(0)
+  lockedUntil      DateTime? // Account lockout after 5 failed attempts
+  passwordChangedAt DateTime @default(now())
+  passwordHistory  PasswordHistory[]
+
+  // Soft delete
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  deletedAt DateTime? // Soft delete
-  
-  // Authentication (NextAuth.js fields)
-  name          String?
-  email         String   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String   // Bcrypt hash
-  
-  // MFA settings
-  mfaEnabled    Boolean  @default(false)
-  mfaSecret     String?  // TOTP secret (encrypted)
-  mfaBackupCodes String? // JSON array of backup code hashes (bcrypt cost 12) with used status: [{"code": "hash", "used": false, "usedAt": null}]
-  mfaBackupCodesGeneratedAt DateTime? // Timestamp when backup codes were generated (for 1-year expiration)
-  smsPhoneNumber String? // Phone number for SMS fallback (E.164 format)
-  smsEnabled     Boolean  @default(false) // Whether SMS fallback is enabled
-  
-  // User preferences
-  language      String   @default("en")
-  timezone      String   @default("UTC")
-  
-  // Status
-  status        UserStatus @default(ACTIVE)
-  lastLoginAt   DateTime?
-  lastLoginIp   String?
-  
-  // Relationships
-  stores        UserStore[]
+  deletedAt DateTime?
+
+  // Relations
   sessions      Session[]
-  accounts      Account[]  // OAuth accounts
+  orders        Order[]
   auditLogs     AuditLog[]
-  passwordHistory PasswordHistory[]
-  
+  storesManaged Store[]    @relation("StoreAdmins")
+  reviews       Review[]
+  carts         Cart[]
+  addresses     Address[]
+  wishlistItems WishlistItem[]
+  notifications Notification[]
+
   @@index([email])
-  @@index([status])
+  @@index([storeId])
+  @@index([role])
+  @@map("users")
 }
 
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-```
-
-### 4.1 PasswordHistory
-
-Tracks password history for security policy enforcement (CHK009).
-
-**Purpose**: Prevent password reuse by storing hashed history of last 5 passwords.
-
-```prisma
-model PasswordHistory {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  
-  userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Password hash (bcrypt cost 12)
-  passwordHash String
-  
-  @@index([userId, createdAt])
-}
-```
-
-**Implementation Notes**:
-- Store bcrypt hash on every password change
-- Validate new password against last 5 historical hashes using `bcrypt.compare()`
-- Auto-delete entries older than 2 years (GDPR compliance)
-- See `src/lib/security/password-policy.ts` for validation logic
-- See `src/services/jobs/password-history-cleanup.ts` for cleanup job
-
----
-
-### 5. UserStore (Many-to-Many Join Table)
-
-Links users to stores with role assignments.
-
-```prisma
-model UserStore {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  storeId String
-  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  roleId  String
-  role    Role   @relation(fields: [roleId], references: [id])
-  
-  // Status
-  isActive Boolean @default(true)
-  
-  @@unique([userId, storeId])
-  @@index([storeId, isActive])
-}
-```
-
-### 6. Role
-
-Predefined roles with granular permissions (RBAC).
-
-```prisma
-model Role {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Role definition
-  name        String   @unique // OWNER, ADMIN, MANAGER, STAFF, VIEWER
-  slug        String   @unique
-  description String?
-  
-  // Permissions (JSON array of permission strings)
-  permissions Json @default("[]") // ["products.create", "orders.view", "customers.edit", ...]
-  
-  // System role (cannot be deleted)
-  isSystem    Boolean @default(false)
-  
-  // Relationships
-  userStores UserStore[]
-  
-  @@index([slug])
-}
-```
-
-### 7. Account (NextAuth.js OAuth)
-
-OAuth provider accounts linked to users.
-
-```prisma
-model Account {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  userId            String
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  type              String  // oauth, oidc, saml
-  provider          String  // google, azure-ad, okta
-  providerAccountId String
-  
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-```
-
-### 8. Session (NextAuth.js)
-
-User authentication sessions.
-
-```prisma
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique // JWT token ID
+  expiresAt DateTime // 12-hour absolute expiration
+  lastActivityAt DateTime @default(now()) // For 7-day idle timeout
+  ipAddress String?
+  userAgent String?
   
+  // Multi-tenant tracking
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
 }
-```
 
-### 9. VerificationToken (NextAuth.js)
+model MFABackupCode {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashedCode String   // bcrypt hash, cost factor 12
+  isUsed     Boolean  @default(false)
+  usedAt     DateTime?
+  expiresAt  DateTime // 90 days from generation
 
-Email verification and password reset tokens.
+  createdAt DateTime @default(now())
 
-```prisma
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  
-  @@unique([identifier, token])
+  @@index([userId])
+  @@map("mfa_backup_codes")
 }
-```
 
----
+model PasswordHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashedPassword String   // bcrypt hash of previous password
+  createdAt      DateTime @default(now())
 
-## Product Catalog
+  @@index([userId, createdAt])
+  @@map("password_history")
+}
 
-### 10. Product
+// ============================================================================
+// STORES (Multi-tenant Root Entity)
+// ============================================================================
 
-Master product entity with variants.
+model Store {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique // URL-safe identifier (e.g., "demo-store")
+  description String?
+  logo        String?  // Vercel Blob URL
+  email       String
+  phone       String?
+  website     String?
 
-```prisma
-model Product {
-  id        String   @id @default(cuid())
+  // Subscription
+  subscriptionPlan   SubscriptionPlan   @default(FREE)
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  trialEndsAt        DateTime?          // 14 days from creation
+  subscriptionEndsAt DateTime?
+
+  // Limits (enforced by plan)
+  productLimit Int @default(10)   // FREE: 10, BASIC: 100, PRO: 1K, ENTERPRISE: unlimited
+  orderLimit   Int @default(100)  // Orders per month
+
+  // Address
+  address    String?
+  city       String?
+  state      String?
+  postalCode String?
+  country    String @default("US")
+
+  // Settings
+  currency   String @default("USD")
+  timezone   String @default("UTC")
+  locale     String @default("en")
+
+  // Soft delete
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  deletedAt DateTime? // Soft delete
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Product details
+  deletedAt DateTime?
+
+  // Relations
+  users           User[]
+  admins          User[]    @relation("StoreAdmins")
+  products        Product[]
+  orders          Order[]
+  customers       Customer[]
+  categories      Category[]
+  brands          Brand[]
+  discounts       Discount[]
+  flashSales      FlashSale[]
+  shippingZones   ShippingZone[]
+  taxRates        TaxRate[]
+  pages           Page[]
+  menus           Menu[]
+  emailTemplates  EmailTemplate[]
+  themes          Theme[]
+  sessions        Session[]
+  auditLogs       AuditLog[]
+  newsletters     Newsletter[]
+  reviews         Review[]
+  inventoryLogs   InventoryLog[]
+  payments        Payment[]
+  externalConfigs ExternalPlatformConfig[]
+  webhooks        Webhook[]
+
+  @@index([slug])
+  @@index([subscriptionPlan])
+  @@index([subscriptionStatus])
+  @@map("stores")
+}
+
+// ============================================================================
+// PRODUCTS & CATALOG
+// ============================================================================
+
+model Product {
+  id          String   @id @default(uuid())
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // Basic Info
   name        String
-  slug        String
-  description String? @db.Text
+  slug        String   // URL-safe (e.g., "blue-t-shirt")
+  description String?  @db.Text
   shortDescription String?
-  
-  // Organization
-  brandId     String?
-  brand       Brand? @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  
-  // Identifiers
+
+  // Pricing
+  price       Decimal  @db.Decimal(10, 2) // Regular price
+  compareAtPrice Decimal? @db.Decimal(10, 2) // Original price (for sale display)
+  costPrice   Decimal? @db.Decimal(10, 2) // Cost from supplier (for profit calculation)
+
+  // Inventory
+  sku         String   // Stock Keeping Unit
   barcode     String?
-  sku         String? // Master SKU (variants have their own)
-  
-  // Taxonomy
-  isTaxable   Boolean @default(true)
-  taxRateId   String?
-  taxRate     TaxRate? @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
-  
-  // Status
-  status      ProductStatus @default(DRAFT)
-  publishedAt DateTime?
-  
+  trackInventory Boolean @default(true)
+  inventoryQty   Int     @default(0)
+  lowStockThreshold Int  @default(5)
+  inventoryStatus InventoryStatus @default(IN_STOCK)
+
+  // Physical attributes
+  weight      Decimal? @db.Decimal(8, 2) // kg
+  length      Decimal? @db.Decimal(8, 2) // cm
+  width       Decimal? @db.Decimal(8, 2) // cm
+  height      Decimal? @db.Decimal(8, 2) // cm
+
+  // Organization
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brandId     String?
+  brand       Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+
+  // Media
+  images      String[]  // Array of Vercel Blob URLs
+  thumbnailUrl String?
+
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String?
-  
-  // Relationships
-  variants       Variant[]
-  categories     ProductCategory[]
-  attributes     ProductAttribute[]
-  media          Media[]
-  labels         ProductLabel[]
-  reviews        ProductReview[]
-  
-  @@unique([storeId, slug])
-  @@index([storeId, status])
-  @@index([brandId])
-  @@fulltext([name, description])
-}
+  metaKeywords    String[]
 
-enum ProductStatus {
-  DRAFT
-  ACTIVE
-  ARCHIVED
-}
-```
+  // Visibility
+  isPublished Boolean @default(false)
+  publishedAt DateTime?
+  isFeatured  Boolean @default(false)
 
-### 11. Variant
-
-Product variants with inventory and pricing.
-
-```prisma
-model Variant {
-  id        String   @id @default(cuid())
+  // Soft delete
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
-  
+
+  // Relations
+  variants      ProductVariant[]
+  orderItems    OrderItem[]
+  reviews       Review[]
+  attributes    ProductAttributeValue[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  inventoryLogs InventoryLog[]
+  flashSaleItems FlashSaleItem[]
+
+  @@unique([storeId, sku])
+  @@unique([storeId, slug])
+  @@index([storeId, categoryId])
+  @@index([storeId, brandId])
+  @@index([storeId, isPublished])
+  @@index([storeId, isFeatured])
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String   @id @default(uuid())
   productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  // Variant identification
-  sku       String   @unique
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Variant details
+  name      String   // e.g., "Small / Red"
+  sku       String
   barcode   String?
   
-  // Pricing
-  price          Decimal  @db.Decimal(10, 2)
-  compareAtPrice Decimal? @db.Decimal(10, 2) // Original price for sale display
-  costPrice      Decimal? @db.Decimal(10, 2) // Cost for margin calculation
-  
+  // Pricing (overrides product price)
+  price     Decimal? @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2)
+
   // Inventory
-  trackInventory Boolean @default(true)
-  stockQuantity  Int     @default(0)
-  lowStockThreshold Int  @default(5)
-  
-  // Physical attributes
-  weight      Decimal? @db.Decimal(10, 2) // kg
-  length      Decimal? @db.Decimal(10, 2) // cm
-  width       Decimal? @db.Decimal(10, 2) // cm
-  height      Decimal? @db.Decimal(10, 2) // cm
-  
-  // Status
-  isActive    Boolean @default(true)
-  isDefault   Boolean @default(false) // Primary variant for product
-  
-  // Variant attributes (e.g., size=M, color=Red)
-  attributes  Json @default("{}") // { "size": "M", "color": "Red" }
-  
-  // Relationships
-  inventoryAdjustments InventoryAdjustment[]
-  orderItems          OrderItem[]
-  
-  @@index([productId])
-  @@index([sku])
-  @@index([isActive])
-}
-```
+  inventoryQty Int @default(0)
+  lowStockThreshold Int @default(5)
 
-### 12. Category
+  // Physical attributes (overrides product)
+  weight    Decimal? @db.Decimal(8, 2)
+  
+  // Media
+  image     String?  // Vercel Blob URL
+  
+  // Options (e.g., { "Size": "Small", "Color": "Red" })
+  options   Json
 
-Hierarchical product categorization.
+  isDefault Boolean @default(false)
 
-```prisma
-model Category {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Category details
+
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@index([sku])
+  @@map("product_variants")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   name        String
-  slug        String
-  description String? @db.Text
+  slug        String   // URL-safe
+  description String?
+  image       String?  // Vercel Blob URL
   
   // Hierarchy
   parentId    String?
   parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children    Category[] @relation("CategoryHierarchy")
-  
-  // Display
-  imageUrl    String?
-  displayOrder Int @default(0)
-  isActive    Boolean @default(true)
-  
+
   // SEO
   metaTitle       String?
   metaDescription String?
-  
-  // Relationships
-  products    ProductCategory[]
-  
-  @@unique([storeId, slug])
-  @@index([storeId, isActive])
-  @@index([parentId])
-}
-```
 
-### 13. ProductCategory (Many-to-Many Join)
+  isPublished Boolean @default(true)
+  sortOrder   Int     @default(0)
 
-```prisma
-model ProductCategory {
-  id        String   @id @default(cuid())
-  
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
-  isPrimary  Boolean @default(false) // One primary category per product
-  
-  @@unique([productId, categoryId])
-  @@index([categoryId])
-}
-```
-
-### 14. Brand
-
-Product brands/manufacturers.
-
-```prisma
-model Brand {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Brand details
+
+  products Product[]
+
+  @@unique([storeId, slug])
+  @@index([storeId, parentId])
+  @@index([storeId, isPublished])
+  @@map("categories")
+}
+
+model Brand {
+  id          String   @id @default(uuid())
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   name        String
-  slug        String
-  description String? @db.Text
-  logoUrl     String?
-  websiteUrl  String?
-  
-  // Status
-  isActive    Boolean @default(true)
-  
-  // Relationships
-  products    Product[]
-  
-  @@unique([storeId, slug])
-  @@index([storeId, isActive])
-}
-```
+  slug        String   // URL-safe
+  description String?
+  logo        String?  // Vercel Blob URL
+  website     String?
 
-### 15. Attribute
+  // SEO
+  metaTitle       String?
+  metaDescription String?
 
-Product attributes/options (e.g., Size, Color).
+  isPublished Boolean @default(true)
 
-```prisma
-model Attribute {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Attribute definition
-  name      String  // Size, Color, Material
-  slug      String
-  type      AttributeType @default(SELECT) // SELECT, SWATCH, TEXT
-  
-  // Allowed values (JSON array for SELECT/SWATCH types)
-  values    Json @default("[]") // ["S", "M", "L", "XL"] or [{"value": "red", "hex": "#FF0000"}]
-  
-  // Display
-  displayOrder Int @default(0)
-  isActive     Boolean @default(true)
-  
-  // Relationships
-  products     ProductAttribute[]
-  
+  deletedAt DateTime?
+
+  products Product[]
+
   @@unique([storeId, slug])
-  @@index([storeId])
+  @@index([storeId, isPublished])
+  @@map("brands")
 }
 
-enum AttributeType {
-  SELECT    // Dropdown
-  SWATCH    // Color swatches
-  TEXT      // Free text input
-}
-```
-
-### 16. ProductAttribute (Many-to-Many Join)
-
-```prisma
 model ProductAttribute {
-  id        String   @id @default(cuid())
-  
-  productId    String
-  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  attributeId  String
-  attribute    Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
-  
-  // Selected values for this product
-  selectedValues Json @default("[]") // Subset of attribute.values
-  
-  @@unique([productId, attributeId])
+  id        String   @id @default(uuid())
+  name      String   // e.g., "Color", "Size"
+  values    String[] // e.g., ["Red", "Blue", "Green"]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productAttributeValues ProductAttributeValue[]
+
+  @@map("product_attributes")
+}
+
+model ProductAttributeValue {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  value       String   // e.g., "Red"
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
   @@index([attributeId])
-}
-```
-
-### 17. Media
-
-Product images and media files.
-
-```prisma
-model Media {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  // File details
-  url          String
-  thumbnailUrl String?
-  altText      String?
-  mimeType     String
-  size         Int      // Bytes
-  
-  // Display
-  displayOrder Int @default(0)
-  isFeatured   Boolean @default(false) // Primary product image
-  
-  @@index([productId])
-}
-```
-
-### 18. ProductLabel
-
-Labels/badges for products (New, Sale, Featured).
-
-```prisma
-model ProductLabel {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  // Label details
-  label     String  // NEW, SALE, FEATURED, LIMITED, OUT_OF_STOCK
-  color     String? // Hex color for badge
-  priority  Int @default(0) // Higher priority shows first
-  
-  @@index([productId])
-}
-```
-
----
-
-## Inventory Management
-
-### 19. InventoryAdjustment
-
-Tracks all inventory changes with audit trail.
-
-```prisma
-model InventoryAdjustment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  
-  variantId String
-  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  
-  // Adjustment details
-  quantityChange Int      // Positive = increase, negative = decrease
-  newQuantity    Int      // Stock quantity after adjustment
-  reason         AdjustmentReason
-  notes          String?
-  
-  // Actor (who made the adjustment)
-  userId    String?
-  orderId   String?  // If adjustment due to order placement/cancellation
-  
-  // Metadata
-  ipAddress String?
-  userAgent String?
-  
-  @@index([variantId, createdAt])
-  @@index([userId])
+  @@map("product_attribute_values")
 }
 
-enum AdjustmentReason {
-  RESTOCK
-  DAMAGE
-  THEFT
-  CORRECTION
-  RETURN
-  ORDER_PLACED
-  ORDER_CANCELED
-  MANUAL
-}
-```
+// ============================================================================
+// CUSTOMERS
+// ============================================================================
 
----
-
-## Customer Management
-
-### 20. Customer
-
-Store customers (registered and guest).
-
-```prisma
 model Customer {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime? // Soft delete for GDPR
-  
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // User linkage (optional - guests have no userId)
+  userId    String?  @unique
   
-  // Contact info
+  // Basic info
   email     String
   firstName String
-  lastName  String?
+  lastName  String
   phone     String?
-  
-  // Customer type
-  isGuest   Boolean @default(false) // Guest checkout
-  
-  // Authentication (if registered)
-  password  String? // Bcrypt hash (null for guests)
-  emailVerified Boolean @default(false)
-  
-  // Preferences
-  language       String @default("en")
-  marketingOptIn Boolean @default(false)
-  
-  // Tax
-  isTaxExempt Boolean @default(false)
-  taxExemptReason String?
-  
-  // Metadata
-  lastOrderAt DateTime?
-  totalOrders Int @default(0)
-  totalSpent  Decimal @db.Decimal(10, 2) @default(0)
-  
-  // Relationships
-  addresses      Address[]
-  orders         Order[]
-  carts          Cart[]
-  wishlists      Wishlist[]
-  reviews        ProductReview[]
-  taxExemptions  TaxExemption[]
-  
+
+  // Marketing
+  acceptsMarketing Boolean @default(false)
+  marketingOptInAt DateTime?
+
+  // Stats
+  totalOrders    Int     @default(0)
+  totalSpent     Decimal @default(0) @db.Decimal(10, 2)
+  averageOrderValue Decimal @default(0) @db.Decimal(10, 2)
+  lastOrderAt    DateTime?
+
+  // Soft delete
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  orders    Order[]
+  addresses Address[]
+  reviews   Review[]
+
   @@unique([storeId, email])
+  @@index([storeId, userId])
   @@index([storeId, email])
-  @@index([storeId, isGuest])
+  @@map("customers")
 }
-```
 
-### 21. Address
-
-Customer shipping and billing addresses.
-
-```prisma
 model Address {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  // Address type
-  type      AddressType @default(SHIPPING)
-  
-  // Address fields
-  firstName   String
-  lastName    String?
-  company     String?
-  address1    String
-  address2    String?
-  city        String
-  state       String?
-  postalCode  String
-  country     String  // ISO 3166-1 alpha-2 code
-  phone       String?
-  
-  // Flags
-  isDefault   Boolean @default(false)
-  
-  @@index([customerId])
-}
-
-enum AddressType {
-  SHIPPING
-  BILLING
-  BOTH
-}
-```
-
-### 22. Cart
-
-Shopping cart for abandoned cart tracking.
-
-```prisma
-model Cart {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  storeId   String
-  
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   customerId String?
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  
-  // Cart contents (JSON array of items)
-  items     Json @default("[]") // [{ variantId, quantity, price }]
-  
-  // Recovery
-  expiresAt          DateTime
-  recoveryEmailSent  Boolean @default(false)
-  recoveryEmailSentAt DateTime?
-  convertedOrderId   String?
-  
-  @@index([storeId, expiresAt])
-  @@index([customerId])
-}
-```
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-### 23. Wishlist
+  // Address details
+  firstName  String
+  lastName   String
+  company    String?
+  address1   String
+  address2   String?
+  city       String
+  state      String
+  postalCode String
+  country    String @default("US")
+  phone      String?
 
-Customer product wishlists.
-
-```prisma
-model Wishlist {
-  id        String   @id @default(cuid())
+  isDefault  Boolean @default(false)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  // Wishlist details
-  name      String @default("My Wishlist")
-  isPublic  Boolean @default(false)
-  
-  // Items (JSON array of product IDs)
-  items     Json @default("[]") // ["prod_123", "prod_456"]
-  
+
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+
+  @@index([userId])
   @@index([customerId])
+  @@map("addresses")
 }
-```
 
----
+// ============================================================================
+// ORDERS & CHECKOUT
+// ============================================================================
 
-## Order Management
-
-### 24. Order
-
-Customer orders with full lifecycle tracking.
-
-```prisma
 model Order {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
+  id        String      @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
   
+  // Customer
   customerId String?
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  
-  // Order identification
-  orderNumber String @unique // Human-readable (e.g., ORD-2025-00001)
-  
+  customer   Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Order details
+  orderNumber String     // Human-readable (e.g., "ORD-1001")
+  status      OrderStatus @default(PENDING)
+
+  // Addresses
+  shippingAddressId String?
+  shippingAddress   Address? @relation("ShippingAddress", fields: [shippingAddressId], references: [id], onDelete: SetNull)
+  billingAddressId  String?
+  billingAddress    Address? @relation("BillingAddress", fields: [billingAddressId], references: [id], onDelete: SetNull)
+
   // Pricing
-  subtotal      Decimal @db.Decimal(10, 2) // Sum of items
-  shippingCost  Decimal @db.Decimal(10, 2) @default(0)
-  taxAmount     Decimal @db.Decimal(10, 2) @default(0)
-  discountAmount Decimal @db.Decimal(10, 2) @default(0)
-  total         Decimal @db.Decimal(10, 2) // subtotal + shipping + tax - discount
-  
-  // Applied promotions
-  couponCode    String?
-  
-  // Status tracking
-  status        OrderStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
-  fulfillmentStatus FulfillmentStatus @default(UNFULFILLED)
-  
-  // Addresses (denormalized for order history)
-  shippingAddress Json // Full address object
-  billingAddress  Json // Full address object
-  
-  // Customer info (snapshot at order time)
-  customerEmail   String
-  customerPhone   String?
-  
-  // Metadata
-  ipAddress       String?
-  userAgent       String?
-  notes           String? @db.Text
-  
-  // Auto-cancel tracking
-  autoCancelAt    DateTime? // When to auto-cancel if unpaid
-  
-  // Relationships
-  items       OrderItem[]
-  payments    Payment[]
-  shipments   Shipment[]
-  refunds     Refund[]
-  
-  @@index([storeId, orderNumber])
-  @@index([storeId, status])
-  @@index([storeId, createdAt])
-  @@index([customerId])
-  @@index([autoCancelAt])
-}
+  subtotal        Decimal @db.Decimal(10, 2) // Sum of items before tax/shipping/discounts
+  taxAmount       Decimal @default(0) @db.Decimal(10, 2)
+  shippingAmount  Decimal @default(0) @db.Decimal(10, 2)
+  discountAmount  Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount     Decimal @db.Decimal(10, 2) // subtotal + tax + shipping - discount
 
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELED
-  REFUNDED
-}
+  // Discount
+  discountCode String?
 
-enum PaymentStatus {
-  PENDING
-  AUTHORIZED
-  PARTIALLY_PAID
-  PAID
-  PARTIALLY_REFUNDED
-  REFUNDED
-  FAILED
-}
+  // Payment
+  paymentMethod  PaymentMethod?
+  paymentGateway PaymentGateway?
+  paymentStatus  PaymentStatus @default(PENDING)
 
-enum FulfillmentStatus {
-  UNFULFILLED
-  PARTIALLY_FULFILLED
-  FULFILLED
-  PARTIALLY_SHIPPED
-  SHIPPED
-  DELIVERED
-}
-```
-
-### 25. OrderItem
-
-Line items in an order.
-
-```prisma
-model OrderItem {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  variantId String
-  variant   Variant @relation(fields: [variantId], references: [id])
-  
-  // Product snapshot (denormalized for order history)
-  productName String
-  variantSku  String
-  attributes  Json @default("{}") // { "size": "M", "color": "Red" }
-  
-  // Pricing
-  quantity       Int
-  unitPrice      Decimal @db.Decimal(10, 2)
-  discountAmount Decimal @db.Decimal(10, 2) @default(0)
-  taxAmount      Decimal @db.Decimal(10, 2) @default(0)
-  subtotal       Decimal @db.Decimal(10, 2) // quantity * unitPrice - discount
-  
-  // Fulfillment
-  quantityFulfilled Int @default(0)
-  quantityShipped   Int @default(0)
-  quantityRefunded  Int @default(0)
-  
-  @@index([orderId])
-  @@index([variantId])
-}
-```
-
----
-
-## Payment Processing
-
-### 26. Payment
-
-Payment transactions for orders.
-
-```prisma
-model Payment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  // Payment method
-  method    PaymentMethod
-  gateway   String  // sslcommerz, bkash, stripe, paypal, bank_transfer, cod
-  
-  // Amounts
-  amount    Decimal @db.Decimal(10, 2)
-  currency  String @default("USD")
-  
-  // Status
-  status    PaymentTransactionStatus @default(PENDING)
-  
-  // Gateway references
-  transactionId String? @unique // SSLCommerz/bKash/Stripe charge ID, PayPal transaction ID
-  gatewayResponse Json? // Full gateway response for debugging
-  
-  // Metadata
-  paidAt    DateTime?
-  failedAt  DateTime?
-  errorMessage String? @db.Text
-  
-  // Relationships
-  refunds   Refund[]
-  
-  @@index([orderId])
-  @@index([transactionId])
-  @@index([status])
-}
-
-enum PaymentMethod {
-  CREDIT_CARD
-  DEBIT_CARD
-  PAYPAL
-  BANK_TRANSFER
-  CASH_ON_DELIVERY
-  OTHER
-}
-
-enum PaymentTransactionStatus {
-  PENDING
-  AUTHORIZED
-  CAPTURED
-  FAILED
-  REFUNDED
-  PARTIALLY_REFUNDED
-  CANCELED
-}
-```
-
-### 27. PaymentGatewayConfig
-
-Store-specific payment gateway configurations.
-
-```prisma
-model PaymentGatewayConfig {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Gateway details
-  gateway   String  // sslcommerz, bkash, stripe, paypal
-  isActive  Boolean @default(true)
-  
-  // Credentials (encrypted at application level)
-  publicKey     String?
-  secretKey     String  // Encrypted
-  webhookSecret String? // Encrypted
-  
-  // Configuration
-  isTestMode Boolean @default(true)
-  settings   Json @default("{}") // Gateway-specific settings
-  
-  @@unique([storeId, gateway])
-  @@index([storeId, isActive])
-}
-```
-
----
-
-## Shipping & Fulfillment
-
-### 28. ShippingZone
-
-Geographic shipping zones.
-
-```prisma
-model ShippingZone {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Zone details
-  name      String
-  
-  // Geographic coverage (JSON arrays)
-  countries   Json @default("[]") // ISO 3166-1 codes: ["US", "CA"]
-  states      Json @default("[]") // State codes: ["CA", "NY", "TX"]
-  postalCodes Json @default("[]") // Postal code patterns: ["90*", "100*"]
-  
-  // Status
-  isActive  Boolean @default(true)
-  
-  // Relationships
-  rates     ShippingRate[]
-  
-  @@index([storeId, isActive])
-}
-```
-
-### 29. ShippingRate
-
-Shipping rates within zones.
-
-```prisma
-model ShippingRate {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
-  zoneId    String
-  zone      ShippingZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  
-  // Rate details
-  name      String  // Standard Shipping, Express, Overnight
-  
-  // Rate type
-  rateType  ShippingRateType @default(FLAT_RATE)
-  
-  // Pricing
-  cost      Decimal @db.Decimal(10, 2)
-  
-  // Free shipping threshold
-  freeShippingThreshold Decimal? @db.Decimal(10, 2)
-  
-  // Conditions (JSON)
-  conditions Json @default("{}") // { "minWeight": 0, "maxWeight": 10, "minPrice": 50 }
-  
-  // Delivery time estimate
-  minDeliveryDays Int?
-  maxDeliveryDays Int?
-  
-  // Status
-  isActive  Boolean @default(true)
-  
-  @@index([zoneId, isActive])
-}
-
-enum ShippingRateType {
-  FLAT_RATE
-  PERCENTAGE
-  WEIGHT_BASED
-  PRICE_BASED
-}
-```
-
-### 30. Shipment
-
-Order shipment tracking.
-
-```prisma
-model Shipment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  // Carrier details
-  carrier        String  // FedEx, UPS, USPS, DHL
+  // Shipping
+  shippingMethod String?
+  shippingStatus ShippingStatus @default(PENDING)
   trackingNumber String?
   trackingUrl    String?
+
+  // Fulfillment
+  fulfilledAt DateTime?
+  canceledAt  DateTime?
+  cancelReason String?
+
+  // Customer notes
+  customerNote String?
+  adminNote    String?
+
+  // IP tracking (fraud prevention)
+  ipAddress   String?
   
-  // Shipping method
-  shippingMethod String
-  shippingCost   Decimal @db.Decimal(10, 2)
-  
-  // Status tracking
-  status         ShipmentStatus @default(PENDING)
-  shippedAt      DateTime?
-  estimatedDeliveryAt DateTime?
-  deliveredAt    DateTime?
-  
-  // Items in this shipment (JSON array)
-  items          Json @default("[]") // [{ orderItemId, quantity }]
-  
-  @@index([orderId])
-  @@index([trackingNumber])
-}
-
-enum ShipmentStatus {
-  PENDING
-  PICKED_UP
-  IN_TRANSIT
-  OUT_FOR_DELIVERY
-  DELIVERED
-  FAILED
-  RETURNED
-}
-```
-
----
-
-## Refunds & Returns
-
-### 31. Refund
-
-Order refunds and returns.
-
-```prisma
-model Refund {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  orderId   String
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  paymentId String?
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-  
-  // Refund details
-  amount    Decimal @db.Decimal(10, 2)
-  reason    RefundReason
-  notes     String? @db.Text
-  
-  // Items being refunded (JSON array)
-  items     Json @default("[]") // [{ orderItemId, quantity, amount }]
-  
-  // Status
-  status    RefundStatus @default(PENDING)
-  
-  // Processing
-  processedAt DateTime?
-  refundMethod String? // same_as_payment, store_credit, original_payment
-  transactionId String? // Gateway refund ID
-  
-  @@index([orderId])
-  @@index([paymentId])
-  @@index([status])
-}
-
-enum RefundReason {
-  CUSTOMER_REQUEST
-  DEFECTIVE_PRODUCT
-  WRONG_ITEM_SHIPPED
-  DAMAGED_IN_SHIPPING
-  NOT_AS_DESCRIBED
-  DUPLICATE_ORDER
-  OTHER
-}
-
-enum RefundStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  REJECTED
-}
-```
-
----
-
-## Marketing & Promotions
-
-### 32. Coupon
-
-Discount coupons and promotions.
-
-```prisma
-model Coupon {
-  id        String   @id @default(cuid())
+  // Soft delete
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Coupon identification
-  code      String
-  name      String
-  description String?
-  
-  // Discount
-  discountType  DiscountType
-  discountValue Decimal @db.Decimal(10, 2) // Percentage or fixed amount
-  
-  // Conditions
-  minOrderValue Decimal? @db.Decimal(10, 2)
-  maxDiscount   Decimal? @db.Decimal(10, 2) // For percentage discounts
-  
-  // Applicability (JSON arrays)
-  eligibleProducts   Json @default("[]") // Product IDs
-  eligibleCategories Json @default("[]") // Category IDs
-  eligibleCustomers  Json @default("[]") // Customer IDs or "all"
-  
-  // Validity
-  validFrom DateTime
-  validTo   DateTime?
-  
-  // Usage limits
-  usageLimitPerCoupon   Int? // Total uses across all customers
-  usageLimitPerCustomer Int? // Uses per customer
-  currentUsageCount     Int @default(0)
-  
-  // Status
-  isActive  Boolean @default(true)
-  
-  @@unique([storeId, code])
-  @@index([storeId, isActive, validFrom, validTo])
+
+  // Relations
+  items    OrderItem[]
+  payments Payment[]
+
+  @@unique([storeId, orderNumber])
+  @@index([storeId, customerId])
+  @@index([storeId, userId])
+  @@index([storeId, status])
+  @@index([storeId, createdAt])
+  @@map("orders")
 }
 
-enum DiscountType {
-  PERCENTAGE
-  FIXED_AMOUNT
-  FREE_SHIPPING
-  BUY_X_GET_Y
-}
-```
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Product
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 
-### 33. FlashSale
+  // Snapshot (preserve data if product deleted)
+  productName String
+  variantName String?
+  sku         String
+  image       String?
 
-Time-limited flash sales.
+  // Pricing
+  price       Decimal @db.Decimal(10, 2) // Unit price at time of order
+  quantity    Int
+  subtotal    Decimal @db.Decimal(10, 2) // price * quantity
+  taxAmount   Decimal @default(0) @db.Decimal(10, 2)
+  discountAmount Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount Decimal @db.Decimal(10, 2)
 
-```prisma
-model FlashSale {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Payment {
+  id        String        @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Payment details
+  amount    Decimal       @db.Decimal(10, 2)
+  currency  String        @default("USD")
+  status    PaymentStatus @default(PENDING)
+  method    PaymentMethod
+  gateway   PaymentGateway
+
+  // Gateway IDs
+  gatewayPaymentId   String? // Stripe payment_intent_id or SSLCommerz tran_id
+  gatewayCustomerId  String? // Stripe customer_id
+  gatewayChargeId    String? // Stripe charge_id
+
+  // Metadata
+  metadata  Json?         // Gateway-specific data
+
+  // Refund
+  refundedAmount Decimal @default(0) @db.Decimal(10, 2)
+  refundedAt     DateTime?
+
+  // Failure
+  failureCode    String?
+  failureMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId, orderId])
+  @@index([storeId, status])
+  @@index([gatewayPaymentId])
+  @@map("payments")
+}
+
+// ============================================================================
+// CART & WISHLIST
+// ============================================================================
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?  @unique // For guest carts
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime // 30 days for guests, never for logged-in users
+
+  items CartItem[]
+
+  @@index([sessionId])
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  quantity  Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cartId])
+  @@index([productId])
+  @@map("cart_items")
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlist_items")
+}
+
+// ============================================================================
+// REVIEWS & RATINGS
+// ============================================================================
+
+model Review {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerId String?
+  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  // Review content
+  rating    Int      // 1-5 stars
+  title     String?
+  comment   String   @db.Text
   
-  // Sale details
+  // Media
+  images    String[] // Vercel Blob URLs
+
+  // Moderation
+  isApproved Boolean @default(false)
+  approvedAt DateTime?
+  
+  // Verification
+  isVerifiedPurchase Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([storeId, productId])
+  @@index([storeId, isApproved])
+  @@map("reviews")
+}
+
+// ============================================================================
+// INVENTORY MANAGEMENT
+// ============================================================================
+
+model InventoryLog {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Change details
+  previousQty Int
+  newQty      Int
+  changeQty   Int      // Positive = addition, Negative = subtraction
+  reason      String   // e.g., "Sale", "Restock", "Adjustment", "Damaged"
+  note        String?
+
+  // User tracking
+  userId    String?
+  
+  createdAt DateTime @default(now())
+
+  @@index([storeId, productId])
+  @@index([storeId, createdAt])
+  @@map("inventory_logs")
+}
+
+// ============================================================================
+// DISCOUNTS & PROMOTIONS
+// ============================================================================
+
+model Discount {
+  id        String       @id @default(uuid())
+  storeId   String
+  store     Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  code      String       // Coupon code (e.g., "SUMMER20")
+  type      DiscountType
+  value     Decimal      @db.Decimal(10, 2) // Percentage or fixed amount
+
+  // Conditions
+  minimumPurchase Decimal? @db.Decimal(10, 2)
+  usageLimit      Int?     // Total usage limit (null = unlimited)
+  usageCount      Int      @default(0)
+  perCustomerLimit Int?    // Per-customer usage limit
+
+  // Validity
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@unique([storeId, code])
+  @@index([storeId, isActive])
+  @@index([storeId, endsAt])
+  @@map("discounts")
+}
+
+model FlashSale {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   name      String
   description String?
   
-  // Discount
+  // Validity
+  startsAt  DateTime
+  endsAt    DateTime
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items FlashSaleItem[]
+
+  @@index([storeId, isActive])
+  @@index([storeId, startsAt, endsAt])
+  @@map("flash_sales")
+}
+
+model FlashSaleItem {
+  id          String     @id @default(uuid())
+  flashSaleId String
+  flashSale   FlashSale  @relation(fields: [flashSaleId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   discountType  DiscountType
   discountValue Decimal @db.Decimal(10, 2)
   
-  // Target products (JSON array)
-  products  Json @default("[]") // Product IDs or "all"
-  
-  // Timing
-  startAt   DateTime
-  endAt     DateTime
-  
-  // Status
-  status    FlashSaleStatus @default(SCHEDULED)
-  
-  @@index([storeId, status, startAt, endAt])
+  stockLimit    Int?    // Limited stock for flash sale
+  soldCount     Int     @default(0)
+
+  @@index([flashSaleId])
+  @@index([productId])
+  @@map("flash_sale_items")
 }
 
-enum FlashSaleStatus {
-  SCHEDULED
-  ACTIVE
-  ENDED
-  CANCELED
-}
-```
+// ============================================================================
+// SHIPPING & TAX
+// ============================================================================
 
-### 34. NewsletterCampaign
-
-Email marketing campaigns.
-
-```prisma
-model NewsletterCampaign {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+model ShippingZone {
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Campaign details
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   name      String
-  subject   String
-  content   String @db.Text // HTML content
-  
-  // Audience filter (JSON)
-  audienceFilter Json @default("{}") // { "minOrders": 1, "lastOrderDays": 30 }
-  
-  // Scheduling
-  scheduledAt DateTime?
-  sentAt      DateTime?
-  
-  // Metrics
-  recipientCount Int @default(0)
-  openCount      Int @default(0)
-  clickCount     Int @default(0)
-  
-  // Status
-  status    CampaignStatus @default(DRAFT)
-  
-  @@index([storeId, status])
-}
+  countries String[] // ISO country codes (e.g., ["US", "CA"])
 
-enum CampaignStatus {
-  DRAFT
-  SCHEDULED
-  SENDING
-  SENT
-  CANCELED
-}
-```
-
----
-
-## Tax Management
-
-### 35. TaxRate
-
-Tax rates by geographic region.
-
-```prisma
-model TaxRate {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  deletedAt DateTime?
+
+  rates ShippingRate[]
+
+  @@index([storeId])
+  @@map("shipping_zones")
+}
+
+model ShippingRate {
+  id             String       @id @default(uuid())
+  shippingZoneId String
+  shippingZone   ShippingZone @relation(fields: [shippingZoneId], references: [id], onDelete: Cascade)
+
+  name           String       // e.g., "Standard Shipping", "Express"
+  price          Decimal      @db.Decimal(10, 2)
   
+  // Conditions
+  minOrderValue  Decimal?     @db.Decimal(10, 2)
+  maxOrderValue  Decimal?     @db.Decimal(10, 2)
+  minWeight      Decimal?     @db.Decimal(8, 2)
+  maxWeight      Decimal?     @db.Decimal(8, 2)
+  
+  // Delivery estimate
+  estimatedDaysMin Int?
+  estimatedDaysMax Int?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shippingZoneId])
+  @@map("shipping_rates")
+}
+
+model TaxRate {
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Rate details
-  name      String  // CA Sales Tax, UK VAT
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  name      String   // e.g., "CA Sales Tax"
+  rate      Decimal  @db.Decimal(5, 4) // e.g., 0.0825 for 8.25%
   
   // Geographic scope
   country   String
   state     String?
-  postalCode String?
   city      String?
-  
-  // Tax calculation
-  rate      Decimal @db.Decimal(5, 4) // 0.0825 = 8.25%
-  isCompound Boolean @default(false) // Compound tax (tax on tax)
-  priority  Int @default(0) // For multiple tax application order
-  
-  // Status
+  postalCode String?
+
   isActive  Boolean @default(true)
-  
-  // Relationships
-  products  Product[]
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([storeId, country, state])
-  @@index([isActive])
-}
-```
-
-### 35.1 TaxExemption
-
-Manages tax exemption certificates and approval workflow (CHK091).
-
-**Purpose**: Allow eligible customers to request and maintain tax-exempt status with certificate management.
-
-```prisma
-model TaxExemption {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  storeId    String
-  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  // Certificate details
-  certificateUrl String    // Vercel Blob storage URL (PDF/JPG, max 5MB)
-  certificateNum String
-  issuingState   String
-  expiresAt      DateTime
-  
-  // Status workflow
-  status         TaxExemptionStatus @default(PENDING)
-  
-  // Admin review
-  approvedBy     String?   // Admin user ID
-  approvedAt     DateTime?
-  rejectedBy     String?   // Admin user ID
-  rejectedAt     DateTime?
-  rejectionReason String?
-  
-  @@index([storeId, customerId, status])
-  @@index([customerId, status, expiresAt])
-  @@index([expiresAt]) // For auto-expiry job
+  @@map("tax_rates")
 }
 
-enum TaxExemptionStatus {
-  PENDING    // Awaiting admin review
-  APPROVED   // Approved and active
-  REJECTED   // Rejected by admin
-  EXPIRED    // Certificate expired
-  REVOKED    // Manually revoked by admin
-}
-```
+// ============================================================================
+// CONTENT MANAGEMENT
+// ============================================================================
 
-**Implementation Notes**:
-- Request workflow: Customer uploads certificate → Admin reviews → Approve/Reject
-- Auto-expiration job: Runs daily, marks EXPIRED on `expiresAt` date
-- Reminder email: Sent 30 days before expiration
-- Audit trail: All status changes logged in AuditLog
-- See `src/services/tax/tax-exemption-service.ts` for business logic
-- See `src/services/jobs/tax-exemption-expiry.ts` for auto-expiry job
-
----
-
----
-
-## Content Management
-
-### 36. Page
-
-CMS pages (About, Privacy, Terms, etc.).
-
-```prisma
 model Page {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Page details
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   title     String
-  slug      String
-  content   String @db.Text // HTML content
-  
-  // Publication
-  status    PageStatus @default(DRAFT)
-  publishedAt DateTime?
+  slug      String   // URL-safe (e.g., "about-us")
+  content   String   @db.Text // HTML content
   
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String?
-  
-  // Display
-  displayOrder Int @default(0)
-  showInFooter Boolean @default(false)
-  
-  @@unique([storeId, slug])
-  @@index([storeId, status])
-}
+  metaKeywords    String[]
 
-enum PageStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-```
+  isPublished Boolean @default(false)
+  publishedAt DateTime?
 
-### 37. Blog
-
-Blog posts for content marketing.
-
-```prisma
-model Blog {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
-  
-  storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Blog details
-  title     String
-  slug      String
-  excerpt   String?
-  content   String @db.Text
-  featuredImageUrl String?
-  
-  // Author
-  authorId  String
-  
-  // Publication
-  status    PageStatus @default(DRAFT)
-  publishedAt DateTime?
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  
-  // Engagement
-  viewCount Int @default(0)
-  
-  // Categories/Tags (JSON arrays)
-  categories Json @default("[]")
-  tags       Json @default("[]")
-  
+
   @@unique([storeId, slug])
-  @@index([storeId, status, publishedAt])
+  @@index([storeId, isPublished])
+  @@map("pages")
 }
-```
 
----
+model Menu {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-## External Integrations
+  name      String   // e.g., "Main Menu", "Footer Menu"
+  handle    String   // Unique identifier (e.g., "main", "footer")
 
-### 38. ExternalPlatformIntegration
+  items     MenuItem[]
 
-WooCommerce/Shopify sync configuration.
-
-```prisma
-model ExternalPlatformIntegration {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([storeId, handle])
+  @@index([storeId])
+  @@map("menus")
+}
+
+model MenuItem {
+  id        String   @id @default(uuid())
+  menuId    String
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+
+  label     String
+  url       String
+  target    String   @default("_self") // "_self" or "_blank"
   
+  // Hierarchy
+  parentId  String?
+  parent    MenuItem?  @relation("MenuItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children  MenuItem[] @relation("MenuItemHierarchy")
+
+  sortOrder Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menuId, parentId])
+  @@map("menu_items")
+}
+
+// ============================================================================
+// EMAIL & NOTIFICATIONS
+// ============================================================================
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
-  // Platform details
-  platform  ExternalPlatform
-  
-  // Sync configuration
-  syncDirection SyncDirection @default(BIDIRECTIONAL)
-  
-  // Authentication (encrypted)
-  apiUrl    String
-  apiKey    String  // Encrypted
-  apiSecret String? // Encrypted
-  webhookSecret String? // Encrypted
-  
-  // Entity-level direction overrides (JSON)
-  entityOverrides Json @default("{}") // { "products": "inbound", "orders": "outbound" }
-  
-  // Conflict resolution
-  conflictResolution ConflictResolution @default(LAST_WRITE_WINS)
-  
-  // Status
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  name      String   // e.g., "Order Confirmation"
+  handle    String   // Unique identifier (e.g., "order_confirmation")
+  subject   String
+  htmlBody  String   @db.Text
+  textBody  String?  @db.Text
+
+  // Variables (e.g., ["{{customerName}}", "{{orderNumber}}"])
+  variables String[]
+
   isActive  Boolean @default(true)
-  lastSyncAt DateTime?
-  syncStatus SyncStatus @default(IDLE)
-  
-  // Relationships
-  syncQueue SyncQueue[]
-  
-  @@index([storeId, isActive])
-}
 
-enum ExternalPlatform {
-  WOOCOMMERCE
-  SHOPIFY
-}
-
-enum SyncDirection {
-  INBOUND      // External → StormCom
-  OUTBOUND     // StormCom → External
-  BIDIRECTIONAL
-}
-
-enum ConflictResolution {
-  LAST_WRITE_WINS
-  MANUAL_QUEUE
-  PRIORITY_RULES
-}
-
-enum SyncStatus {
-  IDLE
-  SYNCING
-  ERROR
-}
-```
-
-### 39. SyncQueue
-
-Queue for external platform sync operations.
-
-```prisma
-model SyncQueue {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  integrationId String
-  integration   ExternalPlatformIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
-  
-  // Entity details
-  entityType String  // product, order, customer, inventory
-  entityId   String
-  operation  SyncOperation
-  direction  SyncDirection
-  
-  // Payload
-  data      Json // Entity data to sync
-  
-  // Processing
-  status    SyncQueueStatus @default(PENDING)
-  retryCount Int @default(0)
-  maxRetries Int @default(3)
-  
-  // Results
-  processedAt DateTime?
-  errorMessage String? @db.Text
-  
-  @@index([integrationId, status])
-  @@index([entityType, entityId])
+
+  @@unique([storeId, handle])
+  @@index([storeId, isActive])
+  @@map("email_templates")
 }
 
-enum SyncOperation {
-  CREATE
-  UPDATE
-  DELETE
-}
-
-enum SyncQueueStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  CONFLICT
-}
-```
-
----
-
-## Auditing & Logging
-
-### 40. AuditLog
-
-Immutable audit trail for all actions.
-
-```prisma
-model AuditLog {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  
+model Newsletter {
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  email     String
   
-  // Actor
+  // Subscription status
+  isSubscribed Boolean @default(true)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+
+  // Source tracking
+  source    String?  // e.g., "checkout", "footer", "popup"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, email])
+  @@index([storeId, isSubscribed])
+  @@map("newsletters")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title     String
+  message   String
+  type      String   // e.g., "order_update", "low_stock", "system"
+  
+  // Link
+  linkUrl   String?
+  linkText  String?
+
+  isRead    Boolean @default(false)
+  readAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ============================================================================
+// THEME CUSTOMIZATION
+// ============================================================================
+
+model Theme {
+  id        String    @id @default(uuid())
+  storeId   String    @unique
+  store     Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // Color scheme
+  primaryColor    String @default("#3B82F6")   // Tailwind blue-500
+  secondaryColor  String @default("#10B981")   // Tailwind green-500
+  accentColor     String @default("#F59E0B")   // Tailwind amber-500
+  backgroundColor String @default("#FFFFFF")
+  textColor       String @default("#1F2937")   // Tailwind gray-800
+  
+  // Typography
+  fontFamily      String @default("Inter")
+  headingFont     String @default("Inter")
+  fontSize        String @default("16px")
+
+  // Layout
+  layoutWidth     String @default("1280px")
+  borderRadius    String @default("0.5rem")
+  
+  // Mode
+  mode            ThemeMode @default(LIGHT)
+
+  // Custom CSS
+  customCss       String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("themes")
+}
+
+// ============================================================================
+// INTEGRATIONS & WEBHOOKS
+// ============================================================================
+
+model ExternalPlatformConfig {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  platform  String   // "woocommerce", "shopify"
+  apiUrl    String
+  apiKey    String   // Encrypted
+  apiSecret String?  // Encrypted
+
+  // Sync settings
+  syncProducts  Boolean @default(true)
+  syncOrders    Boolean @default(true)
+  syncCustomers Boolean @default(true)
+  syncInterval  Int     @default(60) // minutes
+
+  lastSyncAt DateTime?
+  isActive   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  syncLogs SyncLog[]
+
+  @@index([storeId, platform])
+  @@map("external_platform_configs")
+}
+
+model SyncLog {
+  id        String   @id @default(uuid())
+  configId  String
+  config    ExternalPlatformConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+
+  entityType String  // "product", "order", "customer"
+  action     String  // "import", "export", "update"
+  status     String  // "success", "failed", "partial"
+  
+  recordsProcessed Int @default(0)
+  recordsFailed    Int @default(0)
+  
+  errorMessage String? @db.Text
+  metadata     Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([configId, createdAt])
+  @@map("sync_logs")
+}
+
+model Webhook {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  url       String
+  events    String[] // e.g., ["order.created", "product.updated"]
+  secret    String   // For HMAC signature verification
+
+  isActive  Boolean @default(true)
+
+  // Delivery tracking
+  lastDeliveryAt     DateTime?
+  lastDeliveryStatus String? // "success", "failed"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId, isActive])
+  @@map("webhooks")
+}
+
+// ============================================================================
+// AUDIT & LOGGING
+// ============================================================================
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   userId    String?
-  user      User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
-  actorEmail String // Snapshot in case user deleted
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action    String   // e.g., "CREATE", "UPDATE", "DELETE"
+  entityType String  // e.g., "Product", "Order", "User"
+  entityId  String
   
-  // Action
-  action    String  // create, update, delete, login, logout, etc.
-  entityType String // order, product, customer, etc.
-  entityId   String?
+  // Change tracking
+  changes   Json?    // { "field": { "old": "value", "new": "value" } }
   
-  // Changes
-  beforeSnapshot Json? // State before change
-  afterSnapshot  Json? // State after change
-  
-  // Metadata
+  // Request metadata
   ipAddress String?
   userAgent String?
-  
+
+  createdAt DateTime @default(now())
+
   @@index([storeId, createdAt])
-  @@index([userId])
+  @@index([userId, createdAt])
   @@index([entityType, entityId])
+  @@map("audit_logs")
 }
 ```
 
----
+## Key Design Decisions
 
-## Point of Sale (POS)
+### 1. Multi-tenancy Enforcement
+- All tenant-scoped tables include `storeId` foreign key with `onDelete: Cascade`
+- Composite unique constraints prevent data collision (e.g., `@@unique([storeId, sku])`)
+- Prisma middleware will auto-inject `WHERE storeId = ?` filter on all queries
+- SUPER_ADMIN users have `storeId = null` for cross-store access
 
-### 41. PosSession
+### 2. Soft Delete Pattern
+- User-facing tables include `deletedAt DateTime?` for soft deletion
+- Queries filter `WHERE deletedAt IS NULL` by default
+- Hard deletes only for system tables (Session, AuditLog, PasswordHistory)
+- Permanent data retention for compliance (orders, invoices, audit logs)
 
-POS cash drawer sessions.
+### 3. Audit Trail
+- All state changes tracked in `AuditLog` table with JSON diff
+- Includes user ID, IP address, user agent for forensics
+- 2-year retention policy for GDPR compliance
+- Indexed by `storeId`, `userId`, `entityType`, and `createdAt` for fast queries
 
-```prisma
-model PosSession {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  storeId   String
-  
-  // Staff
-  userId    String
-  
-  // Session timing
-  openedAt  DateTime @default(now())
-  closedAt  DateTime?
-  
-  // Cash management
-  openingCash Decimal @db.Decimal(10, 2)
-  closingCash Decimal? @db.Decimal(10, 2)
-  expectedCash Decimal? @db.Decimal(10, 2)
-  cashDifference Decimal? @db.Decimal(10, 2) // closingCash - expectedCash
-  
-  // Metrics
-  transactionCount Int @default(0)
-  totalSales       Decimal @db.Decimal(10, 2) @default(0)
-  
-  // Notes
-  notes     String? @db.Text
-  
-  @@index([storeId, openedAt])
-  @@index([userId])
-}
-```
+### 4. Security
+- Passwords: bcrypt hash with cost factor 12 (stored in `User.password`)
+- MFA secrets: AES-256 encrypted TOTP secrets (stored in `User.totpSecret`)
+- Backup codes: bcrypt hashed with cost factor 12 (stored in `MFABackupCode.hashedCode`)
+- Sessions: JWT token ID stored in `Session.token` with Redis cache
+- API keys: AES-256 encrypted (stored in `ExternalPlatformConfig.apiKey`)
 
----
+### 5. Performance Optimizations
+- Indexes on all foreign keys for join performance
+- Composite indexes on common query patterns (e.g., `@@index([storeId, createdAt])`)
+- Decimal type for monetary values (avoids floating-point precision errors)
+- Array types for simple lists (images, tags, events) - denormalized for read speed
+- JSON type for flexible metadata (theme settings, webhook metadata)
 
-## Product Reviews
+### 6. Data Integrity
+- Check constraints for positive values (enforced in application layer)
+- Unique constraints for business keys (email, slug, sku)
+- Foreign key cascades to prevent orphaned records
+- Default values for all non-nullable fields
+- Timestamps on all tables for audit trail
 
-### 42. ProductReview
+## Migration Strategy
 
-Customer product reviews and ratings.
-
-```prisma
-model ProductReview {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
-  // Review content
-  rating    Int      // 1-5 stars
-  title     String?
-  review    String?  @db.Text
-  
-  // Verification
-  isVerifiedPurchase Boolean @default(false)
-  
-  // Engagement
-  helpfulCount Int @default(0)
-  
-  // Moderation
-  status    ReviewStatus @default(PENDING)
-  moderatedAt DateTime?
-  moderatedBy String?
-  
-  @@index([productId, status])
-  @@index([customerId])
-  @@unique([productId, customerId]) // One review per customer per product
-}
-
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  FLAGGED
-}
-```
-
----
-
-## Additional Supporting Entities
-
-### 41. DSARRequest
-
-Data Subject Access Request / Erasure workflow records.
-
-```prisma
-model DSARRequest {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  storeId     String
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  type        DSARType
-  status      DSARStatus @default(PENDING)
-  requestedByEmail String
-  processedAt DateTime?
-  notes       String?
-
-  @@index([storeId])
-  @@index([type, status])
-}
-
-enum DSARType { ACCESS; ERASURE; PORTABILITY }
-enum DSARStatus { PENDING; IN_PROGRESS; COMPLETED; REJECTED }
-```
-
-### 42. ConsentEvent
-
-Tracks user consent decisions for marketing, tracking, and GDPR/DSAR compliance.
-
-```prisma
-model ConsentEvent {
-  id            String       @id @default(cuid())
-  createdAt     DateTime     @default(now())
-  storeId       String
-  store         Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  customerId    String?
-  customer      Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  subjectEmail  String       // Email of consent subject (for untracked/anonymous customers)
-  type          ConsentType
-  source        String       // "api", "form", "widget", "import"
-  userAgent     String?
-  ipAddress     String?
-  note          String?
-
-  @@index([storeId, subjectEmail, type])
-  @@index([storeId, createdAt])
-}
-
-enum ConsentType { 
-  MARKETING_OPT_IN
-  MARKETING_OPT_OUT
-  TRACKING_OPT_OUT
-}
-```
-
-### 43. Store (add missing relations)
-
-```prisma
-// Add to Store model:
-flashSales    FlashSale[]
-campaigns     NewsletterCampaign[]
-```
-
-### 44. Attribute (add missing relation)
-
-```prisma
-// Add to store relation in Store model:
-model Store {
-  // ... existing fields
-  attributes    Attribute[]
-}
-```
-
----
-
-## Prisma Schema Summary
-
-**Total Models**: 42  
-**Multi-tenant Models**: 38 (all except User, Role, Account, Session, VerificationToken, SubscriptionPlan)  
-**Soft Delete Support**: 20 models (all user-facing data)  
-**Full-text Search**: Product (name, description)  
-**Compound Indexes**: 50+ for query performance  
-**Unique Constraints**: 30+ for data integrity
-
----
-
-## Database Operations & Maintenance
-
-Operational procedures for database management, migrations, performance optimization, and compliance.
-
-### Migration Safety Procedures
-
-**Pre-Migration Checklist**:
-1. ✅ **Backup database** using Vercel Postgres snapshots (automated daily, manual before major migrations)
-2. ✅ **Test migration** on staging environment with production-like data (100K+ records)
-3. ✅ **Review SQL** generated by Prisma Migrate (`npx prisma migrate dev --create-only`)
-4. ✅ **Estimate downtime** (additive changes = zero downtime, schema alterations = coordinate maintenance window)
-5. ✅ **Prepare rollback plan** (keep last 5 migration files, document rollback commands)
-6. ✅ **Alert stakeholders** 24 hours before production migration (for schema-altering changes)
-
-**Migration Execution**:
+### Development (SQLite)
 ```bash
-# 1. Create migration (development)
-npx prisma migrate dev --name add_password_history_table
+# Sync schema to database (no migration files)
+npx prisma db push
 
-# 2. Review generated SQL
-cat prisma/migrations/YYYYMMDDHHMMSS_add_password_history_table/migration.sql
-
-# 3. Test on staging
-DATABASE_URL=$STAGING_DATABASE_URL npx prisma migrate deploy
-
-# 4. Monitor staging for 24 hours
-# - Check error logs (Sentry)
-# - Verify query performance (Prisma slow query logs)
-# - Test affected features (E2E tests)
-
-# 5. Deploy to production (after approval)
-vercel env pull .env.production
-DATABASE_URL=$PRODUCTION_DATABASE_URL npx prisma migrate deploy
-
-# 6. Verify production
-# - Health check: GET /api/health
-# - Check recent errors (Sentry dashboard)
-# - Monitor slow queries (> 100ms threshold)
+# Seed database with initial data
+npx prisma db seed
 ```
 
-**Rollback Procedure**:
+### Production (PostgreSQL)
 ```bash
-# 1. Restore database from snapshot (Vercel Postgres)
-vercel postgres restore production --snapshot 2025-01-20T10:00:00Z
+# Create migration
+npx prisma migrate dev --name init
 
-# 2. Revert migration in code
-git revert <migration_commit_sha>
+# Apply migration to staging
+npx prisma migrate deploy
 
-# 3. Mark migration as rolled back in _prisma_migrations table
-psql $DATABASE_URL -c "UPDATE _prisma_migrations SET rolled_back_at = NOW() WHERE migration_name = '20250120_add_password_history_table';"
+# Verify migration success
+npx prisma migrate status
 
-# 4. Redeploy application
-vercel --prod
+# Apply to production (with backup)
+npx prisma migrate deploy
 ```
 
-**Zero-Downtime Migration Patterns**:
-- **Adding columns**: Use `@default()` to avoid blocking writes
-- **Removing columns**: Mark as deprecated first, remove in next release (2-week grace period)
-- **Adding indexes**: Use `CONCURRENTLY` flag (Prisma CLI auto-generates for PostgreSQL)
-- **Renaming columns**: Use views with old column names during transition period
+## Seeding Strategy
 
-### Database Partitioning Strategy
+Initial seed data includes:
+1. **Users**: 1 Super Admin, 2 Store Admins, 3 Staff, 5 Customers
+2. **Stores**: 2 demo stores (Demo Store, Test Store) with FREE plan
+3. **Products**: 10 sample products per store with variants
+4. **Categories**: 5 categories per store (Electronics, Clothing, Home, Books, Sports)
+5. **Brands**: 3 brands per store
+6. **Orders**: 5 sample orders in various states
+7. **Shipping Zones**: US, Canada, International
+8. **Tax Rates**: CA (8.25%), NY (8.875%)
+9. **Subscription Plans**: Free, Basic, Pro, Enterprise
+10. **Email Templates**: Order Confirmation, Shipping Notification, Password Reset
 
-**Purpose**: Improve query performance for large tables (> 1M rows) by distributing data across multiple physical partitions.
+## Data Retention Policy
 
-**Partition Targets**:
+- **Orders/Invoices**: 3 years (tax compliance)
+- **Audit Logs**: 2 years (GDPR compliance)
+- **Sessions**: 7-day idle timeout, 12-hour absolute expiration
+- **Carts**: 30 days for guests, never expire for logged-in users
+- **Soft Deleted Records**: 90 days before hard delete (except orders - never hard deleted)
+- **Backups**: Daily for 90 days, monthly for 1 year
+- **Error Reports**: 2 years
 
-**1. Orders Table** (Partition by `createdAt` - Monthly):
-```sql
--- Applied automatically by Prisma Migrate during Phase 2
-CREATE TABLE orders_2025_01 PARTITION OF orders
-  FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
+## Constraints & Limits
 
-CREATE TABLE orders_2025_02 PARTITION OF orders
-  FOR VALUES FROM ('2025-02-01') TO ('2025-03-01');
+### Per Store (Enforced by Subscription Plan)
+- **FREE**: 10 products, 100 orders/month
+- **BASIC**: 100 products, 1K orders/month
+- **PRO**: 1K products, 10K orders/month
+- **ENTERPRISE**: Unlimited
 
--- Automated partition management (cron job runs monthly)
--- Script: scripts/create-monthly-partition.ts
-```
+### Database Limits
+- **Max product images**: 10 per product
+- **Max product variants**: 100 per product
+- **Max cart items**: 50 per cart
+- **Max wishlist items**: 100 per user
+- **Max addresses**: 10 per customer
+- **Max backup codes**: 10 per user
+- **Max password history**: 5 per user
 
-**Benefits**:
-- Faster queries when filtering by date: `WHERE createdAt > '2025-01-01'`
-- Efficient archival: Drop old partitions instead of DELETE operations
-- Improved vacuum performance (PostgreSQL maintenance)
-
-**2. AuditLogs Table** (Partition by `timestamp` - Monthly):
-```sql
-CREATE TABLE audit_logs_2025_01 PARTITION OF audit_logs
-  FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
-```
-
-**Benefits**:
-- Faster compliance queries: "Show all actions by user X in January 2025"
-- Efficient purging: Drop partitions older than 1 year
-- Reduced index bloat on high-write table
-
-**Partition Maintenance**:
-```typescript
-// scripts/create-monthly-partition.ts
-import { exec } from 'child_process';
-import { addMonths, format } from 'date-fns';
-
-async function createNextMonthPartition(table: 'orders' | 'audit_logs') {
-  const nextMonth = addMonths(new Date(), 1);
-  const startDate = format(nextMonth, 'yyyy-MM-01');
-  const endDate = format(addMonths(nextMonth, 1), 'yyyy-MM-01');
-  const partitionName = `${table}_${format(nextMonth, 'yyyy_MM')}`;
-
-  const sql = `
-    CREATE TABLE IF NOT EXISTS ${partitionName} PARTITION OF ${table}
-    FOR VALUES FROM ('${startDate}') TO ('${endDate}');
-  `;
-
-  await exec(`psql $DATABASE_URL -c "${sql}"`);
-  console.log(`✅ Created partition: ${partitionName}`);
-}
-
-// Run monthly via cron (1st day of month at 00:00 UTC)
-createNextMonthPartition('orders');
-createNextMonthPartition('audit_logs');
-```
-
-**Performance Impact**:
-- Query time for recent orders: 500ms → 50ms (10x faster)
-- Archival operation: 2 hours → 5 seconds (DROP TABLE instead of DELETE)
-
-### PasswordHistory Retention Policy
-
-**Policy**: Enforce password uniqueness for last 5 passwords (SC-009 compliance).
-
-**Retention Rules**:
-1. **Keep last 5 passwords** per user (rolling window)
-2. **Auto-delete passwords older than 2 years** (GDPR data minimization)
-3. **Hash all historical passwords** using bcrypt (cost factor: 12)
-
-**Implementation** (`src/services/auth/password-service.ts`):
-```typescript
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcrypt';
-import { addYears } from 'date-fns';
-
-export async function validatePasswordHistory(userId: string, newPassword: string): Promise<boolean> {
-  // Fetch last 5 passwords
-  const history = await prisma.passwordHistory.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-  });
-
-  // Check if new password matches any historical password
-  for (const record of history) {
-    const matches = await bcrypt.compare(newPassword, record.passwordHash);
-    if (matches) {
-      throw new Error('Password has been used recently. Please choose a different password.');
-    }
-  }
-
-  return true;
-}
-
-export async function addPasswordToHistory(userId: string, passwordHash: string): Promise<void> {
-  // Add new password to history
-  await prisma.passwordHistory.create({
-    data: { userId, passwordHash },
-  });
-
-  // Keep only last 5 passwords
-  const allPasswords = await prisma.passwordHistory.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  if (allPasswords.length > 5) {
-    const toDelete = allPasswords.slice(5);
-    await prisma.passwordHistory.deleteMany({
-      where: {
-        id: { in: toDelete.map((p) => p.id) },
-      },
-    });
-  }
-}
-
-export async function purgeOldPasswordHistory(): Promise<void> {
-  // Auto-delete passwords older than 2 years (GDPR compliance)
-  const twoYearsAgo = addYears(new Date(), -2);
-
-  const result = await prisma.passwordHistory.deleteMany({
-    where: {
-      createdAt: { lt: twoYearsAgo },
-    },
-  });
-
-  console.log(`✅ Purged ${result.count} password history records older than 2 years`);
-}
-
-// Run monthly via cron
-// cron: 0 0 1 * * (1st day of month at 00:00 UTC)
-```
-
-**Cron Job Configuration** (`.github/workflows/monthly-maintenance.yml`):
-```yaml
-name: Monthly Database Maintenance
-
-on:
-  schedule:
-    - cron: '0 0 1 * *' # 1st day of month at 00:00 UTC
-
-jobs:
-  maintenance:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm ci
-      - run: npx tsx scripts/create-monthly-partition.ts
-      - run: npx tsx scripts/purge-old-password-history.ts
-      - run: npx tsx scripts/purge-soft-deleted-records.ts
-```
-
-**Compliance Benefits**:
-- **GDPR Article 5(1)(e)**: Data minimization (auto-delete old passwords)
-- **NIST SP 800-63B**: Password history enforcement (prevent reuse of last 5 passwords)
-- **SOC 2**: Audit trail of password changes via PasswordHistory table
-
-### Query Performance Monitoring
-
-**Slow Query Detection** (Implemented in `src/lib/prisma.ts`):
-```typescript
-import { PrismaClient } from '@prisma/client';
-import * as Sentry from '@sentry/nextjs';
-
-const prisma = new PrismaClient({
-  log: [{ emit: 'event', level: 'query' }],
-});
-
-prisma.$on('query', (e) => {
-  if (e.duration > 100) {
-    console.warn('[SLOW_QUERY]', {
-      query: e.query,
-      duration: e.duration,
-      params: e.params,
-    });
-
-    // Alert engineering team via Sentry
-    Sentry.captureMessage('Slow database query', {
-      level: 'warning',
-      extra: {
-        query: e.query,
-        duration: e.duration,
-        params: e.params,
-      },
-      tags: {
-        type: 'performance',
-        component: 'database',
-      },
-    });
-  }
-});
-
-export { prisma };
-```
-
-**Alert Thresholds**:
-- **Warning**: Query duration > 100ms (log to console + Sentry)
-- **Critical**: Query duration > 1000ms (PagerDuty alert to on-call engineer)
-
-**Optimization Workflow**:
-1. **Identify slow queries** via Sentry dashboard (weekly review)
-2. **Analyze query plan** using `EXPLAIN ANALYZE` in Prisma Studio
-3. **Add missing indexes** or refactor query
-4. **Test improvement** on staging (verify < 100ms threshold)
-5. **Deploy to production** via standard migration process
-
-### Backup & Recovery
-
-**Automated Backups** (Vercel Postgres):
-- **Frequency**: Daily at 02:00 UTC
-- **Retention**: 90 days
-- **Type**: Full database snapshot with point-in-time recovery
-- **Storage**: Encrypted at rest (AES-256)
-
-**Manual Backup** (Before major migrations):
-```bash
-# Create snapshot via Vercel CLI
-vercel postgres backup create production --name "pre-migration-2025-01-20"
-
-# List backups
-vercel postgres backup list production
-
-# Restore from snapshot
-vercel postgres restore production --snapshot pre-migration-2025-01-20
-```
-
-**Disaster Recovery RTO/RPO**:
-- **RTO (Recovery Time Objective)**: 4 hours (maximum downtime)
-- **RPO (Recovery Point Objective)**: 24 hours (maximum data loss)
-- **Tested quarterly** via disaster recovery drills
-
----
-
-## Database Migrations Strategy
-
-### Initial Migration (Phase 1)
-1. Core entities: Store, User, SubscriptionPlan, StoreSubscription
-2. Catalog: Product, Variant, Category, Brand, Attribute, Media
-3. Customers: Customer, Address
-4. Orders: Order, OrderItem, Payment, Shipment, Refund
-5. Marketing: Coupon, FlashSale
-6. Content: Page, Blog
-7. System: AuditLog, SyncQueue
-
-### Phase 2 Enhancements
-- Add indexes based on query performance analysis
-- Add computed columns for denormalized metrics (e.g., product rating average)
-- Add materialized views for reporting dashboards
-- **Implement table partitioning** for orders and audit_logs tables
-
-### Data Retention & Archival
-- **Soft deletes**: 90-day grace period, then hard delete (except orders/invoices)
-- **Orders**: Retain 3 years for tax/accounting compliance
-- **Audit logs**: Retain 1 year, then archive to cold storage (via partition dropping)
-- **Password history**: Retain last 5 passwords per user, auto-delete records older than 2 years
-- **Backups**: 90-day retention with point-in-time recovery
-
----
+### Field Limits
+- **Product name**: 200 characters
+- **Product description**: 10,000 characters
+- **SKU**: 50 characters
+- **Email**: 255 characters
+- **Phone**: 20 characters
+- **Address lines**: 100 characters each
+- **Custom CSS**: 50,000 characters
 
 ## Next Steps
 
-1. ✅ **Data model defined** (this document)
-2. ⏭️ **Generate Prisma schema file** (`prisma/schema.prisma`)
-3. ⏭️ **Generate API contracts** (OpenAPI specification for 132 functional requirements)
-4. ⏭️ **Generate quickstart guide** (setup instructions with seed data)
-5. ⏭️ **Update agent context** (add schema knowledge to Copilot instructions)
+1. **Generate Prisma Client**: `npx prisma generate`
+2. **Create SQLite Database**: `npx prisma db push`
+3. **Seed Database**: `npx prisma db seed`
+4. **Open Prisma Studio**: `npx prisma studio` (http://localhost:5555)
+5. **Verify Schema**: Check all tables and relationships in Studio
 
----
+## References
 
-**Document Status**: ✅ Complete - Ready for Prisma schema generation
+- **Feature Spec**: `specs/001-multi-tenant-ecommerce/spec.md`
+- **Technical Research**: `specs/001-multi-tenant-ecommerce/research.md`
+- **Prisma Docs**: https://www.prisma.io/docs
+- **PostgreSQL Docs**: https://www.postgresql.org/docs/15/
+- **SQLite Docs**: https://www.sqlite.org/docs.html

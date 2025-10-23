@@ -1,6 +1,6 @@
 ﻿# StormCom - Copilot Instructions
 
-StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Next.js 15.5.5, TypeScript 5.9.3, and Prisma ORM. This file provides guidance for GitHub Copilot Coding Agent to work effectively with this codebase.
+StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Next.js 16 (Including Next.js MCP Server), TypeScript 5.9.3, and Prisma ORM. This file provides guidance for GitHub Copilot Coding Agent to work effectively with this codebase.
 
 ## Project Overview
 
@@ -45,7 +45,7 @@ Planned source code structure (per plan) will introduce `src/`, `prisma/`, and `
 ## Tech Stack & Versions
 
 ### Core Framework
-- **Next.js**: 15.5.5 (App Router only, NO Pages Router)
+- **Next.js**: 16.0.0 (App Router only, NO Pages Router)
 - **React**: 19.x (Server Components by default)
 - **TypeScript**: 5.9.3 (strict mode enabled)
 - **Node.js**: 18.x or higher
@@ -60,7 +60,7 @@ Planned source code structure (per plan) will introduce `src/`, `prisma/`, and `
 - **PostgreSQL**: Production (Vercel Postgres)
 
 ### Authentication
-- **NextAuth.js**: v5 (authentication & sessions)
+- **NextAuth.js**: v4+ (authentication & sessions)
 - **bcrypt**: Password hashing
 
 ### Testing

@@ -482,7 +482,7 @@ What actually happens.
 - OS: [e.g., macOS 13.0]
 - Browser: [e.g., Chrome 120]
 - Node.js: [e.g., 18.17.0]
-- Next.js: [e.g., 15.5.5]
+- Next.js: [e.g., 16.0.0]
 
 ## Screenshots
 If applicable, add screenshots.
