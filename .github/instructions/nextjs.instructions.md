@@ -1190,6 +1190,172 @@ When building features for StormCom, ensure:
 
 ---
 
-**Version**: 2.0 | **Last Updated**: 2025-01-17 | **Project**: StormCom Multi-tenant E-commerce
+## Next.js MCP Server Integration (REQUIRED)
+
+**CRITICAL**: Next.js 16.0.0+ includes built-in Model Context Protocol (MCP) server support for AI-assisted development. StormCom REQUIRES both MCP servers for optimal Copilot agent experience.
+
+### 1. Built-in Next.js MCP Server (Automatic in Next.js 16+)
+
+The Next.js MCP server is **automatically enabled** in development and provides:
+
+- **Real-time Application State**: Access live runtime information and internal state
+- **Error Diagnostics**: Retrieve build errors, runtime errors, and type errors from dev server
+- **Development Logs**: Access console output and server logs
+- **Page Metadata**: Query page metadata, routes, and rendering details
+- **Server Actions**: Inspect Server Actions by ID for debugging
+- **Component Hierarchies**: Understand component structure and relationships
+
+**Available Tools**:
+- `get_errors`: Retrieve current build/runtime/type errors
+- `get_logs`: Access development server logs
+- `get_page_metadata`: Get page routes, components, rendering info
+- `get_project_metadata`: Retrieve project structure and configuration
+- `get_server_action_by_id`: Look up Server Actions for debugging
+
+**Verification**:
+```bash
+# Start dev server (MCP enabled automatically in Next.js 16+)
+npm run dev
+
+# MCP server runs within Next.js dev server
+# No additional configuration needed
+```
+
+### 2. Next DevTools MCP (External Package - REQUIRED)
+
+**Installation**:
+```bash
+# Create .mcp.json at project root
+# f:\StormCom\.mcp.json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+```
+
+**Features**:
+- **Next.js Knowledge Base**: Query comprehensive Next.js 16 documentation and best practices
+- **Migration Tools**: Automated codemods for upgrading to Next.js 16
+- **Cache Components Guide**: Setup assistance for Cache Components and PPR
+- **Browser Testing**: Playwright MCP integration for E2E testing
+- **Dev Server Discovery**: Automatically connects to running Next.js dev servers
+
+**Available Tools**:
+- `nextjs_docs`: Search Next.js documentation with natural language queries
+- `upgrade_nextjs_16`: Run automated codemods for Next.js 16 migration
+- `enable_cache_components`: Setup Cache Components configuration
+- `browser_eval`: Execute Playwright commands for browser testing
+- `nextjs_runtime`: Query running dev server for routes, errors, diagnostics
+
+**Available Prompts**:
+- "Help me upgrade my Next.js app to version 16"
+- "When should I use 'use client' in App Router?"
+- "What's the structure of my Next.js routes?"
+- "Explain Cache Components and how to use them"
+- "How do I optimize performance in Next.js 16?"
+
+### 3. MCP Workflow for Copilot Agents
+
+**Development Workflow**:
+```bash
+# 1. Start Next.js dev server (MCP enabled automatically)
+npm run dev
+
+# 2. Copilot agent connects to MCP servers automatically via .mcp.json
+
+# 3. Agent can now query live application state
+# Example prompts:
+# - "What errors are currently in my application?"
+# - "Show me the structure of my dashboard routes"
+# - "Help me debug this Server Action error"
+# - "Optimize this page for performance"
+```
+
+**Example Agent Interaction**:
+```typescript
+// User: "What errors are currently in my application?"
+
+// Agent Action:
+// 1. Calls get_errors tool from Next.js MCP server
+// 2. Retrieves build errors, runtime errors, type errors
+// 3. Analyzes errors and provides actionable fixes
+
+// Agent Response:
+// "Found 2 errors in your application:
+// 
+// 1. Type Error in app/dashboard/products/page.tsx:42
+//    Property 'storeId' is missing in type 'Product'
+//    Fix: Add storeId to Product type definition
+//
+// 2. Runtime Error in app/api/orders/route.ts:28
+//    Cannot read property 'id' of undefined
+//    Fix: Add null check before accessing order.id"
+```
+
+**Benefits for StormCom Development**:
+- **Context-Aware Suggestions**: Agent recommends features based on existing structure
+- **Live Application State**: Query current routes, middleware, errors during development
+- **Multi-Tenant Awareness**: Agent understands route groups and tenant isolation patterns
+- **Performance Insights**: Get recommendations based on actual performance metrics
+- **Accurate Implementations**: Generate code following StormCom patterns and conventions
+
+### 4. Configuration for StormCom
+
+**Required Files**:
+```bash
+# f:\StormCom\.mcp.json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+
+# No configuration needed for built-in Next.js MCP server
+# Automatically enabled in Next.js 16+ development mode
+```
+
+**Verification Checklist**:
+- [ ] Next.js 16.0.0+ installed
+- [ ] `.mcp.json` created at project root
+- [ ] `npm run dev` starts without errors
+- [ ] Copilot agent can query MCP servers
+- [ ] Test prompt: "What's the structure of my Next.js routes?"
+
+### 5. Troubleshooting MCP Connection
+
+**Common Issues**:
+```bash
+# Issue: MCP server not connecting
+# Solution 1: Verify Next.js version
+npm list next
+# Should be 16.0.0 or higher
+
+# Solution 2: Restart dev server
+npm run dev
+
+# Solution 3: Check .mcp.json syntax
+cat .mcp.json
+# Ensure valid JSON format
+
+# Solution 4: Verify Copilot agent MCP configuration
+# Check agent settings for .mcp.json path
+```
+
+**Resources**:
+- [Next.js MCP Documentation](https://nextjs.org/docs/app/guides/mcp)
+- [Next DevTools MCP Package](https://www.npmjs.com/package/next-devtools-mcp)
+- [Vercel MCP Template](https://vercel.com/templates/next.js/model-context-protocol-mcp-with-next-js)
+- [Next.js 16 Blog Post](https://nextjs.org/blog/next-16)
+
+---
+
+**Version**: 2.1 | **Last Updated**: 2025-01-25 | **Project**: StormCom Multi-tenant E-commerce
 
 

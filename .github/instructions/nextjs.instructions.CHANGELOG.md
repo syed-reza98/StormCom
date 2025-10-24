@@ -1,12 +1,179 @@
 # Next.js Instructions Update Changelog
 
-**Date**: 2025-01-17  
+**Date**: 2025-01-25 (Updated)  
+**Previous Update**: 2025-01-17  
 **Updated File**: `.github/instructions/nextjs.instructions.md`  
-**Previous Line Count**: ~200 lines  
-**Updated Line Count**: 1195 lines  
-**Changes**: Comprehensive enhancement to align with StormCom multi-tenant e-commerce requirements
+**Previous Line Count**: 1,195 lines  
+**Updated Line Count**: ~1,340 lines  
+**Changes**: Added comprehensive Next.js MCP Server integration documentation
 
-## Summary
+## Latest Update (2025-01-25)
+
+### Summary
+
+Added comprehensive section on **Next.js MCP Server Integration** to align with Next.js 16.0.0+ built-in Model Context Protocol support and external Next DevTools MCP package.
+
+### New Section Added
+
+#### Next.js MCP Server Integration (NEW - Major Section)
+
+**Purpose**: Enable AI-assisted development with real-time application state access and Next.js knowledge base
+
+**Two MCP Servers**:
+
+1. **Built-in Next.js MCP Server** (Automatic in Next.js 16+)
+   - Real-time application state and runtime information
+   - Error diagnostics (build/runtime/type errors)
+   - Development logs and console output
+   - Page metadata (routes, components, rendering details)
+   - Server Actions inspection by ID
+   - Component hierarchies
+   - **Tools**: `get_errors`, `get_logs`, `get_page_metadata`, `get_project_metadata`, `get_server_action_by_id`
+
+2. **Next DevTools MCP** (External Package - REQUIRED)
+   - Next.js 16 knowledge base (comprehensive documentation)
+   - Migration tools (automated codemods for Next.js 16)
+   - Cache Components setup assistance
+   - Playwright MCP integration for browser testing
+   - Auto-discovery of running Next.js dev servers
+   - **Tools**: `nextjs_docs`, `upgrade_nextjs_16`, `enable_cache_components`, `browser_eval`, `nextjs_runtime`
+   - **Prompts**: Upgrade guidance, component usage, route structure, performance optimization
+
+**Configuration**:
+```json
+// f:\StormCom\.mcp.json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+```
+
+**Development Workflow**:
+- Start Next.js dev server (MCP automatically enabled)
+- Copilot agent connects to both MCP servers
+- Agent queries live application state for errors, routes, diagnostics
+- Example prompts: Error detection, route structure, debugging assistance, performance optimization
+
+**Benefits for StormCom**:
+- Context-aware suggestions based on existing structure
+- Live application state queries (routes, middleware, errors)
+- Multi-tenant awareness (route groups, tenant isolation)
+- Performance insights from actual metrics
+- Accurate code generation following StormCom patterns
+
+**Troubleshooting Section**:
+- Common issues and solutions
+- MCP server connection verification
+- Resource links (official docs, npm package, templates)
+
+### Changes Made
+
+1. **Added Complete MCP Server Documentation**:
+   - Built-in Next.js MCP Server features and tools
+   - Next DevTools MCP installation and configuration
+   - MCP workflow for Copilot agents
+   - StormCom-specific configuration
+   - Troubleshooting guide with common issues
+
+2. **Code Examples**:
+   - `.mcp.json` configuration file
+   - Agent interaction example (error detection)
+   - Bash commands for verification and troubleshooting
+   - Example prompts for AI assistants
+
+3. **Updated Version**: Changed from 2.0 to 2.1 with new date (2025-01-25)
+
+### Gap Addressed
+
+**Gap #19**: Next.js MCP Server integration documentation missing
+- ✅ Documented built-in Next.js MCP Server (Next.js 16+ automatic)
+- ✅ Documented Next DevTools MCP package (external, required)
+- ✅ Provided complete configuration (.mcp.json example)
+- ✅ Explained development workflow with Copilot agents
+- ✅ Added troubleshooting section
+- ✅ Listed benefits specific to StormCom development
+
+### Alignment with Project Requirements
+
+#### From Official Next.js Documentation
+- ✅ Follows Next.js 16 MCP Server guide (https://nextjs.org/docs/app/guides/mcp)
+- ✅ Uses recommended configuration with next-devtools-mcp@latest
+- ✅ Documents all available MCP tools and prompts
+- ✅ Includes development workflow best practices
+
+#### From Next.js 16 Release
+- ✅ Acknowledges built-in MCP server in Next.js 16.0.0+
+- ✅ Highlights Next DevTools MCP as key feature
+- ✅ Explains integration with AI coding agents (Claude, Cursor, Copilot)
+- ✅ Documents benefits for debugging and workflow improvements
+
+#### From next-devtools-mcp Package
+- ✅ Lists all features (tools, prompts, resources)
+- ✅ Provides correct npm package name and version (@latest)
+- ✅ Documents MCP client configuration format
+- ✅ Includes first prompt examples for testing
+
+### Impact Assessment
+
+#### For GitHub Copilot Agents
+- **Before**: No guidance on MCP Server usage, agents couldn't access live application state
+- **After**: Copilot agents can now:
+  - Query real-time errors from running Next.js dev server
+  - Access route structure and component hierarchies
+  - Get context-aware suggestions based on actual project state
+  - Use Next.js knowledge base for accurate implementations
+  - Debug with live diagnostics and error traces
+- **Benefit**: Significantly improved agent accuracy and context awareness
+
+#### For Developers
+- **Before**: Manual debugging, no AI-assisted error detection, separate documentation lookup
+- **After**: Developers benefit from:
+  - AI agents that understand current application state
+  - Automated error detection and fix suggestions
+  - Interactive debugging with natural language queries
+  - Integrated documentation access via AI assistant
+  - Faster troubleshooting with live diagnostics
+- **Benefit**: Faster development cycles, reduced debugging time
+
+#### For StormCom Project
+- **Before**: Generic AI assistance without project context
+- **After**: StormCom-specific benefits:
+  - AI understands multi-tenant architecture (route groups, storeId filtering)
+  - Context-aware suggestions for dashboard, admin, storefront routes
+  - Performance recommendations based on actual Web Vitals
+  - Code generation following established patterns (Server Components, API standards)
+- **Benefit**: Higher code quality, better architecture adherence, faster feature development
+
+### Resources Referenced
+
+1. **Next.js Official Documentation**:
+   - https://nextjs.org/docs/app/guides/mcp (MCP Server guide)
+   - https://nextjs.org/blog/next-16 (Next.js 16 release announcement)
+
+2. **NPM Package**:
+   - https://www.npmjs.com/package/next-devtools-mcp (Next DevTools MCP)
+
+3. **Vercel Templates**:
+   - https://vercel.com/templates/next.js/model-context-protocol-mcp-with-next-js
+
+### Validation
+
+✅ **Section added**: Complete Next.js MCP Server Integration section  
+✅ **Configuration documented**: .mcp.json example with correct syntax  
+✅ **Tools documented**: All MCP tools from both servers listed  
+✅ **Workflow explained**: Development workflow with Copilot agents  
+✅ **Troubleshooting included**: Common issues and solutions  
+✅ **Resources linked**: Official docs, npm package, templates  
+✅ **Version updated**: 2.0 → 2.1 (2025-01-25)  
+✅ **Line count increased**: 1,195 → ~1,340 lines (+145 lines)  
+
+---
+
+## Previous Update (2025-01-17)
 
 Updated `nextjs.instructions.md` from generic Next.js best practices to StormCom-specific guidance that enforces:
 - ✅ Exact version requirements (Next.js 16.0.0+, React 19.x, TypeScript 5.9.3+)
