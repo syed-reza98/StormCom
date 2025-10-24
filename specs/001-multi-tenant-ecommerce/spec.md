@@ -224,7 +224,7 @@ As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate
 - Responsive: Layout must adapt to mobile, tablet, and desktop breakpoints as per design system. Minimum touch target size 44x44px.
 - Loading and feedback: While submitting, the "Sign In" button must show a spinner and be disabled. On error, the form must display a clear error message and restore focus to the first invalid field.
 - Edge cases: Requirements must specify behavior for network failure (show error banner), slow loading (show spinner for >1s), and form resubmission (prevent double submit).
-- Wireframe: [Login Page Wireframe] must specify all element positions, spacing, and error/empty/loading states.
+- Wireframe: [Login Page Wireframe](../../docs/audit/login-register-wireframes.md#login-page) must specify all element positions, spacing, and error/empty/loading states.
 
 **Register Page (Dashboard):**
 - Must include: labeled fields for name, email, password, confirm password, a password requirements checklist (showing which criteria are met), "Sign Up" button, and a link to the login page.
@@ -256,6 +256,8 @@ As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate
 
 **Acceptance Scenarios**:
 
+**MFA Policy**: Multi-Factor Authentication (MFA) is optional for all user roles (Super Admin, Store Admin, Staff, Customer) during Phase 1 development to facilitate testing and initial setup. However, in production deployments, MFA becomes **REQUIRED for Super Admin accounts** to ensure maximum security for platform administration. Store Admins, Staff, and Customer accounts will have MFA as an optional security enhancement in all environments.
+
 **Super Admin Login**:
 
 1. Given I am a Super Admin, When I navigate to `/auth/login`, Then I see a login form with email and password fields, "Forgot Password" link, and "Sign In" button, styled as per UI requirements.
@@ -264,7 +266,7 @@ As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate
 4. Given I am on the login page, When I enter valid email but incorrect password, Then I see an error message: "Invalid email or password. Please try again." and the failed attempt is logged.
 5. Given I have entered incorrect credentials 5 times, When I attempt to login again, Then my account is locked for 15 minutes and I see: "Account locked due to too many failed login attempts. Please try again in 15 minutes or use 'Forgot Password' to reset."
 6. Given I have forgotten my password, When I click "Forgot Password" and enter my email, Then I receive a password reset link via email valid for 1 hour.
-7. Given I am a Super Admin with MFA enabled (optional for all users including Super Admins during initial development), When I enter correct credentials, Then I am prompted for a 6-digit TOTP code from my authenticator app. If I don't have access to my authenticator app, I can use one of my 10 backup codes or request SMS code (if enabled) to gain access.
+7. Given I am a Super Admin with MFA enabled (see MFA Policy above), When I enter correct credentials, Then I am prompted for a 6-digit TOTP code from my authenticator app. If I don't have access to my authenticator app, I can use one of my 10 backup codes or request SMS code (if enabled) to gain access.
 8. Given I am enrolling in MFA for the first time, When I complete TOTP setup by scanning QR code, Then I am shown 10 single-use backup codes with download/print options before access is granted. These codes are displayed only once.
 9. Given I have lost access to my authenticator app and backup codes, When I click "Lost access?" on MFA challenge page, Then I can request email verification link to disable MFA and reset my password.
 10. Given I am authenticated as Super Admin, When I navigate to any store-specific page, Then I can view and manage data across all stores in the system.

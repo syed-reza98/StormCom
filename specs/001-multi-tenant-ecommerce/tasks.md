@@ -109,6 +109,20 @@
 - [ ] T057 [US0] Create E2E test "User account is locked after 5 failed login attempts" in tests/e2e/auth/account-lockout.spec.ts
 - [ ] T058 [US0] Create E2E test "User can complete MFA enrollment and login with TOTP code" in tests/e2e/auth/mfa.spec.ts
 - [ ] T059 [US0] Create E2E test "User can reset password via email link" in tests/e2e/auth/password-reset.spec.ts
+- [ ] T055a [US0] Create E2E test "Invalid email format shows validation error" in tests/e2e/auth/validation.spec.ts
+- [ ] T055b [US0] Create E2E test "Incorrect password shows error message" in tests/e2e/auth/login-errors.spec.ts
+- [ ] T058a [US0] Create E2E test "User can login with MFA backup code" in tests/e2e/auth/mfa-backup.spec.ts
+- [ ] T058b [US0] Create E2E test "User can recover lost MFA access via email" in tests/e2e/auth/mfa-recovery.spec.ts
+- [ ] T056a [US0] Create E2E test "Super Admin can access all stores" in tests/e2e/auth/cross-tenant.spec.ts
+- [ ] T056b [US0] Create E2E test "Store Admin redirected to assigned store only" in tests/e2e/auth/role-redirect.spec.ts
+- [ ] T056c [US0] Create E2E test "Staff denied access to restricted pages" in tests/e2e/auth/permissions.spec.ts
+- [ ] T056d [US0] Create E2E test "Inactive account login prevented" in tests/e2e/auth/inactive-account.spec.ts
+- [ ] T056e [US0] Create E2E test "Customer redirected to account page" in tests/e2e/auth/customer-login.spec.ts
+- [ ] T059a [US0] Create E2E test "Session expires after 7 days inactivity" in tests/e2e/auth/session-expiry.spec.ts
+- [ ] T059b [US0] Create E2E test "Password change invalidates all sessions" in tests/e2e/auth/session-invalidation.spec.ts
+- [ ] T059c [US0] Create E2E test "Permission revocation terminates sessions" in tests/e2e/auth/session-termination.spec.ts
+- [ ] T059d [US0] Create E2E test "Password must meet length and complexity requirements" in tests/e2e/auth/password-validation.spec.ts
+- [ ] T059e [US0] Create E2E test "Password cannot be reused from last 5 passwords" in tests/e2e/auth/password-history.spec.ts
 - [ ] T060 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts
 
 ---
@@ -560,10 +574,10 @@ Tasks marked with `[P]` can be executed in parallel with other `[P]` tasks withi
 
 ## Summary
 
-**Total Tasks**: 225
+**Total Tasks**: 239 (updated from 225 after adding missing E2E tests)
 **Phases**: 19 (Setup, Foundational, 13 User Stories, Polish)
 **User Stories**: 15 (US0-US14 mapped)
-**P0 (Blocking)**: 1 story (US0 - 25 tasks)
+**P0 (Blocking)**: 1 story (US0 - 39 tasks, including 19 E2E tests)
 **P1 (Must Have)**: 12 stories (US1-US9, US11-US12, US14 - ~170 tasks)
 **P2 (Should Have)**: 2 stories (US10, US13 - ~14 tasks)
 **Setup & Polish**: ~30 tasks
@@ -573,13 +587,13 @@ Tasks marked with `[P]` can be executed in parallel with other `[P]` tasks withi
 - ✅ [Story] labels only on user story tasks (not Setup, Foundational, or Polish)
 - ✅ [P] markers only on parallelizable tasks (different files, no dependencies)
 - ✅ Every task includes exact file path for implementation
-- ✅ E2E tests included per spec.md scenarios
+- ✅ E2E tests included per spec.md scenarios (UPDATED: 14 additional E2E tests added for US0)
 - ✅ Tasks organized by user story (PRIMARY), not technical layer
 - ✅ Each story phase independently testable
 
 **Testing Coverage**:
 - Unit/Integration tests: ~25 test files
-- E2E tests: ~30 test scenarios
+- E2E tests: ~44 test scenarios (updated from ~30 after adding US0 coverage)
 - Coverage targets: 80%+ for business logic, 100% for critical paths
 
 **Estimated Implementation Time** (based on 2-hour average per task):
