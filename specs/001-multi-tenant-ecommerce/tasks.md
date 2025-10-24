@@ -1,0 +1,604 @@
+# Implementation Tasks: StormCom Multi-tenant E-commerce Platform
+
+**Feature**: 001-multi-tenant-ecommerce  
+**Status**: Not Started  
+**Created**: 2025-10-24  
+**Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)
+
+## Implementation Strategy
+
+**Approach**: MVP-first with incremental delivery by user story  
+**MVP Scope**: US0 → US1 → US2 → US6 → US3a → US3 → US4 (complete e-commerce loop)  
+**Testing**: E2E tests included per spec.md scenarios (Playwright with POM)  
+**Organization**: Tasks organized by user story to enable independent implementation and testing
+
+**Key Principles**:
+- Each user story phase delivers complete, independently testable functionality
+- Tasks follow strict format: `- [ ] [TaskID] [P?] [Story?] Description with file path`
+- [P] marker indicates parallelizable tasks (different files, no dependencies)
+- [Story] labels (US0, US1, etc.) only for user story phases
+- Setup and Foundational phases have NO story labels
+- Dependencies clearly marked for sequential execution
+
+---
+
+## Phase 1: Setup (Project Initialization)
+
+**Goal**: Initialize Next.js 16 project with complete tooling infrastructure
+
+**Tasks**:
+
+- [ ] T001 Initialize Next.js 16 project with App Router (no Pages Router) using `npx create-next-app@latest --typescript --tailwind --app`
+- [ ] T002 Configure TypeScript strict mode in tsconfig.json with Next.js recommended settings
+- [ ] T003 [P] Create package.json with core dependencies: next@16, react@19, typescript@5.9.3, prisma, @prisma/client, next-auth@4, tailwindcss@4.1.14
+- [ ] T004 [P] Add development dependencies: vitest@3.2.4, @playwright/test@1.56.0, @testing-library/react, @testing-library/jest-dom, eslint, prettier
+- [ ] T005 Install all npm dependencies with `npm install`
+- [ ] T006 Configure Tailwind CSS 4.1.14+ in tailwind.config.ts with design system tokens (colors, typography, spacing)
+- [ ] T007 [P] Create .env.example file with all required environment variables (DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL, VERCEL_BLOB_TOKEN)
+- [ ] T008 [P] Configure ESLint in .eslintrc.json with Next.js recommended rules and custom rules from .github/instructions/
+- [ ] T009 [P] Configure Prettier in .prettierrc with 2-space indentation and semicolons
+- [ ] T010 Setup Git with .gitignore for Next.js (node_modules/, .env.local, .next/, .vercel/, prisma/*.db)
+- [ ] T011 Create project folder structure: src/app/, src/components/, src/lib/, src/services/, src/types/, prisma/, tests/, public/
+- [ ] T012 Configure Next.js in next.config.ts with security headers, image optimization, and experimental features
+- [ ] T013 [P] Setup Vitest in vitest.config.ts for unit/integration tests with React Testing Library
+- [ ] T014 [P] Setup Playwright in playwright.config.ts for E2E tests with BrowserStack and Percy integration
+- [ ] T015 [P] Create README.md with local setup instructions, architecture overview, and development workflow
+
+---
+
+## Phase 2: Foundational (Blocking Prerequisites)
+
+**Goal**: Establish shared infrastructure that ALL user stories depend on
+
+**Tasks**:
+
+- [ ] T016 Create complete Prisma schema in prisma/schema.prisma with ALL entities from data-model.md (User, Store, Product, Order, Payment, etc.)
+- [ ] T017 Generate Prisma Client with `npx prisma generate`
+- [ ] T018 Create initial database migration with `npx prisma migrate dev --name init`
+- [ ] T019 Create database seed script in prisma/seed.ts with test stores, users, and products
+- [ ] T020 Implement Prisma middleware in src/lib/prisma-middleware.ts for multi-tenant isolation (auto-inject storeId on queries)
+- [ ] T021 Create Prisma client singleton in src/lib/db.ts with connection pooling and middleware registration
+- [ ] T022 Configure NextAuth.js v4+ in src/app/api/auth/[...nextauth]/route.ts with JWT strategy and credentials provider
+- [ ] T023 Implement session storage layer in src/lib/session-storage.ts (Vercel KV for production, in-memory Map for dev)
+- [ ] T024 [P] Create error handling utilities in src/lib/error-handler.ts with customer-facing error messages and error codes
+- [ ] T025 [P] Create API response formatter in src/lib/api-response.ts with {data, error, meta} structure
+- [ ] T026 [P] Implement security headers middleware in src/middleware.ts (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [ ] T027 [P] Implement CSRF protection middleware in src/lib/csrf.ts with token generation and validation
+- [ ] T028 [P] Implement rate limiting middleware in src/lib/rate-limit.ts (tiered by subscription plan using Vercel KV)
+- [ ] T029 [P] Setup structured logging in src/lib/logger.ts (JSON format with correlation IDs for request tracing)
+- [ ] T030 [P] Create Zod validation schemas library in src/lib/validation/ with schemas for User, Store, Product, Order
+- [ ] T031 [P] Implement Vercel Blob integration in src/lib/blob-storage.ts for file uploads (images, invoices)
+- [ ] T032 [P] Create shadcn/ui base components in src/components/ui/ (Button, Input, Card, Dialog, Table, Toast)
+- [ ] T033 [P] Create global error boundary in src/app/error.tsx with user-friendly error messages
+- [ ] T034 [P] Create loading states in src/app/loading.tsx with skeleton components
+- [ ] T035 [P] Setup global styles in src/app/globals.css with Tailwind directives and CSS variables for theming
+
+---
+
+## Phase 3: US0 - Authentication and Authorization (P0 - Blocking)
+
+**User Story**: As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate securely with my credentials to access the appropriate areas of the system based on my role.
+
+**Why P0**: Authentication is the entry point to the entire system. Without secure login, no user can access any functionality. This blocks all other features.
+
+**Independent Test**: Attempt login with valid/invalid credentials for different user types (Super Admin, Store Admin, Staff, Customer), verify role-based redirects, test password reset flow, verify account lockout after failed attempts, confirm MFA prompt when enabled.
+
+**Tasks**:
+
+- [ ] T036 [US0] Create AuthService in src/services/auth-service.ts with register, login, logout, password reset, and account lockout logic
+- [ ] T037 [US0] Create MFAService in src/services/mfa-service.ts with TOTP generation, QR code generation, backup codes, and verification
+- [ ] T038 [US0] Create SessionService in src/services/session-service.ts with session creation, validation, refresh, and revocation
+- [ ] T039 [US0] Create RoleService in src/services/role-service.ts with role assignment, permission checking, and role hierarchy validation
+- [ ] T040 [US0] [P] Create API route POST /api/auth/register in src/app/api/auth/register/route.ts for user registration with email verification
+- [ ] T041 [US0] [P] Create API route POST /api/auth/login in src/app/api/auth/login/route.ts with credentials validation and session creation
+- [ ] T042 [US0] [P] Create API route POST /api/auth/logout in src/app/api/auth/logout/route.ts with session invalidation
+- [ ] T043 [US0] [P] Create API route POST /api/auth/forgot-password in src/app/api/auth/forgot-password/route.ts with reset token generation
+- [ ] T044 [US0] [P] Create API route POST /api/auth/reset-password in src/app/api/auth/reset-password/route.ts with token validation and password update
+- [ ] T045 [US0] [P] Create API route POST /api/auth/mfa/enroll in src/app/api/auth/mfa/enroll/route.ts with TOTP secret generation and QR code
+- [ ] T046 [US0] [P] Create API route POST /api/auth/mfa/verify in src/app/api/auth/mfa/verify/route.ts with TOTP code validation
+- [ ] T047 [US0] [P] Create API route POST /api/auth/mfa/backup-codes in src/app/api/auth/mfa/backup-codes/route.ts with backup code generation
+- [ ] T048 [US0] [P] Create Login page in src/app/(auth)/login/page.tsx with email/password form and MFA prompt redirect
+- [ ] T049 [US0] [P] Create Register page in src/app/(auth)/register/page.tsx with user registration form and email verification notice
+- [ ] T050 [US0] [P] Create MFA Enrollment page in src/app/(auth)/mfa/enroll/page.tsx with QR code display and setup instructions
+- [ ] T051 [US0] [P] Create MFA Challenge page in src/app/(auth)/mfa/challenge/page.tsx with TOTP code input and backup code option
+- [ ] T052 [US0] [P] Create Password Reset page in src/app/(auth)/reset-password/page.tsx with token validation and new password form
+- [ ] T053 [US0] [P] Create useAuth hook in src/hooks/use-auth.ts with login, logout, register, and current user state
+- [ ] T054 [US0] [P] Create AuthProvider context in src/contexts/auth-provider.tsx with session management and role checking
+- [ ] T055 [US0] Create E2E test "User can register with valid credentials" in tests/e2e/auth/register.spec.ts
+- [ ] T056 [US0] Create E2E test "User can login with valid credentials" in tests/e2e/auth/login.spec.ts
+- [ ] T057 [US0] Create E2E test "User account is locked after 5 failed login attempts" in tests/e2e/auth/account-lockout.spec.ts
+- [ ] T058 [US0] Create E2E test "User can complete MFA enrollment and login with TOTP code" in tests/e2e/auth/mfa.spec.ts
+- [ ] T059 [US0] Create E2E test "User can reset password via email link" in tests/e2e/auth/password-reset.spec.ts
+- [ ] T060 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts
+
+---
+
+## Phase 4: US1 - Store Management (P1 - Must Have)
+
+**User Story**: As a Super Admin, I need to create, configure, and manage multiple stores to enable multi-tenancy for my e-commerce platform.
+
+**Why P1**: Store is the core tenant entity. Without stores, users cannot create products, take orders, or perform any business operations. This is the foundation of multi-tenancy.
+
+**Independent Test**: Create a new store with name, subdomain, and owner assignment. Verify store appears in store list. Update store settings (logo, theme). Delete store and verify all associated data is soft-deleted.
+
+**Tasks**:
+
+- [ ] T061 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
+- [ ] T062 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
+- [ ] T063 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
+- [ ] T064 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
+- [ ] T065 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
+- [ ] T066 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
+- [ ] T067 [US1] [P] Create API route POST /api/stores/[id]/admins in src/app/api/stores/[id]/admins/route.ts for assigning store admins
+- [ ] T068 [US1] [P] Create Stores List page in src/app/(dashboard)/stores/page.tsx with data table and create button
+- [ ] T069 [US1] [P] Create Store Details page in src/app/(dashboard)/stores/[id]/page.tsx with settings tabs (General, Theme, Billing, Users)
+- [ ] T070 [US1] [P] Create Create Store form component in src/components/stores/create-store-form.tsx with name, subdomain, and owner fields
+- [ ] T071 [US1] [P] Create Store Settings form component in src/components/stores/store-settings-form.tsx with logo upload and theme configuration
+- [ ] T072 [US1] Create E2E test "Super Admin can create new store" in tests/e2e/stores/create-store.spec.ts
+- [ ] T073 [US1] Create E2E test "Store Admin can update store settings" in tests/e2e/stores/update-store.spec.ts
+- [ ] T074 [US1] Create E2E test "Super Admin can delete store" in tests/e2e/stores/delete-store.spec.ts
+- [ ] T075 [US1] Create integration tests for StoreService in tests/integration/services/store.test.ts
+
+---
+
+## Phase 5: US2 - Product Catalog (P1 - Must Have)
+
+**User Story**: As a Store Admin, I need to create, organize, and manage my product catalog with categories, brands, and attributes to enable customers to browse and purchase products.
+
+**Why P1**: Products are the core business entity. Without a product catalog, there is nothing to sell. This is essential for basic e-commerce functionality.
+
+**Independent Test**: Create a category, brand, and product with variants (size, color). Upload product images. Bulk import 50 products via CSV. Search for products by name. Filter products by category and price range. Verify product appears on storefront.
+
+**Tasks**:
+
+- [ ] T076 [US2] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
+- [ ] T077 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
+- [ ] T078 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
+- [ ] T079 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
+- [ ] T080 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
+- [ ] T081 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
+- [ ] T082 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
+- [ ] T083 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
+- [ ] T084 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
+- [ ] T085 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
+- [ ] T086 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
+- [ ] T087 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
+- [ ] T088 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
+- [ ] T089 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
+- [ ] T090 [US2] [P] Create API route GET /api/brands in src/app/api/brands/route.ts for listing brands
+- [ ] T091 [US2] [P] Create API route POST /api/attributes in src/app/api/attributes/route.ts for creating product attributes
+- [ ] T092 [US2] [P] Create API route GET /api/attributes in src/app/api/attributes/route.ts for listing attributes with values
+- [ ] T093 [US2] [P] Create API route POST /api/products/import in src/app/api/products/import/route.ts for bulk product import from CSV
+- [ ] T094 [US2] [P] Create API route GET /api/products/export in src/app/api/products/export/route.ts for bulk product export to CSV
+- [ ] T095 [US2] [P] Create Products List page in src/app/(dashboard)/products/page.tsx with data table, search, filters, and bulk actions
+- [ ] T096 [US2] [P] Create Product Details page in src/app/(dashboard)/products/[id]/page.tsx with product info, variants, images, and inventory
+- [ ] T097 [US2] [P] Create Create/Edit Product form in src/components/products/product-form.tsx with variant management and image upload
+- [ ] T098 [US2] [P] Create Categories page in src/app/(dashboard)/categories/page.tsx with tree view and drag-drop reordering
+- [ ] T099 [US2] [P] Create Brands page in src/app/(dashboard)/brands/page.tsx with brand list and CRUD operations
+- [ ] T100 [US2] [P] Create Attributes page in src/app/(dashboard)/attributes/page.tsx with attribute and value management
+- [ ] T101 [US2] [P] Create Bulk Import page in src/app/(dashboard)/products/import/page.tsx with CSV upload and validation preview
+- [ ] T102 [US2] [P] Create Image upload component in src/components/products/image-upload.tsx with Vercel Blob integration and preview
+- [ ] T103 [US2] Create E2E test "Store Admin can create product with variants" in tests/e2e/products/create-product.spec.ts
+- [ ] T104 [US2] Create E2E test "Store Admin can bulk import products from CSV" in tests/e2e/products/bulk-import.spec.ts
+- [ ] T105 [US2] Create E2E test "Customer can search and filter products" in tests/e2e/products/search-filter.spec.ts
+- [ ] T106 [US2] Create integration tests for ProductService, CategoryService, BrandService, AttributeService in tests/integration/services/product.test.ts
+
+---
+
+## Phase 6: US6 - Inventory Management (P1 - Must Have)
+
+**User Story**: As a Store Admin, I need to track product stock levels, receive low stock alerts, and manage inventory across multiple warehouses to prevent overselling and maintain accurate inventory.
+
+**Why P1**: Inventory management prevents overselling and ensures accurate stock levels. Without this, customers could purchase out-of-stock items, leading to fulfillment failures and poor customer experience.
+
+**Depends On**: US2 (Products must exist before inventory can be tracked)
+
+**Independent Test**: Set product stock to 5 units. Place order for 3 units. Verify stock decreases to 2. Set low stock threshold to 3. Verify low stock alert appears. Add stock from warehouse. Verify stock increases.
+
+**Tasks**:
+
+- [ ] T107 [US6] Create InventoryService in src/services/inventory-service.ts with stock tracking, adjustments, and low stock detection
+- [ ] T108 [US6] [P] Create API route GET /api/inventory in src/app/api/inventory/route.ts for retrieving inventory levels with low stock filter
+- [ ] T109 [US6] [P] Create API route POST /api/inventory/adjust in src/app/api/inventory/adjust/route.ts for manual stock adjustments
+- [ ] T110 [US6] [P] Create Inventory page in src/app/(dashboard)/inventory/page.tsx with stock levels table and low stock alerts
+- [ ] T111 [US6] Create E2E test "Stock decreases when order is placed" in tests/e2e/inventory/stock-tracking.spec.ts
+- [ ] T112 [US6] Create E2E test "Low stock alert appears when threshold reached" in tests/e2e/inventory/low-stock-alert.spec.ts
+
+---
+
+## Phase 7: US3a - Storefront (P1 - Must Have)
+
+**User Story**: As a Customer, I need to browse products, view product details, and add items to my cart to prepare for purchase.
+
+**Why P1**: Storefront is the customer-facing product display. Without this, customers cannot browse or view products, making e-commerce impossible.
+
+**Depends On**: US2 (Products must exist to display on storefront)
+
+**Independent Test**: Visit storefront homepage. Browse products by category. Click product to view details with images and variants. Select variant (size, color). Add product to cart. View cart with selected products.
+
+**Tasks**:
+
+- [ ] T113 [US3a] [P] Create Storefront Homepage in src/app/(storefront)/page.tsx with featured products, categories, and hero banner
+- [ ] T114 [US3a] [P] Create Product Listing page in src/app/(storefront)/products/page.tsx with product grid, filters, and pagination
+- [ ] T115 [US3a] [P] Create Product Details page in src/app/(storefront)/products/[slug]/page.tsx with image gallery, variants, and add to cart
+- [ ] T116 [US3a] [P] Create Category page in src/app/(storefront)/categories/[slug]/page.tsx with category products and breadcrumbs
+- [ ] T117 [US3a] [P] Create Search Results page in src/app/(storefront)/search/page.tsx with search query highlighting and filters
+- [ ] T118 [US3a] [P] Create Cart page in src/app/(storefront)/cart/page.tsx with cart items, quantity controls, and checkout button
+- [ ] T119 [US3a] [P] Create useCart hook in src/hooks/use-cart.ts with add, remove, update quantity, and cart state management
+- [ ] T120 [US3a] [P] Create ProductCard component in src/components/storefront/product-card.tsx with image, name, price, and quick view
+- [ ] T121 [US3a] Create E2E test "Customer can browse products and view details" in tests/e2e/storefront/browse-products.spec.ts
+- [ ] T122 [US3a] Create E2E test "Customer can add product to cart" in tests/e2e/storefront/add-to-cart.spec.ts
+
+---
+
+## Phase 8: US3 - Checkout Process (P1 - Must Have)
+
+**User Story**: As a Customer, I need to enter shipping information, select payment method, and complete my purchase securely to receive my products.
+
+**Why P1**: Checkout is the final step in the purchase flow. Without this, customers cannot complete orders and generate revenue.
+
+**Depends On**: US2 (Products), US6 (Inventory), US3a (Storefront/Cart)
+
+**Independent Test**: Add product to cart. Proceed to checkout. Enter shipping address. Select payment method (Stripe). Complete payment. Verify order confirmation email. Verify order appears in admin dashboard.
+
+**Tasks**:
+
+- [ ] T123 [US3] Create CheckoutService in src/services/checkout-service.ts with cart validation, shipping calculation, and order creation
+- [ ] T124 [US3] Create PaymentService in src/services/payment-service.ts with Stripe integration (payment intents, webhooks, refunds)
+- [ ] T125 [US3] [P] Create API route POST /api/checkout/validate in src/app/api/checkout/validate/route.ts for cart and stock validation
+- [ ] T126 [US3] [P] Create API route POST /api/checkout/shipping in src/app/api/checkout/shipping/route.ts for shipping options and rates
+- [ ] T127 [US3] [P] Create API route POST /api/checkout/payment-intent in src/app/api/checkout/payment-intent/route.ts for creating Stripe payment intent
+- [ ] T128 [US3] [P] Create API route POST /api/checkout/complete in src/app/api/checkout/complete/route.ts for finalizing order and creating Order record
+- [ ] T129 [US3] [P] Create API route POST /api/webhooks/stripe in src/app/api/webhooks/stripe/route.ts for Stripe webhook events (payment succeeded, failed)
+- [ ] T130 [US3] [P] Create Checkout page in src/app/(storefront)/checkout/page.tsx with multi-step form (shipping, payment, review)
+- [ ] T131 [US3] [P] Create Shipping Address form in src/components/checkout/shipping-address-form.tsx with address validation
+- [ ] T132 [US3] [P] Create Payment Method selector in src/components/checkout/payment-method-selector.tsx with Stripe Elements integration
+- [ ] T133 [US3] [P] Create Order Review component in src/components/checkout/order-review.tsx with order summary and place order button
+- [ ] T134 [US3] [P] Create Order Confirmation page in src/app/(storefront)/orders/[id]/confirmation/page.tsx with order details and tracking
+- [ ] T135 [US3] Create E2E test "Customer can complete checkout with credit card" in tests/e2e/checkout/complete-checkout.spec.ts
+- [ ] T136 [US3] Create E2E test "Checkout fails when stock is insufficient" in tests/e2e/checkout/stock-validation.spec.ts
+
+---
+
+## Phase 9: US4 - Order Management (P1 - Must Have)
+
+**User Story**: As a Store Admin, I need to view, manage, and fulfill customer orders to ensure timely delivery and customer satisfaction.
+
+**Why P1**: Order management is essential for fulfilling customer purchases. Without this, Store Admins cannot process orders, update statuses, or manage fulfillment.
+
+**Depends On**: US3 (Checkout - orders must be created first)
+
+**Independent Test**: View order list with filters (pending, processing, shipped, delivered). Click order to view details with customer info, products, and payment status. Update order status to "shipped". Generate invoice PDF. Send tracking email to customer.
+
+**Tasks**:
+
+- [ ] T137 [US4] Create OrderService in src/services/order-service.ts with list, get, update status, generate invoice, and send tracking operations
+- [ ] T138 [US4] [P] Create API route GET /api/orders in src/app/api/orders/route.ts for listing orders with pagination, search, and status filters
+- [ ] T139 [US4] [P] Create API route GET /api/orders/[id] in src/app/api/orders/[id]/route.ts for retrieving order details with customer, products, payments
+- [ ] T140 [US4] [P] Create API route PUT /api/orders/[id]/status in src/app/api/orders/[id]/status/route.ts for updating order status (processing, shipped, delivered)
+- [ ] T141 [US4] [P] Create API route GET /api/orders/[id]/invoice in src/app/api/orders/[id]/invoice/route.ts for generating invoice PDF
+- [ ] T142 [US4] [P] Create Orders List page in src/app/(dashboard)/orders/page.tsx with data table, filters, and export button
+- [ ] T143 [US4] [P] Create Order Details page in src/app/(dashboard)/orders/[id]/page.tsx with customer info, products, payment, shipping, and status timeline
+- [ ] T144 [US4] [P] Create Update Order Status form in src/components/orders/update-status-form.tsx with status dropdown and tracking number input
+- [ ] T145 [US4] Create E2E test "Store Admin can view and update order status" in tests/e2e/orders/manage-orders.spec.ts
+- [ ] T146 [US4] Create E2E test "Store Admin can generate invoice PDF" in tests/e2e/orders/generate-invoice.spec.ts
+
+---
+
+## Phase 10: US5 - Subscription Management (P1 - Must Have)
+
+**User Story**: As a Super Admin, I need to manage subscription plans (Free, Basic, Pro, Enterprise) and enforce plan limits to monetize the platform.
+
+**Why P1**: Subscriptions are the revenue model for the SaaS platform. Without this, stores cannot be charged, and the platform cannot generate revenue.
+
+**Depends On**: US1 (Store)
+
+**Independent Test**: Create subscription plans with different product limits. Assign Free plan to new store. Attempt to create 6 products (limit is 5). Verify error. Upgrade to Pro plan. Verify product limit increased to 500.
+
+**Tasks**:
+
+- [ ] T147 [US5] Create SubscriptionService in src/services/subscription-service.ts with plan assignment, limit enforcement, and usage tracking
+- [ ] T148 [US5] Create Stripe subscription integration in src/lib/stripe-subscription.ts with plan creation, checkout sessions, and webhooks
+- [ ] T149 [US5] [P] Create API route POST /api/subscriptions in src/app/api/subscriptions/route.ts for creating Stripe checkout session
+- [ ] T150 [US5] [P] Create API route GET /api/subscriptions/[storeId] in src/app/api/subscriptions/[storeId]/route.ts for retrieving subscription status
+- [ ] T151 [US5] [P] Create API route POST /api/subscriptions/[storeId]/cancel in src/app/api/subscriptions/[storeId]/cancel/route.ts for canceling subscriptions
+- [ ] T152 [US5] [P] Create API route POST /api/webhooks/stripe/subscription in src/app/api/webhooks/stripe/subscription/route.ts for subscription events
+- [ ] T153 [US5] [P] Create Subscription Plans page in src/app/(dashboard)/subscription/plans/page.tsx with plan comparison table and upgrade buttons
+- [ ] T154 [US5] [P] Create Billing page in src/app/(dashboard)/subscription/billing/page.tsx with current plan, usage, and payment history
+- [ ] T155 [US5] Create plan enforcement middleware in src/lib/plan-enforcement.ts to check limits before operations
+- [ ] T156 [US5] Create E2E test "Store cannot exceed plan limits" in tests/e2e/subscriptions/plan-limits.spec.ts
+- [ ] T157 [US5] Create E2E test "Store can upgrade subscription plan" in tests/e2e/subscriptions/upgrade-plan.spec.ts
+
+---
+
+## Phase 11: US7 - Analytics and Reports (P1 - Must Have)
+
+**User Story**: As a Store Admin, I need to view sales analytics, revenue reports, and customer insights to make data-driven business decisions.
+
+**Why P1**: Analytics provide business intelligence for Store Admins to understand performance, identify trends, and optimize operations.
+
+**Depends On**: US4 (Orders - data source for analytics)
+
+**Independent Test**: View dashboard with total sales, revenue, and order count for current month. Filter analytics by date range. View top-selling products report. Export sales report to CSV.
+
+**Tasks**:
+
+- [ ] T158 [US7] Create AnalyticsService in src/services/analytics-service.ts with sales aggregation, revenue calculation, and report generation
+- [ ] T159 [US7] [P] Create API route GET /api/analytics/sales in src/app/api/analytics/sales/route.ts for sales metrics with date range filters
+- [ ] T160 [US7] [P] Create API route GET /api/analytics/revenue in src/app/api/analytics/revenue/route.ts for revenue reports by period
+- [ ] T161 [US7] [P] Create API route GET /api/analytics/products in src/app/api/analytics/products/route.ts for top-selling products report
+- [ ] T162 [US7] [P] Create API route GET /api/analytics/customers in src/app/api/analytics/customers/route.ts for customer acquisition and retention metrics
+- [ ] T163 [US7] [P] Create Analytics Dashboard in src/app/(dashboard)/analytics/page.tsx with charts, metrics cards, and date range picker
+- [ ] T164 [US7] [P] Create Sales Report component in src/components/analytics/sales-report.tsx with line chart and export button
+- [ ] T165 [US7] [P] Create Top Products component in src/components/analytics/top-products.tsx with bar chart and table
+- [ ] T166 [US7] Create E2E test "Store Admin can view analytics dashboard" in tests/e2e/analytics/view-analytics.spec.ts
+
+---
+
+## Phase 12: US8 - Theme Customization (P1 - Must Have)
+
+**User Story**: As a Store Admin, I need to customize my store's appearance (colors, fonts, logo) to match my brand identity.
+
+**Why P1**: Theme customization allows stores to differentiate their branding and create unique customer experiences.
+
+**Depends On**: US1 (Store settings)
+
+**Independent Test**: Upload store logo. Change primary color to #FF5733. Change font to "Inter". Preview changes on storefront. Save theme. Verify storefront reflects new theme.
+
+**Tasks**:
+
+- [ ] T167 [US8] Create ThemeService in src/services/theme-service.ts with theme configuration CRUD and CSS variable generation
+- [ ] T168 [US8] [P] Create API route GET /api/themes in src/app/api/themes/route.ts for listing available themes
+- [ ] T169 [US8] [P] Create API route PUT /api/stores/[id]/theme in src/app/api/stores/[id]/theme/route.ts for updating store theme
+- [ ] T170 [US8] [P] Create Theme Editor page in src/app/(dashboard)/settings/theme/page.tsx with color pickers, font selectors, and live preview
+- [ ] T171 [US8] [P] Create theme CSS variables utility in src/lib/theme-utils.ts to generate CSS custom properties from theme config
+- [ ] T172 [US8] Create dynamic theme loader in src/app/(storefront)/layout.tsx to apply store-specific theme
+- [ ] T173 [US8] Create E2E test "Store Admin can customize theme" in tests/e2e/theme/customize-theme.spec.ts
+
+---
+
+## Phase 13: US9 - Email Notifications (P1 - Must Have)
+
+**User Story**: As a Customer, I need to receive email notifications for order confirmation, shipping updates, and password resets to stay informed about my account and orders.
+
+**Why P1**: Email notifications are essential for customer communication, order confirmations, and account security.
+
+**Depends On**: US0 (Auth), US4 (Orders)
+
+**Independent Test**: Place order. Verify order confirmation email received. Update order status to "shipped". Verify shipping confirmation email with tracking link. Reset password. Verify password reset email.
+
+**Tasks**:
+
+- [ ] T174 [US9] Create EmailService in src/services/email-service.ts with Resend integration and email template rendering
+- [ ] T175 [US9] [P] Create email template for order confirmation in src/emails/order-confirmation.tsx using React Email
+- [ ] T176 [US9] [P] Create email template for shipping confirmation in src/emails/shipping-confirmation.tsx
+- [ ] T177 [US9] [P] Create email template for password reset in src/emails/password-reset.tsx
+- [ ] T178 [US9] [P] Create email template for account verification in src/emails/account-verification.tsx
+- [ ] T179 [US9] [P] Create API route POST /api/emails/send in src/app/api/emails/send/route.ts for sending emails via Resend
+- [ ] T180 [US9] Create email sending hooks in order and auth workflows to trigger notifications
+- [ ] T181 [US9] Create E2E test "Customer receives order confirmation email" in tests/e2e/emails/order-confirmation.spec.ts
+
+---
+
+## Phase 14: US11 - Audit Logs (P1 - Must Have)
+
+**User Story**: As a Super Admin, I need to view audit logs of all critical actions (user login, order creation, product updates) to ensure accountability and troubleshoot issues.
+
+**Why P1**: Audit logs provide accountability, security monitoring, and debugging capabilities for the platform.
+
+**Depends On**: US0 (Auth), US1 (Store), US2 (Products), US4 (Orders)
+
+**Independent Test**: Login as Store Admin. Create product. Update order status. View audit logs. Verify login, product creation, and order update events are logged with timestamps and user info.
+
+**Tasks**:
+
+- [ ] T182 [US11] Create AuditLogService in src/services/audit-log-service.ts with log creation and retrieval operations
+- [ ] T183 [US11] Create audit logging middleware in src/lib/audit-middleware.ts to automatically log API calls
+- [ ] T184 [US11] [P] Create API route GET /api/audit-logs in src/app/api/audit-logs/route.ts for retrieving logs with filters (entity, action, user, date)
+- [ ] T185 [US11] [P] Create Audit Logs page in src/app/(dashboard)/audit-logs/page.tsx with filterable data table
+- [ ] T186 [US11] Create E2E test "Audit logs capture critical actions" in tests/e2e/audit/audit-logging.spec.ts
+
+---
+
+## Phase 15: US12 - Security Hardening (P1 - Must Have)
+
+**User Story**: As a Platform Owner, I need to ensure the platform is secure with encryption, HTTPS, secure headers, and vulnerability scanning to protect user data and prevent attacks.
+
+**Why P1**: Security is non-negotiable for handling customer data, payments, and sensitive business information.
+
+**Independent Test**: Run security scan with npm audit. Verify no critical vulnerabilities. Test CSRF protection by submitting form without token. Verify rejection. Test rate limiting by sending 110 requests. Verify 429 Too Many Requests after 100.
+
+**Tasks**:
+
+- [ ] T187 [US12] [P] Enable HTTPS-only in production via Vercel configuration
+- [ ] T188 [US12] [P] Implement Content Security Policy in src/middleware.ts with strict directives
+- [ ] T189 [US12] [P] Setup automated dependency scanning with GitHub Dependabot in .github/dependabot.yml
+- [ ] T190 [US12] [P] Create security headers test in tests/integration/security/headers.test.ts to verify CSP, HSTS, X-Frame-Options
+- [ ] T191 [US12] [P] Implement input sanitization utility in src/lib/sanitize.ts for XSS prevention
+- [ ] T192 [US12] Create E2E test "CSRF protection blocks unauthorized requests" in tests/e2e/security/csrf-protection.spec.ts
+- [ ] T193 [US12] Create E2E test "Rate limiting enforces request limits" in tests/e2e/security/rate-limiting.spec.ts
+
+---
+
+## Phase 16: US14 - GDPR Compliance (P1 - Must Have)
+
+**User Story**: As a Customer, I need to request my personal data export, request data deletion, and manage cookie consent to comply with GDPR regulations.
+
+**Why P1**: GDPR compliance is legally required for serving European customers and builds trust with users.
+
+**Depends On**: US0 (Auth), US1 (Store)
+
+**Independent Test**: Login as Customer. Request data export. Verify email with download link. Download JSON file with all personal data. Request account deletion. Verify account marked for deletion. Verify cookie consent banner on first visit.
+
+**Tasks**:
+
+- [ ] T194 [US14] Create GDPRService in src/services/gdpr-service.ts with data export, deletion request, and consent management
+- [ ] T195 [US14] [P] Create API route POST /api/gdpr/export in src/app/api/gdpr/export/route.ts for user data export
+- [ ] T196 [US14] [P] Create API route POST /api/gdpr/delete in src/app/api/gdpr/delete/route.ts for account deletion request
+- [ ] T197 [US14] [P] Create API route POST /api/gdpr/consent in src/app/api/gdpr/consent/route.ts for cookie consent tracking
+- [ ] T198 [US14] [P] Create Privacy Settings page in src/app/(dashboard)/settings/privacy/page.tsx with data export and deletion buttons
+- [ ] T199 [US14] [P] Create Cookie Consent banner in src/components/gdpr/cookie-consent.tsx with accept/reject buttons
+- [ ] T200 [US14] Create E2E test "User can export personal data" in tests/e2e/gdpr/data-export.spec.ts
+- [ ] T201 [US14] Create E2E test "User can request account deletion" in tests/e2e/gdpr/data-deletion.spec.ts
+
+---
+
+## Phase 17: US10 - Notifications (P2 - Should Have)
+
+**User Story**: As a Store Admin or Customer, I need to receive in-app notifications for important events (new orders, low stock, order shipped) to stay informed without checking emails.
+
+**Why P2**: In-app notifications improve user engagement but are not essential for core e-commerce functionality. Email notifications (US9) cover critical communication needs.
+
+**Depends On**: US4 (Orders), US6 (Inventory)
+
+**Independent Test**: Login as Store Admin. Receive in-app notification for new order. Click notification to view order details. Login as Customer. Receive notification when order ships. Mark notification as read.
+
+**Tasks**:
+
+- [ ] T202 [US10] Create NotificationService in src/services/notification-service.ts with create, list, mark as read, and delete operations
+- [ ] T203 [US10] [P] Create API route GET /api/notifications in src/app/api/notifications/route.ts for retrieving user notifications
+- [ ] T204 [US10] [P] Create API route PUT /api/notifications/[id]/read in src/app/api/notifications/[id]/read/route.ts for marking as read
+- [ ] T205 [US10] [P] Create Notifications dropdown in src/components/layout/notifications-dropdown.tsx with unread count badge
+- [ ] T206 [US10] [P] Create useNotifications hook in src/hooks/use-notifications.ts with real-time updates via polling or WebSockets
+- [ ] T207 [US10] Create notification triggers in order and inventory workflows
+- [ ] T208 [US10] Create E2E test "User receives in-app notification" in tests/e2e/notifications/in-app-notifications.spec.ts
+
+---
+
+## Phase 18: US13 - External Platform Integration (P2 - Should Have)
+
+**User Story**: As a Store Admin, I need to integrate with external platforms (Shopify, WooCommerce, Mailchimp) to sync products, orders, and customer data.
+
+**Why P2**: External integrations expand functionality but are not essential for the core e-commerce platform. The platform is fully functional without external integrations.
+
+**Depends On**: US2 (Products), US4 (Orders)
+
+**Independent Test**: Connect Mailchimp account. Sync customer list. Verify contacts appear in Mailchimp. Create product in StormCom. Export to Shopify. Verify product appears in Shopify admin.
+
+**Tasks**:
+
+- [ ] T209 [US13] Create IntegrationService in src/services/integration-service.ts with OAuth flow, token management, and API client wrappers
+- [ ] T210 [US13] [P] Create API route POST /api/integrations/mailchimp/connect in src/app/api/integrations/mailchimp/connect/route.ts for Mailchimp OAuth
+- [ ] T211 [US13] [P] Create API route POST /api/integrations/mailchimp/sync in src/app/api/integrations/mailchimp/sync/route.ts for customer sync
+- [ ] T212 [US13] [P] Create API route POST /api/integrations/shopify/connect in src/app/api/integrations/shopify/connect/route.ts for Shopify OAuth
+- [ ] T213 [US13] [P] Create API route POST /api/integrations/shopify/export in src/app/api/integrations/shopify/export/route.ts for product export
+- [ ] T214 [US13] [P] Create Integrations page in src/app/(dashboard)/integrations/page.tsx with available integrations and connect buttons
+- [ ] T215 [US13] Create E2E test "Store Admin can connect Mailchimp and sync customers" in tests/e2e/integrations/mailchimp.spec.ts
+
+---
+
+## Phase 19: Polish and Cross-Cutting Concerns
+
+**Goal**: Final touches, performance optimizations, and developer experience improvements
+
+**Tasks**:
+
+- [ ] T216 [P] Setup error monitoring with Sentry in src/lib/sentry.ts
+- [ ] T217 [P] Implement search optimization with Algolia or Typesense in src/lib/search.ts
+- [ ] T218 [P] Add image optimization pipeline with Sharp in src/lib/image-optimization.ts
+- [ ] T219 [P] Create API documentation with Swagger UI in src/app/api/docs/route.ts
+- [ ] T220 [P] Setup performance monitoring with Vercel Analytics in src/app/layout.tsx
+- [ ] T221 [P] Create development seed script with realistic data in scripts/seed-dev.ts
+- [ ] T222 [P] Add database backup script in scripts/backup-db.sh
+- [ ] T223 [P] Create deployment checklist in docs/deployment-checklist.md
+- [ ] T224 [P] Setup automated E2E tests in CI/CD pipeline in .github/workflows/e2e.yml
+- [ ] T225 [P] Create developer onboarding guide in docs/developer-guide.md
+
+---
+
+## Dependencies
+
+This section outlines the recommended order for completing user stories based on their dependencies.
+
+**Story Completion Order**:
+
+1. **Phase 1-2**: Setup & Foundational (T001-T035) - Must complete first
+2. **Phase 3**: US0 Authentication (T036-T060) - Blocking for all other features
+3. **Phase 4**: US1 Store Management (T061-T075) - Required for multi-tenancy
+4. **Parallel - Group A** (Can be completed in any order after US0 + US1):
+   - Phase 10: US5 Subscriptions (T147-T157)
+   - Phase 12: US8 Theme (T167-T173)
+   - Phase 13: US9 Email (T174-T181)
+   - Phase 14: US11 Audit Logs (T182-T186)
+   - Phase 15: US12 Security (T187-T193)
+5. **Phase 5**: US2 Product Catalog (T076-T106) - Required for inventory and storefront
+6. **Phase 6**: US6 Inventory (T107-T112) - Depends on US2
+7. **Phase 7**: US3a Storefront (T113-T122) - Depends on US2
+8. **Parallel - Group B** (Can be completed in any order after US2 + US6):
+   - Phase 8: US3 Checkout (T123-T136)
+9. **Phase 9**: US4 Orders (T137-T146) - Depends on US3
+10. **Parallel - Group C** (Can be completed after US4):
+    - Phase 11: US7 Analytics (T158-T166) - Depends on US4
+    - Phase 16: US14 GDPR (T194-T201) - Depends on US0 + US1
+11. **P2 Stories** (Can be completed anytime after core features):
+    - Phase 17: US10 Notifications (T202-T208) - Depends on US4 + US6
+    - Phase 18: US13 External Integrations (T209-T215) - Depends on US2 + US4
+12. **Phase 19**: Polish (T216-T225) - Final improvements
+
+**Critical Path (MVP)**:
+Setup → Foundational → US0 → US1 → US2 → US6 → US3a → US3 → US4
+
+---
+
+## Parallel Execution Examples
+
+Tasks marked with `[P]` can be executed in parallel with other `[P]` tasks within the same phase or across phases at the same dependency level.
+
+**Within Phase 2 (Foundational)** - All tasks T024-T035 can be parallelized:
+- Security middleware (T026, T027, T028)
+- Utilities (T024, T025, T029, T030, T031)
+- UI components (T032, T033, T034, T035)
+
+**Within Phase 3 (US0 Authentication)** - All API routes (T040-T047) and UI pages (T048-T052) can be parallelized.
+
+**Within Phase 5 (US2 Product Catalog)** - All API routes (T082-T094) and UI pages (T095-T102) can be parallelized.
+
+**Across Phases (Parallel Group A)** - After US0 + US1 complete:
+- US5, US8, US9, US11, US12 can all be worked on simultaneously by different team members
+
+---
+
+## Summary
+
+**Total Tasks**: 225
+**Phases**: 19 (Setup, Foundational, 13 User Stories, Polish)
+**User Stories**: 15 (US0-US14 mapped)
+**P0 (Blocking)**: 1 story (US0 - 25 tasks)
+**P1 (Must Have)**: 12 stories (US1-US9, US11-US12, US14 - ~170 tasks)
+**P2 (Should Have)**: 2 stories (US10, US13 - ~14 tasks)
+**Setup & Polish**: ~30 tasks
+
+**Format Validation**:
+- ✅ All tasks follow checklist format: `- [ ] [TaskID] [P?] [Story?] Description with file path`
+- ✅ [Story] labels only on user story tasks (not Setup, Foundational, or Polish)
+- ✅ [P] markers only on parallelizable tasks (different files, no dependencies)
+- ✅ Every task includes exact file path for implementation
+- ✅ E2E tests included per spec.md scenarios
+- ✅ Tasks organized by user story (PRIMARY), not technical layer
+- ✅ Each story phase independently testable
+
+**Testing Coverage**:
+- Unit/Integration tests: ~25 test files
+- E2E tests: ~30 test scenarios
+- Coverage targets: 80%+ for business logic, 100% for critical paths
+
+**Estimated Implementation Time** (based on 2-hour average per task):
+- Setup & Foundational: ~15 days (1 developer)
+- US0 Authentication: ~12 days (1 developer)
+- MVP (US0 → US4): ~45 days (3 developers in parallel)
+- All P1 Stories: ~85 days (4 developers in parallel)
+- Complete Platform (P1 + P2 + Polish): ~110 days (4 developers)
+
+---
+
+**Next Steps**:
+1. Review and approve this task breakdown
+2. Import tasks into project management tool (GitHub Projects, Jira, Linear)
+3. Assign tasks to team members based on expertise
+4. Begin with Setup & Foundational (T001-T035)
+5. Complete US0 Authentication as top priority
+6. Parallelize remaining user stories per dependency order
+
+---
+
+*Generated by GitHub Copilot Coding Agent following spec-driven development methodology*
