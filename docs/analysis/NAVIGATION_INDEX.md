@@ -1,7 +1,7 @@
 # StormCom SaaS Platform - Complete Page Navigation Index
 
 > **Note**: This document is part of the original analysis of the demo application at https://ecom-demo.workdo.io/. 
-> The StormCom platform implementation uses **Next.js 15.5.5**, **TypeScript 5.9.3**, and **Prisma ORM**. 
+> The StormCom platform implementation uses **Next.js 16**, **TypeScript 5.9.3**, and **Prisma ORM**. 
 > For implementation specifications, see `docs/specifications/001-stormcom-platform/`.
 
 ## Total Pages Discovered: 73

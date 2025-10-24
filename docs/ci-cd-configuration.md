@@ -591,7 +591,7 @@ npm run test:integration   # Run integration tests
 
 ### 3. Build & Bundle Size
 
-**Tools**: Next.js 15, webpack-bundle-analyzer
+**Tools**: Next.js 16, webpack-bundle-analyzer
 
 **Bundle Size Limits**:
 - ⚠️ **Warning**: 180 KB total initial JS

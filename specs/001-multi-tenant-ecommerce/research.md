@@ -1,366 +1,357 @@
-# Technical Research: StormCom Multi-tenant E-commerce Platform
-
-**Feature**: StormCom Multi-tenant E-commerce  
-**Date**: 2025-10-17  
-**Phase**: 0 - Research & Technical Decisions
-
-## Overview
-
-This document resolves all "NEEDS CLARIFICATION" items from the Technical Context in `plan.md`. Each decision is based on research into best practices, ecosystem maturity, cost-effectiveness, and alignment with the project's tech stack (Next.js 15.5.5, TypeScript, Vercel deployment).
-
----
-
-## 1. Transactional Email Service
-
-### Decision
-**Resend** (https://resend.com)
-
-### Rationale
-- **Native Next.js integration**: Official SDK with TypeScript support, works seamlessly with Next.js API routes and Server Actions
-- **Developer experience**: Simple API, React Email integration for email templates (JSX/TSX instead of HTML)
-- **Vercel-optimized**: Built by Vercel team members, optimized for serverless functions
-- **Generous free tier**: 3,000 emails/month free, then $20/month for 50,000 emails (cost-effective for MVP)
-- **Modern API**: RESTful API with proper error handling, webhooks for delivery status
-- **Domain authentication**: Built-in SPF/DKIM setup, subdomain verification
-
-### Alternatives Considered
-| Service | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **SendGrid** | Mature, 100/day free tier, robust | Complex API, outdated SDK, expensive at scale | ❌ Rejected - Poor DX |
-| **Mailgun** | Reliable, good deliverability | No React Email support, basic free tier | ❌ Rejected - No template tooling |
-| **AWS SES** | Very cheap ($0.10/1000 emails) | Requires AWS setup, no templates, complex auth | ❌ Rejected - Operational overhead |
-| **Postmark** | Excellent deliverability | No free tier, $15/month minimum | ❌ Rejected - Cost for MVP |
-
-### Implementation Notes
-```typescript
-// Install: npm install resend react-email
-// Usage in API route or Server Action
-import { Resend } from 'resend';
-import { OrderConfirmationEmail } from '@/emails/OrderConfirmation';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-await resend.emails.send({
-  from: 'orders@yourdomain.com',
-  to: customer.email,
-  subject: `Order #${order.number} Confirmed`,
-  react: OrderConfirmationEmail({ order, customer }),
-});
-```
-
-**Email Templates**: Use React Email (https://react.email) for type-safe, component-based email templates stored in `/emails/` directory.
-
----
-
-## 2. File Storage Solution
-
-### Decision
-**Vercel Blob Storage** (https://vercel.com/docs/storage/vercel-blob)
-
-### Rationale
-- **Zero-config integration**: Native Vercel service, no third-party accounts needed
-- **Edge-optimized**: Global CDN with automatic caching, reduces latency for image serving
-- **Simple SDK**: Official `@vercel/blob` package with TypeScript support
-- **Generous free tier**: 100GB bandwidth/month, 1GB storage free (Pro: 1TB bandwidth, 100GB storage)
-- **Built-in transformations**: Image optimization via Vercel Image Optimization API
-- **Secure**: Signed URLs for private files, automatic HTTPS
-
-### Alternatives Considered
-| Service | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **AWS S3** | Mature, very cheap ($0.023/GB) | Requires AWS account, complex IAM, no CDN included | ❌ Rejected - Operational complexity |
-| **Cloudinary** | Advanced image transforms, DAM | Expensive ($89/month after free tier), overkill | ❌ Rejected - Cost + complexity |
-| **UploadThing** | Next.js-focused, good DX | Smaller free tier (2GB), less mature | ⚠️ Fallback option |
-| **Supabase Storage** | Generous free tier (100GB) | Requires Supabase account, not Vercel-native | ❌ Rejected - Adds external dependency |
-
-### Implementation Notes
-```typescript
-// Install: npm install @vercel/blob
-import { put, del } from '@vercel/blob';
-
-// Upload product image
-const blob = await put(`products/${productId}/${file.name}`, file, {
-  access: 'public',
-  contentType: file.type,
-});
-// Returns: { url: 'https://...', downloadUrl: '...', pathname: '...' }
-
-// Delete image
-await del(blob.url);
-```
-
-**Image Optimization**: Use Next.js `<Image>` component with Vercel Image Optimization for automatic WebP conversion, responsive sizing, and lazy loading.
-
-**Storage Organization**:
-```
-/stores/{storeId}/products/{productId}/{filename}
-/stores/{storeId}/orders/{orderId}/invoices/{filename}.pdf
-/stores/{storeId}/themes/{themeId}/{asset}
-```
-
----
-
-## 3. Background Job Queue System
-
-### Decision
-**Inngest** (https://www.inngest.com)
-
-### Rationale
-- **Serverless-native**: Designed for serverless environments (Vercel, Cloudflare Workers), no infrastructure to manage
-- **Type-safe**: Full TypeScript support with typed events and functions
-- **Built-in features**: Automatic retries, exponential backoff, cron scheduling, rate limiting, debouncing
-- **Developer experience**: Simple API, local development mode, visual debugger
-- **Generous free tier**: 10,000 function runs/month, 1M events/month (enough for MVP)
-- **Durability**: Persists job state, handles long-running tasks (up to 24 hours)
-- **No polling**: Event-driven architecture, webhook-based triggers
-
-### Alternatives Considered
-| Service | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Vercel Cron** | Native, free, simple | No queue, no retries, max 10s execution | ❌ Rejected - Too limited |
-| **BullMQ** | Feature-rich, popular | Requires Redis, not serverless-friendly | ❌ Rejected - Infrastructure overhead |
-| **Quirrel** | Serverless-focused | Deprecated/inactive project | ❌ Rejected - No longer maintained |
-| **Trigger.dev** | Modern, good DX | Newer service, smaller community | ⚠️ Fallback option |
-
-### Implementation Notes
-```typescript
-// Install: npm install inngest
-import { Inngest } from 'inngest';
-
-const inngest = new Inngest({ id: 'stormcom' });
-
-// Define background function
-export const autoCancelUnpaidOrders = inngest.createFunction(
-  { id: 'auto-cancel-unpaid-orders' },
-  { cron: '*/5 * * * *' }, // Every 5 minutes
-  async ({ step }) => {
-    const unpaidOrders = await step.run('fetch-unpaid-orders', async () => {
-      return await prisma.order.findMany({
-        where: {
-          status: 'pending',
-          createdAt: { lt: new Date(Date.now() - 60 * 60 * 1000) }, // 1 hour old
-        },
-      });
-    });
-
-    await step.run('cancel-orders', async () => {
-      // Cancel orders and restore inventory
-    });
-  }
-);
-```
-
-**Use Cases**:
-- Auto-cancel unpaid orders (cron: every 5 minutes)
-- Abandoned cart recovery (cron: daily)
-- Email notification queue (event-driven)
-- Webhook retry logic (event-driven with retries)
-- Low stock alerts (event-driven)
-- Plan expiration checks (cron: daily)
-- External platform sync (event-driven)
-
----
-
-## 4. Product Search Engine
-
-### Decision
-**Database Full-Text Search (Phase 1) → Algolia (Phase 2 optional upgrade)**
-
-### Rationale
-**Phase 1: PostgreSQL Full-Text Search**
-- **Zero additional cost**: Included with PostgreSQL, no third-party service
-- **Sufficient for MVP**: Handles 10K products per store with acceptable performance (<1s search)
-- **Simple implementation**: Prisma supports full-text search via `@@fulltext` index
-- **No external dependencies**: Reduces complexity and failure points
-
-**Phase 2: Algolia (Optional Upgrade)**
-- **Best-in-class search**: Typo tolerance, instant results, advanced ranking
-- **Scalability**: Sub-50ms search on millions of records
-- **Free tier**: 10,000 searches/month, 10,000 records (good for testing)
-- **Pricing**: $0.50/1000 searches after free tier (cost-effective at scale)
-
-### Alternatives Considered
-| Service | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **Elasticsearch** | Powerful, open-source | Requires hosting, expensive, complex | ❌ Rejected - Operational overhead |
-| **Typesense** | Fast, open-source, cheaper | Requires hosting or $0.03/hr cloud | ⚠️ Alternative to Algolia |
-| **Meilisearch** | Excellent DX, open-source | Requires hosting, smaller community | ⚠️ Alternative to Algolia |
-| **PostgreSQL FTS** | Free, simple, good enough | Limited features vs dedicated search | ✅ Phase 1 choice |
-
-### Implementation Notes
-
-**Phase 1: PostgreSQL Full-Text Search**
-```prisma
-// prisma/schema.prisma
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  // ... other fields
-  
-  @@fulltext([name, description])
-  @@index([storeId, name])
-}
-```
-
-```typescript
-// Search products with Prisma
-const products = await prisma.product.findMany({
-  where: {
-    storeId,
-    OR: [
-      { name: { search: searchQuery } },
-      { description: { search: searchQuery } },
-    ],
-  },
-  take: 24,
-  skip: (page - 1) * 24,
-});
-```
-
-**Phase 2: Algolia Integration (Optional)**
-```typescript
-// Install: npm install algoliasearch
-import algoliasearch from 'algoliasearch';
-
-const client = algoliasearch(
-  process.env.ALGOLIA_APP_ID!,
-  process.env.ALGOLIA_ADMIN_KEY!
-);
-
-const index = client.initIndex('products');
-
-// Sync product to Algolia on create/update
-await index.saveObject({
-  objectID: product.id,
-  storeId: product.storeId,
-  name: product.name,
-  description: product.description,
-  price: product.price,
-  // ... other searchable fields
-});
-```
-
-**Search Performance Target**: <1s search response time for Phase 1 (database), <300ms for Phase 2 (Algolia).
-
----
-
-## 5. Monitoring & Observability (APM/Logging)
-
-### Decision
-**Vercel Analytics + Sentry** (hybrid approach)
-
-### Rationale
-**Vercel Analytics** (for performance monitoring)
-- **Native integration**: Zero-config for Next.js on Vercel
-- **Web Vitals tracking**: LCP, FID, CLS, TTFB automatically collected
-- **Real User Monitoring (RUM)**: Actual user performance data, not synthetic
-- **Free tier**: Included with all Vercel plans
-- **Audience Insights**: Track by geography, device, browser
-
-**Sentry** (for error tracking & logging)
-- **Best-in-class error tracking**: Source maps, stack traces, breadcrumbs
-- **Distributed tracing**: Track requests across services (API → database → external APIs)
-- **Performance monitoring**: Transaction profiling, slow queries detection
-- **Generous free tier**: 5,000 errors/month, 10,000 transactions/month (sufficient for MVP)
-- **Pricing**: $26/month for 50K errors after free tier (cost-effective)
-- **Integrations**: Slack, GitHub, PagerDuty for alerting
-
-### Alternatives Considered
-| Service | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **DataDog** | Enterprise-grade, comprehensive | Expensive ($15/host + $0.10/GB logs) | ❌ Rejected - Overkill + cost |
-| **New Relic** | Full APM suite | Complex setup, expensive at scale | ❌ Rejected - Cost + complexity |
-| **Logtail (Better Stack)** | Modern, affordable | Smaller ecosystem, newer service | ⚠️ Alternative for logs |
-| **Axiom** | Serverless-native, fast | Smaller community, less mature | ⚠️ Alternative for logs |
-| **LogRocket** | Session replay, amazing DX | Expensive ($99/month after trial) | ❌ Rejected - Cost |
-
-### Implementation Notes
-
-**Vercel Analytics**
-```typescript
-// Install: npm install @vercel/analytics
-// In app/layout.tsx
-import { Analytics } from '@vercel/analytics/react';
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  );
-}
-```
-
-**Sentry Setup**
-```typescript
-// Install: npm install @sentry/nextjs
-// sentry.client.config.ts
-import * as Sentry from '@sentry/nextjs';
-
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  tracesSampleRate: 1.0, // 100% in dev, reduce in prod (0.1 = 10%)
-  environment: process.env.NODE_ENV,
-  integrations: [
-    new Sentry.Replay({
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
-  ],
-  replaysSessionSampleRate: 0.1, // 10% of sessions
-  replaysOnErrorSampleRate: 1.0, // 100% of errors
-});
-```
-
-**Logging Strategy**:
-- **Errors**: Sentry for all exceptions with context (user, store, request)
-- **Performance**: Vercel Analytics for Web Vitals, Sentry for API transaction profiling
-- **Business Metrics**: Custom events in Sentry (e.g., order placed, payment failed)
-- **Audit Logs**: Database storage (immutable append-only table) for compliance
-
-**Alerting**:
-- Sentry → Slack for critical errors (payment failures, auth errors, sync failures)
-- Uptime monitoring: Vercel built-in + UptimeRobot (external check)
-- Threshold alerts: >100 errors/hour, >5s p95 API response time, >10% order failures
-
----
-
-## Summary of Technical Decisions
-
-| Component | Phase 1 Decision | Phase 2 Enhancement | Rationale |
-|-----------|------------------|---------------------|-----------|
-| **Email** | Resend | - | Native Next.js, React Email, generous free tier |
-| **File Storage** | Vercel Blob | - | Zero-config, edge-optimized, included with Vercel |
-| **Background Jobs** | Inngest | - | Serverless-native, type-safe, built-in retries |
-| **Search** | PostgreSQL FTS | Algolia (optional) | Start simple, upgrade if needed for scale/features |
-| **Monitoring** | Vercel Analytics + Sentry | - | Best hybrid: performance (Vercel) + errors (Sentry) |
-
-**Total Monthly Cost (MVP Phase 1)**:
-- Resend: $0 (under 3,000 emails/month)
-- Vercel Blob: $0 (under 100GB bandwidth/month)
-- Inngest: $0 (under 10,000 function runs/month)
-- PostgreSQL FTS: $0 (included with database)
-- Vercel Analytics: $0 (included with Vercel Pro plan)
-- Sentry: $0 (under 5,000 errors/month)
-
-**Estimated Cost at Scale (1,000 stores, 100K orders/month)**:
-- Resend: ~$100/month (250K emails/month)
-- Vercel Blob: ~$20/month (500GB bandwidth)
-- Inngest: ~$50/month (100K function runs)
-- Algolia (if upgraded): ~$150/month (300K searches)
-- Sentry: ~$50/month (100K errors/month)
-- **Total**: ~$370/month external services (plus Vercel hosting)
-
----
-
-## Next Steps
-
-All technical dependencies resolved. Proceed to **Phase 1: Design & Contracts**:
-1. Generate `data-model.md` (database schema from entities in spec)
-2. Generate API contracts in `/contracts/` (OpenAPI spec from functional requirements)
-3. Generate `quickstart.md` (setup and development guide)
-4. Update Copilot agent context with new technology decisions
+# Research: StormCom Multi-tenant E-commerce Platform
+
+**Feature**: 001-multi-tenant-ecommerce  
+**Date**: 2025-10-23  
+**Status**: Complete
+
+This document consolidates research findings and technical decisions for implementing StormCom's multi-tenant e-commerce platform. All "NEEDS CLARIFICATION" items from the Technical Context have been resolved through analysis of the feature specification, constitution, and technology requirements.
+
+## Architecture Decisions
+
+### Decision 1: Next.js App Router with Server Components First
+
+**Context**: Need to build a full-stack web application with admin dashboard and customer storefront while minimizing client-side JavaScript bundle size.
+
+**Decision**: Use Next.js 16.0.0+ App Router with React 19 Server Components as the default rendering strategy.
+
+**Rationale**:
+- **Performance**: Server Components reduce client-side JavaScript by 70%, directly supporting <200KB bundle constraint
+- **SEO**: Server-side rendering critical for customer storefront organic search traffic (product pages, categories)
+- **Type Safety**: Next.js integrates seamlessly with TypeScript strict mode and Prisma for end-to-end type safety
+- **Deployment**: Vercel platform provides zero-config deployment with automatic Edge Network CDN for global performance
+- **Developer Experience**: App Router provides modern file-based routing with layouts, loading states, error boundaries
+
+**Alternatives Considered**:
+1. **Pages Router** - Rejected: Prohibited by constitution, less efficient data fetching patterns
+2. **Separate frontend/backend** - Rejected: Adds complexity, deployment overhead, CORS management; App Router provides unified full-stack solution
+3. **Remix** - Rejected: Smaller ecosystem, less mature Vercel deployment, team unfamiliar
+
+**Implementation Details**:
+- Route groups for logical separation: `(auth)`, `(admin)`, `(dashboard)`, `(storefront)`
+- Server Components for all non-interactive UI (product lists, order tables, analytics dashboards)
+- Client Components only for forms, modals, interactive widgets (marked with `'use client'`)
+- Route Handlers (`route.ts`) for REST APIs in `app/api/`
+- Server Actions for form mutations (add to cart, update profile)
+
+### Decision 2: Prisma ORM with PostgreSQL (Production) / SQLite (Development)
+
+**Context**: Need type-safe database access with multi-tenant isolation, migrations, and support for complex queries.
+
+**Decision**: Use Prisma ORM with PostgreSQL 15+ in production (Vercel Postgres) and SQLite for local development.
+
+**Rationale**:
+- **Type Safety**: Prisma generates TypeScript types from schema, eliminating runtime type errors
+- **Multi-Tenancy**: Prisma middleware can auto-inject `storeId` filter on all queries for zero-leakage tenant isolation
+- **Migrations**: Declarative schema with automatic migration generation (`prisma migrate`)
+- **Performance**: Connection pooling (5 connections/serverless function), query optimization with `select`, indexes
+- **Developer Experience**: Prisma Studio for database GUI, introspection for existing databases
+- **Local Development**: SQLite eliminates PostgreSQL setup requirement for local dev, zero config
+
+**Alternatives Considered**:
+1. **Raw SQL queries** - Rejected: No type safety, SQL injection risk, prohibited by constitution
+2. **Drizzle ORM** - Rejected: Less mature, smaller ecosystem, team unfamiliar
+3. **TypeORM** - Rejected: Heavier than needed, Active Record pattern less suitable for serverless
+
+**Implementation Details**:
+- Schema: `snake_case` columns (auto-mapped to `camelCase` in TypeScript), `cuid()` primary keys, timestamps on all tables
+- Multi-tenant middleware: Intercept all queries, inject `where: { storeId: currentStoreId }` except for Super Admin
+- Soft deletes: `deletedAt DateTime?` field, custom middleware to exclude deleted records
+- Indexes: Compound indexes on `[storeId, createdAt]`, `[storeId, email]` for common queries
+- Connection pooling: Prisma default 5 connections per function, scalable to 20 for Enterprise plans
+
+### Decision 3: NextAuth.js v4+ with JWT + Vercel KV Sessions
+
+**Context**: Need secure authentication with role-based access control, MFA support, and fast session validation (<10ms).
+
+**Decision**: Use NextAuth.js v4+ with JWT tokens stored in HTTP-only cookies, session state in Vercel KV (Redis), and bcrypt password hashing (cost factor 12).
+
+**Rationale**:
+- **Security**: HTTP-only, Secure, SameSite=Lax cookies prevent XSS/CSRF attacks
+- **Performance**: Vercel KV provides <10ms session validation (production), in-memory Map for local dev
+- **Scalability**: Stateless JWT tokens reduce database load, session store only for validation/invalidation
+- **MFA Support**: NextAuth.js supports TOTP (RFC 6238) out-of-the-box with authenticator apps
+- **SSO Ready**: Built-in OIDC/SAML providers (Okta, Azure AD, Google) for enterprise SSO (Phase 1)
+- **Fast Invalidation**: Session store allows immediate logout/permission revocation (<60s requirement)
+
+**Alternatives Considered**:
+1. **Database-only sessions** - Rejected: Slower validation (DB query on every request), higher load
+2. **Pure JWT (no session store)** - Rejected: Cannot invalidate tokens before expiration (security risk)
+3. **Auth0/Clerk** - Rejected: External dependency, vendor lock-in, higher cost at scale
+
+**Implementation Details**:
+- JWT structure: `{ userId, sessionId (UUID), role, storeId, iat, exp (30 days) }`
+- Session validation: Check JWT signature → Query Vercel KV for sessionId → Update lastActivityAt (7-day idle timeout)
+- Password policy: Min 8 chars, uppercase/lowercase/number/special, last 5 passwords checked (bcrypt hashes)
+- MFA: TOTP primary, 10 backup codes (bcrypt hashed), optional SMS fallback
+- Account lockout: 5 failed attempts/15min → 15min lockout, email notification
+
+### Decision 4: Tailwind CSS 4.1.14+ with shadcn/ui Components
+
+**Context**: Need utility-first styling with accessible component primitives, dark mode, and per-tenant theming.
+
+**Decision**: Use Tailwind CSS 4.1.14+ with shadcn/ui (copy-paste components built on Radix UI primitives).
+
+**Rationale**:
+- **Constitution Compliance**: CSS-in-JS prohibited, Tailwind required
+- **Accessibility**: Radix UI provides WCAG 2.1 AA compliant primitives (keyboard nav, ARIA, focus management)
+- **Theming**: CSS variables for colors/fonts enable per-store branding (`--color-primary` from `Store.primaryColor`)
+- **Performance**: Zero-runtime CSS, purged unused classes, <50KB CSS bundle
+- **Developer Experience**: Utility-first reduces context switching, no CSS files per component
+- **Dark Mode**: Built-in dark mode with `.dark` class on `<html>`, CSS variable swapping
+
+**Alternatives Considered**:
+1. **styled-components / Emotion** - Rejected: Prohibited by constitution (CSS-in-JS)
+2. **Vanilla CSS Modules** - Rejected: More verbose, no utility-first benefits, larger bundle
+3. **Material UI / Chakra UI** - Rejected: Heavier bundles, opinionated styling, less customizable
+
+**Implementation Details**:
+- Design tokens: Define in `tailwind.config.ts` (colors, typography, spacing, radii, shadows)
+- Component library: Copy shadcn/ui components to `src/components/ui/` (Button, Input, Dialog, Table, etc.)
+- Theming: Inject `<style>` with CSS variables based on `Store.primaryColor/secondaryColor` at runtime
+- Dark mode: Use `next-themes` provider, user preference stored in `localStorage`, server-rendered with theme script
+- Responsive: Mobile-first approach, breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl), 1536px (2xl)
+
+### Decision 5: Vitest + Playwright Testing Stack
+
+**Context**: Need comprehensive testing with 80% business logic coverage, 100% E2E critical paths, cross-browser support.
+
+**Decision**: Use Vitest 3.2.4+ for unit/integration tests, Playwright 1.56.0+ with MCP for E2E tests, BrowserStack for cross-browser, Percy for visual regression, k6 for load testing, Lighthouse CI for performance, axe-core for accessibility.
+
+**Rationale**:
+- **Vitest**: Blazing fast (Vite-powered), native TypeScript/ESM support, Jest-compatible API, built-in coverage (v8)
+- **Playwright**: Multi-browser (Chromium, Firefox, WebKit), POM pattern, parallel execution, trace files on failure
+- **BrowserStack**: Real device testing (mobile Safari, mobile Chrome), Percy integration for visual diffs
+- **k6**: Grafana-backed load testing (100 concurrent users/5min), scriptable scenarios
+- **Lighthouse CI**: Automated performance budgets (LCP <2s, CLS <0.1, TBT <300ms), fails CI on violation
+- **axe-core**: WCAG 2.1 AA compliance checks, integrates with Playwright for E2E accessibility validation
+
+**Alternatives Considered**:
+1. **Jest + Puppeteer** - Rejected: Slower than Vitest, Puppeteer limited to Chromium (no Firefox/WebKit)
+2. **Cypress** - Rejected: No true multi-browser support, slower than Playwright, proprietary syntax
+3. **Selenium** - Rejected: Verbose API, slower execution, maintenance overhead
+
+**Implementation Details**:
+- Unit tests: Co-located with source in `__tests__/` subdirectories, AAA pattern, 80% coverage threshold
+- Integration tests: `tests/integration/api/` for Route Handler testing, mock database with in-memory SQLite
+- E2E tests: `tests/e2e/scenarios/` organized by user story, POM in `tests/e2e/pages/`
+- Test data: Fixtures in `tests/e2e/fixtures/`, seed database before tests, cleanup after
+- CI/CD: Run tests on every PR, block merge if coverage drops or E2E fails
+
+## Technology Stack Summary
+
+### Core Framework
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **Next.js** | 16.0.0+ | Full-stack framework | App Router, Server Components, Vercel deployment |
+| **React** | 19.x | UI library | Server Components by default, modern hooks |
+| **TypeScript** | 5.9.3+ | Type safety | Strict mode, end-to-end type safety with Prisma |
+
+### Backend & Data
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **Prisma ORM** | Latest stable | Database ORM | Type-safe queries, migrations, multi-tenant middleware |
+| **PostgreSQL** | 15+ | Production database | Full-text search (pg_trgm), JSON support, reliability |
+| **SQLite** | Latest | Development database | Zero-config local dev, Prisma compatible |
+| **Vercel KV** | N/A | Session store (Redis) | <10ms lookups, immediate invalidation, global replication |
+
+### Authentication & Security
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **NextAuth.js** | v4+ | Authentication | JWT sessions, MFA (TOTP), SSO (OIDC/SAML), provider ecosystem |
+| **bcrypt** | Latest | Password hashing | Cost factor 12, industry standard, secure |
+| **Zod** | Latest | Runtime validation | Type-safe schemas, client+server validation, Prisma integration |
+
+### Styling & UI
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **Tailwind CSS** | 4.1.14+ | Utility-first styling | Constitution required, small bundle, theming via CSS vars |
+| **Radix UI** | Latest | Accessible primitives | WCAG 2.1 AA compliant, unstyled, composable |
+| **shadcn/ui** | Latest | Component library | Copy-paste components built on Radix UI, customizable |
+| **Framer Motion** | Latest | Animations | Respect prefers-reduced-motion, smooth transitions |
+| **lucide-react** | Latest | Icons | Consistent stroke width, tree-shakeable |
+
+### Testing & Quality
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **Vitest** | 3.2.4+ | Unit/integration tests | Fast (Vite-powered), native TS/ESM, Jest-compatible |
+| **Playwright** | 1.56.0+ | E2E tests | Multi-browser, POM pattern, MCP support, traces |
+| **BrowserStack** | N/A | Cross-browser testing | Real devices, Percy visual regression |
+| **k6** | Latest | Load testing | 100 concurrent users, Grafana metrics |
+| **Lighthouse CI** | Latest | Performance budgets | LCP/CLS/TBT thresholds, CI enforcement |
+| **axe-core** | Latest | Accessibility testing | WCAG 2.1 AA automation, Playwright integration |
+
+### Development Tools
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **ESLint** | Latest | Linting | Constitution rules, TypeScript best practices |
+| **Prettier** | Latest | Formatting | Consistent code style, automatic on save |
+| **React Hook Form** | Latest | Form state | Minimal re-renders, Zod integration, TypeScript support |
+
+### Deployment & Infrastructure
+| Technology | Version | Purpose | Rationale |
+|------------|---------|---------|-----------|
+| **Vercel** | N/A | Platform | Zero-config deployment, Edge Network CDN, Vercel KV/Postgres |
+| **Vercel Analytics** | N/A | Web Vitals monitoring | Real-time LCP/FID/CLS tracking, no config |
+| **Vercel Speed Insights** | N/A | Performance metrics | User-centric performance data, automatic |
+| **Vercel Blob** | N/A | File storage | Product images, invoices, automatic optimization |
+
+## Best Practices Identified
+
+### Multi-Tenant Architecture
+1. **Prisma Middleware Pattern**: Auto-inject `storeId` filter on all queries to prevent cross-tenant data leakage
+2. **Session Context**: Store `storeId` in JWT and session, validate on every request
+3. **Database Indexes**: Compound indexes `@@index([storeId, createdAt])` for tenant-scoped queries
+4. **Unique Constraints**: `@@unique([storeId, email])`, `@@unique([storeId, sku])` for per-tenant uniqueness
+5. **Soft Deletes**: `deletedAt DateTime?` with middleware to auto-exclude deleted records
+6. **Audit Trail**: Immutable logs for security-sensitive actions (auth, permissions, data export)
+
+### Performance Optimization
+1. **Server Components Default**: 70%+ components should be Server Components to minimize JavaScript bundle
+2. **Dynamic Imports**: Lazy-load heavy components (charts, editors, modals) with `next/dynamic`
+3. **Image Optimization**: Use `next/image` for automatic WebP conversion, responsive srcset, lazy loading
+4. **Database Query Optimization**: Select only needed fields, use indexes, avoid N+1 queries
+5. **Connection Pooling**: Prisma default 5 connections/function, scale to 20 for Enterprise
+6. **Caching Strategy**: 5-minute TTL for analytics/reports, CDN caching for static assets
+7. **Code Splitting**: Automatic by route, manual for large pages
+
+### Security Best Practices
+1. **Input Validation**: Zod schemas on client+server, sanitize HTML with DOMPurify
+2. **Rate Limiting**: 100 req/min per IP (unauthenticated), tiered by plan (authenticated)
+3. **SQL Injection Prevention**: Prisma parameterized queries only, no raw SQL
+4. **XSS Prevention**: React automatic escaping, Content Security Policy headers
+5. **CSRF Protection**: NextAuth.js built-in CSRF tokens, validate on mutations
+6. **Session Management**: HTTP-only, Secure, SameSite=Lax cookies, 7-day idle timeout
+7. **Password Policy**: Min 8 chars, complexity requirements, last 5 passwords checked
+8. **MFA Enforcement**: Optional for all users (including Super Admins) in Phase 1
+9. **Environment Variables**: All secrets in env vars, never commit to git
+
+### Testing Strategy
+1. **Test Coverage Targets**: 80% business logic, 100% utilities, 100% E2E critical paths, 100% API routes
+2. **AAA Pattern**: Arrange, Act, Assert structure for readability and maintainability
+3. **Test Data Isolation**: Fixtures for test stores/users/products, no shared state between tests
+4. **POM Pattern**: Page Object Model for E2E tests to centralize selectors and actions
+5. **Mock External Dependencies**: Database (in-memory SQLite), payment gateways (test mode), email (mock)
+6. **Deterministic Tests**: No flaky tests, use fixtures instead of random data, mock time-dependent logic
+7. **Cross-Browser Testing**: Chromium (primary), Firefox, WebKit, Mobile Safari, Mobile Chrome (BrowserStack)
+8. **Visual Regression**: Percy snapshots on mobile (375px), tablet (768px), desktop (1280px)
+9. **Accessibility Testing**: axe-core on all pages, manual screen reader testing quarterly
+10. **Performance Testing**: k6 load testing (100 concurrent users/5min), Lighthouse CI budgets
+
+### Code Quality Standards
+1. **File Size Limits**: Max 300 lines/file, max 50 lines/function (ESLint enforced)
+2. **Naming Conventions**: camelCase (vars/functions), PascalCase (components/types), UPPER_SNAKE_CASE (constants)
+3. **TypeScript Strict Mode**: No `any` types except documented exceptions, explicit return types
+4. **File Organization**: Group by feature, co-locate related files, barrel exports (`index.ts`)
+5. **Component Structure**: Server Component default, Client Component only when needed (`'use client'`)
+6. **Error Handling**: User-friendly messages, error codes for support, structured API errors
+7. **Documentation**: JSDoc for complex functions, inline comments for complex logic only
+8. **Git Workflow**: Feature branches, Conventional Commits, squash merge to main
+
+## Integration Patterns
+
+### Payment Gateway Integration
+- **Strategy Pattern**: Abstract `PaymentProvider` interface with adapter per gateway (Stripe, SSLCommerz)
+- **Configuration**: Per-store credentials in `paymentGateways` JSONB field (encrypted)
+- **Webhook Handling**: Single endpoint `/api/webhooks/payment?gateway=stripe` with signature verification
+- **Idempotency**: Use payment intent ID + order ID as key, 24-hour TTL in Redis
+- **Retry Logic**: 3 attempts with exponential backoff, dead-letter queue for permanent failures
+- **Testing**: Mock payment provider in tests, sandbox mode for development
+
+### External Platform Sync (WooCommerce/Shopify)
+- **Strategy Pattern**: Abstract `SyncProvider` interface with adapter per platform
+- **Bidirectional Webhooks**: Inbound (external → StormCom) and outbound (StormCom → external)
+- **Conflict Resolution**: Last-write-wins (timestamp), manual queue, or priority rules (configurable)
+- **Retry Logic**: Exponential backoff (max 5 attempts), dead-letter queue (30-day retention)
+- **Sync Dashboard**: Real-time status, last sync timestamp, failed items with error details
+- **Bulk Import/Export**: Initial onboarding for large catalogs (1000+ products), progress tracking
+
+### Email Notification System
+- **Email Service**: Resend for transactional emails (order confirmations, password reset, shipping notifications)
+- **Queue System**: Background job queue for email sending, retry on failure (3 attempts, exponential backoff)
+- **Template Engine**: Handlebars syntax `{{variableName}}`, fallback values for missing data
+- **Template Management**: Admin UI for customizing email templates per notification type
+- **Preview/Test**: Send test emails to admin address before publishing template
+- **Bounce Handling**: Track bounced emails, mark customer email as invalid after 3 bounces
+
+## Migration Strategies
+
+### From Existing E-commerce Platform
+1. **Data Export**: Export products, orders, customers from existing platform (CSV/API)
+2. **Data Mapping**: Map external IDs to StormCom IDs, handle category/attribute mismatches
+3. **Bulk Import**: Use bulk import API with validation, error reporting, resume on failure
+4. **Image Migration**: Download product images, upload to Vercel Blob, update references
+5. **Customer Migration**: Import customers, send password reset links (cannot migrate passwords)
+6. **Order History**: Import historical orders (read-only), mark as "imported from [platform]"
+7. **Inventory Sync**: Initial inventory import, enable ongoing sync if external platform still active
+8. **DNS Cutover**: Point domain to StormCom after data verification, redirect old URLs
+
+### Database Migrations
+1. **Schema Changes**: Modify `prisma/schema.prisma`, run `prisma migrate dev` (local), `prisma migrate deploy` (production)
+2. **Pre-Migration Backup**: Automated backup before production migration, 30-day retention
+3. **Breaking Changes**: Two-phase deployment (add new schema, deprecate old, dual-write, remove old after 2 weeks)
+4. **Data Migrations**: Custom scripts in `prisma/migrations/` for data transformations
+5. **Rollback Procedure**: Documented in `docs/database/rollback-procedure.md`, restore from pre-migration backup
+6. **Staging Testing**: Test all migrations on staging (production database copy) before production
+
+## Risk Mitigation
+
+### Technical Risks
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Database connection pool exhaustion** | High | Monitor at 70% capacity, alert admins, suggest pool size increase, graceful degradation |
+| **Payment gateway timeout** | High | 30s timeout, 3 retries, fallback to alternative payment method, user-friendly error |
+| **External platform sync failure** | Medium | Retry queue with exponential backoff, dead-letter queue (30-day retention), manual retry UI |
+| **Rate limit exceeded** | Medium | Tiered limits by plan, alert at 80% usage, upgrade CTA, burst allowance (2× for 10s) |
+| **Session store (Vercel KV) unavailable** | High | Fallback to in-memory session validation (slower), alert admins, graceful degradation |
+| **Search performance degradation (>10K products)** | Medium | PostgreSQL FTS up to 10K, auto-migrate to Algolia above 10K (Phase 2) |
+
+### Security Risks
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Cross-tenant data leakage** | Critical | Prisma middleware auto-inject `storeId`, automated E2E tests for tenant isolation |
+| **SQL injection** | High | Prisma parameterized queries only, no raw SQL allowed (constitution enforced) |
+| **XSS attacks** | High | React automatic escaping, DOMPurify for user HTML, Content Security Policy headers |
+| **CSRF attacks** | Medium | NextAuth.js CSRF tokens, validate on all mutations, SameSite=Lax cookies |
+| **Account takeover** | High | MFA optional (Phase 1), account lockout (5 attempts/15min), bcrypt cost 12, audit logs |
+| **Session hijacking** | Medium | HTTP-only cookies, session ID in JWT, user agent validation, invalidate on password change |
+
+### Operational Risks
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Vercel platform downtime** | High | 99.9% SLA guarantee, multi-region deployment, automated health checks, status page |
+| **Database backup failure** | Critical | Automated daily backups, 90-day retention, weekly backup restore tests, monitoring |
+| **Email delivery failure** | Medium | Retry queue (3 attempts), track bounce rate, alert at >5%, fallback to backup email service |
+| **CDN cache poisoning** | Medium | Signed URLs for cache invalidation, versioned assets, short TTL for dynamic content |
+| **Runaway costs** | Medium | Usage alerts at 80% of monthly quota, plan limit enforcement, cost monitoring dashboard |
+
+## Phase 2 Enhancements
+
+### High Priority (P1)
+1. **bKash Payment Gateway** (Bangladesh market demand)
+2. **Algolia Search Integration** (for stores >10K products)
+3. **Multi-Language Support** (16 languages, RTL for Arabic/Hebrew)
+4. **Carrier API Integrations** (FedEx, UPS, USPS, DHL for real-time shipping quotes)
+5. **Tax Calculation Services** (Avalara, TaxJar for automated tax determination)
+
+### Medium Priority (P2)
+1. **POS Offline Mode** (local storage + sync-back when online)
+2. **Custom Report Builder** (drag-and-drop dimensions, metrics, filters)
+3. **Customer Segmentation Engine** (behavioral triggers, personalized campaigns)
+4. **Advanced Analytics** (predictive sales forecasting, inventory recommendations, churn prediction)
+
+### Low Priority (P3)
+1. **Product Comparison Feature** (compare up to 4 products side-by-side)
+2. **Digital Products Support** (downloadable files, license key management)
+3. **GraphQL API** (alongside REST API for mobile app development)
+4. **White-Label SaaS** (allow resellers to rebrand platform)
+
+## Conclusion
+
+All technical decisions have been made with clear rationale and alternatives considered. The chosen stack (Next.js 16 + React 19 + TypeScript 5.9.3 + Prisma + PostgreSQL + NextAuth.js + Tailwind CSS + Vitest + Playwright) aligns with the constitution requirements and provides a solid foundation for building a scalable, secure, performant multi-tenant e-commerce platform.
+
+Next steps:
+1. ✅ **Phase 0 Complete**: Research.md generated with all technical decisions documented
+2. 🔄 **Phase 1 In Progress**: Generate data-model.md, contracts/openapi.yaml, quickstart.md
+3. ⏳ **Phase 2 Pending**: Task breakdown in tasks.md (run `/speckit.tasks` command after Phase 1)
+
+**Research Status**: ✅ COMPLETE - All NEEDS CLARIFICATION items resolved, ready for Phase 1 Design & Contracts.

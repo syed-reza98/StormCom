@@ -1,0 +1,122 @@
+name: Validate GitHub Copilot Customizations
+
+on:
+  push:
+    branches:
+      - main
+      - 'copilot/**'
+    paths:
+      - '.github/copilot/**'
+  pull_request:
+    paths:
+      - '.github/copilot/**'
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  validate-customizations:
+    name: Validate Copilot Customizations
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Run validation script
+        run: |
+          cd .github/copilot
+          node tests/validate.js
+      
+      - name: Check file counts
+        run: |
+          echo "📊 File Counts:"
+          echo "Chat Modes: $(find .github/copilot/chatmodes -name '*.chatmode.md' | wc -l)"
+          echo "Instructions: $(find .github/copilot/instructions -name '*.instructions.md' | wc -l)"
+          echo "Prompts: $(find .github/copilot/prompts -name '*.prompt.md' | wc -l)"
+          echo "Documentation: $(find .github/copilot -maxdepth 1 -name '*.md' | wc -l)"
+      
+      - name: Validate custom instructions
+        run: |
+          echo "🔍 Validating custom StormCom instructions..."
+          
+          # Check Prisma instructions
+          if grep -q "multi-tenant" .github/copilot/instructions/prisma.instructions.md && \
+             grep -q "storeId" .github/copilot/instructions/prisma.instructions.md; then
+            echo "✅ Prisma instructions validated"
+          else
+            echo "❌ Prisma instructions missing required content"
+            exit 1
+          fi
+          
+          # Check Vitest instructions
+          if grep -q "AAA" .github/copilot/instructions/vitest.instructions.md && \
+             grep -q "Testing Library" .github/copilot/instructions/vitest.instructions.md; then
+            echo "✅ Vitest instructions validated"
+          else
+            echo "❌ Vitest instructions missing required content"
+            exit 1
+          fi
+          
+          # Check Security instructions
+          if grep -q "bcrypt" .github/copilot/instructions/security-best-practices.instructions.md && \
+             grep -q "NextAuth" .github/copilot/instructions/security-best-practices.instructions.md; then
+            echo "✅ Security instructions validated"
+          else
+            echo "❌ Security instructions missing required content"
+            exit 1
+          fi
+      
+      - name: Validate collection YAML
+        run: |
+          echo "📦 Validating collection YAML..."
+          
+          if [ -f .github/copilot/collections/stormcom-development.collection.yml ]; then
+            echo "✅ Collection YAML exists"
+            
+            # Check for required categories
+            for category in "SaaS Developer" "Market Researcher" "Documentation Reviewer" "System Designer" "UI/UX Designer" "Q/A Specialist" "Security Expert" "DevOps Expert"; do
+              if grep -q "$category" .github/copilot/collections/stormcom-development.collection.yml; then
+                echo "  ✅ Category: $category"
+              else
+                echo "  ❌ Missing category: $category"
+                exit 1
+              fi
+            done
+          else
+            echo "❌ Collection YAML not found"
+            exit 1
+          fi
+      
+      - name: Validate documentation
+        run: |
+          echo "📚 Validating documentation..."
+          
+          for doc in README.md QUICKSTART.md INDEX.md SUMMARY.md STRUCTURE.md; do
+            if [ -f .github/copilot/$doc ]; then
+              echo "✅ $doc exists"
+            else
+              echo "❌ $doc not found"
+              exit 1
+            fi
+          done
+      
+      - name: Generate validation summary
+        if: always()
+        run: |
+          echo "## Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Category | Count | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Chat Modes | $(find .github/copilot/chatmodes -name '*.chatmode.md' | wc -l) | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Instructions | $(find .github/copilot/instructions -name '*.instructions.md' | wc -l) | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Prompts | $(find .github/copilot/prompts -name '*.prompt.md' | wc -l) | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Documentation | $(find .github/copilot -maxdepth 1 -name '*.md' | wc -l) | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All validations passed!" >> $GITHUB_STEP_SUMMARY

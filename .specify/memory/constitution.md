@@ -151,7 +151,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 ## Additional Constraints
 
 ### Required Technologies
-- ✅ **Next.js** `15.5.5+` (App Router only, NO Pages Router).
+- ✅ **Next.js** `16.0.0+` (App Router only, NO Pages Router)(Including Next.js MCP Server).
 - ✅ **React** `19.x` (Server Components by default).
 - ✅ **TypeScript** `5.9.3+` (strict mode enabled).
 - ✅ **Prisma ORM** (latest stable version).
@@ -159,7 +159,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **PostgreSQL** (production on Vercel Postgres).
 - ✅ **Tailwind CSS** `4.1.14+` (utility-first styling).
 - ✅ **Radix UI** + **shadcn/ui** (accessible component library).
-- ✅ **NextAuth.js** `v5` (authentication).
+- ✅ **NextAuth.js** `v4+` (authentication).
 - ✅ **Zod** (runtime validation).
 - ✅ **React Hook Form** (form state management).
 - ✅ **Vitest** `3.2.4+` (unit/integration testing).
@@ -275,7 +275,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 Ensure all user data is encrypted at rest and in transit. Follow industry best practices for authentication and authorization, including HTTPS, secure cookies, and role-based access control.
 
 **Authentication & Authorization**
-- Use NextAuth.js v5 for authentication.
+- Use NextAuth.js v4+ for authentication.
 - Implement JWT sessions with HTTP-only cookies (SameSite=Lax).
 - Hash passwords with bcrypt (cost factor: 12).
 - Enforce Role-Based Access Control (RBAC) with granular permissions.

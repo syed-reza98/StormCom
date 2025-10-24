@@ -26,12 +26,12 @@ StormCom is a comprehensive multi-tenant SaaS e-commerce platform enabling busin
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| **Framework** | Next.js | 15.5.5 | App Router, Server Components, API routes |
+| **Framework** | Next.js | 16.0.0 | App Router, Server Components, API routes |
 | **Language** | TypeScript | 5.9.3 | Strict mode, type safety |
 | **Runtime** | Node.js | 18+ | Server-side execution |
 | **Database** | PostgreSQL / SQLite | Latest | Production / Development |
 | **ORM** | Prisma | Latest | Type-safe database access |
-| **Authentication** | NextAuth.js | v5 | JWT sessions, OAuth, MFA |
+| **Authentication** | NextAuth.js | v4+ | JWT sessions, OAuth, MFA |
 | **Payment** | Stripe + SSLCommerz | Latest | International + Bangladesh |
 | **Email** | Resend | Latest | Transactional emails |
 | **Background Jobs** | Inngest | Latest | Cron scheduling, event-driven |
