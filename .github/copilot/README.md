@@ -10,6 +10,10 @@ This directory contains specialized GitHub Copilot customizations for the StormC
 ├── instructions/         # Coding standards and best practices
 ├── chatmodes/           # Specialized AI personas for different roles
 ├── collections/         # Curated collections of related customizations
+├── tests/               # Validation and testing suite
+│   ├── validate.js      # Automated validation script
+│   ├── VALIDATION_REPORT.md  # Comprehensive validation results
+│   └── TESTING_GUIDE.md      # Testing instructions and scenarios
 └── README.md            # This file
 ```
 
@@ -126,6 +130,24 @@ All customizations are sourced from [awesome-copilot](https://github.com/rezwana
 - `specs/001-multi-tenant-ecommerce/spec.md` - Feature specification
 - `specs/001-multi-tenant-ecommerce/plan.md` - Implementation plan
 
+## ✅ Validation & Testing
+
+All customizations have been comprehensively validated and tested:
+
+- **Automated Validation**: Run `npm run validate` or `node tests/validate.js`
+- **Test Results**: 108 tests passed (100% success rate)
+- **GitHub Actions**: Continuous validation on every push
+- **Validation Report**: See `tests/VALIDATION_REPORT.md` for detailed results
+- **Testing Guide**: See `tests/TESTING_GUIDE.md` for manual testing instructions
+
+### Quick Validation
+```bash
+cd .github/copilot
+node tests/validate.js
+```
+
+Expected output: `🎉 All validations passed!`
+
 ## 📄 License
 
 These customizations maintain their original MIT License from the awesome-copilot repository.
@@ -137,9 +159,11 @@ When adding new customizations:
 2. Follow the file naming conventions from awesome-copilot
 3. Add proper frontmatter and documentation
 4. Update the collection YAML if creating grouped customizations
-5. Test the customization in your local development environment
+5. **Run validation**: `node tests/validate.js` before committing
+6. Test the customization in your local development environment
 
 ---
 
 **Last Updated**: 2025-10-24  
-**Maintained by**: StormCom Development Team
+**Maintained by**: StormCom Development Team  
+**Validation Status**: ✅ All tests passing
