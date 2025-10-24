@@ -2,10 +2,59 @@
 applyTo: '**'
 ---
 
-# Next.js Best Practices for LLMs (2025)
+# Next.js Best Practices for StormCom (2025)
 
+This document defines the authoritative Next.js best practices for StormCom, a multi-tenant e-commerce SaaS platform. It is intended for use by GitHub Copilot agents and developers to ensure code quality, maintainability, scalability, and compliance with project requirements.
 
-This document summarizes the latest, authoritative best practices for building, structuring, and maintaining Next.js applications. It is intended for use by LLMs and developers to ensure code quality, maintainability, and scalability.
+**Project Context**: StormCom Multi-tenant E-commerce Platform  
+**Stack**: Next.js 16.0.0+ (App Router), React 19.x, TypeScript 5.9.3+, Prisma ORM, PostgreSQL/SQLite  
+**Deployment**: Vercel Platform with Edge Network CDN
+
+---
+
+## 0. Version Requirements & Technology Stack
+
+**CRITICAL**: These versions are REQUIRED for StormCom and MUST be used:
+
+### Core Framework (MANDATORY)
+- **Next.js**: `16.0.0+` (App Router ONLY, Pages Router is PROHIBITED)
+- **React**: `19.x` (Server Components by default)
+- **TypeScript**: `5.9.3+` (strict mode REQUIRED)
+- **Node.js**: `18.x or higher`
+
+### Database & ORM (MANDATORY)
+- **Prisma ORM**: Latest stable (type-safe database access)
+- **PostgreSQL**: `15+` (production on Vercel Postgres)
+- **SQLite**: Latest (local development only)
+
+### Styling & UI (MANDATORY)
+- **Tailwind CSS**: `4.1.14+` (utility-first, CSS-in-JS is PROHIBITED)
+- **Radix UI** + **shadcn/ui**: Accessible component primitives
+- **Framer Motion**: Latest (animations with reduced-motion support)
+- **lucide-react**: Latest (icons)
+
+### Forms & Validation (MANDATORY)
+- **React Hook Form**: Latest (form state management)
+- **Zod**: Latest (runtime validation, client + server)
+
+### Authentication (MANDATORY)
+- **NextAuth.js**: `v4+` (authentication & sessions)
+- **bcrypt**: Latest (password hashing, cost factor 12)
+
+### Testing (MANDATORY)
+- **Vitest**: `3.2.4+` (unit/integration tests)
+- **Playwright**: `1.56.0+` with MCP (E2E tests)
+- **BrowserStack**: Cross-browser testing + Percy visual regression
+- **k6** (Grafana): Load testing
+- **Lighthouse CI**: Performance budgets
+- **axe-core**: WCAG 2.1 AA accessibility testing
+
+### Deployment (MANDATORY)
+- **Vercel**: Serverless deployment platform
+- **Vercel KV**: Redis-compatible session store (production)
+- **Vercel Blob**: File storage (product images, invoices)
+- **Vercel Analytics**: Web Vitals monitoring
+- **Vercel Speed Insights**: Performance metrics
 
 ---
 

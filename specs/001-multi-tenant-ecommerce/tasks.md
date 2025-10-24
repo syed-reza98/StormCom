@@ -507,9 +507,9 @@
 
 **Tasks**:
 
-- [ ] T216 [P] Setup error monitoring with Sentry in src/lib/sentry.ts
-- [ ] T217 [P] Implement search optimization with Algolia or Typesense in src/lib/search.ts
-- [ ] T218 [P] Add image optimization pipeline with Sharp in src/lib/image-optimization.ts
+- [ ] T216 [P] Setup error monitoring with Sentry in src/lib/sentry.ts (configure DSN from env, setup environment tags, enable release tracking, add breadcrumbs for user actions, configure sample rate for production)
+- [ ] T217 [P] Implement search optimization with Typesense in src/lib/search.ts (configure products collection with indexed fields: name, description, category, brand, SKU; setup autocomplete with typo tolerance of 2, enable relevance scoring with custom weights, configure synonyms for common product terms)
+- [ ] T218 [P] Add image optimization pipeline with Sharp in src/lib/image-optimization.ts (support formats: JPEG, PNG, WebP, AVIF; create resize presets: thumbnail 150px, small 300px, medium 600px, large 1200px; set quality: 80 for JPEG, 85 for WebP; enable progressive JPEG and lossless WebP)
 - [ ] T219 [P] Create API documentation with Swagger UI in src/app/api/docs/route.ts
 - [ ] T220 [P] Setup performance monitoring with Vercel Analytics in src/app/layout.tsx
 - [ ] T221 [P] Create development seed script with realistic data in scripts/seed-dev.ts

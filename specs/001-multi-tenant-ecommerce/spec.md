@@ -233,7 +233,7 @@ As a Super Admin, Store Admin, Staff member, or Customer, I need to authenticate
 - Layout, accessibility, and responsiveness must match the Login page requirements.
 - Loading and feedback: While submitting, the "Sign Up" button must show a spinner and be disabled. On error, the form must display a clear error message and restore focus to the first invalid field.
 - Edge cases: Requirements must specify behavior for network failure, slow loading, and form resubmission.
-- Wireframe: [Register Page Wireframe] must specify all element positions, spacing, and error/empty/loading states.
+- Wireframe: [Register Page Wireframe](../../docs/audit/login-register-wireframes.md#register-page) must specify all element positions, spacing, and error/empty/loading states.
 
 **Logout:**
 - Logout action must be available in the dashboard user menu (top right avatar dropdown), with a clear label and accessible via keyboard and screen reader.
