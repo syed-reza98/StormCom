@@ -7,8 +7,8 @@
  * for the StormCom project.
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const COPILOT_DIR = path.join(__dirname, '..');
 const CHATMODES_DIR = path.join(COPILOT_DIR, 'chatmodes');
