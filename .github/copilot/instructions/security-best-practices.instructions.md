@@ -85,6 +85,7 @@ export const authOptions: NextAuthOptions = {
 import bcrypt from 'bcrypt';
 
 // Cost factor: 12 (recommended for 2025)
+// Cost factor 12 provides good security as of 2025; review annually and increase as computing power improves.
 const BCRYPT_ROUNDS = 12;
 
 // Hash password during registration
