@@ -21,10 +21,17 @@
 
 # Vercel
 .vercel
+.vercel/
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+dist/
+
+# Testing Reports
+/playwright-report/
+/test-results/
+*.test.ts.snap
 
 # Prisma
 /prisma/*.db
