@@ -11,7 +11,7 @@ Your goal is to automate the process of filling in a form using Playwright MCP.
 
 ## Specific Instructions
 
-Navigate to https://forms.microsoft.com/url-of-my-form
+Navigate to https://forms.microsoft.com/[YOUR-FORM-ID]
 
 ### Fill in the form with the following details:
 
