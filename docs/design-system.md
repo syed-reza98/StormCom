@@ -1,23 +1,78 @@
 # StormCom Design System
 
 **Version**: 1.0.0  
-**Last Updated**: October 22, 2025  
-**Status**: Phase 1 Implementation  
+**Last Updated**: 2025-01-25  
+**Status**: Active
 
 ## Overview
 
-This document defines the StormCom design system for consistent UI/UX across admin dashboard and customer storefronts. The system is built on Tailwind CSS 4.x with shadcn/ui components, custom design tokens, and comprehensive accessibility standards.
+StormCom's design system provides a comprehensive set of design tokens, components, and patterns to ensure consistency, accessibility, and maintainability across the admin dashboard and customer storefront.
 
-## Table of Contents
+---
 
-1. [Design Tokens](#design-tokens)
-2. [Tailwind Configuration](#tailwind-configuration)
-3. [CSS Variables](#css-variables)
-4. [Component Library](#component-library)
-5. [Storybook Documentation](#storybook-documentation)
-6. [Accessibility Testing](#accessibility-testing)
-7. [Visual Regression Testing](#visual-regression-testing)
-8. [Theming and Customization](#theming-and-customization)
+## Terminology Definitions
+
+### Centered Card Layout
+A vertically and horizontally centered container on the page with:
+- **Maximum width**: 480px (mobile), 560px (tablet/desktop)
+- **Padding**: 32px (2rem) on desktop, 24px (1.5rem) on mobile
+- **Background**: White (#FFFFFF) in light mode, Slate 900 (#0f172a) in dark mode
+- **Border radius**: 12px (rounded-xl)
+- **Shadow**: Elevation 3 (0 10px 15px -3px rgba(0, 0, 0, 0.1))
+- **Vertical alignment**: Center of viewport (min-height: 100vh with flexbox centering)
+- **Horizontal alignment**: Center (margin: 0 auto)
+
+**Use cases**: Login, register, forgot password, MFA enrollment, password reset pages
+
+**Example CSS**:
+```css
+.centered-card {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.centered-card__container {
+  width: 100%;
+  max-width: 28rem; /* 448px */
+  padding: 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+```
+
+### Dashboard Branding
+Dashboard-specific visual identity elements:
+- **Logo**: StormCom logo (SVG) displayed in header, max height 40px
+- **Primary color**: Teal 600 (#0f766e) for primary actions, links, active states
+- **Secondary color**: Purple 600 (#7c3aed) for secondary actions, highlights
+- **Typography**: Inter font family with optical sizing
+- **Header height**: 64px with sticky positioning
+- **Sidebar width**: 280px (expanded), 64px (collapsed)
+- **Background**: Slate 50 (#f8fafc) in light mode, Slate 950 (#020617) in dark mode
+
+**Contrast with Storefront Branding**: Storefronts use per-tenant `Store.primaryColor` and `Store.secondaryColor` from database, injected as CSS variables. Dashboard uses fixed platform colors.
+
+---
+
+## Glossary
+
+| Term | Definition |
+|------|------------|
+| **Store Owner** | Billing entity (person/company) who owns the store subscription; not a user role |
+| **Store Admin** | User role with full access to store management features |
+| **Staff** | User role with limited permissions (configurable module access) |
+| **Super Admin** | Platform-level administrator with cross-store access |
+| **Customer** | Storefront user with account management and order history access |
+| **Centered Card Layout** | Vertically/horizontally centered container (max-width 480px, padding 32px, rounded-xl) |
+| **Dashboard Branding** | Platform-specific visual identity (Teal/Purple colors, Inter font, StormCom logo) |
+| **Storefront Branding** | Per-tenant visual identity (custom colors from Store.primaryColor/secondaryColor) |
+| **Wireframe** | Low-fidelity layout sketch showing element positions and hierarchy |
+| **POM (Page Object Model)** | E2E testing pattern encapsulating page interactions in classes |
+| **Constitution** | Project standards document (`.specify/memory/constitution.md`) defining code quality, testing, and architecture rules |
 
 ---
 

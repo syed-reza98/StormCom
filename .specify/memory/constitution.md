@@ -151,7 +151,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 ## Additional Constraints
 
 ### Required Technologies
-- ✅ **Next.js** `16.0.0+` (App Router only, NO Pages Router)(Including Next.js MCP Server).
+- ✅ **Next.js** `16.0.0+` (App Router only, NO Pages Router, **includes built-in Next.js MCP Server**).
 - ✅ **React** `19.x` (Server Components by default).
 - ✅ **TypeScript** `5.9.3+` (strict mode enabled).
 - ✅ **Prisma ORM** (latest stable version).
@@ -159,7 +159,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **PostgreSQL** (production on Vercel Postgres).
 - ✅ **Tailwind CSS** `4.1.14+` (utility-first styling).
 - ✅ **Radix UI** + **shadcn/ui** (accessible component library).
-- ✅ **NextAuth.js** `v4+` (authentication).
+- ✅ **Custom Auth System** (JWT + Vercel KV session storage) - **NOTE**: NextAuth.js v5 incompatible with Next.js 16; custom implementation used instead (see plan.md, tasks.md).
 - ✅ **Zod** (runtime validation).
 - ✅ **React Hook Form** (form state management).
 - ✅ **Vitest** `3.2.4+` (unit/integration testing).
@@ -168,7 +168,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **k6** (Grafana - performance/load testing).
 - ✅ **Lighthouse CI** (performance budgets and auditing).
 - ✅ **axe-core** (accessibility testing - WCAG 2.1 Level AA).
-- ✅ **Vercel** (deployment platform).
+- ✅ **Vercel** (deployment platform with native observability: Analytics, Logs, Speed Insights).
 
 ### Prohibited Technologies
 - ❌ **Redux/MobX/Zustand** (use React Server Components + hooks).

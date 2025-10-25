@@ -427,7 +427,7 @@ As a Store Admin, I view real-time KPI cards, generate sales/inventory/customer 
 
 **Acceptance Scenarios**:
 
-1. Given the dashboard, When I view KPI cards, Then I see total sales, order count, low stock alerts, and customer count updated within 10 minutes of data changes (SC-020).
+1. Given the dashboard, When I view KPI cards, Then I see total sales, order count, low stock alerts, and customer count updated within 10 minutes of data changes (SC-020). **NOTE**: SC-020 defines acceptable **data freshness lag** (analytics/reporting data staleness), NOT page rendering time. Page load performance is governed by constitution requirements: LCP <2.0s desktop, <2.5s mobile, API response <500ms p95.
 2. Given the reports section, When I generate a sales report for last month, Then I see order totals, revenue, and top products with filters for date range, status, and customer segments.
 3. Given a generated report, When I export to CSV, Then the downloaded file matches on-screen data within 0.5% variance (SC-008).
 4. Given threshold configuration, When sales exceed target or stock falls below minimum, Then alert badges appear on dashboard within 1 minute (SC-005).

@@ -12,10 +12,10 @@ StormCom is a comprehensive multi-tenant SaaS e-commerce platform enabling busin
 ## Technical Context
 
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)
-**Framework**: Next.js 16.0.0+ (App Router only, NO Pages Router), React 19.x (Server Components by default)
+**Framework**: Next.js 16.0.0+ (App Router only, NO Pages Router, **includes built-in Next.js MCP Server**), React 19.x (Server Components by default)
 **Primary Dependencies**: 
 - Prisma ORM (latest stable) for type-safe database access
-- NextAuth.js v4+ for authentication & sessions
+- **Custom Auth System** (JWT + Vercel KV session storage) - **NOTE**: NextAuth.js v5 incompatible with Next.js 16, replaced with custom implementation in Phase 3 (see tasks.md T022, T036-T039)
 - Tailwind CSS 4.1.14+ for styling
 - Radix UI + shadcn/ui for accessible components
 - Zod for runtime validation
@@ -29,6 +29,7 @@ StormCom is a comprehensive multi-tenant SaaS e-commerce platform enabling busin
 - Lighthouse CI for performance budgets
 - axe-core for WCAG 2.1 Level AA accessibility
 **Target Platform**: Vercel serverless platform (Edge Network CDN, Vercel KV for session storage)
+**Observability**: Vercel native stack (Analytics for Web Vitals, Logs for serverless functions, Speed Insights for real-time performance) - **NOTE**: No external error tracking service (e.g., Sentry); uses Vercel Logs for error monitoring
 **Project Type**: Full-stack web application (admin dashboard + customer storefront)
 **Performance Goals**: 
 - Page load (LCP): <2.0s desktop, <2.5s mobile
@@ -162,12 +163,24 @@ StormCom/
 │   │   ├── tables/
 │   │   └── charts/
 │   ├── lib/                        # Utilities & helpers
-│   │   ├── auth.ts
-│   │   ├── db.ts                   # Prisma client
-│   │   ├── utils.ts
-│   │   ├── validation.ts           # Zod schemas
-│   │   ├── api-client.ts
-│   │   └── constants.ts
+│   │   ├── auth.ts                 # Auth utilities (deprecated - use services/auth-service.ts)
+│   │   ├── db.ts                   # Prisma client singleton
+│   │   ├── utils.ts                # General utilities (cn, formatters)
+│   │   ├── validation.ts           # Zod validation schemas library (User, Store, Product, Order)
+│   │   ├── api-client.ts           # API client wrapper
+│   │   ├── constants.ts            # Global constants
+│   │   ├── error-handler.ts        # Error handling utilities with customer-facing messages
+│   │   ├── api-response.ts         # API response formatter ({data, error, meta})
+│   │   ├── csrf.ts                 # CSRF protection middleware
+│   │   ├── rate-limit.ts           # Rate limiting middleware (tiered by subscription plan)
+│   │   ├── email.ts                # Resend email service integration
+│   │   ├── storage.ts              # Vercel Blob integration for file uploads
+│   │   ├── encryption.ts           # AES-256-GCM encryption utilities
+│   │   ├── password.ts             # bcrypt password hashing and validation
+│   │   ├── mfa.ts                  # TOTP generation, QR codes, backup codes
+│   │   ├── audit.ts                # Audit logging utilities
+│   │   ├── session-storage.ts      # Session storage layer (Vercel KV / in-memory)
+│   │   └── prisma-middleware.ts    # Multi-tenant isolation middleware
 │   ├── services/                   # Business logic
 │   │   ├── auth/
 │   │   ├── stores/

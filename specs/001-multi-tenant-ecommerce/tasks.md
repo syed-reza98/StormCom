@@ -134,26 +134,34 @@
 - [x] T052 [US0] [P] Create Password Reset page in src/app/(auth)/reset-password/page.tsx with token validation and new password form
 - [x] T053 [US0] [P] Create useAuth hook in src/hooks/use-auth.ts with login, logout, register, and current user state
 - [x] T054 [US0] [P] Create AuthProvider context in src/contexts/auth-provider.tsx with session management and role checking
-- [ ] T055 [US0] Create E2E test "User can register with valid credentials" in tests/e2e/auth/register.spec.ts
-- [ ] T056 [US0] Create E2E test "User can login with valid credentials" in tests/e2e/auth/login.spec.ts
-- [ ] T057 [US0] Create E2E test "User account is locked after 5 failed login attempts" in tests/e2e/auth/account-lockout.spec.ts
-- [ ] T058 [US0] Create E2E test "User can complete MFA enrollment and login with TOTP code" in tests/e2e/auth/mfa.spec.ts
-- [ ] T059 [US0] Create E2E test "User can reset password via email link" in tests/e2e/auth/password-reset.spec.ts
-- [ ] T055a [US0] Create E2E test "Invalid email format shows validation error" in tests/e2e/auth/validation.spec.ts
-- [ ] T055b [US0] Create E2E test "Incorrect password shows error message" in tests/e2e/auth/login-errors.spec.ts
-- [ ] T058a [US0] Create E2E test "User can login with MFA backup code" in tests/e2e/auth/mfa-backup.spec.ts
-- [ ] T058b [US0] Create E2E test "User can recover lost MFA access via email" in tests/e2e/auth/mfa-recovery.spec.ts
-- [ ] T056a [US0] Create E2E test "Super Admin can access all stores" in tests/e2e/auth/cross-tenant.spec.ts
-- [ ] T056b [US0] Create E2E test "Store Admin redirected to assigned store only" in tests/e2e/auth/role-redirect.spec.ts
-- [ ] T056c [US0] Create E2E test "Staff denied access to restricted pages" in tests/e2e/auth/permissions.spec.ts
-- [ ] T056d [US0] Create E2E test "Inactive account login prevented" in tests/e2e/auth/inactive-account.spec.ts
-- [ ] T056e [US0] Create E2E test "Customer redirected to account page" in tests/e2e/auth/customer-login.spec.ts
-- [ ] T059a [US0] Create E2E test "Session expires after 7 days inactivity" in tests/e2e/auth/session-expiry.spec.ts
-- [ ] T059b [US0] Create E2E test "Password change invalidates all sessions" in tests/e2e/auth/session-invalidation.spec.ts
-- [ ] T059c [US0] Create E2E test "Permission revocation terminates sessions" in tests/e2e/auth/session-termination.spec.ts
-- [ ] T059d [US0] Create E2E test "Password must meet length and complexity requirements" in tests/e2e/auth/password-validation.spec.ts
-- [ ] T059e [US0] Create E2E test "Password cannot be reused from last 5 passwords" in tests/e2e/auth/password-history.spec.ts
-- [ ] T060 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts
+- [ ] T054a [US0] [P] Create PasswordStrengthIndicator component in src/components/auth/password-strength-indicator.tsx with real-time validation checklist (min 8 chars, uppercase, lowercase, number, special char) - **REQUIRED by spec.md L232**
+- [ ] T054b [US0] [P] Create ForgotPasswordPage in src/app/(auth)/forgot-password/page.tsx with email input and reset link request - **Missing from original task list**
+- [ ] T055 [US0] Create E2E test "User can register with valid credentials" in tests/e2e/auth/register.spec.ts using RegisterPage POM (validates form submission, email verification notice, database user creation)
+- [ ] T056 [US0] Create E2E test "User can login with valid credentials" in tests/e2e/auth/login.spec.ts using LoginPage POM (validates email/password, session creation, role-based redirect to /dashboard or /account)
+- [ ] T057 [US0] Create E2E test "User account is locked after 5 failed login attempts" in tests/e2e/auth/account-lockout.spec.ts using LoginPage POM (attempts 5 invalid logins, validates lockout message, 15-minute timeout)
+- [ ] T058 [US0] Create E2E test "User can complete MFA enrollment and login with TOTP code" in tests/e2e/auth/mfa.spec.ts using MFAEnrollPage, MFAChallengePage POMs (scans QR code, saves backup codes, verifies TOTP login)
+- [ ] T059 [US0] Create E2E test "User can reset password via email link" in tests/e2e/auth/password-reset.spec.ts using ForgotPasswordPage, PasswordResetPage POMs (requests reset, clicks email link, sets new password, validates 1-hour expiry)
+- [ ] T060 [US0] Create E2E test "Invalid email format shows validation error" in tests/e2e/auth/validation.spec.ts using RegisterPage, LoginPage POMs (tests "notanemail", validates inline error message)
+- [ ] T061 [US0] Create E2E test "Incorrect password shows error message" in tests/e2e/auth/login-errors.spec.ts using LoginPage POM (valid email + wrong password, validates "Invalid email or password" message, failed attempt logged)
+- [ ] T062 [US0] Create E2E test "User can login with MFA backup code" in tests/e2e/auth/mfa-backup.spec.ts using MFAChallengePage POM (enters backup code, validates single-use, marks code as used)
+- [ ] T063 [US0] Create E2E test "User can recover lost MFA access via email" in tests/e2e/auth/mfa-recovery.spec.ts using MFAChallengePage POM (clicks "Lost access?", verifies email recovery link, disables MFA)
+- [ ] T064 [US0] Create E2E test "Super Admin can access all stores" in tests/e2e/auth/cross-tenant.spec.ts using DashboardPage POM (login as Super Admin, navigate to multiple stores, validates cross-store data visibility)
+- [ ] T065 [US0] Create E2E test "Store Admin redirected to assigned store only" in tests/e2e/auth/role-redirect.spec.ts using LoginPage, DashboardPage POMs (login as Store Admin, validates redirect to assigned store, blocks other stores with 404)
+- [ ] T066 [US0] Create E2E test "Staff denied access to restricted pages" in tests/e2e/auth/permissions.spec.ts using DashboardPage, SettingsPage POMs (login as Staff, attempt /settings, validates 403 Forbidden, audit log entry)
+- [ ] T067 [US0] Create E2E test "Inactive account login prevented" in tests/e2e/auth/inactive-account.spec.ts using LoginPage POM (login with INACTIVE status, validates "account deactivated" message)
+- [ ] T068 [US0] Create E2E test "Customer redirected to account page" in tests/e2e/auth/customer-login.spec.ts using LoginPage, AccountPage POMs (login as Customer, validates redirect to /account, shows order history)
+- [ ] T069 [US0] Create E2E test "Session expires after 7 days inactivity" in tests/e2e/auth/session-expiry.spec.ts using DashboardPage POM (fast-forward time, validates session expired message, redirect to login)
+- [ ] T070 [US0] Create E2E test "Password change invalidates all sessions" in tests/e2e/auth/session-invalidation.spec.ts using SettingsPage, LoginPage POMs (change password, validates other sessions invalidated within 60s)
+- [ ] T071 [US0] Create E2E test "Permission revocation terminates sessions" in tests/e2e/auth/session-termination.spec.ts using DashboardPage POM (admin revokes permissions, validates session terminated within 60s)
+- [ ] T072 [US0] Create E2E test "Password must meet length and complexity requirements" in tests/e2e/auth/password-validation.spec.ts using RegisterPage, PasswordResetPage POMs (tests <8 chars, no uppercase, no number, etc., validates inline errors)
+- [ ] T073 [US0] Create E2E test "Password cannot be reused from last 5 passwords" in tests/e2e/auth/password-history.spec.ts using SettingsPage POM (change password 6 times, attempt reuse of 1st password, validates "password used recently" error)
+- [ ] T074 [US0] Create E2E test "Login with valid credentials shows loading state" in tests/e2e/auth/login-loading.spec.ts using LoginPage POM (validates spinner on submit button, disabled state during submission)
+- [ ] T075 [US0] Create E2E test "Register with duplicate email shows error" in tests/e2e/auth/register-duplicate.spec.ts using RegisterPage POM (attempts registration with existing email, validates "email already registered" error)
+- [ ] T076 [US0] Create E2E test "Password reset token expires after 1 hour" in tests/e2e/auth/password-reset-expiry.spec.ts using PasswordResetPage POM (requests reset, waits 1 hour, clicks link, validates expiry message)
+- [ ] T077 [US0] Create E2E test "Email verification required before login" in tests/e2e/auth/email-verification.spec.ts using RegisterPage, LoginPage POMs (registers, attempts login without verifying, validates "verify email" message)
+- [ ] T078 [US0] Create E2E test "Logout from user menu succeeds" in tests/e2e/auth/logout.spec.ts using DashboardPage, UserMenuPOM (clicks logout, validates redirect to /login, "logged out" message announced to screen reader)
+- [ ] T079 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts (unit tests for all service methods, mocks Prisma, validates business logic)
+- [ ] T080 [US0] Create E2E accessibility tests for auth pages in tests/e2e/auth/accessibility.spec.ts using axe-core (runs WCAG 2.1 AA checks on login, register, MFA pages; validates keyboard navigation, focus indicators, ARIA labels) - **CONSTITUTION REQUIREMENT**
 
 ---
 
@@ -163,25 +171,28 @@
 
 **Why P1**: Store is the core tenant entity. Without stores, users cannot create products, take orders, or perform any business operations. This is the foundation of multi-tenancy.
 
+**Dependencies**: **[DEPENDS: T080]** - Phase 4 BLOCKED until US0 Authentication E2E tests complete. Constitution requires 100% E2E coverage for critical paths before proceeding.
+
 **Independent Test**: Create a new store with name, subdomain, and owner assignment. Verify store appears in store list. Update store settings (logo, theme). Delete store and verify all associated data is soft-deleted.
 
 **Tasks**:
 
-- [ ] T061 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
-- [ ] T062 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
-- [ ] T063 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
-- [ ] T064 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
-- [ ] T065 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
-- [ ] T066 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
-- [ ] T067 [US1] [P] Create API route POST /api/stores/[id]/admins in src/app/api/stores/[id]/admins/route.ts for assigning store admins
-- [ ] T068 [US1] [P] Create Stores List page in src/app/(dashboard)/stores/page.tsx with data table and create button
-- [ ] T069 [US1] [P] Create Store Details page in src/app/(dashboard)/stores/[id]/page.tsx with settings tabs (General, Theme, Billing, Users)
-- [ ] T070 [US1] [P] Create Create Store form component in src/components/stores/create-store-form.tsx with name, subdomain, and owner fields
-- [ ] T071 [US1] [P] Create Store Settings form component in src/components/stores/store-settings-form.tsx with logo upload and theme configuration
-- [ ] T072 [US1] Create E2E test "Super Admin can create new store" in tests/e2e/stores/create-store.spec.ts
-- [ ] T073 [US1] Create E2E test "Store Admin can update store settings" in tests/e2e/stores/update-store.spec.ts
-- [ ] T074 [US1] Create E2E test "Super Admin can delete store" in tests/e2e/stores/delete-store.spec.ts
-- [ ] T075 [US1] Create integration tests for StoreService in tests/integration/services/store.test.ts
+- [ ] T081 [US1] [DEPENDS: T080] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
+- [ ] T082 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
+- [ ] T083 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
+- [ ] T084 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
+- [ ] T085 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
+- [ ] T086 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
+- [ ] T087 [US1] [P] Create API route POST /api/stores/[id]/admins in src/app/api/stores/[id]/admins/route.ts for assigning store admins
+- [ ] T088 [US1] [P] Create Stores List page in src/app/(dashboard)/stores/page.tsx with data table and create button
+- [ ] T089 [US1] [P] Create Store Details page in src/app/(dashboard)/stores/[id]/page.tsx with settings tabs (General, Theme, Billing, Users)
+- [ ] T090 [US1] [P] Create Create Store form component in src/components/stores/create-store-form.tsx with name, subdomain, and owner fields
+- [ ] T091 [US1] [P] Create Store Settings form component in src/components/stores/store-settings-form.tsx with logo upload and theme configuration
+- [ ] T092 [US1] Create E2E test "Super Admin can create new store" in tests/e2e/stores/create-store.spec.ts using StoresListPage, CreateStoreFormPOM
+- [ ] T093 [US1] Create E2E test "Store Admin can update store settings" in tests/e2e/stores/update-store.spec.ts using StoreDetailsPage, StoreSettingsFormPOM
+- [ ] T094 [US1] Create E2E test "Super Admin can delete store" in tests/e2e/stores/delete-store.spec.ts using StoresListPage POM (soft delete validation)
+- [ ] T095 [US1] Create E2E accessibility tests for store management pages in tests/e2e/stores/accessibility.spec.ts using axe-core
+- [ ] T096 [US1] Create integration tests for StoreService in tests/integration/services/store.test.ts
 
 ---
 
@@ -191,17 +202,19 @@
 
 **Why P1**: Products are the core business entity. Without a product catalog, there is nothing to sell. This is essential for basic e-commerce functionality.
 
+**Dependencies**: **[DEPENDS: T096]** - Phase 5 BLOCKED until US1 Store Management complete (stores must exist before products can be created).
+
 **Independent Test**: Create a category, brand, and product with variants (size, color). Upload product images. Bulk import 50 products via CSV. Search for products by name. Filter products by category and price range. Verify product appears on storefront.
 
 **Tasks**:
 
-- [ ] T076 [US2] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
-- [ ] T077 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
-- [ ] T078 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
-- [ ] T079 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
-- [ ] T080 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
-- [ ] T081 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
-- [ ] T082 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
+- [ ] T097 [US2] [DEPENDS: T096] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
+- [ ] T098 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
+- [ ] T099 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
+- [ ] T100 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
+- [ ] T101 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
+- [ ] T102 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
+- [ ] T103 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
 - [ ] T083 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
 - [ ] T084 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
 - [ ] T085 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
