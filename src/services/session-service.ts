@@ -282,3 +282,34 @@ export async function updateMFAStatus(
 
   return true;
 }
+
+/**
+ * Update session activity timestamp
+ * Called on each authenticated request to track user activity
+ */
+export async function updateSessionActivity(sessionId: string): Promise<void> {
+  const session = await getSessionStorage(sessionId);
+
+  if (!session) {
+    throw new Error('SESSION_NOT_FOUND');
+  }
+
+  // Update lastAccessedAt timestamp
+  await updateSessionStorage(sessionId, {
+    ...session,
+    lastAccessedAt: Date.now(), // Use timestamp (number) not Date object
+  });
+}
+
+// Export all functions as SessionService
+export const SessionService = {
+  createSession,
+  getSession,
+  validateAndRefreshSession,
+  deleteSession,
+  deleteAllSessions,
+  isSessionValid,
+  getUserFromSession,
+  updateMFAStatus,
+  updateSessionActivity,
+};

@@ -1,21 +1,22 @@
 # Implementation Tasks: StormCom Multi-tenant E-commerce Platform
 
 **Feature**: 001-multi-tenant-ecommerce  
-**Status**: Phase 3 (US0 Authentication) - 17/25 tasks complete (Service layer + API routes + UI pages done, hooks/context/tests pending)  
+**Status**: Phase 3 (US0 Authentication) - 19/25 tasks complete (Service layer + API routes + UI pages + hooks/context done, E2E tests pending)  
 **Created**: 2025-10-24  
 **Updated**: 2025-01-25  
 **Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)  
-**Overall Progress**: 52/239 tasks complete (21.8%)
+**Overall Progress**: 54/239 tasks complete (22.6%)
 
 ## Progress Summary
 
 - ✅ **Phase 1: Setup (T001-T015)** - 15/15 complete (100%)
 - ✅ **Phase 2: Foundational (T016-T035)** - 20/20 complete (100%)
-- 🚧 **Phase 3: US0 Authentication (T036-T060)** - 17/25 complete (68%)
+- 🚧 **Phase 3: US0 Authentication (T036-T060)** - 19/25 complete (76%)
   - ✅ Service layer: AuthService, MFAService, SessionService, RoleService (T036-T039)
   - ✅ API routes: register, login, logout, forgot-password, reset-password, mfa/enroll, mfa/verify, mfa/backup-codes (T040-T047)
   - ✅ UI pages: login, register, forgot-password, reset-password, mfa/enroll, mfa/challenge (T048-T052)
-  - ⏳ Pending: 2 hooks/context files, 6 E2E test suites
+  - ✅ Hooks & Context: useAuth hook, AuthProvider context (T053-T054)
+  - ⏳ Pending: 6 E2E test suites (T055-T060)
 - ⏳ **Phase 4: US1 Store Management (T061-T075)** - 0/15 complete
 - ⏳ **Phase 5: US2 Product Catalog (T076-T106)** - 0/31 complete
 - ⏳ **Phase 6+**: US6, US3a, US3, US4, US5, US7, US8, US9 - 0/153 complete
@@ -127,8 +128,8 @@
 - [x] T050 [US0] [P] Create MFA Enrollment page in src/app/(auth)/mfa/enroll/page.tsx with QR code display and setup instructions
 - [x] T051 [US0] [P] Create MFA Challenge page in src/app/(auth)/mfa/challenge/page.tsx with TOTP code input and backup code option
 - [x] T052 [US0] [P] Create Password Reset page in src/app/(auth)/reset-password/page.tsx with token validation and new password form
-- [ ] T053 [US0] [P] Create useAuth hook in src/hooks/use-auth.ts with login, logout, register, and current user state
-- [ ] T054 [US0] [P] Create AuthProvider context in src/contexts/auth-provider.tsx with session management and role checking
+- [x] T053 [US0] [P] Create useAuth hook in src/hooks/use-auth.ts with login, logout, register, and current user state
+- [x] T054 [US0] [P] Create AuthProvider context in src/contexts/auth-provider.tsx with session management and role checking
 - [ ] T055 [US0] Create E2E test "User can register with valid credentials" in tests/e2e/auth/register.spec.ts
 - [ ] T056 [US0] Create E2E test "User can login with valid credentials" in tests/e2e/auth/login.spec.ts
 - [ ] T057 [US0] Create E2E test "User account is locked after 5 failed login attempts" in tests/e2e/auth/account-lockout.spec.ts
