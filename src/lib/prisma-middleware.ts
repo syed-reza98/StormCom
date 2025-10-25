@@ -32,7 +32,7 @@ export function registerMultiTenantMiddleware(prisma: PrismaClient): PrismaClien
   // until we implement proper session context in Phase 3
   
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Prisma] Multi-tenant filtering will be enforced at application layer ✓');
+    console.warn('[Prisma] Multi-tenant filtering will be enforced at application layer ✓');
   }
   
   return prisma;

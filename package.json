@@ -61,7 +61,10 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.38.0",
     "@playwright/test": "^1.56.0",
+    "@tailwindcss/postcss": "^4.1.16",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.0",
@@ -71,8 +74,8 @@
     "@vitejs/plugin-react": "^4.3.0",
     "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^16.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.15",
     "jsdom": "^25.0.0",
     "postcss": "^8.4.47",
     "prettier": "^3.3.0",

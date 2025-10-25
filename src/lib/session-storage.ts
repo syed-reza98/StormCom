@@ -225,7 +225,7 @@ export async function cleanupExpiredSessions(): Promise<number> {
     }
 
     if (cleanedCount > 0) {
-      console.log(`[Session] Cleaned up ${cleanedCount} expired sessions`);
+      console.warn(`[Session] Cleaned up ${cleanedCount} expired sessions`);
     }
 
     return cleanedCount;

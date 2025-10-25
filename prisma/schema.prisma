@@ -131,6 +131,10 @@ model User {
   // Security
   emailVerified    Boolean   @default(false)
   emailVerifiedAt  DateTime?
+  verificationToken String?   // Email verification token
+  verificationExpires DateTime? // Verification token expiration
+  resetToken        String?   // Password reset token
+  resetExpires      DateTime? // Reset token expiration
   lastLoginAt      DateTime?
   lastLoginIP      String?
   failedLoginAttempts Int    @default(0)

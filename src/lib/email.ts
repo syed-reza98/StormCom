@@ -65,7 +65,7 @@ export async function sendEmail(
 
   // Development mode: log email instead of sending
   if (isDev || !resend) {
-    console.log('📧 [EMAIL - DEV MODE]', {
+    console.warn('📧 [EMAIL - DEV MODE]', {
       from: options.from || EMAIL_CONFIG.from,
       to: options.to,
       subject: options.subject,
