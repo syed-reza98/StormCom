@@ -5,6 +5,18 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { FormError } from '@/components/auth/form-error';
+import { Mail, ArrowLeft } from 'lucide-react';
 
 // Validation schema
 const forgotPasswordSchema = z.object({
@@ -77,199 +89,105 @@ export default function ForgotPasswordPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            {/* Email Icon */}
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-              <svg
-                className="h-6 w-6 text-blue-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                />
-              </svg>
-            </div>
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-4">
+            <Mail className="mx-auto h-12 w-12 text-primary" aria-hidden="true" />
+            <CardTitle>Check your email</CardTitle>
+            <CardDescription className="space-y-2">
+              <p>
+                If an account exists with <strong className="text-foreground">{submittedEmail}</strong>, we've sent
+                password reset instructions.
+              </p>
+              <p className="text-sm">
+                Please check your inbox and spam folder. The link will expire in 1 hour.
+              </p>
+            </CardDescription>
+          </CardHeader>
 
-            <h1 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-              Check your email
-            </h1>
-            <p className="mt-4 text-base text-gray-600">
-              If an account exists with <strong>{submittedEmail}</strong>, we've sent
-              password reset instructions.
-            </p>
-            <p className="mt-4 text-sm text-gray-600">
-              Please check your inbox and spam folder. The link will expire in 1 hour.
-            </p>
-          </div>
+          <CardContent className="space-y-4">
+            <Button asChild className="w-full">
+              <Link href="/login">
+                Back to Login
+              </Link>
+            </Button>
 
-          <div className="mt-8 space-y-4">
-            <Link
-              href="/login"
-              className="w-full flex justify-center items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors min-h-[44px]"
-            >
-              Back to Login
-            </Link>
-
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-muted-foreground">
               Didn't receive the email?{' '}
               <button
                 onClick={() => setSuccess(false)}
-                className="font-medium text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
               >
                 Try again
               </button>
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   // Forgot password form
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            Forgot password?
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle>Forgot password?</CardTitle>
+          <CardDescription>
             Enter your email address and we'll send you a link to reset your password.
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        {/* Forgot Password Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Server Error Message */}
-          {serverError && (
-            <div
-              className="rounded-md bg-red-50 border border-red-200 p-4"
-              role="alert"
-              aria-live="polite"
-            >
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-red-800">{serverError}</p>
-                </div>
-              </div>
-            </div>
-          )}
+        <CardContent>
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            {/* Server Error Message */}
+            <FormError message={serverError || undefined} />
 
-          <div className="space-y-4">
             {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Email address
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
                 {...register('email')}
                 id="email"
                 type="email"
                 autoComplete="email"
                 autoFocus
-                className={`block w-full rounded-md border ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
-                } px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm`}
                 placeholder="you@example.com"
+                error={!!errors.email}
                 aria-invalid={errors.email ? 'true' : 'false'}
                 aria-describedby={errors.email ? 'email-error' : undefined}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600" id="email-error" role="alert">
+                <p className="text-sm text-destructive" id="email-error" role="alert">
                   {errors.email.message}
                 </p>
               )}
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex justify-center items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
-            aria-label={loading ? 'Sending reset link...' : 'Send reset link'}
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Sending reset link...
-              </>
-            ) : (
-              'Send reset link'
-            )}
-          </button>
-        </form>
-
-        {/* Back to Login Link */}
-        <div className="text-center">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded inline-flex items-center gap-2"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              aria-hidden="true"
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={loading}
+              loading={loading}
+              className="w-full"
+              aria-label={loading ? 'Sending reset link...' : 'Send reset link'}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-              />
-            </svg>
-            Back to Login
-          </Link>
-        </div>
-      </div>
+              {loading ? 'Sending reset link...' : 'Send reset link'}
+            </Button>
+
+            {/* Back to Login Link */}
+            <div className="text-center">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded inline-flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Back to Login
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
