@@ -48,6 +48,7 @@
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
     "next": "^16.0.0",
+    "next-auth": "^4.24.11",
     "prisma": "^6.1.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
@@ -64,7 +65,10 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",
     "@playwright/test": "^1.56.0",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.0",
@@ -75,15 +79,21 @@
     "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
-  "eslint-config-next": "^14.2.15",
+    "eslint-config-next": "^14.2.15",
     "jsdom": "^25.0.0",
     "postcss": "^8.4.47",
     "prettier": "^3.3.0",
     "prettier-plugin-tailwindcss": "^0.6.0",
     "tailwindcss": "^4.1.14",
+    "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "next-auth": {
+      "next": "16.0.0"
+    }
   },
   "engines": {
     "node": ">=18.0.0",
