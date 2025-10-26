@@ -62,4 +62,4 @@ Thumbs.db
 .sentryclirc
 
 # Audit files (docs only, no code)
-/docs/audit/
+/docs/audit/demo
