@@ -160,11 +160,11 @@
 - [x] T073 [US0] Create E2E test "Password cannot be reused from last 5 passwords" in tests/e2e/auth/password-history.spec.ts using SettingsPage POM (change password 6 times, attempt reuse of 1st password, validates "password used recently" error)
 - [x] T074 [US0] Create E2E test "Login with valid credentials shows loading state" in tests/e2e/auth/login-loading.spec.ts using LoginPage POM (validates spinner on submit button, disabled state during submission)
 - [x] T075 [US0] Create E2E test "Register with duplicate email shows error" in tests/e2e/auth/register-duplicate.spec.ts using RegisterPage POM (attempts registration with existing email, validates "email already registered" error)
-- [ ] T076 [US0] Create E2E test "Password reset token expires after 1 hour" in tests/e2e/auth/password-reset-expiry.spec.ts using PasswordResetPage POM (requests reset, waits 1 hour, clicks link, validates expiry message)
-- [ ] T077 [US0] Create E2E test "Email verification required before login" in tests/e2e/auth/email-verification.spec.ts using RegisterPage, LoginPage POMs (registers, attempts login without verifying, validates "verify email" message)
-- [ ] T078 [US0] Create E2E test "Logout from user menu succeeds" in tests/e2e/auth/logout.spec.ts using DashboardPage, UserMenuPOM (clicks logout, validates redirect to /login, "logged out" message announced to screen reader)
-- [ ] T079 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts (unit tests for all service methods, mocks Prisma, validates business logic)
-- [ ] T080 [US0] Create E2E accessibility tests for auth pages in tests/e2e/auth/accessibility.spec.ts using axe-core (runs WCAG 2.1 AA checks on login, register, MFA pages; validates keyboard navigation, focus indicators, ARIA labels) - **CONSTITUTION REQUIREMENT**
+- [x] T076 [US0] Create E2E test "Password reset token expires after 1 hour" in tests/e2e/auth/password-reset-expiry.spec.ts using PasswordResetPage POM (requests reset, waits 1 hour, clicks link, validates expiry message)
+- [x] T077 [US0] Create E2E test "Email verification required before login" in tests/e2e/auth/email-verification.spec.ts using RegisterPage, LoginPage POMs (registers, attempts login without verifying, validates "verify email" message)
+- [x] T078 [US0] Create E2E test "Logout from user menu succeeds" in tests/e2e/auth/logout.spec.ts using DashboardPage, UserMenuPOM (clicks logout, validates redirect to /login, "logged out" message announced to screen reader)
+- [x] T079 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts (unit tests for all service methods, mocks Prisma, validates business logic)
+- [x] T080 [US0] Create E2E accessibility tests for auth pages in tests/e2e/auth/accessibility.spec.ts using axe-core (runs WCAG 2.1 AA checks on login, register, MFA pages; validates keyboard navigation, focus indicators, ARIA labels) - **CONSTITUTION REQUIREMENT**
 
 ---
 
@@ -174,13 +174,13 @@
 
 **Why P1**: Store is the core tenant entity. Without stores, users cannot create products, take orders, or perform any business operations. This is the foundation of multi-tenancy.
 
-**Dependencies**: **[DEPENDS: T080]** - Phase 4 BLOCKED until US0 Authentication E2E tests complete. Constitution requires 100% E2E coverage for critical paths before proceeding.
+**Dependencies**: **[RESOLVED: T080]** - Phase 4 UNBLOCKED as US0 Authentication E2E tests are complete. Constitution requirement for 100% E2E coverage for critical paths satisfied.
 
 **Independent Test**: Create a new store with name, subdomain, and owner assignment. Verify store appears in store list. Update store settings (logo, theme). Delete store and verify all associated data is soft-deleted.
 
 **Tasks**:
 
-- [ ] T081 [US1] [DEPENDS: T080] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
+- [ ] T081 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
 - [ ] T082 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
 - [ ] T083 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
 - [ ] T084 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
