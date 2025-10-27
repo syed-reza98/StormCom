@@ -129,7 +129,7 @@ export class ProductService {
             select: { id: true, name: true, slug: true },
           },
           variants: {
-            where: { deletedAt: null },
+            
             orderBy: { isDefault: 'desc' },
           },
           _count: {
@@ -176,7 +176,7 @@ export class ProductService {
           select: { id: true, name: true, slug: true },
         },
         variants: {
-          where: { deletedAt: null },
+          
           orderBy: { isDefault: 'desc' },
         },
         attributes: {
@@ -213,7 +213,7 @@ export class ProductService {
           select: { id: true, name: true, slug: true },
         },
         variants: {
-          where: { deletedAt: null },
+          
           orderBy: { isDefault: 'desc' },
         },
         _count: {
@@ -250,13 +250,11 @@ export class ProductService {
     // Validate input
     const validatedData = createProductSchema.parse(data);
     
-    // Generate slug if not provided
-    if (!validatedData.slug) {
-      validatedData.slug = await this.generateUniqueSlug(storeId, validatedData.name);
-    }
+    // Generate slug if not provided (required by Prisma)
+    const slug = validatedData.slug || await this.generateUniqueSlug(storeId, validatedData.name);
 
     // Validate business rules
-    await this.validateBusinessRules(storeId, validatedData);
+    await this.validateBusinessRules(storeId, { ...validatedData, slug });
 
     // Update inventory status based on quantity
     const inventoryStatus = this.calculateInventoryStatus(
@@ -267,6 +265,7 @@ export class ProductService {
     const product = await prisma.product.create({
       data: {
         ...validatedData,
+        slug,
         storeId,
         inventoryStatus,
         images: JSON.stringify(validatedData.images),
@@ -357,7 +356,7 @@ export class ProductService {
           select: { id: true, name: true, slug: true },
         },
         variants: {
-          where: { deletedAt: null },
+          
           orderBy: { isDefault: 'desc' },
         },
         _count: {
@@ -441,7 +440,7 @@ export class ProductService {
           select: { id: true, name: true, slug: true },
         },
         variants: {
-          where: { deletedAt: null },
+          
           orderBy: { isDefault: 'desc' },
         },
         _count: {
@@ -459,10 +458,11 @@ export class ProductService {
       data: {
         productId,
         storeId,
-        oldQuantity: product.inventoryQty,
-        newQuantity,
+        previousQty: product.inventoryQty,
+        newQty: newQuantity,
+        changeQty: newQuantity - product.inventoryQty,
         reason,
-        changedBy: 'system', // TODO: Get from context
+        userId: null, // System change, no specific user
       },
     });
 
@@ -713,13 +713,13 @@ export class ProductService {
       throw new Error('Product not found');
     }
 
-    return prisma.product.update({
+    const updated = await prisma.product.update({
       where: { id: productId },
-      data: { stock: quantity },
+      data: { inventoryQty: quantity },
       include: {
         category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true, slug: true } },
-        variants: { where: { deletedAt: null }, orderBy: { isDefault: 'desc' } },
+        variants: {  orderBy: { isDefault: 'desc' } },
         _count: {
           select: {
             orderItems: true,
@@ -729,6 +729,8 @@ export class ProductService {
         },
       },
     });
+    
+    return updated as unknown as ProductWithRelations;
   }
 
   /**
@@ -740,18 +742,18 @@ export class ProductService {
       throw new Error('Product not found');
     }
 
-    const newStock = product.stock - quantity;
+    const newStock = product.inventoryQty - quantity;
     if (newStock < 0) {
       throw new Error('Insufficient stock');
     }
 
     return prisma.product.update({
       where: { id: productId },
-      data: { stock: newStock },
+      data: { inventoryQty: newStock },
       include: {
         category: { select: { id: true, name: true, slug: true } },
         brand: { select: { id: true, name: true, slug: true } },
-        variants: { where: { deletedAt: null }, orderBy: { isDefault: 'desc' } },
+        variants: {  orderBy: { isDefault: 'desc' } },
         _count: {
           select: {
             orderItems: true,
@@ -771,7 +773,7 @@ export class ProductService {
     if (!product) {
       throw new Error('Product not found');
     }
-    return product.stock >= quantity;
+    return product.inventoryQty >= quantity;
   }
 }
 

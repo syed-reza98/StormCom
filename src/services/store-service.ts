@@ -268,7 +268,7 @@ export class StoreService {
    */
   async list(
     input: ListStoresInput,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<ListStoresResult> {
@@ -362,7 +362,7 @@ export class StoreService {
    */
   async get(
     storeId: string,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<StoreWithCounts> {
@@ -420,7 +420,7 @@ export class StoreService {
   async update(
     storeId: string,
     input: UpdateStoreInput,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<Store> {
@@ -493,7 +493,7 @@ export class StoreService {
    */
   async delete(
     storeId: string,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole
   ): Promise<boolean> {
     // Only SUPER_ADMIN can delete stores
@@ -573,7 +573,7 @@ export class StoreService {
   async assignAdmin(
     storeId: string,
     input: AssignAdminInput,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<User> {
@@ -663,7 +663,7 @@ export class StoreService {
   async removeAdmin(
     storeId: string,
     userId: string,
-    requestingUserId: string,
+    _requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<boolean> {

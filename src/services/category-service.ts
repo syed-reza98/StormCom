@@ -396,7 +396,7 @@ export class CategoryService {
       },
     });
 
-    return category;
+    return category as unknown as CategoryWithRelations;
   }
 
   /**
@@ -457,7 +457,7 @@ export class CategoryService {
       await this.validateHierarchy(categoryId, newParentId, storeId);
     }
 
-    return this.updateCategory(categoryId, storeId, { parentId: newParentId });
+    return this.updateCategory(categoryId, storeId, { parentId: newParentId || undefined });
   }
 
   /**
@@ -532,10 +532,10 @@ export class CategoryService {
     const order = sortOrder === 'desc' ? 'desc' : 'asc';
 
     if (field === 'sortOrder') {
-      return [{ sortOrder: order }, { name: 'asc' }];
+      return [{ sortOrder: order }, { name: 'asc' }] as any;
     }
 
-    return { [field]: order };
+    return { [field]: order } as any;
   }
 
   /**
