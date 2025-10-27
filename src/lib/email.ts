@@ -424,7 +424,7 @@ Thank you for your order! We've received your order and are processing it.
 Order Number: ${orderNumber}
 Order Total: ${orderTotal}
 
-View order details: ${orderUrl}
+View order changes: ${orderUrl}
 
 We'll send you another email when your order ships.
 

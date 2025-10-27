@@ -101,7 +101,7 @@ function handlePrismaError(error: Prisma.PrismaClientKnownRequestError): ErrorRe
       error: {
         code: ErrorCode.ALREADY_EXISTS,
         message: `Resource already exists with the same ${fields.join(', ')}`,
-        details: { fields },
+        details: JSON.stringify({ fields }),
         timestamp: new Date().toISOString(),
       },
     };

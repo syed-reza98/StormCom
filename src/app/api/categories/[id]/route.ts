@@ -88,7 +88,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           error: { 
             code: 'VALIDATION_ERROR', 
             message: 'Invalid input', 
-            details: error.errors 
+            changes: error.errors 
           } 
         },
         { status: 400 }

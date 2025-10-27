@@ -56,7 +56,7 @@ export const loginContract = {
     error: z.object({
       code: z.enum(['VALIDATION_ERROR', 'INVALID_CREDENTIALS', 'ACCOUNT_LOCKED', 'EMAIL_NOT_VERIFIED']),
       message: z.string(),
-      details: z.any().optional(),
+      changes: z.any().optional(),
     }),
   }),
 };
@@ -101,7 +101,7 @@ export const registerContract = {
     error: z.object({
       code: z.enum(['VALIDATION_ERROR', 'EMAIL_ALREADY_EXISTS', 'RATE_LIMIT_EXCEEDED']),
       message: z.string(),
-      details: z.any().optional(),
+      changes: z.any().optional(),
     }),
   }),
 };
@@ -172,7 +172,7 @@ export const mfaEnrollContract = {
     error: z.object({
       code: z.enum(['UNAUTHORIZED', 'MFA_ALREADY_ENABLED', 'VALIDATION_ERROR']),
       message: z.string(),
-      details: z.any().optional(),
+      changes: z.any().optional(),
     }),
   }),
 };

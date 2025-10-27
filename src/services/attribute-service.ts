@@ -554,7 +554,7 @@ export class AttributeService {
     const where: Prisma.ProductAttributeWhereInput = {};
 
     if (filters.search) {
-      where.name = { contains: filters.search, mode: 'insensitive' };
+      where.name = { contains: filters.search };
     }
 
     return where;
@@ -593,7 +593,7 @@ export class AttributeService {
   /**
    * Alias for createAttribute
    */
-  async create(storeId: string, data: CreateAttributeData): Promise<AttributeWithValues> {
+  async create(_storeId: string, data: CreateAttributeData): Promise<AttributeWithValues> {
     // Note: AttributeService doesn't use storeId in create, it's global
     return this.createAttribute(data);
   }

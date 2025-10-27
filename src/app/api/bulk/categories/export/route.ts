@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           error: { 
             code: 'VALIDATION_ERROR', 
             message: 'Invalid export configuration', 
-            details: error.errors 
+            changes: error.errors 
           } 
         },
         { status: 400 }

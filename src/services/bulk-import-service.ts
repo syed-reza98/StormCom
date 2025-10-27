@@ -320,13 +320,11 @@ class BulkImportService {
 
     // Process rows in batches
     const batches = this.createBatches(validatedRows, config.batchSize);
-    let transaction: any = null;
 
     try {
       if (config.rollbackOnError) {
         // Use transaction for rollback capability
         await prisma.$transaction(async (tx) => {
-          transaction = tx;
           await this.processBatches(
             storeId,
             batches,
@@ -595,30 +593,45 @@ class BulkImportService {
       }
     }
 
-    // Parse tags
-    const tags = row.tags ? row.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
+    // Parse tags as metaKeywords
+    const metaKeywords = row.tags ? row.tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
-    // Prepare product data
+    // Ensure SKU exists (required field)
+    if (!row.sku) {
+      errors.push({
+        row: rowNumber,
+        field: 'sku',
+        message: 'SKU is required',
+        severity: 'error',
+      });
+      skippedRows.push(rowNumber);
+      return;
+    }
+
+    // Prepare product data with correct field names matching schema
     const productData = {
       name: row.name,
       sku: row.sku,
       description: row.description,
       shortDescription: row.shortDescription,
       price: row.price,
-      salePrice: row.salePrice,
+      compareAtPrice: row.salePrice, // salePrice -> compareAtPrice
       costPrice: row.costPrice,
       categoryId,
       brandId,
-      trackQuantity: row.trackQuantity,
-      quantity: row.quantity,
-      lowStockThreshold: row.lowStockThreshold,
+      trackInventory: row.trackQuantity ?? true, // trackQuantity -> trackInventory
+      inventoryQty: row.quantity ?? 0, // quantity -> inventoryQty
+      lowStockThreshold: row.lowStockThreshold ?? 5,
       weight: row.weight,
-      dimensions,
-      tags,
+      length: dimensions?.length,
+      width: dimensions?.width,
+      height: dimensions?.height,
+      metaKeywords, // tags -> metaKeywords
       metaTitle: row.metaTitle,
       metaDescription: row.metaDescription,
-      isVisible: row.isVisible,
-      status: row.status,
+      isPublished: row.isVisible ?? false, // isVisible -> isPublished
+      isFeatured: false,
+      images: [], // No images from CSV import
     };
 
     // Create or update product
@@ -668,7 +681,8 @@ class BulkImportService {
           const categoryData = {
             name: part,
             parentId,
-            isVisible: true,
+            isPublished: true, // isVisible -> isPublished
+            sortOrder: 0,
           };
           category = await categoryService.createCategory(storeId, categoryData);
         }
@@ -687,7 +701,8 @@ class BulkImportService {
     if (createIfMissing) {
       const categoryData = {
         name: categoryName,
-        isVisible: true,
+        isPublished: true,
+        sortOrder: 0,
       };
       const newCategory = await categoryService.createCategory(storeId, categoryData);
       return newCategory.id;

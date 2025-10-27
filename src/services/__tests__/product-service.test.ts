@@ -1,7 +1,7 @@
 // src/services/__tests__/product-service.test.ts
 // Unit tests for ProductService
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProductService } from '../product-service';
 import { prismaMock } from '../../../tests/mocks/prisma';
 import { InventoryStatus } from '@prisma/client';
@@ -67,9 +67,9 @@ describe('ProductService', () => {
           deletedAt: null,
           isPublished: true,
           OR: [
-            { name: { contains: 'test', mode: 'insensitive' } },
-            { description: { contains: 'test', mode: 'insensitive' } },
-            { sku: { contains: 'test', mode: 'insensitive' } },
+            { name: { contains: 'test' } },
+            { description: { contains: 'test' } },
+            { sku: { contains: 'test' } },
           ],
         },
         include: {

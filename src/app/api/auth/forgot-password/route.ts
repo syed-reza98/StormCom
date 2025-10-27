@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid input data',
-            details: validation.error.flatten().fieldErrors,
+            changes: validation.error.flatten().fieldErrors,
           },
         },
         { status: 400 }
