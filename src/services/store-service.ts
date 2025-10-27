@@ -268,7 +268,7 @@ export class StoreService {
    */
   async list(
     input: ListStoresInput,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<ListStoresResult> {
@@ -362,7 +362,7 @@ export class StoreService {
    */
   async get(
     storeId: string,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<StoreWithCounts> {
@@ -420,7 +420,7 @@ export class StoreService {
   async update(
     storeId: string,
     input: UpdateStoreInput,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<Store> {
@@ -467,7 +467,7 @@ export class StoreService {
             entityType: 'Store',
             entityId: storeId,
             storeId,
-            userId: _requestingUserId,
+            userId: __requestingUserId,
             changes: JSON.stringify({
               changes: validatedInput,
               previousName: existingStore.name,
@@ -493,7 +493,7 @@ export class StoreService {
    */
   async delete(
     storeId: string,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole
   ): Promise<boolean> {
     // Only SUPER_ADMIN can delete stores
@@ -547,7 +547,7 @@ export class StoreService {
             entityType: 'Store',
             entityId: storeId,
             storeId,
-            userId: _requestingUserId,
+            userId: __requestingUserId,
             changes: JSON.stringify({
               storeName: store.name,
               slug: store.slug,
@@ -573,7 +573,7 @@ export class StoreService {
   async assignAdmin(
     storeId: string,
     input: AssignAdminInput,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<User> {
@@ -635,7 +635,7 @@ export class StoreService {
             entityType: 'User',
             entityId: validatedInput.userId,
             storeId,
-            userId: _requestingUserId,
+            userId: __requestingUserId,
             changes: JSON.stringify({
               assignedUserId: validatedInput.userId,
               assignedRole: validatedInput.role,
@@ -663,7 +663,7 @@ export class StoreService {
   async removeAdmin(
     storeId: string,
     userId: string,
-    _requestingUserId: string,
+    __requestingUserId: string,
     requestingUserRole: UserRole,
     requestingUserStoreId?: string
   ): Promise<boolean> {
@@ -675,7 +675,7 @@ export class StoreService {
     }
 
     // Cannot remove yourself as admin
-    if (requestingUserId === userId) {
+    if (_requestingUserId === userId) {
       throw new StoreServiceError(
         'Cannot remove yourself as store admin',
         'CANNOT_REMOVE_SELF',
@@ -718,7 +718,7 @@ export class StoreService {
             entityType: 'User',
             entityId: userId,
             storeId,
-            userId: _requestingUserId,
+            userId: __requestingUserId,
             changes: JSON.stringify({
               removedUserId: userId,
               previousRole: user.role,
