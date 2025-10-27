@@ -1,11 +1,11 @@
 # Implementation Tasks: StormCom Multi-tenant E-commerce Platform
 
 **Feature**: 001-multi-tenant-ecommerce  
-**Status**: Phase 5 (US2 Product Catalog) - 101/260 tasks complete (38.8%) - Store management complete, product catalog API routes in progress  
+**Status**: Phase 5 (US2 Product Catalog) - 112/260 tasks complete (43.1%) - Product catalog service layer and core API routes complete  
 **Created**: 2025-10-24  
 **Updated**: 2025-10-27  
 **Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)  
-**Overall Progress**: 101/260 tasks complete (38.8%)
+**Overall Progress**: 112/260 tasks complete (43.1%)
 
 **✅ MILESTONE ACHIEVED**: Phase 4 US1 Store Management complete (T091-T096). Authentication and store management foundations established. Ready for Phase 5 US2 Product Catalog.
 
@@ -23,7 +23,7 @@
   - ✅ E2E test suites (T055-T079) - 25/25 complete (spec.md defines 25 scenarios)
   - ✅ Accessibility tests (T080) - 1/1 complete (constitution requirement)
 - ✅ **Phase 4: US1 Store Management (T081-T096)** - 16/16 complete (100%)
-- ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 5/31 complete (16.1%) - API routes for categories, brands, and attributes complete
+- ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 16/31 complete (51.6%) - Core service layer and product API routes complete
 - ⏳ **Phase 6+**: US6, US3a, US3, US4, US5, US7, US8, US9 - 0/153 complete
 
 ## Implementation Strategy
@@ -211,17 +211,17 @@
 
 **Tasks**:
 
-- [ ] T097 [US2] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
-- [ ] T098 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
-- [ ] T099 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
-- [ ] T100 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
-- [ ] T101 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
-- [ ] T102 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
-- [ ] T103 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
-- [ ] T104 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
-- [ ] T105 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
-- [ ] T106 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
-- [ ] T107 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
+- [x] T097 [US2] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
+- [x] T098 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
+- [x] T099 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
+- [x] T100 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
+- [x] T101 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
+- [x] T102 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
+- [x] T103 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
+- [x] T104 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
+- [x] T105 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
+- [x] T106 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
+- [x] T107 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
 - [x] T108 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
 - [x] T109 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
 - [x] T110 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
