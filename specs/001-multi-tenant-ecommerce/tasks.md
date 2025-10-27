@@ -23,7 +23,7 @@
   - ✅ E2E test suites (T055-T079) - 25/25 complete (spec.md defines 25 scenarios)
   - ✅ Accessibility tests (T080) - 1/1 complete (constitution requirement)
 - ✅ **Phase 4: US1 Store Management (T081-T096)** - 16/16 complete (100%)
-- ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 24/31 complete (77.4%) - All API routes and dashboard UI pages complete, test phase remaining
+- ✅ **Phase 5: US2 Product Catalog (T097-T127)** - 31/31 complete (100%) - Complete product catalog management system with dashboard UI, API routes, and comprehensive testing
 - ⏳ **Phase 6+**: US6, US3a, US3, US4, US5, US7, US8, US9 - 0/153 complete
 
 ## Implementation Strategy
@@ -235,13 +235,13 @@
 - [x] T118 [US2] [P] Create Create/Edit Product form in src/components/products/product-form.tsx with variant management and image upload
 - [x] T119 [US2] [P] Create Categories page in src/app/(dashboard)/categories/page.tsx with tree view and drag-drop reordering
 - [x] T120 [US2] [P] Create Brands page in src/app/(dashboard)/brands/page.tsx with brand list and CRUD operations
-- [ ] T121 [US2] [P] Create Attributes page in src/app/(dashboard)/attributes/page.tsx with attribute and value management
-- [ ] T122 [US2] [P] Create Bulk Import page in src/app/(dashboard)/products/import/page.tsx with CSV upload and validation preview
-- [ ] T123 [US2] [P] Create Image upload component in src/components/products/image-upload.tsx with Vercel Blob integration and preview
-- [ ] T124 [US2] Create E2E test "Store Admin can create product with variants" in tests/e2e/products/create-product.spec.ts
-- [ ] T125 [US2] Create E2E test "Store Admin can bulk import products from CSV" in tests/e2e/products/bulk-import.spec.ts
-- [ ] T126 [US2] Create E2E test "Customer can search and filter products" in tests/e2e/products/search-filter.spec.ts
-- [ ] T127 [US2] Create integration tests for ProductService, CategoryService, BrandService, AttributeService in tests/integration/services/product.test.ts
+- [x] T121 [US2] [P] Create Attributes page in src/app/(dashboard)/attributes/page.tsx with attribute and value management ✓
+- [x] T122 [US2] [P] Create Bulk Import page in src/app/(dashboard)/products/import/page.tsx with CSV upload and validation preview ✓
+- [x] T123 [US2] [P] Create Image upload component in src/components/products/image-upload.tsx with Vercel Blob integration and preview ✓
+- [x] T124 [US2] Create E2E test "Store Admin can create product with variants" in tests/e2e/products/create-product.spec.ts ✓
+- [x] T125 [US2] Create E2E test "Store Admin can bulk import products from CSV" in tests/e2e/products/bulk-import.spec.ts ✓
+- [x] T126 [US2] Create E2E test "Customer can search and filter products" in tests/e2e/products/search-filter.spec.ts ✓
+- ✅ T127 [US2] Create integration tests for ProductService, CategoryService, BrandService, AttributeService in tests/integration/services/product.test.ts
 
 ---
 
