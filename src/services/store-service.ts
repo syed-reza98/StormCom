@@ -719,7 +719,7 @@ export class StoreService {
             entityType: 'User',
             entityId: userId,
             storeId,
-            userId: _requestingUserId,
+            userId: __requestingUserId,
             changes: JSON.stringify({
               removedUserId: userId,
               previousRole: user.role,

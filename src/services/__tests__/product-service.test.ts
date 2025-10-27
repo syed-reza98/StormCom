@@ -1,7 +1,7 @@
 // src/services/__tests__/product-service.test.ts
 // Unit tests for ProductService
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProductService } from '../product-service';
 import { prismaMock } from '../../../tests/mocks/prisma';
 import { InventoryStatus } from '@prisma/client';
