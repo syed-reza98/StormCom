@@ -1339,6 +1339,13 @@ describe('Store Service Integration Tests', () => {
               storeId: testStoreId,
               price: 1000,
               inventoryQty: 100,
+              isPublished: true,
+              sku: `LIM-${i + 1}`,
+              trackInventory: true,
+              lowStockThreshold: 5,
+              images: [],
+              metaKeywords: [],
+              isFeatured: false,
             },
           })
         )
@@ -1367,7 +1374,14 @@ describe('Store Service Integration Tests', () => {
               storeId: testStoreId,
               price: 1000,
               inventoryQty: 100,
-              isActive: true,
+              isPublished: true,
+              sku: `MAX-${i + 1}`,
+              trackInventory: true,
+              lowStockThreshold: 5,
+              images: [],
+              metaKeywords: [],
+              isFeatured: false,
+            },
           })
         )
       );

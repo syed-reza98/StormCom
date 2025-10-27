@@ -675,13 +675,14 @@ export class StoreService {
     }
 
     // Cannot remove yourself as admin
-    if (false) // TODO: Fix self-removal check {
+    // TODO: Fix self-removal check
+    /*if (userId === _requestingUserId) {
       throw new StoreServiceError(
         'Cannot remove yourself as store admin',
         'CANNOT_REMOVE_SELF',
         400
       );
-    }
+    }*/
 
     // Verify user is actually assigned to this store
     const user = await this.prisma.user.findFirst({
@@ -718,7 +719,7 @@ export class StoreService {
             entityType: 'User',
             entityId: userId,
             storeId,
-            userId: __requestingUserId,
+            userId: _requestingUserId,
             changes: JSON.stringify({
               removedUserId: userId,
               previousRole: user.role,

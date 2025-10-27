@@ -1,0 +1,33 @@
+{
+  "errors": [
+    {
+      "file": "tests/integration/store-service.test.ts",
+      "line": 1384,
+      "column": 14,
+      "code": "TS1005",
+      "message": "',' expected."
+    },
+    {
+      "file": "tests/integration/store-service.test.ts",
+      "line": 1387,
+      "column": 7,
+      "code": "TS1128",
+      "message": "Declaration or statement expected."
+    },
+    {
+      "file": "tests/integration/store-service.test.ts",
+      "line": 1461,
+      "column": 1,
+      "code": "TS1128",
+      "message": "Declaration or statement expected."
+    },
+    {
+      "file": "tests/integration/store-service.test.ts",
+      "line": 1461,
+      "column": 2,
+      "code": "TS1128",
+      "message": "Declaration or statement expected."
+    }
+  ],
+  "count": 4
+}
