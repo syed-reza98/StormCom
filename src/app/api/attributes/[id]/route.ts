@@ -12,7 +12,7 @@ interface RouteParams {
 }
 
 // GET /api/attributes/[id] - Get single attribute
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
@@ -23,8 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const attribute = await attributeService.getAttributeById(
-      params.id,
-      session.user.storeId
+      params.id
     );
 
     if (!attribute) {
@@ -63,7 +62,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const attribute = await attributeService.updateAttribute(
       params.id,
-      session.user.storeId,
       validatedData
     );
 
@@ -128,7 +126,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await attributeService.deleteAttribute(params.id, session.user.storeId);
+    await attributeService.deleteAttribute(params.id);
 
     return NextResponse.json(
       { message: 'Attribute deleted successfully' },

@@ -1,6 +1,8 @@
 // tests/e2e/helpers/test-data.ts
 // Test data seeding helpers for E2E tests
 
+/* eslint-disable no-console */
+
 interface TestStore {
   id: string;
   name: string;

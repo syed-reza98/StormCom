@@ -47,21 +47,20 @@ export async function GET(request: NextRequest) {
 
     // Parse query parameters
     const search = url.searchParams.get('search') || undefined;
-    const type = url.searchParams.get('type') as 'text' | 'number' | 'boolean' | 'select' | 'multiselect' | 'date' | undefined;
-    const isRequired = url.searchParams.get('isRequired') === 'true' ? true : 
-                      url.searchParams.get('isRequired') === 'false' ? false : undefined;
-    const sortBy = url.searchParams.get('sortBy') as 'name' | 'type' | 'createdAt' | 'updatedAt' || 'name';
+    // TODO: type and isRequired filters not yet implemented in service
+    // const type = url.searchParams.get('type') as 'text' | 'number' | 'boolean' | 'select' | 'multiselect' | 'date' | undefined;
+    // const isRequired = url.searchParams.get('isRequired') === 'true' ? true : 
+    //                   url.searchParams.get('isRequired') === 'false' ? false : undefined;
+    const sortBy = url.searchParams.get('sortBy') as 'name' | 'createdAt' | 'updatedAt' || 'name';
     const sortOrder = url.searchParams.get('sortOrder') as 'asc' | 'desc' || 'asc';
     const page = parseInt(url.searchParams.get('page') || '1');
     const perPage = Math.min(parseInt(url.searchParams.get('perPage') || '10'), 100);
 
-    const result = await attributeService.getAttributes(storeId, {
+    const result = await attributeService.getAttributes({
       search,
-      type,
-      isRequired,
       sortBy,
       sortOrder,
-    });
+    }, page, perPage);
 
     return Response.json({
       data: result.attributes || result,
@@ -107,8 +106,8 @@ export async function POST(request: NextRequest) {
     }
 
     const attribute = await attributeService.createAttribute({
-      storeId,
-      ...validatedData
+      name: validatedData.name,
+      values: validatedData.options || [] // TODO: Schema mismatch - API uses 'options', service uses 'values'
     });
 
     return Response.json(

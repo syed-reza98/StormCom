@@ -5,6 +5,8 @@
  * ensuring test isolation and deterministic test execution.
  */
 
+/* eslint-disable no-console */
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

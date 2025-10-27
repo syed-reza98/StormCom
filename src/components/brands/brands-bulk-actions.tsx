@@ -23,18 +23,18 @@ export function BrandsBulkActions() {
       
       switch (action) {
         case 'activate':
-          console.log('Activating selected brands');
+          // TODO: Implement activate brands
           break;
         case 'deactivate':
-          console.log('Deactivating selected brands');
+          // TODO: Implement deactivate brands
           break;
         case 'delete':
           if (confirm(`Are you sure you want to delete ${selectedCount} brand(s)? This action cannot be undone.`)) {
-            console.log('Deleting selected brands');
+            // TODO: Implement delete brands
           }
           break;
         case 'export':
-          console.log('Exporting selected brands');
+          // TODO: Implement export brands
           break;
       }
     } catch (error) {

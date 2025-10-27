@@ -33,10 +33,12 @@ export async function POST(request: NextRequest) {
     if (config.structure === 'hierarchical') {
       categories = await categoryService.getCategoryTree(session.user.storeId);
     } else {
-      const result = await categoryService.getCategories(session.user.storeId, {
-        page: 1,
-        limit: 10000, // Large limit for export
-      });
+      const result = await categoryService.getCategories(
+        session.user.storeId,
+        {}, // filters
+        1, // page
+        10000 // perPage - Large limit for export
+      );
       categories = result.categories;
     }
 
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
       data: {
         downloadUrl: `/api/bulk/categories/export/download/${Date.now()}`,
         fileName: `categories-export-${new Date().toISOString().split('T')[0]}.${config.format}`,
-        totalCategories: Array.isArray(categories) ? categories.length : categories?.length || 0,
+        totalCategories: Array.isArray(categories) ? categories.length : 0,
         format: config.format,
         structure: config.structure,
         fields: fieldsToExport,

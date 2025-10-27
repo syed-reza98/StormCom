@@ -10,7 +10,7 @@ import { z } from 'zod';
 // TYPES & SCHEMAS
 // ============================================================================
 
-export interface AttributeWithValues extends ProductAttribute {
+export interface AttributeWithValues extends Omit<ProductAttribute, 'values'> {
   values: string[];
   _count?: {
     productAttributeValues: number;
@@ -286,8 +286,7 @@ export class AttributeService {
     }
 
     // Remove id from update data
-    const updateData = { ...validatedData };
-    delete updateData.id;
+    const { id: _id, ...updateData } = validatedData;
 
     // Convert values array to JSON if provided
     const prismaUpdateData: any = { ...updateData };
@@ -585,6 +584,18 @@ export class AttributeService {
     } catch {
       return [];
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // METHOD ALIASES (for backward compatibility with tests)
+  // --------------------------------------------------------------------------
+
+  /**
+   * Alias for createAttribute
+   */
+  async create(storeId: string, data: CreateAttributeData): Promise<AttributeWithValues> {
+    // Note: AttributeService doesn't use storeId in create, it's global
+    return this.createAttribute(data);
   }
 }
 

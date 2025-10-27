@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -96,7 +95,7 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
     };
 
     fetchProducts();
-  }, [searchParams]);
+  }, [searchParams, pagination]);
 
   // Handle row selection
   const handleSelectProduct = (productId: string, checked: boolean) => {

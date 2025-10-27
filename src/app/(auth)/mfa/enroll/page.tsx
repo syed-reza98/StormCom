@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -278,9 +279,11 @@ export default function MFAEnrollPage() {
             <CardContent className="space-y-4">
               {qrCodeUrl && (
                 <div className="bg-muted rounded-lg p-6 flex items-center justify-center">
-                  <img
+                  <Image
                     src={qrCodeUrl}
                     alt="MFA QR Code"
+                    width={300}
+                    height={300}
                     className="w-full max-w-xs mx-auto"
                   />
                 </div>
@@ -288,7 +291,7 @@ export default function MFAEnrollPage() {
               
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground text-center">
-                  Can't scan? Use the code below:
+                  Can{'\''}t scan? Use the code below:
                 </p>
                 <div className="bg-muted rounded-md p-3 border">
                   <code className="text-sm font-mono text-foreground break-all block text-center">
@@ -362,7 +365,7 @@ export default function MFAEnrollPage() {
               <div className="flex gap-3">
                 <Info className="h-5 w-5 text-primary flex-shrink-0" aria-hidden="true" />
                 <p className="text-sm text-muted-foreground">
-                  After verification, you'll receive backup codes. Save them in a secure location to regain access if you lose your authenticator device.
+                  After verification, you{'\''}ll receive backup codes. Save them in a secure location to regain access if you lose your authenticator device.
                 </p>
               </div>
             </div>

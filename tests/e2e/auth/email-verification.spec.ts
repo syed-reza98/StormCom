@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { test, expect, Page } from '@playwright/test';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';

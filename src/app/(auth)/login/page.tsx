@@ -211,7 +211,7 @@ export default function LoginPage() {
             {/* Footer Links */}
             <div className="text-center text-sm text-muted-foreground">
               <p>
-                Don't have an account?{' '}
+                Don{'\''}t have an account?{' '}
                 <Link
                   href="/register"
                   className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"

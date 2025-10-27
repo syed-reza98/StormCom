@@ -31,6 +31,9 @@ if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = db;
 }
 
+// Export db as prisma for backward compatibility
+export { db as prisma };
+
 // Export Prisma enums for convenient access
 export {
   UserRole,

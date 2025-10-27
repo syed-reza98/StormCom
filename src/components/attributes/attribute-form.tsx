@@ -26,7 +26,7 @@ interface AttributeFormData {
   name: string;
   slug: string;
   type: 'text' | 'number' | 'select' | 'boolean' | 'color' | 'size';
-  description: string;
+  description?: string;
   required: boolean;
   isActive: boolean;
   sortOrder: number;

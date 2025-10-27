@@ -35,11 +35,12 @@ export async function POST(request: NextRequest) {
     const config = exportConfigSchema.parse(body);
 
     // Get all products based on filters
-    const result = await productService.getProducts(session.user.storeId, {
-      ...config.filters,
-      page: 1,
-      limit: 10000, // Large limit for export
-    });
+    const result = await productService.getProducts(
+      session.user.storeId,
+      config.filters || {},
+      1, // page
+      10000 // perPage - Large limit for export
+    );
 
     // Default fields to export
     const defaultFields = [

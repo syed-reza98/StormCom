@@ -190,7 +190,7 @@ export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
           
           {search && (
             <Badge variant="secondary" className="gap-1">
-              Search: "{search}"
+              Search: {'"'}{search}{'"'}
               <button
                 onClick={() => {
                   setSearch('');

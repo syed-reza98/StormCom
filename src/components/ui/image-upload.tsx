@@ -4,6 +4,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -61,7 +62,7 @@ export function ImageUpload({
     onChange?.(newImages);
   }, [onChange]);
 
-  const validateFile = (file: File): string | null => {
+  const validateFile = useCallback((file: File): string | null => {
     // Check file type
     if (!acceptedTypes.includes(file.type)) {
       return `File type ${file.type} is not supported. Please use: ${acceptedTypes.map(type => type.split('/')[1]).join(', ')}`;
@@ -79,7 +80,7 @@ export function ImageUpload({
     }
 
     return null;
-  };
+  }, [acceptedTypes, maxSizeMB, images.length, maxImages]);
 
   const processFiles = useCallback(async (files: FileList | File[]) => {
     setError(null);
@@ -154,7 +155,7 @@ export function ImageUpload({
         }
       }
     }
-  }, [images, maxImages, onUpload, updateImages]);
+  }, [images, maxImages, onUpload, updateImages, validateFile]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -307,10 +308,11 @@ export function ImageUpload({
               >
                 {/* Image Preview */}
                 <div className="aspect-square relative">
-                  <img
+                  <Image
                     src={image.url}
                     alt={`Upload ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   
                   {/* Primary Badge */}

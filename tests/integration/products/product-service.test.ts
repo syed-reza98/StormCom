@@ -401,7 +401,7 @@ describe('ProductService Integration Tests', () => {
       const prices = result.products.map(p => p.price);
       for (let i = 1; i < prices.length; i++) {
         expect(prices[i]).toBeLessThanOrEqual(prices[i - 1]);
-      });
+      }
     });
 
     it('should paginate results correctly', async () => {
