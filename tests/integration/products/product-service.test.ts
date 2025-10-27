@@ -56,17 +56,10 @@ describe('ProductService Integration Tests', () => {
         price: 99.99,
         categoryId: category.id,
         weight: 1.5,
-        dimensions: '10x10x5',
         isFeatured: false,
         inventoryQty: 100,
         lowStockThreshold: 10,
-        manageStock: true,
-        allowBackorders: false,
         trackInventory: true,
-        soldIndividually: false,
-        seoTitle: 'Test Product SEO Title',
-        seoDescription: 'Test product SEO description',
-        seoKeywords: 'test, product, integration',
       };
 
       const product = await productService.create(testStoreId, productData);
@@ -101,7 +94,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'RETRIEVE-001',
         price: 50.00,
         categoryId: category.id,
-        inventoryQty: 50,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 50,
       });
 
       // Retrieve product
@@ -131,7 +129,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'ORIGINAL-001',
         price: 100.00,
         categoryId: category.id,
-        inventoryQty: 100,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 100,
       });
 
       // Update product
@@ -170,7 +173,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'DELETE-001',
         price: 75.00,
         categoryId: category.id,
-        inventoryQty: 25,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 25,
       });
 
       // Delete product
@@ -199,7 +207,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'DUPLICATE-SKU',
         price: 50.00,
         categoryId: category.id,
-        inventoryQty: 50,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 50,
       });
 
       // Try to create second product with same SKU
@@ -210,6 +223,11 @@ describe('ProductService Integration Tests', () => {
           sku: 'DUPLICATE-SKU', // Same SKU
           price: 60.00,
           categoryId: category.id,
+          isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
           inventoryQty: 60,
         })
       ).rejects.toThrow('SKU already exists');
@@ -386,7 +404,7 @@ describe('ProductService Integration Tests', () => {
 
       expect(page1.products).toHaveLength(2);
       expect(page1.pagination.total).toBe(4);
-      expect(page1.totalPages).toBe(2);
+      expect(page1.pagination.totalPages).toBe(2);
 
       // Get second page
       const page2 = await productService.list(testStoreId, {
@@ -396,7 +414,7 @@ describe('ProductService Integration Tests', () => {
 
       expect(page2.products).toHaveLength(2);
       expect(page2.pagination.total).toBe(4);
-      expect(page2.totalPages).toBe(2);
+      expect(page2.pagination.totalPages).toBe(2);
 
       // Verify different products on each page
       const page1Ids = page1.products.map(p => p.id);
@@ -421,7 +439,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'STOCK-001',
         price: 50.00,
         categoryId: category.id,
-        inventoryQty: 100,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 100,
         trackInventory: true,
       });
 
@@ -446,7 +469,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'PURCHASE-001',
         price: 75.00,
         categoryId: category.id,
-        inventoryQty: 50,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 50,
         trackInventory: true,
       });
 
@@ -471,9 +499,13 @@ describe('ProductService Integration Tests', () => {
         sku: 'LOW-STOCK-001',
         price: 25.00,
         categoryId: category.id,
-        inventoryQty: 5,
-        trackInventory: true,
-        allowBackorders: false,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 5,
+        trackInventory: true
       });
 
       // Try to decrease stock by more than available
@@ -497,9 +529,13 @@ describe('ProductService Integration Tests', () => {
         sku: 'BACKORDER-001',
         price: 40.00,
         categoryId: category.id,
-        inventoryQty: 2,
-        trackInventory: true,
-        allowBackorders: true,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 2,
+        trackInventory: true
       });
 
       // Decrease stock below zero
@@ -523,7 +559,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'IN-STOCK-001',
         price: 30.00,
         categoryId: category.id,
-        inventoryQty: 10,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 10,
         trackInventory: true,
       });
 
@@ -533,9 +574,13 @@ describe('ProductService Integration Tests', () => {
         sku: 'OUT-OF-STOCK-001',
         price: 35.00,
         categoryId: category.id,
-        inventoryQty: 0,
-        trackInventory: true,
-        allowBackorders: false,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 0,
+        trackInventory: true
       });
 
       const inStockCheck = await productService.isInStock(testStoreId, inStockProduct.id, 5);
@@ -592,7 +637,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'ATTR-001',
         price: 60.00,
         categoryId: category.id,
-        inventoryQty: 75,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 75,
         attributes: [
           {
             attributeId: colorAttribute.id,
@@ -646,7 +696,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'UPDATE-001',
         price: 45.00,
         categoryId: category.id,
-        inventoryQty: 30,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 30,
         attributes: [
           {
             attributeId: colorAttribute.id,
@@ -700,7 +755,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE1-001',
         price: 100.00,
         categoryId: category1.id,
-        inventoryQty: 50,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 50,
       });
 
       // Create product in second store
@@ -710,7 +770,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE2-001',
         price: 200.00,
         categoryId: category2.id,
-        inventoryQty: 25,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 25,
       });
 
       // List products for store 1
@@ -754,7 +819,12 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE2-001',
         price: 150.00,
         categoryId: category.id,
-        inventoryQty: 40,
+        isPublished: true,
+          trackInventory: true,
+          images: [],
+          metaKeywords: [],
+          lowStockThreshold: 5,
+          inventoryQty: 40,
       });
 
       // Try to access store 2 product from store 1 context
