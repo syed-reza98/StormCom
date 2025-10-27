@@ -382,8 +382,8 @@ class BulkExportService {
     // Search filter
     if (filters.search) {
       where.OR = [
-        { name: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
+        { name: { contains: filters.search } },
+        { description: { contains: filters.search } },
       ];
     }
 

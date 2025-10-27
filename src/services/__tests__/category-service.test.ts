@@ -54,8 +54,8 @@ describe('CategoryService', () => {
           deletedAt: null,
           isPublished: true,
           OR: [
-            { name: { contains: 'electronics', mode: 'insensitive' } },
-            { description: { contains: 'electronics', mode: 'insensitive' } },
+            { name: { contains: 'electronics' } },
+            { description: { contains: 'electronics' } },
           ],
         },
         include: {

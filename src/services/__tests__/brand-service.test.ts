@@ -59,8 +59,8 @@ describe('BrandService', () => {
           deletedAt: null,
           isPublished: true,
           OR: [
-            { name: { contains: 'tech', mode: 'insensitive' } },
-            { description: { contains: 'tech', mode: 'insensitive' } },
+            { name: { contains: 'tech' } },
+            { description: { contains: 'tech' } },
           ],
         },
         include: {

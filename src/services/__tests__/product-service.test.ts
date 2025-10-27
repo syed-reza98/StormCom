@@ -67,9 +67,9 @@ describe('ProductService', () => {
           deletedAt: null,
           isPublished: true,
           OR: [
-            { name: { contains: 'test', mode: 'insensitive' } },
-            { description: { contains: 'test', mode: 'insensitive' } },
-            { sku: { contains: 'test', mode: 'insensitive' } },
+            { name: { contains: 'test' } },
+            { description: { contains: 'test' } },
+            { sku: { contains: 'test' } },
           ],
         },
         include: {

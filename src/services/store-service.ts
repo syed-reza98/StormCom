@@ -291,9 +291,9 @@ export class StoreService {
     // Apply search filter
     if (validatedInput.search) {
       whereClause.OR = [
-        { name: { contains: validatedInput.search, mode: 'insensitive' } },
-        { slug: { contains: validatedInput.search, mode: 'insensitive' } },
-        { email: { contains: validatedInput.search, mode: 'insensitive' } },
+        { name: { contains: validatedInput.search } },
+        { slug: { contains: validatedInput.search } },
+        { email: { contains: validatedInput.search } },
       ];
     }
 
