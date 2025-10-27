@@ -1,89 +1,117 @@
 // src/app/api/attributes/route.ts
 // Product Attributes API Routes - List and Create operations
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { attributeService, createAttributeSchema } from '@/services/attribute-service';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { attributeService } from '@/services/attribute-service';
 
-// GET /api/attributes - List attributes with filtering and pagination
+// ============================================================================
+// VALIDATION SCHEMAS
+// ============================================================================
+
+const createAttributeSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be under 100 characters'),
+  slug: z.string().min(1, 'Slug is required').max(100, 'Slug must be under 100 characters')
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase, alphanumeric with hyphens'),
+  type: z.enum(['text', 'number', 'boolean', 'select', 'multiselect', 'date'], 
+    { errorMap: () => ({ message: 'Type must be one of: text, number, boolean, select, multiselect, date' }) }),
+  description: z.string().max(500, 'Description must be under 500 characters').optional(),
+  isRequired: z.boolean().default(false),
+  defaultValue: z.string().max(255, 'Default value must be under 255 characters').optional(),
+  options: z.array(z.string().min(1).max(100)).optional(),
+  validation: z.object({
+    min: z.number().optional(),
+    max: z.number().optional(),
+    pattern: z.string().optional(),
+  }).optional(),
+  displayOrder: z.number().int().min(0).default(0),
+  isPublished: z.boolean().default(true),
+});
+
+// ============================================================================
+// GET /api/attributes - List Attributes
+// ============================================================================
+
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.storeId) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
-        { status: 401 }
+    const url = new URL(request.url);
+    
+    // Extract storeId from query params (required)
+    const storeId = url.searchParams.get('storeId');
+    if (!storeId) {
+      return Response.json(
+        { error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } },
+        { status: 400 }
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    
     // Parse query parameters
-    const search = searchParams.get('search') || undefined;
-    const type = searchParams.get('type') as 'text' | 'number' | 'boolean' | 'select' | 'multiselect' | 'date' | undefined;
-    const isRequired = searchParams.get('isRequired') === 'true' ? true : 
-                      searchParams.get('isRequired') === 'false' ? false : undefined;
-    const sortBy = searchParams.get('sortBy') as 'name' | 'type' | 'createdAt' | 'updatedAt' | undefined;
-    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | undefined;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const search = url.searchParams.get('search') || undefined;
+    const type = url.searchParams.get('type') as 'text' | 'number' | 'boolean' | 'select' | 'multiselect' | 'date' | undefined;
+    const isRequired = url.searchParams.get('isRequired') === 'true' ? true : 
+                      url.searchParams.get('isRequired') === 'false' ? false : undefined;
+    const sortBy = url.searchParams.get('sortBy') as 'name' | 'type' | 'createdAt' | 'updatedAt' || 'name';
+    const sortOrder = url.searchParams.get('sortOrder') as 'asc' | 'desc' || 'asc';
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const perPage = Math.min(parseInt(url.searchParams.get('perPage') || '10'), 100);
 
-    // Additional query options
-    const includeProductCount = searchParams.get('includeProductCount') === 'true';
-
-    const result = await attributeService.getAttributes(session.user.storeId, {
+    const result = await attributeService.getAttributes(storeId, {
       search,
       type,
       isRequired,
       sortBy,
       sortOrder,
-      page,
-      limit,
-      includeProductCount,
     });
 
-    return NextResponse.json({
-      data: result.attributes,
-      meta: {
-        page: result.pagination.page,
-        limit: result.pagination.limit,
-        total: result.pagination.total,
-        totalPages: result.pagination.totalPages,
-      },
+    return Response.json({
+      data: result.attributes || result,
+      meta: result.pagination || {},
     });
   } catch (error) {
     console.error('Error fetching attributes:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch attributes' } },
       { status: 500 }
     );
   }
 }
 
-// POST /api/attributes - Create new attribute
+// ============================================================================
+// POST /api/attributes - Create Attribute
+// ============================================================================
+
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.storeId) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
-        { status: 401 }
+    const body = await request.json();
+    
+    // Extract storeId from body (required)
+    const storeId = body.storeId;
+    if (!storeId) {
+      return Response.json(
+        { error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } },
+        { status: 400 }
       );
     }
 
-    const body = await request.json();
-    
     // Validate input
     const validatedData = createAttributeSchema.parse(body);
 
-    const attribute = await attributeService.createAttribute(
-      session.user.storeId,
-      validatedData
-    );
+    // Validate options for select/multiselect types
+    if (['select', 'multiselect'].includes(validatedData.type)) {
+      if (!validatedData.options || validatedData.options.length === 0) {
+        return Response.json(
+          { error: { code: 'VALIDATION_ERROR', message: 'Options are required for select and multiselect types' } },
+          { status: 400 }
+        );
+      }
+    }
 
-    return NextResponse.json(
+    const attribute = await attributeService.createAttribute({
+      storeId,
+      ...validatedData
+    });
+
+    return Response.json(
       {
         data: attribute,
         message: 'Attribute created successfully',
@@ -92,7 +120,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      return Response.json(
         { 
           error: { 
             code: 'VALIDATION_ERROR', 
@@ -105,14 +133,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (error instanceof Error && error.message.includes('already exists')) {
-      return NextResponse.json(
+      return Response.json(
         { error: { code: 'DUPLICATE_ERROR', message: error.message } },
         { status: 409 }
       );
     }
 
     console.error('Error creating attribute:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: { code: 'INTERNAL_ERROR', message: 'Failed to create attribute' } },
       { status: 500 }
     );
