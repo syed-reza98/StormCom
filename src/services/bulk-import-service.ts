@@ -320,13 +320,11 @@ class BulkImportService {
 
     // Process rows in batches
     const batches = this.createBatches(validatedRows, config.batchSize);
-    let transaction: any = null;
 
     try {
       if (config.rollbackOnError) {
         // Use transaction for rollback capability
         await prisma.$transaction(async (tx) => {
-          transaction = tx;
           await this.processBatches(
             storeId,
             batches,

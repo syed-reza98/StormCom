@@ -198,17 +198,16 @@ export class BrandService {
     // Validate input
     const validatedData = createBrandSchema.parse(data);
     
-    // Generate slug if not provided
-    if (!validatedData.slug) {
-      validatedData.slug = await this.generateUniqueSlug(storeId, validatedData.name);
-    }
+    // Generate slug if not provided (required by Prisma)
+    const slug = validatedData.slug || await this.generateUniqueSlug(storeId, validatedData.name);
 
     // Validate business rules
-    await this.validateBusinessRules(storeId, validatedData);
+    await this.validateBusinessRules(storeId, { ...validatedData, slug });
 
     const brand = await prisma.brand.create({
       data: {
         ...validatedData,
+        slug,
         storeId,
       },
       include: {
@@ -247,8 +246,7 @@ export class BrandService {
     await this.validateBusinessRules(storeId, validatedData, brandId);
 
     // Remove id from update data
-    const updateData = { ...validatedData };
-    delete updateData.id;
+    const { id: _, ...updateData } = validatedData;
 
     const brand = await prisma.brand.update({
       where: { id: brandId },

@@ -3,9 +3,6 @@
 // Supports CSV/Excel formats, progress tracking, and large dataset handling
 
 import { prisma } from '@/lib/db';
-import { productService } from './product-service';
-import { categoryService } from './category-service';
-import { brandService } from './brand-service';
 import { z } from 'zod';
 
 // ============================================================================
@@ -172,7 +169,7 @@ class BulkExportService {
       const exportData = await this.generateExportData(storeId, config, progress);
 
       // Create file based on format
-      const filePath = await this.createExportFile(exportData, config, progress);
+      await this.createExportFile(exportData, config, progress);
       
       // In production, upload to cloud storage (Vercel Blob, S3, etc.)
       progress.downloadUrl = `/api/exports/download/${progress.jobId}`;
@@ -332,7 +329,7 @@ class BulkExportService {
         return await prisma.order.findMany({
           where: { ...baseWhere, ...filters },
           include: {
-            customer: { select: { name: true, email: true } },
+            customer: { select: { firstName: true, lastName: true, email: true } },
             items: {
               include: {
                 product: { select: { name: true, sku: true } },
@@ -554,18 +551,18 @@ class BulkExportService {
 
     switch (config.format) {
       case 'csv':
-        const csvContent = this.generateCSV(data, config);
+        this.generateCSV(data, config);
         // In production, save to cloud storage
         return filePath;
 
       case 'excel':
         // This would require a library like exceljs
         // For now, fall back to CSV
-        const excelCsvContent = this.generateCSV(data, config);
+        this.generateCSV(data, config);
         return filePath;
 
       case 'json':
-        const jsonContent = JSON.stringify(data, null, 2);
+        JSON.stringify(data, null, 2);
         return filePath;
 
       default:
@@ -685,7 +682,7 @@ class BulkExportService {
   /**
    * Get all active export jobs for a store
    */
-  async getActiveJobs(storeId: string): Promise<ExportProgress[]> {
+  async getActiveJobs(_storeId: string): Promise<ExportProgress[]> {
     // In production, you'd store jobs in database with storeId association
     // For now, return all active jobs
     return Array.from(this.activeJobs.values());
