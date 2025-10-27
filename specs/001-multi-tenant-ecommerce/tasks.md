@@ -1,28 +1,28 @@
 # Implementation Tasks: StormCom Multi-tenant E-commerce Platform
 
 **Feature**: 001-multi-tenant-ecommerce  
-**Status**: Phase 3 (US0 Authentication) - 28/45 tasks complete (62.2%) - Design system complete, E2E tests pending  
+**Status**: Phase 5 (US2 Product Catalog) - 96/260 tasks complete (36.9%) - Store management complete, product catalog next  
 **Created**: 2025-10-24  
-**Updated**: 2025-10-26  
+**Updated**: 2025-10-27  
 **Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)  
-**Overall Progress**: 63/260 tasks complete (24.2%)
+**Overall Progress**: 96/260 tasks complete (36.9%)
 
-**⚠️ BLOCKING ISSUES**: Phase 4 blocked until US0 E2E tests complete (T055-T079 = 25 tests pending). Constitution requires 100% E2E coverage for critical authentication paths before proceeding.
+**✅ MILESTONE ACHIEVED**: Phase 4 US1 Store Management complete (T091-T096). Authentication and store management foundations established. Ready for Phase 5 US2 Product Catalog.
 
 ## Progress Summary
 
 - ✅ **Phase 1: Setup (T001-T015)** - 15/15 complete (100%)
 - ✅ **Phase 2: Foundational (T016-T035)** - 20/20 complete (100%)
-- 🚧 **Phase 3: US0 Authentication (T036-T080)** - 28/45 complete (62.2%)
+- ✅ **Phase 3: US0 Authentication (T036-T080)** - 45/45 complete (100%)
   - ✅ Service layer: AuthService, MFAService, SessionService, RoleService (T036-T039)
   - ✅ API routes: register, login, logout, forgot-password, reset-password, mfa/enroll, mfa/verify, mfa/backup-codes (T040-T047)
   - ✅ UI pages: login, register, forgot-password, reset-password, mfa/enroll, mfa/challenge (T048-T052) - **UPDATED with design system**
   - ✅ Hooks & Context: useAuth hook, AuthProvider context (T053-T054)
   - ✅ Design System: Tailwind config, CSS variables, shared UI components (Button, Input, Card, Label, FormError, FormSuccess) - **NEW**
   - ✅ UI components: PasswordStrengthIndicator, all auth pages redesigned with centered card layout (T054a-T054b)
-  - ⏳ **BLOCKING**: E2E test suites (T055-T079) - 0/25 complete (spec.md defines 25 scenarios)
-  - ⏳ **BLOCKING**: Accessibility tests (T080) - 0/1 complete (constitution requirement)
-- ⏳ **Phase 4: US1 Store Management (T081-T096)** - 0/16 complete **[DEPENDS: T080]**
+  - ✅ E2E test suites (T055-T079) - 25/25 complete (spec.md defines 25 scenarios)
+  - ✅ Accessibility tests (T080) - 1/1 complete (constitution requirement)
+- ✅ **Phase 4: US1 Store Management (T081-T096)** - 16/16 complete (100%)
 - ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 0/31 complete
 - ⏳ **Phase 6+**: US6, US3a, US3, US4, US5, US7, US8, US9 - 0/153 complete
 
@@ -168,13 +168,13 @@
 
 ---
 
-## Phase 4: US1 - Store Management (P1 - Must Have)
+## Phase 4: US1 - Store Management (P1 - Must Have) ✅
 
 **User Story**: As a Super Admin, I need to create, configure, and manage multiple stores to enable multi-tenancy for my e-commerce platform.
 
 **Why P1**: Store is the core tenant entity. Without stores, users cannot create products, take orders, or perform any business operations. This is the foundation of multi-tenancy.
 
-**Dependencies**: **[RESOLVED: T080]** - Phase 4 UNBLOCKED as US0 Authentication E2E tests are complete. Constitution requirement for 100% E2E coverage for critical paths satisfied.
+**Status**: COMPLETE (All 16 tasks finished)
 
 **Independent Test**: Create a new store with name, subdomain, and owner assignment. Verify store appears in store list. Update store settings (logo, theme). Delete store and verify all associated data is soft-deleted.
 
@@ -183,19 +183,19 @@
 - [x] T081 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
 - [x] T082 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
 - [x] T083 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
-- [ ] T084 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
-- [ ] T085 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
-- [ ] T086 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
-- [ ] T087 [US1] [P] Create API route POST /api/stores/[id]/admins in src/app/api/stores/[id]/admins/route.ts for assigning store admins
-- [ ] T088 [US1] [P] Create Stores List page in src/app/(dashboard)/stores/page.tsx with data table and create button
-- [ ] T089 [US1] [P] Create Store Details page in src/app/(dashboard)/stores/[id]/page.tsx with settings tabs (General, Theme, Billing, Users)
-- [ ] T090 [US1] [P] Create Create Store form component in src/components/stores/create-store-form.tsx with name, subdomain, and owner fields
-- [ ] T091 [US1] [P] Create Store Settings form component in src/components/stores/store-settings-form.tsx with logo upload and theme configuration
-- [ ] T092 [US1] Create E2E test "Super Admin can create new store" in tests/e2e/stores/create-store.spec.ts using StoresListPage, CreateStoreFormPOM
-- [ ] T093 [US1] Create E2E test "Store Admin can update store settings" in tests/e2e/stores/update-store.spec.ts using StoreDetailsPage, StoreSettingsFormPOM
-- [ ] T094 [US1] Create E2E test "Super Admin can delete store" in tests/e2e/stores/delete-store.spec.ts using StoresListPage POM (soft delete validation)
-- [ ] T095 [US1] Create E2E accessibility tests for store management pages in tests/e2e/stores/accessibility.spec.ts using axe-core
-- [ ] T096 [US1] Create integration tests for StoreService in tests/integration/services/store.test.ts
+- [x] T084 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
+- [x] T085 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
+- [x] T086 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
+- [x] T087 [US1] [P] Create API route POST /api/stores/[id]/admins in src/app/api/stores/[id]/admins/route.ts for assigning store admins
+- [x] T088 [US1] [P] Create Stores List page in src/app/(dashboard)/stores/page.tsx with data table and create button
+- [x] T089 [US1] [P] Create Store Details page in src/app/(dashboard)/stores/[id]/page.tsx with settings tabs (General, Theme, Billing, Users)
+- [x] T090 [US1] [P] Create Create Store form component in src/components/stores/create-store-form.tsx with name, subdomain, and owner fields
+- [x] T091 [US1] [P] Create Store Settings form component in src/components/stores/store-settings-form.tsx with logo upload and theme configuration
+- [x] T092 [US1] Create E2E test "Super Admin can create new store" in tests/e2e/stores/create-store.spec.ts using StoresListPage, CreateStoreFormPOM
+- [x] T093 [US1] Create E2E test "Store Admin can update store settings" in tests/e2e/stores/update-store.spec.ts using StoreDetailsPage, StoreSettingsFormPOM
+- [x] T094 [US1] Create E2E test "Super Admin can delete store" in tests/e2e/stores/delete-store.spec.ts using StoresListPage POM (soft delete validation)
+- [x] T095 [US1] Create E2E accessibility tests for store management pages in tests/e2e/stores/accessibility.spec.ts using axe-core
+- [x] T096 [US1] Create integration tests for StoreService in tests/integration/services/store.test.ts
 
 ---
 
@@ -205,43 +205,43 @@
 
 **Why P1**: Products are the core business entity. Without a product catalog, there is nothing to sell. This is essential for basic e-commerce functionality.
 
-**Dependencies**: **[DEPENDS: T096]** - Phase 5 BLOCKED until US1 Store Management complete (stores must exist before products can be created).
+**Dependencies**: **[RESOLVED: T096]** - Phase 5 UNBLOCKED as US1 Store Management complete (stores exist, can create products).
 
 **Independent Test**: Create a category, brand, and product with variants (size, color). Upload product images. Bulk import 50 products via CSV. Search for products by name. Filter products by category and price range. Verify product appears on storefront.
 
 **Tasks**:
 
-- [ ] T097 [US2] [DEPENDS: T096] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
+- [ ] T097 [US2] Create ProductService in src/services/product-service.ts with create, list, get, update, delete, search, and filter operations
 - [ ] T098 [US2] Create CategoryService in src/services/category-service.ts with hierarchical category CRUD and tree structure operations
 - [ ] T099 [US2] Create BrandService in src/services/brand-service.ts with brand CRUD operations
 - [ ] T100 [US2] Create AttributeService in src/services/attribute-service.ts with attribute and attribute value management
 - [ ] T101 [US2] Create BulkImportService in src/services/bulk-import-service.ts with CSV parsing, validation, and batch product creation
 - [ ] T102 [US2] Create BulkExportService in src/services/bulk-export-service.ts with product export to CSV format
 - [ ] T103 [US2] [P] Create API route POST /api/products in src/app/api/products/route.ts for creating products with variants and images
-- [ ] T083 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
-- [ ] T084 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
-- [ ] T085 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
-- [ ] T086 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
-- [ ] T087 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
-- [ ] T088 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
-- [ ] T089 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
-- [ ] T090 [US2] [P] Create API route GET /api/brands in src/app/api/brands/route.ts for listing brands
-- [ ] T091 [US2] [P] Create API route POST /api/attributes in src/app/api/attributes/route.ts for creating product attributes
-- [ ] T092 [US2] [P] Create API route GET /api/attributes in src/app/api/attributes/route.ts for listing attributes with values
-- [ ] T093 [US2] [P] Create API route POST /api/products/import in src/app/api/products/import/route.ts for bulk product import from CSV
-- [ ] T094 [US2] [P] Create API route GET /api/products/export in src/app/api/products/export/route.ts for bulk product export to CSV
-- [ ] T095 [US2] [P] Create Products List page in src/app/(dashboard)/products/page.tsx with data table, search, filters, and bulk actions
-- [ ] T096 [US2] [P] Create Product Details page in src/app/(dashboard)/products/[id]/page.tsx with product info, variants, images, and inventory
-- [ ] T097 [US2] [P] Create Create/Edit Product form in src/components/products/product-form.tsx with variant management and image upload
-- [ ] T098 [US2] [P] Create Categories page in src/app/(dashboard)/categories/page.tsx with tree view and drag-drop reordering
-- [ ] T099 [US2] [P] Create Brands page in src/app/(dashboard)/brands/page.tsx with brand list and CRUD operations
-- [ ] T100 [US2] [P] Create Attributes page in src/app/(dashboard)/attributes/page.tsx with attribute and value management
-- [ ] T101 [US2] [P] Create Bulk Import page in src/app/(dashboard)/products/import/page.tsx with CSV upload and validation preview
-- [ ] T102 [US2] [P] Create Image upload component in src/components/products/image-upload.tsx with Vercel Blob integration and preview
-- [ ] T103 [US2] Create E2E test "Store Admin can create product with variants" in tests/e2e/products/create-product.spec.ts
-- [ ] T104 [US2] Create E2E test "Store Admin can bulk import products from CSV" in tests/e2e/products/bulk-import.spec.ts
-- [ ] T105 [US2] Create E2E test "Customer can search and filter products" in tests/e2e/products/search-filter.spec.ts
-- [ ] T106 [US2] Create integration tests for ProductService, CategoryService, BrandService, AttributeService in tests/integration/services/product.test.ts
+- [ ] T104 [US2] [P] Create API route GET /api/products in src/app/api/products/route.ts for listing products with pagination, search, and filters
+- [ ] T105 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
+- [ ] T106 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
+- [ ] T107 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
+- [ ] T108 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
+- [ ] T109 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
+- [ ] T110 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
+- [ ] T111 [US2] [P] Create API route GET /api/brands in src/app/api/brands/route.ts for listing brands
+- [ ] T112 [US2] [P] Create API route POST /api/attributes in src/app/api/attributes/route.ts for creating product attributes
+- [ ] T113 [US2] [P] Create API route GET /api/attributes in src/app/api/attributes/route.ts for listing attributes with values
+- [ ] T114 [US2] [P] Create API route POST /api/products/import in src/app/api/products/import/route.ts for bulk product import from CSV
+- [ ] T115 [US2] [P] Create API route GET /api/products/export in src/app/api/products/export/route.ts for bulk product export to CSV
+- [ ] T116 [US2] [P] Create Products List page in src/app/(dashboard)/products/page.tsx with data table, search, filters, and bulk actions
+- [ ] T117 [US2] [P] Create Product Details page in src/app/(dashboard)/products/[id]/page.tsx with product info, variants, images, and inventory
+- [ ] T118 [US2] [P] Create Create/Edit Product form in src/components/products/product-form.tsx with variant management and image upload
+- [ ] T119 [US2] [P] Create Categories page in src/app/(dashboard)/categories/page.tsx with tree view and drag-drop reordering
+- [ ] T120 [US2] [P] Create Brands page in src/app/(dashboard)/brands/page.tsx with brand list and CRUD operations
+- [ ] T121 [US2] [P] Create Attributes page in src/app/(dashboard)/attributes/page.tsx with attribute and value management
+- [ ] T122 [US2] [P] Create Bulk Import page in src/app/(dashboard)/products/import/page.tsx with CSV upload and validation preview
+- [ ] T123 [US2] [P] Create Image upload component in src/components/products/image-upload.tsx with Vercel Blob integration and preview
+- [ ] T124 [US2] Create E2E test "Store Admin can create product with variants" in tests/e2e/products/create-product.spec.ts
+- [ ] T125 [US2] Create E2E test "Store Admin can bulk import products from CSV" in tests/e2e/products/bulk-import.spec.ts
+- [ ] T126 [US2] Create E2E test "Customer can search and filter products" in tests/e2e/products/search-filter.spec.ts
+- [ ] T127 [US2] Create integration tests for ProductService, CategoryService, BrandService, AttributeService in tests/integration/services/product.test.ts
 
 ---
 
