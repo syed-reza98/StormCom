@@ -719,6 +719,20 @@ export class CategoryService {
   async create(storeId: string, data: CreateCategoryData): Promise<CategoryWithRelations> {
     return this.createCategory(storeId, data);
   }
+
+  /**
+   * Alias for getCategoryById
+   */
+  async getById(storeId: string, categoryId: string): Promise<CategoryWithRelations | null> {
+    return this.getCategoryById(categoryId, storeId);
+  }
+
+  /**
+   * Alias for getCategoryBySlug
+   */
+  async getBySlug(storeId: string, slug: string): Promise<CategoryWithRelations | null> {
+    return this.getCategoryBySlug(slug, storeId);
+  }
 }
 
 // Export singleton instance

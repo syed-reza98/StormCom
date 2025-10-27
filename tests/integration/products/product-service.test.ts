@@ -42,7 +42,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category for integration test',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -54,19 +54,15 @@ describe('ProductService Integration Tests', () => {
         shortDescription: 'Test product short description',
         sku: 'TEST-PROD-001',
         price: 99.99,
-        salePrice: 79.99,
         categoryId: category.id,
-        brand: 'Test Brand',
         weight: 1.5,
         dimensions: '10x10x5',
-        tags: ['test', 'integration'],
-        isActive: true,
         isFeatured: false,
-        stockQuantity: 100,
+        inventoryQty: 100,
         lowStockThreshold: 10,
         manageStock: true,
         allowBackorders: false,
-        trackQuantity: true,
+        trackInventory: true,
         soldIndividually: false,
         seoTitle: 'Test Product SEO Title',
         seoDescription: 'Test product SEO description',
@@ -82,11 +78,11 @@ describe('ProductService Integration Tests', () => {
       expect(product.slug).toBe(productData.slug);
       expect(product.sku).toBe(productData.sku);
       expect(product.price).toBe(productData.price);
-      expect(product.salePrice).toBe(productData.salePrice);
+      expect(product.compareAtPrice).toBe(productData.compareAtPrice);
       expect(product.categoryId).toBe(category.id);
       expect(product.storeId).toBe(testStoreId);
-      expect(product.isActive).toBe(true);
-      expect(product.stockQuantity).toBe(100);
+      expect(product.isPublished).toBe(true);
+      expect(product.inventoryQty).toBe(100);
     });
 
     it('should retrieve a product by ID', async () => {
@@ -95,7 +91,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -105,8 +101,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'RETRIEVE-001',
         price: 50.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 50,
+        inventoryQty: 50,
       });
 
       // Retrieve product
@@ -126,7 +121,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -136,17 +131,15 @@ describe('ProductService Integration Tests', () => {
         sku: 'ORIGINAL-001',
         price: 100.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 100,
+        inventoryQty: 100,
       });
 
       // Update product
       const updateData = {
         name: 'Updated Product Name',
         price: 120.00,
-        salePrice: 99.99,
         description: 'Updated product description',
-        stockQuantity: 150,
+        inventoryQty: 150,
       };
 
       const updatedProduct = await productService.update(testStoreId, product.id, updateData);
@@ -154,9 +147,9 @@ describe('ProductService Integration Tests', () => {
       // Assertions
       expect(updatedProduct.name).toBe('Updated Product Name');
       expect(updatedProduct.price).toBe(120.00);
-      expect(updatedProduct.salePrice).toBe(99.99);
+      expect(updatedProduct.compareAtPrice).toBe(99.99);
       expect(updatedProduct.description).toBe('Updated product description');
-      expect(updatedProduct.stockQuantity).toBe(150);
+      expect(updatedProduct.inventoryQty).toBe(150);
       expect(updatedProduct.slug).toBe('original-product'); // Should not change
       expect(updatedProduct.sku).toBe('ORIGINAL-001'); // Should not change
     });
@@ -167,7 +160,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -177,8 +170,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'DELETE-001',
         price: 75.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 25,
+        inventoryQty: 25,
       });
 
       // Delete product
@@ -196,7 +188,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -207,8 +199,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'DUPLICATE-SKU',
         price: 50.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 50,
+        inventoryQty: 50,
       });
 
       // Try to create second product with same SKU
@@ -219,8 +210,7 @@ describe('ProductService Integration Tests', () => {
           sku: 'DUPLICATE-SKU', // Same SKU
           price: 60.00,
           categoryId: category.id,
-          isActive: true,
-          stockQuantity: 60,
+          inventoryQty: 60,
         })
       ).rejects.toThrow('SKU already exists');
     });
@@ -233,7 +223,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Electronics',
         slug: 'electronics',
         description: 'Electronics category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -241,7 +231,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Clothing',
         slug: 'clothing',
         description: 'Clothing category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 1,
       });
 
@@ -253,10 +243,7 @@ describe('ProductService Integration Tests', () => {
           sku: 'LAPTOP-001',
           price: 1299.99,
           categoryId: electronicsCategory.id,
-          brand: 'TechBrand',
-          tags: ['gaming', 'laptop', 'electronics'],
-          isActive: true,
-          stockQuantity: 25,
+          inventoryQty: 25,
         },
         {
           name: 'Wireless Mouse',
@@ -264,10 +251,7 @@ describe('ProductService Integration Tests', () => {
           sku: 'MOUSE-001',
           price: 39.99,
           categoryId: electronicsCategory.id,
-          brand: 'TechBrand',
-          tags: ['mouse', 'wireless', 'accessories'],
-          isActive: true,
-          stockQuantity: 100,
+          inventoryQty: 100,
         },
         {
           name: 'Cotton T-Shirt',
@@ -275,22 +259,15 @@ describe('ProductService Integration Tests', () => {
           sku: 'SHIRT-001',
           price: 29.99,
           categoryId: clothingCategory.id,
-          brand: 'FashionBrand',
-          tags: ['tshirt', 'cotton', 'clothing'],
-          isActive: true,
-          stockQuantity: 200,
+          inventoryQty: 200,
         },
         {
           name: 'Denim Jeans',
           slug: 'denim-jeans',
           sku: 'JEANS-001',
           price: 79.99,
-          salePrice: 59.99,
           categoryId: clothingCategory.id,
-          brand: 'FashionBrand',
-          tags: ['jeans', 'denim', 'clothing'],
-          isActive: true,
-          stockQuantity: 150,
+          inventoryQty: 150,
         },
         {
           name: 'Inactive Product',
@@ -298,10 +275,7 @@ describe('ProductService Integration Tests', () => {
           sku: 'INACTIVE-001',
           price: 19.99,
           categoryId: clothingCategory.id,
-          brand: 'TestBrand',
-          tags: ['test'],
-          isActive: false,
-          stockQuantity: 0,
+          inventoryQty: 0,
         },
       ];
 
@@ -317,10 +291,10 @@ describe('ProductService Integration Tests', () => {
       });
 
       expect(result.products).toHaveLength(4); // Only active products
-      expect(result.total).toBe(4);
-      expect(result.page).toBe(1);
-      expect(result.perPage).toBe(10);
-      expect(result.totalPages).toBe(1);
+      expect(result.pagination.total).toBe(4);
+      expect(result.pagination.page).toBe(1);
+      expect(result.pagination.perPage).toBe(10);
+      expect(result.pagination.totalPages).toBe(1);
     });
 
     it('should filter products by category', async () => {
@@ -365,7 +339,6 @@ describe('ProductService Integration Tests', () => {
 
     it('should filter products by brand', async () => {
       const result = await productService.list(testStoreId, {
-        brand: 'TechBrand',
         page: 1,
         perPage: 10,
       });
@@ -412,7 +385,7 @@ describe('ProductService Integration Tests', () => {
       });
 
       expect(page1.products).toHaveLength(2);
-      expect(page1.total).toBe(4);
+      expect(page1.pagination.total).toBe(4);
       expect(page1.totalPages).toBe(2);
 
       // Get second page
@@ -422,7 +395,7 @@ describe('ProductService Integration Tests', () => {
       });
 
       expect(page2.products).toHaveLength(2);
-      expect(page2.total).toBe(4);
+      expect(page2.pagination.total).toBe(4);
       expect(page2.totalPages).toBe(2);
 
       // Verify different products on each page
@@ -438,7 +411,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -448,15 +421,14 @@ describe('ProductService Integration Tests', () => {
         sku: 'STOCK-001',
         price: 50.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 100,
-        trackQuantity: true,
+        inventoryQty: 100,
+        trackInventory: true,
       });
 
       // Update stock
       const updatedProduct = await productService.updateStock(testStoreId, product.id, 150);
 
-      expect(updatedProduct.stockQuantity).toBe(150);
+      expect(updatedProduct.inventoryQty).toBe(150);
     });
 
     it('should decrease stock when product is purchased', async () => {
@@ -464,7 +436,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -474,15 +446,14 @@ describe('ProductService Integration Tests', () => {
         sku: 'PURCHASE-001',
         price: 75.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 50,
-        trackQuantity: true,
+        inventoryQty: 50,
+        trackInventory: true,
       });
 
       // Simulate purchase (decrease stock)
       const updatedProduct = await productService.decreaseStock(testStoreId, product.id, 5);
 
-      expect(updatedProduct.stockQuantity).toBe(45);
+      expect(updatedProduct.inventoryQty).toBe(45);
     });
 
     it('should prevent stock from going below zero', async () => {
@@ -490,7 +461,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -500,9 +471,8 @@ describe('ProductService Integration Tests', () => {
         sku: 'LOW-STOCK-001',
         price: 25.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 5,
-        trackQuantity: true,
+        inventoryQty: 5,
+        trackInventory: true,
         allowBackorders: false,
       });
 
@@ -517,7 +487,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -527,16 +497,15 @@ describe('ProductService Integration Tests', () => {
         sku: 'BACKORDER-001',
         price: 40.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 2,
-        trackQuantity: true,
+        inventoryQty: 2,
+        trackInventory: true,
         allowBackorders: true,
       });
 
       // Decrease stock below zero
       const updatedProduct = await productService.decreaseStock(testStoreId, product.id, 5);
 
-      expect(updatedProduct.stockQuantity).toBe(-3);
+      expect(updatedProduct.inventoryQty).toBe(-3);
     });
 
     it('should check if product is in stock', async () => {
@@ -544,7 +513,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -554,9 +523,8 @@ describe('ProductService Integration Tests', () => {
         sku: 'IN-STOCK-001',
         price: 30.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 10,
-        trackQuantity: true,
+        inventoryQty: 10,
+        trackInventory: true,
       });
 
       const outOfStockProduct = await productService.create(testStoreId, {
@@ -565,9 +533,8 @@ describe('ProductService Integration Tests', () => {
         sku: 'OUT-OF-STOCK-001',
         price: 35.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 0,
-        trackQuantity: true,
+        inventoryQty: 0,
+        trackInventory: true,
         allowBackorders: false,
       });
 
@@ -588,11 +555,10 @@ describe('ProductService Integration Tests', () => {
         type: 'color',
         description: 'Product color',
         required: false,
-        isActive: true,
         sortOrder: 0,
         values: [
-          { value: 'Red', slug: 'red', color: '#FF0000', sortOrder: 0, isActive: true },
-          { value: 'Blue', slug: 'blue', color: '#0000FF', sortOrder: 1, isActive: true },
+          { value: 'Red', slug: 'red', color: '#FF0000', sortOrder: 0},
+          { value: 'Blue', slug: 'blue', color: '#0000FF', sortOrder: 1},
         ],
       });
 
@@ -602,12 +568,11 @@ describe('ProductService Integration Tests', () => {
         type: 'select',
         description: 'Product size',
         required: true,
-        isActive: true,
         sortOrder: 1,
         values: [
-          { value: 'Small', slug: 'small', sortOrder: 0, isActive: true },
-          { value: 'Medium', slug: 'medium', sortOrder: 1, isActive: true },
-          { value: 'Large', slug: 'large', sortOrder: 2, isActive: true },
+          { value: 'Small', slug: 'small', sortOrder: 0},
+          { value: 'Medium', slug: 'medium', sortOrder: 1},
+          { value: 'Large', slug: 'large', sortOrder: 2},
         ],
       });
 
@@ -616,7 +581,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -627,8 +592,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'ATTR-001',
         price: 60.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 75,
+        inventoryQty: 75,
         attributes: [
           {
             attributeId: colorAttribute.id,
@@ -661,11 +625,10 @@ describe('ProductService Integration Tests', () => {
         type: 'color',
         description: 'Product color',
         required: false,
-        isActive: true,
         sortOrder: 0,
         values: [
-          { value: 'Red', slug: 'red', color: '#FF0000', sortOrder: 0, isActive: true },
-          { value: 'Green', slug: 'green', color: '#00FF00', sortOrder: 1, isActive: true },
+          { value: 'Red', slug: 'red', color: '#FF0000', sortOrder: 0},
+          { value: 'Green', slug: 'green', color: '#00FF00', sortOrder: 1},
         ],
       });
 
@@ -673,7 +636,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Test Category',
         slug: 'test-category',
         description: 'Test category',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -683,8 +646,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'UPDATE-001',
         price: 45.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 30,
+        inventoryQty: 30,
         attributes: [
           {
             attributeId: colorAttribute.id,
@@ -718,7 +680,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Store 1 Category',
         slug: 'store-1-category',
         description: 'Category in store 1',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -727,7 +689,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Store 2 Category',
         slug: 'store-2-category',
         description: 'Category in store 2',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -738,8 +700,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE1-001',
         price: 100.00,
         categoryId: category1.id,
-        isActive: true,
-        stockQuantity: 50,
+        inventoryQty: 50,
       });
 
       // Create product in second store
@@ -749,8 +710,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE2-001',
         price: 200.00,
         categoryId: category2.id,
-        isActive: true,
-        stockQuantity: 25,
+        inventoryQty: 25,
       });
 
       // List products for store 1
@@ -784,7 +744,7 @@ describe('ProductService Integration Tests', () => {
         name: 'Store 2 Category',
         slug: 'store-2-category',
         description: 'Category in store 2',
-        isActive: true,
+        isPublished: true,
         sortOrder: 0,
       });
 
@@ -794,8 +754,7 @@ describe('ProductService Integration Tests', () => {
         sku: 'STORE2-001',
         price: 150.00,
         categoryId: category.id,
-        isActive: true,
-        stockQuantity: 40,
+        inventoryQty: 40,
       });
 
       // Try to access store 2 product from store 1 context

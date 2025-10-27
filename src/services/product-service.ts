@@ -673,6 +673,13 @@ export class ProductService {
   }
 
   /**
+   * Alias for getProductById
+   */
+  async getById(storeId: string, productId: string): Promise<ProductWithRelations | null> {
+    return this.getProductById(productId, storeId);
+  }
+
+  /**
    * Alias for updateProduct
    */
   async update(storeId: string, productId: string, data: Partial<CreateProductData>): Promise<ProductWithRelations> {
