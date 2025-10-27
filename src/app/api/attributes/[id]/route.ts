@@ -8,12 +8,13 @@ import { attributeService, createAttributeSchema } from '@/services/attribute-se
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/attributes/[id] - Get single attribute
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -23,7 +24,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     }
 
     const attribute = await attributeService.getAttributeById(
-      params.id
+      id
     );
 
     if (!attribute) {
@@ -44,8 +45,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 // PATCH /api/attributes/[id] - Update attribute
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -61,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateSchema.parse(body);
 
     const attribute = await attributeService.updateAttribute(
-      params.id,
+      id,
       validatedData
     );
 
@@ -116,8 +118,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/attributes/[id] - Soft delete attribute
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -126,7 +129,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await attributeService.deleteAttribute(params.id);
+    await attributeService.deleteAttribute(id);
 
     return NextResponse.json(
       { message: 'Attribute deleted successfully' },

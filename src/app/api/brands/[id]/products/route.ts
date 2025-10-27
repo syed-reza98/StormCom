@@ -8,7 +8,7 @@ import { brandService } from '@/services/brand-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const assignProductsSchema = z.object({
@@ -20,8 +20,9 @@ const unassignProductsSchema = z.object({
 });
 
 // POST /api/brands/[id]/products - Assign products to brand
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { productIds } = assignProductsSchema.parse(body);
 
     const result = await brandService.assignProductsToBrand(
-      params.id,
+      id,
       productIds,
       session.user.storeId
     );
@@ -82,8 +83,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/brands/[id]/products - Remove products from brand
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -96,7 +98,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { productIds } = unassignProductsSchema.parse(body);
 
     const result = await brandService.removeProductsFromBrand(
-      params.id,
+      id,
       productIds,
       session.user.storeId
     );

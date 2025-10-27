@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { InventoryStatus } from '@prisma/client';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const decreaseStockSchema = z.object({
@@ -19,8 +19,9 @@ const decreaseStockSchema = z.object({
 });
 
 // POST /api/products/[id]/stock/decrease - Decrease inventory quantity
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       // Get current product with lock
       const product = await tx.product.findFirst({
         where: {
-          id: params.id,
+          id: id,
           storeId: session.user!.storeId!,
           deletedAt: null,
         },
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
       // Update product inventory
       const updatedProduct = await tx.product.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           inventoryQty: newQuantity,
           inventoryStatus: newStatus,
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       await tx.inventoryLog.create({
         data: {
           storeId: session.user!.storeId!,
-          productId: params.id,
+          productId: id,
           changeType: 'SALE',
           quantityChange: -validatedData.quantity,
           quantityBefore: product.inventoryQty,

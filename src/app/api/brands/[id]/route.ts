@@ -8,12 +8,13 @@ import { brandService, createBrandSchema } from '@/services/brand-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/brands/[id] - Get single brand
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -23,7 +24,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     }
 
     const brand = await brandService.getBrandById(
-      params.id,
+      id,
       session.user.storeId
     );
 
@@ -45,8 +46,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 // PATCH /api/brands/[id] - Update brand
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -62,7 +64,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateSchema.parse(body);
 
     const brand = await brandService.updateBrand(
-      params.id,
+      id,
       session.user.storeId,
       validatedData
     );
@@ -110,8 +112,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/brands/[id] - Soft delete brand
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -120,7 +123,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await brandService.deleteBrand(params.id, session.user.storeId);
+    await brandService.deleteBrand(id, session.user.storeId);
 
     return NextResponse.json(
       { message: 'Brand deleted successfully' },

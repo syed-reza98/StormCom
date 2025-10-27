@@ -9,12 +9,13 @@ import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/products/[id] - Get single product
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -23,7 +24,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const product = await productService.getProductById(params.id, session.user.storeId);
+    const product = await productService.getProductById(id, session.user.storeId);
 
     if (!product) {
       return NextResponse.json(
@@ -43,8 +44,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/products/[id] - Full product replacement
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -59,7 +61,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const validatedData = createProductSchema.parse(body);
 
     const product = await productService.updateProduct(
-      params.id,
+      id,
       session.user.storeId,
       validatedData
     );
@@ -108,8 +110,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // PATCH /api/products/[id] - Update product
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -125,7 +128,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateSchema.parse(body);
 
     const product = await productService.updateProduct(
-      params.id,
+      id,
       session.user.storeId,
       validatedData
     );
@@ -174,8 +177,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/products/[id] - Soft delete product
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -184,7 +188,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await productService.deleteProduct(params.id, session.user.storeId);
+    await productService.deleteProduct(id, session.user.storeId);
 
     return NextResponse.json(
       { message: 'Product deleted successfully' },

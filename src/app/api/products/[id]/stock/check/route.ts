@@ -7,12 +7,13 @@ import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/products/[id]/stock/check - Check stock availability
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const product = await db.product.findFirst({
       where: {
-        id: params.id,
+        id: id,
         storeId: session.user.storeId,
         deletedAt: null,
       },

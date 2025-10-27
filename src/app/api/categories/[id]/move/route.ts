@@ -8,7 +8,7 @@ import { categoryService } from '@/services/category-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const moveCategorySchema = z.object({
@@ -17,8 +17,9 @@ const moveCategorySchema = z.object({
 });
 
 // PATCH /api/categories/[id]/move - Move category in hierarchy
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -32,7 +33,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     // Note: position parameter is parsed but not used by moveCategory service method
 
     const result = await categoryService.moveCategory(
-      params.id,
+      id,
       newParentId ?? null,  // Convert undefined to null for service method
       session.user.storeId
     );

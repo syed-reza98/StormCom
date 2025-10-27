@@ -8,7 +8,7 @@ import { attributeService } from '@/services/attribute-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const assignAttributeSchema = z.object({
@@ -24,8 +24,9 @@ const bulkAssignSchema = z.object({
 });
 
 // POST /api/attributes/[id]/products - Assign attribute to product
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const result = await attributeService.assignAttributeToProduct(
       productId,
-      params.id,
+      id,
       value as string,
       session.user.storeId
     );
@@ -89,8 +90,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 }
 
 // POST /api/attributes/[id]/products/bulk - Bulk assign attribute to multiple products
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -104,7 +106,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     // Transform assignments to match service signature
     const transformedAssignments = assignments.map(a => ({
-      attributeId: params.id,
+      attributeId: id,
       value: String(a.value),
     }));
 

@@ -11,10 +11,13 @@ export class RegisterPage {
   readonly page: Page;
 
   // Form field locators
-  readonly firstNameInput: Locator;
-  readonly lastNameInput: Locator;
+  readonly nameInput: Locator;          // Updated: single name field (schema has 'name', not firstName/lastName)
+  readonly firstNameInput: Locator;     // Kept for backward compatibility
+  readonly lastNameInput: Locator;      // Kept for backward compatibility
   readonly emailInput: Locator;
+  readonly phoneInput: Locator;         // Added: phone field (in schema)
   readonly passwordInput: Locator;
+  readonly confirmPasswordInput: Locator; // Password confirmation field (re-added for test compatibility)
   readonly submitButton: Locator;
 
   // Navigation link locators
@@ -44,6 +47,7 @@ export class RegisterPage {
     this.lastNameInput = page.locator('input#lastName');
     this.emailInput = page.locator('input#email');
     this.passwordInput = page.locator('input#password');
+    this.confirmPasswordInput = page.locator('input#confirmPassword');
     this.submitButton = page.locator('button[type="submit"]');
 
     // Navigation links
@@ -72,6 +76,26 @@ export class RegisterPage {
   async goto(): Promise<void> {
     await this.page.goto('/register');
     await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Wait for the page to fully load
+   * Alias for compatibility with test expectations
+   */
+  async waitForPageLoad(): Promise<void> {
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Fill basic registration info (first name, last name, email)
+   * @param firstName - User's first name
+   * @param lastName - User's last name
+   * @param email - User's email address
+   */
+  async fillBasicInfo(firstName: string, lastName: string, email: string): Promise<void> {
+    await this.firstNameInput.fill(firstName);
+    await this.lastNameInput.fill(lastName);
+    await this.emailInput.fill(email);
   }
 
   /**
@@ -123,7 +147,7 @@ export class RegisterPage {
    * @param lastName - User's last name
    * @param email - User's email address
    * @param password - User's password
-   * @param confirmPassword - Password confirmation (optional, for compatibility)
+   * @param confirmPassword - Password confirmation (optional, defaults to password value)
    */
   async fillAndSubmit(
     firstName: string,
@@ -132,9 +156,14 @@ export class RegisterPage {
     password: string,
     confirmPassword?: string
   ): Promise<void> {
-    // Note: confirmPassword parameter exists for API compatibility but is not used
-    // as the current form doesn't have a separate password confirmation field
-    await this.register(firstName, lastName, email, password);
+    await this.fillForm(firstName, lastName, email, password);
+    
+    // Fill confirm password if the field exists and confirmPassword is provided
+    if (confirmPassword !== undefined) {
+      await this.confirmPasswordInput.fill(confirmPassword);
+    }
+    
+    await this.submit();
   }
 
   /**

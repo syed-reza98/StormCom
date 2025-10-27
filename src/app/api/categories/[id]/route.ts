@@ -9,12 +9,13 @@ import { createCategorySchema } from '@/services/category-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/categories/[id] - Get single category
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -29,13 +30,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const breadcrumb = searchParams.get('breadcrumb') === 'true';
     if (breadcrumb) {
       const breadcrumbPath = await categoryService.getCategoryBreadcrumb(
-        params.id,
+        id,
         session.user.storeId
       );
       return NextResponse.json({ data: breadcrumbPath });
     }
 
-    const category = await categoryService.getCategoryById(params.id, session.user.storeId);
+    const category = await categoryService.getCategoryById(id, session.user.storeId);
 
     if (!category) {
       return NextResponse.json(
@@ -55,8 +56,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PATCH /api/categories/[id] - Update category
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -72,7 +74,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateSchema.parse(body);
 
     const category = await categoryService.updateCategory(
-      params.id,
+      id,
       session.user.storeId,
       validatedData
     );
@@ -123,8 +125,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/categories/[id] - Soft delete category
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteParams) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -133,7 +136,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await categoryService.deleteCategory(params.id, session.user.storeId);
+    await categoryService.deleteCategory(id, session.user.storeId);
 
     return NextResponse.json(
       { message: 'Category deleted successfully' },

@@ -1,53 +1,30 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  291,
-                    "exitCode":  2,
-                    "timestamp":  "2025-10-28T03:24:08Z",
+                    "totalErrors":  279,
+                    "exitCode":  1,
+                    "timestamp":  "2025-10-28T04:40:12Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  329
+                    "totalLines":  317
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit",
                       "",
-                      "src/app/api/products/[id]/stock/decrease/route.ts(90,11): error TS2561: Object literal may only specify known properties, but \u0027changeType\u0027 does not exist in type \u0027Without\u003cInventoryLogCreateInput, InventoryLogUncheckedCreateInput\u003e \u0026 InventoryLogUncheckedCreateInput\u0027. Did you mean to write \u0027changeQty\u0027?",
+                      "src/app/api/products/[id]/stock/decrease/route.ts(91,11): error TS2561: Object literal may only specify known properties, but \u0027changeType\u0027 does not exist in type \u0027Without\u003cInventoryLogCreateInput, InventoryLogUncheckedCreateInput\u003e \u0026 InventoryLogUncheckedCreateInput\u0027. Did you mean to write \u0027changeQty\u0027?",
                       "tests/e2e/auth/mfa-recovery.spec.ts(44,19): error TS2353: Object literal may only specify known properties, and \u0027mfaRecoveryToken\u0027 does not exist in type \u0027UserSelect\u003cDefaultArgs\u003e\u0027.",
                       "tests/e2e/auth/mfa-recovery.spec.ts(47,25): error TS2339: Property \u0027mfaRecoveryToken\u0027 does not exist on type \u0027{ password: string; id: string; email: string; name: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
                       "tests/e2e/auth/mfa-recovery.spec.ts(48,25): error TS2339: Property \u0027mfaRecoveryExpires\u0027 does not exist on type \u0027{ password: string; id: string; email: string; name: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
                       "tests/e2e/auth/mfa-recovery.spec.ts(69,11): error TS2353: Object literal may only specify known properties, and \u0027mfaRecoveryToken\u0027 does not exist in type \u0027(Without\u003cUserUpdateInput, UserUncheckedUpdateInput\u003e \u0026 UserUncheckedUpdateInput) | (Without\u003c...\u003e \u0026 UserUpdateInput)\u0027.",
                       "tests/e2e/auth/password-history.spec.ts(286,11): error TS2304: Cannot find name \u0027submitButton\u0027.",
-                      "tests/e2e/auth/password-reset.spec.ts(126,52): error TS2339: Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                      "tests/e2e/auth/password-reset.spec.ts(131,56): error TS2551: Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                      "tests/e2e/auth/password-reset.spec.ts(133,52): error TS2551: Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                      "tests/e2e/auth/password-reset.spec.ts(173,48): error TS2551: Property \u0027hasPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordError\u0027?",
                       "tests/e2e/auth/password-reset.spec.ts(198,11): error TS2353: Object literal may only specify known properties, and \u0027passwordHash\u0027 does not exist in type \u0027Without\u003cPasswordHistoryCreateInput, PasswordHistoryUncheckedCreateInput\u003e \u0026 PasswordHistoryUncheckedCreateInput\u0027.",
-                      "tests/e2e/auth/password-reset.spec.ts(224,49): error TS2339: Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                      "tests/e2e/auth/password-reset.spec.ts(263,48): error TS2551: Property \u0027hasConfirmPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027confirmPasswordError\u0027?",
                       "tests/e2e/auth/password-validation.spec.ts(41,7): error TS6133: \u0027accountPage\u0027 is declared but its value is never read.",
-                      "tests/e2e/auth/password-validation.spec.ts(130,24): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/password-validation.spec.ts(140,9): error TS2554: Expected 4 arguments, but got 5.",
-                      "tests/e2e/auth/password-validation.spec.ts(156,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(164,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/password-validation.spec.ts(215,24): error TS2551: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027SettingsPage\u0027. Did you mean \u0027waitForLoad\u0027?",
                       "tests/e2e/auth/password-validation.spec.ts(218,24): error TS2551: Property \u0027navigateToPasswordSection\u0027 does not exist on type \u0027SettingsPage\u0027. Did you mean \u0027navigateToPasswordTab\u0027?",
-                      "tests/e2e/auth/password-validation.spec.ts(290,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(334,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(357,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(358,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(388,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(418,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(419,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(440,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(441,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(456,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(519,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(559,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                      "tests/e2e/auth/password-validation.spec.ts(560,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/register-duplicate.spec.ts(39,7): error TS6133: \u0027loginPage\u0027 is declared but its value is never read.",
                       "tests/e2e/auth/register-duplicate.spec.ts(110,7): error TS2554: Expected 4 arguments, but got 5.",
-                      "tests/e2e/auth/register-duplicate.spec.ts(187,26): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/register-duplicate.spec.ts(195,9): error TS2554: Expected 4 arguments, but got 5.",
                       "tests/e2e/auth/register-duplicate.spec.ts(253,11): error TS6133: \u0027differentStoreUser\u0027 is declared but its value is never read.",
                       "tests/e2e/auth/register-duplicate.spec.ts(268,9): error TS2554: Expected 4 arguments, but got 5.",
@@ -56,9 +33,7 @@
                       "    Argument of type \u0027string\u0027 is not assignable to parameter of type \u0027boolean\u0027.",
                       "  Overload 2 of 5, \u0027(callback: ConditionBody\u003cPlaywrightTestArgs \u0026 PlaywrightTestOptions \u0026 PlaywrightWorkerArgs \u0026 PlaywrightWorkerOptions\u003e, description?: string | undefined): void\u0027, gave the following error.",
                       "    Argument of type \u0027string\u0027 is not assignable to parameter of type \u0027ConditionBody\u003cPlaywrightTestArgs \u0026 PlaywrightTestOptions \u0026 PlaywrightWorkerArgs \u0026 PlaywrightWorkerOptions\u003e\u0027.",
-                      "tests/e2e/auth/register-duplicate.spec.ts(331,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/register-duplicate.spec.ts(470,7): error TS2554: Expected 4 arguments, but got 5.",
-                      "tests/e2e/auth/register-duplicate.spec.ts(522,24): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
                       "tests/e2e/auth/register.spec.ts(132,11): error TS6133: \u0027isLoadingDuringSubmit\u0027 is declared but its value is never read.",
                       "tests/e2e/auth/role-redirect.spec.ts(99,24): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
                       "tests/e2e/auth/session-invalidation.spec.ts(248,17): error TS2769: No overload matches this call.",
@@ -71,7 +46,8 @@
                       "    Argument of type \u0027string\u0027 is not assignable to parameter of type \u0027boolean\u0027.",
                       "  Overload 2 of 5, \u0027(callback: ConditionBody\u003cPlaywrightTestArgs \u0026 PlaywrightTestOptions \u0026 PlaywrightWorkerArgs \u0026 PlaywrightWorkerOptions\u003e, description?: string | undefined): void\u0027, gave the following error.",
                       "    Argument of type \u0027string\u0027 is not assignable to parameter of type \u0027ConditionBody\u003cPlaywrightTestArgs \u0026 PlaywrightTestOptions \u0026 PlaywrightWorkerArgs \u0026 PlaywrightWorkerOptions\u003e\u0027.",
-                      "tests/e2e/pages/RegisterPage.ts(133,5): error TS6133: \u0027confirmPassword\u0027 is declared but its value is never read.",
+                      "tests/e2e/pages/RegisterPage.ts(14,12): error TS2564: Property \u0027nameInput\u0027 has no initializer and is not definitely assigned in the constructor.",
+                      "tests/e2e/pages/RegisterPage.ts(18,12): error TS2564: Property \u0027phoneInput\u0027 has no initializer and is not definitely assigned in the constructor.",
                       "tests/e2e/products/categories-management.spec.ts(218,13): error TS6133: \u0027firstCategoryName\u0027 is declared but its value is never read.",
                       "tests/e2e/products/categories-management.spec.ts(248,13): error TS6133: \u0027targetCategory\u0027 is declared but its value is never read.",
                       "tests/e2e/products/categories-management.spec.ts(255,57): error TS2339: Property \u0027filter\u0027 does not exist on type \u0027Promise\u003cvoid\u003e\u0027.",
@@ -85,7 +61,19 @@
                       "tests/e2e/stores/store-management.spec.ts(134,22): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
                       "tests/e2e/stores/store-management.spec.ts(262,24): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
                       "tests/e2e/stores/store-management.spec.ts(478,11): error TS2561: Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
+                      "tests/integration/api/products-api.test.ts(268,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(284,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(304,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(339,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(365,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(387,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(414,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(427,61): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(442,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(461,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
                       "tests/integration/api/products-api.test.ts(494,15): error TS2339: Property \u0027PUT\u0027 does not exist on type \u0027typeof import(\"F:/stormcom/src/app/api/products/[id]/stock/route\")\u0027.",
+                      "tests/integration/api/products-api.test.ts(517,56): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                      "tests/integration/api/products-api.test.ts(531,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
                       "tests/integration/api/stores.test.ts(714,11): error TS2322: Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027OrderStatus | EnumOrderStatusFilter\u003c\"Order\"\u003e | undefined\u0027.",
                       "tests/integration/api/stores.test.ts(717,11): error TS2353: Object literal may only specify known properties, and \u0027total\u0027 does not exist in type \u0027OrderSumAggregateInputType\u0027.",
                       "tests/integration/api/stores.test.ts(721,23): error TS18048: \u0027revenueResult._sum\u0027 is possibly \u0027undefined\u0027.",
@@ -342,8 +330,8 @@
                    {
                        "message":  "Object literal may only specify known properties, but \u0027changeType\u0027 does not exist in type \u0027Without\u003cInventoryLogCreateInput, InventoryLogUncheckedCreateInput\u003e \u0026 InventoryLogUncheckedCreateInput\u0027. Did you mean to write \u0027changeQty\u0027?",
                        "column":  11,
-                       "line":  90,
-                       "fullText":  "src/app/api/products/[id]/stock/decrease/route.ts(90,11): error TS2561: Object literal may only specify known properties, but \u0027changeType\u0027 does not exist in type \u0027Without\u003cInventoryLogCreateInput, InventoryLogUncheckedCreateInput\u003e \u0026 InventoryLogUncheckedCreateInput\u0027. Did you mean to write \u0027changeQty\u0027?",
+                       "line":  91,
+                       "fullText":  "src/app/api/products/[id]/stock/decrease/route.ts(91,11): error TS2561: Object literal may only specify known properties, but \u0027changeType\u0027 does not exist in type \u0027Without\u003cInventoryLogCreateInput, InventoryLogUncheckedCreateInput\u003e \u0026 InventoryLogUncheckedCreateInput\u0027. Did you mean to write \u0027changeQty\u0027?",
                        "code":  "TS2561",
                        "severity":  "error",
                        "file":  "src/app/api/products/[id]/stock/decrease/route.ts"
@@ -394,65 +382,11 @@
                        "file":  "tests/e2e/auth/password-history.spec.ts"
                    },
                    {
-                       "message":  "Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                       "column":  52,
-                       "line":  126,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(126,52): error TS2339: Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                       "column":  56,
-                       "line":  131,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(131,56): error TS2551: Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                       "code":  "TS2551",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                       "column":  52,
-                       "line":  133,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(133,52): error TS2551: Property \u0027newPasswordInput\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordInput\u0027?",
-                       "code":  "TS2551",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027hasPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordError\u0027?",
-                       "column":  48,
-                       "line":  173,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(173,48): error TS2551: Property \u0027hasPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027passwordError\u0027?",
-                       "code":  "TS2551",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
                        "message":  "Object literal may only specify known properties, and \u0027passwordHash\u0027 does not exist in type \u0027Without\u003cPasswordHistoryCreateInput, PasswordHistoryUncheckedCreateInput\u003e \u0026 PasswordHistoryUncheckedCreateInput\u0027.",
                        "column":  11,
                        "line":  198,
                        "fullText":  "tests/e2e/auth/password-reset.spec.ts(198,11): error TS2353: Object literal may only specify known properties, and \u0027passwordHash\u0027 does not exist in type \u0027Without\u003cPasswordHistoryCreateInput, PasswordHistoryUncheckedCreateInput\u003e \u0026 PasswordHistoryUncheckedCreateInput\u0027.",
                        "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                       "column":  49,
-                       "line":  224,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(224,49): error TS2339: Property \u0027getErrorMessage\u0027 does not exist on type \u0027PasswordResetPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-reset.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027hasConfirmPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027confirmPasswordError\u0027?",
-                       "column":  48,
-                       "line":  263,
-                       "fullText":  "tests/e2e/auth/password-reset.spec.ts(263,48): error TS2551: Property \u0027hasConfirmPasswordError\u0027 does not exist on type \u0027PasswordResetPage\u0027. Did you mean \u0027confirmPasswordError\u0027?",
-                       "code":  "TS2551",
                        "severity":  "error",
                        "file":  "tests/e2e/auth/password-reset.spec.ts"
                    },
@@ -466,38 +400,11 @@
                        "file":  "tests/e2e/auth/password-validation.spec.ts"
                    },
                    {
-                       "message":  "Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  130,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(130,24): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
                        "message":  "Expected 4 arguments, but got 5.",
                        "column":  9,
                        "line":  140,
                        "fullText":  "tests/e2e/auth/password-validation.spec.ts(140,9): error TS2554: Expected 4 arguments, but got 5.",
                        "code":  "TS2554",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  156,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(156,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  164,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(164,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
                        "severity":  "error",
                        "file":  "tests/e2e/auth/password-validation.spec.ts"
                    },
@@ -520,123 +427,6 @@
                        "file":  "tests/e2e/auth/password-validation.spec.ts"
                    },
                    {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  290,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(290,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  334,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(334,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  357,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(357,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  358,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(358,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  388,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(388,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  418,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(418,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  419,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(419,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  440,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(440,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  441,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(441,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  456,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(456,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  519,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(519,24): error TS2339: Property \u0027fillBasicInfo\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  559,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(559,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  560,
-                       "fullText":  "tests/e2e/auth/password-validation.spec.ts(560,26): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/password-validation.spec.ts"
-                   },
-                   {
                        "message":  "\u0027loginPage\u0027 is declared but its value is never read.",
                        "column":  7,
                        "line":  39,
@@ -651,15 +441,6 @@
                        "line":  110,
                        "fullText":  "tests/e2e/auth/register-duplicate.spec.ts(110,7): error TS2554: Expected 4 arguments, but got 5.",
                        "code":  "TS2554",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/register-duplicate.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  26,
-                       "line":  187,
-                       "fullText":  "tests/e2e/auth/register-duplicate.spec.ts(187,26): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
                        "severity":  "error",
                        "file":  "tests/e2e/auth/register-duplicate.spec.ts"
                    },
@@ -700,29 +481,11 @@
                        "column":  17
                    },
                    {
-                       "message":  "Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  331,
-                       "fullText":  "tests/e2e/auth/register-duplicate.spec.ts(331,24): error TS2339: Property \u0027confirmPasswordInput\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/register-duplicate.spec.ts"
-                   },
-                   {
                        "message":  "Expected 4 arguments, but got 5.",
                        "column":  7,
                        "line":  470,
                        "fullText":  "tests/e2e/auth/register-duplicate.spec.ts(470,7): error TS2554: Expected 4 arguments, but got 5.",
                        "code":  "TS2554",
-                       "severity":  "error",
-                       "file":  "tests/e2e/auth/register-duplicate.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "column":  24,
-                       "line":  522,
-                       "fullText":  "tests/e2e/auth/register-duplicate.spec.ts(522,24): error TS2339: Property \u0027waitForPageLoad\u0027 does not exist on type \u0027RegisterPage\u0027.",
-                       "code":  "TS2339",
                        "severity":  "error",
                        "file":  "tests/e2e/auth/register-duplicate.spec.ts"
                    },
@@ -763,11 +526,20 @@
                        "column":  17
                    },
                    {
-                       "message":  "\u0027confirmPassword\u0027 is declared but its value is never read.",
-                       "column":  5,
-                       "line":  133,
-                       "fullText":  "tests/e2e/pages/RegisterPage.ts(133,5): error TS6133: \u0027confirmPassword\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
+                       "message":  "Property \u0027nameInput\u0027 has no initializer and is not definitely assigned in the constructor.",
+                       "column":  12,
+                       "line":  14,
+                       "fullText":  "tests/e2e/pages/RegisterPage.ts(14,12): error TS2564: Property \u0027nameInput\u0027 has no initializer and is not definitely assigned in the constructor.",
+                       "code":  "TS2564",
+                       "severity":  "error",
+                       "file":  "tests/e2e/pages/RegisterPage.ts"
+                   },
+                   {
+                       "message":  "Property \u0027phoneInput\u0027 has no initializer and is not definitely assigned in the constructor.",
+                       "column":  12,
+                       "line":  18,
+                       "fullText":  "tests/e2e/pages/RegisterPage.ts(18,12): error TS2564: Property \u0027phoneInput\u0027 has no initializer and is not definitely assigned in the constructor.",
+                       "code":  "TS2564",
                        "severity":  "error",
                        "file":  "tests/e2e/pages/RegisterPage.ts"
                    },
@@ -889,11 +661,119 @@
                        "file":  "tests/e2e/stores/store-management.spec.ts"
                    },
                    {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  268,
+                       "fullText":  "tests/integration/api/products-api.test.ts(268,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  284,
+                       "fullText":  "tests/integration/api/products-api.test.ts(284,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  304,
+                       "fullText":  "tests/integration/api/products-api.test.ts(304,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  339,
+                       "fullText":  "tests/integration/api/products-api.test.ts(339,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  365,
+                       "fullText":  "tests/integration/api/products-api.test.ts(365,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  387,
+                       "fullText":  "tests/integration/api/products-api.test.ts(387,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  58,
+                       "line":  414,
+                       "fullText":  "tests/integration/api/products-api.test.ts(414,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  61,
+                       "line":  427,
+                       "fullText":  "tests/integration/api/products-api.test.ts(427,61): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  58,
+                       "line":  442,
+                       "fullText":  "tests/integration/api/products-api.test.ts(442,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  58,
+                       "line":  461,
+                       "fullText":  "tests/integration/api/products-api.test.ts(461,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
                        "message":  "Property \u0027PUT\u0027 does not exist on type \u0027typeof import(\"F:/stormcom/src/app/api/products/[id]/stock/route\")\u0027.",
                        "column":  15,
                        "line":  494,
                        "fullText":  "tests/integration/api/products-api.test.ts(494,15): error TS2339: Property \u0027PUT\u0027 does not exist on type \u0027typeof import(\"F:/stormcom/src/app/api/products/[id]/stock/route\")\u0027.",
                        "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  56,
+                       "line":  517,
+                       "fullText":  "tests/integration/api/products-api.test.ts(517,56): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "tests/integration/api/products-api.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "column":  55,
+                       "line":  531,
+                       "fullText":  "tests/integration/api/products-api.test.ts(531,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
+                       "code":  "TS2353",
                        "severity":  "error",
                        "file":  "tests/integration/api/products-api.test.ts"
                    },

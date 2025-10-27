@@ -315,6 +315,46 @@ export class PasswordResetPage {
   // ============= Error and Validation Methods =============
 
   /**
+   * Get general error message from the page
+   * Alias for getServerErrorText() for test compatibility
+   * @returns Error message text or null if not visible
+   */
+  async getErrorMessage(): Promise<string | null> {
+    return await this.getServerErrorText();
+  }
+
+  /**
+   * Alias for passwordInput - some tests expect newPasswordInput
+   */
+  get newPasswordInput(): Locator {
+    return this.passwordInput;
+  }
+
+  /**
+   * Check if password field has an error
+   * @returns True if password error is visible
+   */
+  async hasPasswordError(): Promise<boolean> {
+    try {
+      return await this.passwordError.isVisible();
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if confirm password field has an error
+   * @returns True if confirm password error is visible
+   */
+  async hasConfirmPasswordError(): Promise<boolean> {
+    try {
+      return await this.confirmPasswordError.isVisible();
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Get the server error alert text
    * @returns Error message text or null if not visible
    */
