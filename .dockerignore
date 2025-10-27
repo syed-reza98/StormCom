@@ -34,7 +34,6 @@ docs/
 specs/
 
 # Development files
-.vscode/
 .idea/
 *.swp
 *.swo

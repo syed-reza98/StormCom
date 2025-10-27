@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
+    "type-check:save": "powershell -ExecutionPolicy Bypass -File ./scripts/collect-type-errors.ps1",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -53,6 +54,7 @@
     "next": "^16.0.0",
     "next-auth": "^4.24.11",
     "next-devtools-mcp": "^0.2.1",
+    "otpauth": "^9.4.1",
     "prisma": "^6.1.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
@@ -100,7 +102,7 @@
     }
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=11.0.0"
   }
 }

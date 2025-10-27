@@ -42,6 +42,71 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 }
 
+// PUT /api/products/[id] - Full product replacement
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.storeId) {
+      return NextResponse.json(
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    
+    // Validate input (full schema for PUT)
+    const validatedData = createProductSchema.parse(body);
+
+    const product = await productService.updateProduct(
+      params.id,
+      session.user.storeId,
+      validatedData
+    );
+
+    return NextResponse.json({
+      data: product,
+      message: 'Product updated successfully',
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          error: { 
+            code: 'VALIDATION_ERROR', 
+            message: 'Invalid input', 
+            details: error.errors 
+          } 
+        },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof Error) {
+      // Handle business logic errors
+      if (error.message === 'Product not found') {
+        return NextResponse.json(
+          { error: { code: 'NOT_FOUND', message: error.message } },
+          { status: 404 }
+        );
+      }
+
+      if (error.message.includes('already exists')) {
+        return NextResponse.json(
+          { error: { code: 'BUSINESS_ERROR', message: error.message } },
+          { status: 400 }
+        );
+      }
+    }
+
+    console.error('Error updating product:', error);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to update product' } },
+      { status: 500 }
+    );
+  }
+}
+
 // PATCH /api/products/[id] - Update product
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
@@ -76,7 +141,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           error: { 
             code: 'VALIDATION_ERROR', 
             message: 'Invalid input', 
-            changes: error.errors 
+            details: error.errors 
           } 
         },
         { status: 400 }

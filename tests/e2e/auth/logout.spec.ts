@@ -2,7 +2,6 @@
 
 import { test, expect, Page } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
 import { RegisterPage } from '../pages/RegisterPage';
 
 /**
@@ -39,7 +38,6 @@ import { RegisterPage } from '../pages/RegisterPage';
 test.describe('User Logout from User Menu - T078', () => {
   let page: Page;
   let loginPage: LoginPage;
-  let dashboardPage: DashboardPage;
   let registerPage: RegisterPage;
 
   // Test user data
@@ -54,7 +52,6 @@ test.describe('User Logout from User Menu - T078', () => {
   test.beforeEach(async ({ page: testPage }) => {
     page = testPage;
     loginPage = new LoginPage(page);
-    dashboardPage = new DashboardPage(page);
     registerPage = new RegisterPage(page);
 
     // Setup authenticated user session
@@ -511,7 +508,7 @@ test.describe('User Logout from User Menu - T078', () => {
     expect(firstLogout).toBe(true);
 
     // Immediately try logout again (race condition test)
-    const secondLogout = await findAndClickLogout();
+    await findAndClickLogout();
     
     // Wait for any logout process to complete
     await page.waitForTimeout(3000);

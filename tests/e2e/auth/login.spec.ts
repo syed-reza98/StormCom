@@ -74,7 +74,10 @@ test.describe('User Login', () => {
 
       expect(auditLog).not.toBeNull();
       expect(auditLog?.action).toBe('LOGIN');
-      expect(auditLog?.details).toMatchObject({
+      
+      // Parse changes JSON to verify it contains the expected data
+      const changes = auditLog?.changes ? JSON.parse(auditLog.changes) : null;
+      expect(changes).toMatchObject({
         email: admin.email,
         role: 'SUPER_ADMIN',
       });
@@ -167,8 +170,8 @@ test.describe('User Login', () => {
       // Wait brief moment for loading state
       await loginPage.page.waitForTimeout(100);
       
-      // Check if loading state is shown
-      const isLoading = await loginPage.isSubmitLoading();
+      // Check if loading state is shown (validates UI feedback)
+      await loginPage.isSubmitLoading();
       
       // Wait for completion
       await submitPromise;

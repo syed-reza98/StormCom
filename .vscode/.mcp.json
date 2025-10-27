@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"],
+      "tools": ["*"]
+    }
+  }
+}

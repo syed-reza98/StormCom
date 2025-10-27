@@ -118,6 +118,26 @@ export class RegisterPage {
   }
 
   /**
+   * Alias for register() method - fill and submit registration form
+   * @param firstName - User's first name
+   * @param lastName - User's last name
+   * @param email - User's email address
+   * @param password - User's password
+   * @param confirmPassword - Password confirmation (optional, for compatibility)
+   */
+  async fillAndSubmit(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    confirmPassword?: string
+  ): Promise<void> {
+    // Note: confirmPassword parameter exists for API compatibility but is not used
+    // as the current form doesn't have a separate password confirmation field
+    await this.register(firstName, lastName, email, password);
+  }
+
+  /**
    * Wait for successful registration (success message appears)
    * @param timeout - Optional timeout in milliseconds (default: 10000)
    */

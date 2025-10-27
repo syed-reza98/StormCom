@@ -85,7 +85,10 @@ test.describe('Login Errors', () => {
 
       expect(auditLog).not.toBeNull();
       expect(auditLog?.action).toBe('LOGIN_FAILED');
-      expect(auditLog?.details).toMatchObject({
+      
+      // Parse changes JSON to verify it contains the expected data
+      const changes = auditLog?.changes ? JSON.parse(auditLog.changes) : null;
+      expect(changes).toMatchObject({
         email: user.email,
         reason: expect.stringMatching(/password|credentials/i),
       });
@@ -188,31 +191,31 @@ test.describe('Login Errors', () => {
   });
 
   test('Failed login does not reveal account status', async () => {
-    // Arrange - Create inactive user
+    // Arrange - Create deleted user (soft delete)
     const user = await createSuperAdmin({
-      email: 'inactive-user-test@stormcom-test.local',
+      email: 'deleted-user-test@stormcom-test.local',
       password: 'Password123!',
     });
 
     try {
-      // Set user to INACTIVE
+      // Soft delete user
       await db.user.update({
         where: { id: user.id },
-        data: { status: 'INACTIVE' },
+        data: { deletedAt: new Date() },
       });
 
       // Act - Try to login with correct password
       await loginPage.login(user.email, user.plainPassword);
       await loginPage.page.waitForTimeout(1000);
 
-      // Assert - Should show generic error, not "account inactive"
+      // Assert - Should show generic error, not "account deleted"
       const errorText = await loginPage.getErrorAlertText();
       
       // Should use generic message
       expect(errorText).toMatch(/invalid.*email.*password|incorrect.*credentials/i);
       
       // Should NOT reveal account status
-      expect(errorText).not.toMatch(/inactive|disabled|suspended/i);
+      expect(errorText).not.toMatch(/deleted|inactive|disabled|suspended/i);
     } finally {
       // Clean up
       await deleteTestUser(user.id);

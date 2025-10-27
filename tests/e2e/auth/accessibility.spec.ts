@@ -1,7 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
-import { DashboardPage } from '../pages/DashboardPage';
 
 /**
  * E2E Accessibility Tests: Authentication Flows
@@ -40,7 +39,6 @@ test.describe('Authentication Accessibility Tests - T080', () => {
   let page: Page;
   let loginPage: LoginPage;
   let registerPage: RegisterPage;
-  let dashboardPage: DashboardPage;
 
   // Test user data
   const testUser = {
@@ -55,7 +53,6 @@ test.describe('Authentication Accessibility Tests - T080', () => {
     page = testPage;
     loginPage = new LoginPage(page);
     registerPage = new RegisterPage(page);
-    dashboardPage = new DashboardPage(page);
   });
 
   test.describe('Login Page Accessibility', () => {
@@ -200,8 +197,6 @@ test.describe('Authentication Accessibility Tests - T080', () => {
 
       // Find email input via tab navigation
       let emailFound = false;
-      let passwordFound = false;
-      let submitFound = false;
       
       for (let i = 0; i < 10; i++) {
         await page.keyboard.press('Tab');
@@ -215,9 +210,7 @@ test.describe('Authentication Accessibility Tests - T080', () => {
           emailFound = true;
         } else if (inputType === 'password') {
           await page.keyboard.type(testUser.password);
-          passwordFound = true;
         } else if (tagName === 'BUTTON' && await focusedElement.textContent().then(t => t?.toLowerCase().includes('login'))) {
-          submitFound = true;
           break;
         }
       }
@@ -268,11 +261,9 @@ test.describe('Authentication Accessibility Tests - T080', () => {
 
       // Form should associate errors with inputs
       const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
 
       if (await emailInput.count() > 0) {
         const ariaDescribedBy = await emailInput.getAttribute('aria-describedby');
-        const ariaInvalid = await emailInput.getAttribute('aria-invalid');
         
         if (ariaDescribedBy) {
           const describedElement = page.locator(`#${ariaDescribedBy}`);
@@ -304,7 +295,6 @@ test.describe('Authentication Accessibility Tests - T080', () => {
 
       // Form should have fieldsets or proper grouping for related fields
       const fieldsets = page.locator('fieldset');
-      const groupedInputs = page.locator('[role="group"]');
       
       if (await fieldsets.count() > 0) {
         // Fieldsets should have legends
@@ -421,7 +411,6 @@ test.describe('Authentication Accessibility Tests - T080', () => {
         const focusedElement = page.locator(':focus');
         const tagName = await focusedElement.evaluate(el => el.tagName).catch(() => '');
         const inputType = await focusedElement.getAttribute('type');
-        const inputName = await focusedElement.getAttribute('name');
 
         if (tagName === 'INPUT') {
           if (inputType === 'text' && !formFields.firstName) {

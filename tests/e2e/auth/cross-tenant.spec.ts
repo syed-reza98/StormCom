@@ -9,7 +9,6 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
-import { db } from '../../../src/lib/db';
 import { createSuperAdmin, deleteTestUser } from '../fixtures/users';
 import { createTestStore, deleteTestStore } from '../fixtures/stores';
 

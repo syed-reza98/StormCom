@@ -203,4 +203,49 @@ export class LoginPage {
   async submitWithEnter(): Promise<void> {
     await this.passwordInput.press('Enter');
   }
+
+  /**
+   * Fill email field only
+   * @param email - User email
+   */
+  async fillEmail(email: string): Promise<void> {
+    await this.emailInput.fill(email);
+  }
+
+  /**
+   * Fill password field only
+   * @param password - User password
+   */
+  async fillPassword(password: string): Promise<void> {
+    await this.passwordInput.fill(password);
+  }
+
+  /**
+   * Click submit button
+   */
+  async clickSubmit(): Promise<void> {
+    await this.submitButton.click();
+  }
+
+  /**
+   * Wait for error alert to appear
+   */
+  async waitForError(): Promise<void> {
+    await expect(this.errorAlert).toBeVisible({ timeout: 5000 });
+  }
+
+  /**
+   * Get error message text (alias for getErrorAlertText)
+   */
+  async getErrorMessage(): Promise<string> {
+    return await this.getErrorAlertText();
+  }
+
+  /**
+   * Clear the login form
+   */
+  async clearForm(): Promise<void> {
+    await this.emailInput.clear();
+    await this.passwordInput.clear();
+  }
 }

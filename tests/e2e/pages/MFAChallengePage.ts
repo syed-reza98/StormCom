@@ -32,6 +32,7 @@ export class MFAChallengePage {
 
   // Navigation locators
   readonly backToLoginLink: Locator;
+  readonly lostAccessLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -58,6 +59,7 @@ export class MFAChallengePage {
 
     // Navigation
     this.backToLoginLink = page.locator('a:has-text("Back to Login")');
+    this.lostAccessLink = page.locator('a:has-text("Lost access?")');
   }
 
   /**

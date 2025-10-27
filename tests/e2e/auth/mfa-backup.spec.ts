@@ -11,6 +11,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { MFAChallengePage } from '../pages/MFAChallengePage';
 import { db } from '../../../src/lib/db';
 import { createSuperAdmin, deleteTestUser } from '../fixtures/users';
+import { hashPassword } from '../../../src/lib/password';
 
 test.describe('MFA Backup Codes', () => {
   test('User can login with MFA backup code', async ({ page }) => {
@@ -22,10 +23,14 @@ test.describe('MFA Backup Codes', () => {
       totpSecret: 'JBSWY3DPEHPK3PXP',
     });
 
-    // Add backup code
-    await db.user.update({
-      where: { id: user.id },
-      data: { backupCodes: [backupCode] },
+    // Add backup code using proper relation
+    const hashedCode = await hashPassword(backupCode);
+    await db.mFABackupCode.create({
+      data: {
+        userId: user.id,
+        hashedCode,
+        expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
+      },
     });
 
     try {
@@ -44,11 +49,10 @@ test.describe('MFA Backup Codes', () => {
       await expect(page).toHaveURL(/\/dashboard/);
 
       // Verify code marked as used
-      const updatedUser = await db.user.findUnique({
-        where: { id: user.id },
-        select: { backupCodes: true },
+      const backupCodeRecord = await db.mFABackupCode.findFirst({
+        where: { userId: user.id },
       });
-      expect(updatedUser?.backupCodes).not.toContain(backupCode);
+      expect(backupCodeRecord?.isUsed).toBe(true);
     } finally {
       await deleteTestUser(user.id);
     }
@@ -56,6 +60,7 @@ test.describe('MFA Backup Codes', () => {
 
   test('Backup code can only be used once', async ({ page }) => {
     const backupCode = 'SINGLEUSE12345';
+    const backupCode2 = 'BACKUP2';
     const user = await createSuperAdmin({
       email: 'single-use-test@stormcom-test.local',
       password: 'SingleUse123!',
@@ -63,9 +68,22 @@ test.describe('MFA Backup Codes', () => {
       totpSecret: 'JBSWY3DPEHPK3PXP',
     });
 
-    await db.user.update({
-      where: { id: user.id },
-      data: { backupCodes: [backupCode, 'BACKUP2'] },
+    // Create two backup codes using proper relation
+    const hashedCode = await hashPassword(backupCode);
+    const hashedCode2 = await hashPassword(backupCode2);
+    await db.mFABackupCode.createMany({
+      data: [
+        {
+          userId: user.id,
+          hashedCode,
+          expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        },
+        {
+          userId: user.id,
+          hashedCode: hashedCode2,
+          expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        },
+      ],
     });
 
     try {

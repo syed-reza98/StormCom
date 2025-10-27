@@ -253,6 +253,47 @@ export class PasswordResetPage {
     await this.page.waitForURL('/forgot-password');
   }
 
+  // ============= Convenience Alias Methods =============
+
+  /**
+   * Alias for gotoResetPassword() - navigate to reset password page with token
+   * @param token - Reset token from email link
+   */
+  async gotoWithToken(token: string): Promise<void> {
+    await this.gotoResetPassword(token);
+  }
+
+  /**
+   * Alias for page load wait - waits for the reset password page to be fully loaded
+   */
+  async waitForPageLoad(): Promise<void> {
+    await this.page.waitForLoadState('networkidle');
+    await this.resetPasswordHeading.waitFor({ state: 'visible' });
+  }
+
+  /**
+   * Alias for fillResetPasswordForm() - fill new password fields
+   * @param password - New password
+   * @param confirmPassword - Password confirmation (defaults to password if not provided)
+   */
+  async fillNewPassword(password: string, confirmPassword?: string): Promise<void> {
+    await this.fillResetPasswordForm(password, confirmPassword || password);
+  }
+
+  /**
+   * Alias for submitResetPassword() - submit the reset password form
+   */
+  async submit(): Promise<void> {
+    await this.submitResetPassword();
+  }
+
+  /**
+   * Alias for waitForResetSuccess() - wait for successful password reset
+   */
+  async waitForSuccess(): Promise<void> {
+    await this.waitForResetSuccess();
+  }
+
   // ============= Navigation Methods =============
 
   /**

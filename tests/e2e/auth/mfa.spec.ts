@@ -85,13 +85,13 @@ test.describe('MFA Enrollment and Login', () => {
         select: {
           mfaEnabled: true,
           totpSecret: true,
-          backupCodes: true,
+          mfaBackupCodes: true,
         },
       });
 
       expect(updatedUser?.mfaEnabled).toBe(true);
       expect(updatedUser?.totpSecret).not.toBeNull();
-      expect(updatedUser?.backupCodes).toHaveLength(10);
+      expect(updatedUser?.mfaBackupCodes).toHaveLength(10);
     } finally {
       // Clean up
       await deleteTestUser(user.id);

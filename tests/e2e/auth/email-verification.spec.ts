@@ -3,7 +3,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
 
 /**
  * E2E Tests: Email Verification Required Before Login
@@ -40,7 +39,6 @@ test.describe('Email Verification Required Before Login - T077', () => {
   let page: Page;
   let registerPage: RegisterPage;
   let loginPage: LoginPage;
-  let dashboardPage: DashboardPage;
 
   // Test user data
   const unverifiedUser = {
@@ -60,7 +58,6 @@ test.describe('Email Verification Required Before Login - T077', () => {
     page = testPage;
     registerPage = new RegisterPage(page);
     loginPage = new LoginPage(page);
-    dashboardPage = new DashboardPage(page);
   });
 
   test('Registration creates unverified account and shows verification message', async () => {
