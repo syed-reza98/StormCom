@@ -129,10 +129,10 @@ class MockStoreService {
         action: 'STORE_CREATE',
         entityType: 'Store',
         entityId: store.id,
-        details: {
+        changes: JSON.stringify({
           storeName: store.name,
           storeSlug: store.slug,
-        },
+        }),
       },
     });
     
@@ -165,11 +165,11 @@ class MockStoreService {
         action: 'STORE_UPDATE',
         entityType: 'Store',
         entityId: storeId,
-        details: {
+        changes: JSON.stringify({
           updatedFields: Object.keys(data),
           oldValues: {},
           newValues: data,
-        },
+        }),
       },
     });
     
@@ -348,10 +348,10 @@ class MockStoreService {
         action: 'STORE_DELETE',
         entityType: 'Store',
         entityId: storeId,
-        details: {
+        changes: JSON.stringify({
           storeName: store.name,
           storeSlug: store.slug,
-        },
+        }),
       },
     });
   }
@@ -386,14 +386,14 @@ class MockStoreService {
     const revenueResult = await db.order.aggregate({
       where: {
         storeId,
-        status: 'COMPLETED',
+        status: 'DELIVERED',
       },
       _sum: {
-        total: true,
+        totalAmount: true,
       },
     });
     
-    const revenue = revenueResult._sum.total || 0;
+    const revenue = revenueResult._sum.totalAmount || 0;
     const averageOrderValue = orderCount > 0 ? revenue / orderCount : 0;
     const conversionRate = customerCount > 0 ? (orderCount / customerCount) * 100 : 0;
     
@@ -493,10 +493,10 @@ class MockStoreService {
         action: 'SUBSCRIPTION_UPDATE',
         entityType: 'Store',
         entityId: storeId,
-        details: {
+        changes: JSON.stringify({
           oldPlan: 'previous_plan', // Would get from store
           newPlan: plan,
-        },
+        }),
       },
     });
     
@@ -666,7 +666,7 @@ describe('Store Service Integration Tests', () => {
       data: {
         email: 'superadmin-store-service@stormcom-test.local',
         password: 'hashedpassword',
-        firstName: 'Super',
+        name: 'Super',
         lastName: 'Admin',
         role: 'SUPER_ADMIN',
         emailVerified: true,
@@ -678,7 +678,7 @@ describe('Store Service Integration Tests', () => {
       data: {
         email: 'storeadmin-store-service@stormcom-test.local',
         password: 'hashedpassword',
-        firstName: 'Store',
+        name: 'Store',
         lastName: 'Admin',
         role: 'STORE_ADMIN',
         emailVerified: true,
@@ -1221,8 +1221,7 @@ describe('Store Service Integration Tests', () => {
               slug: `product-${i + 1}-${Date.now()}`,
               storeId: testStoreId,
               price: 1000,
-              inventory: 100,
-              isActive: true,
+              inventoryQty: 100,
             },
           })
         ),
@@ -1232,9 +1231,8 @@ describe('Store Service Integration Tests', () => {
             data: {
               email: `customer${i + 1}-stats@stormcom-test.local`,
               password: 'hashedpassword',
-              firstName: `Customer`,
+              name: `Customer`,
               lastName: `${i + 1}`,
-              role: 'CUSTOMER',
               storeId: testStoreId,
               emailVerified: true,
             },
@@ -1255,11 +1253,10 @@ describe('Store Service Integration Tests', () => {
               orderNumber: `ORD-${Date.now()}-${i + 1}`,
               storeId: testStoreId,
               customerId: customer.id,
-              status: 'COMPLETED',
+              status: 'DELIVERED',
               subtotal: 1500,
               tax: 150,
               shipping: 500,
-              total: 2150,
               currency: 'USD',
             },
           })
@@ -1341,8 +1338,7 @@ describe('Store Service Integration Tests', () => {
               slug: `limit-product-${i + 1}-${Date.now()}`,
               storeId: testStoreId,
               price: 1000,
-              inventory: 100,
-              isActive: true,
+              inventoryQty: 100,
             },
           })
         )
@@ -1370,9 +1366,8 @@ describe('Store Service Integration Tests', () => {
               slug: `max-product-${i + 1}-${Date.now()}`,
               storeId: testStoreId,
               price: 1000,
-              inventory: 100,
+              inventoryQty: 100,
               isActive: true,
-            },
           })
         )
       );

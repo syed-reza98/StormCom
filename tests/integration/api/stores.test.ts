@@ -98,10 +98,10 @@ class MockStoreApiRoutes {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid pagination parameters',
-            details: {
+            changes: JSON.stringify({
               page: 'Must be >= 1',
               limit: 'Must be between 1 and 100',
-            },
+            }),
           },
         };
       }
@@ -256,7 +256,7 @@ class MockStoreApiRoutes {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Validation failed',
-            details: errors,
+            changes: errors,
           },
         };
       }
@@ -308,10 +308,10 @@ class MockStoreApiRoutes {
           action: 'STORE_CREATE',
           entityType: 'Store',
           entityId: store.id,
-          details: {
+          changes: JSON.stringify({
             storeName: store.name,
             storeSlug: store.slug,
-          },
+          }),
         },
       });
 
@@ -497,7 +497,7 @@ class MockStoreApiRoutes {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Validation failed',
-            details: errors,
+            changes: errors,
           },
         };
       }
@@ -518,9 +518,9 @@ class MockStoreApiRoutes {
           action: 'STORE_UPDATE',
           entityType: 'Store',
           entityId: storeId,
-          details: {
+          changes: JSON.stringify({
             updatedFields: Object.keys(data),
-          },
+          }),
         },
       });
 
@@ -610,10 +610,10 @@ class MockStoreApiRoutes {
           action: 'STORE_DELETE',
           entityType: 'Store',
           entityId: storeId,
-          details: {
+          changes: JSON.stringify({
             storeName: store.name,
             storeSlug: store.slug,
-          },
+          }),
         },
       });
 
@@ -793,9 +793,9 @@ class MockStoreApiRoutes {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Valid subscription plan is required',
-            details: {
+            changes: JSON.stringify({
               plan: `Must be one of: ${Object.values(SubscriptionPlan).join(', ')}`,
-            },
+            }),
           },
         };
       }
@@ -840,10 +840,10 @@ class MockStoreApiRoutes {
           action: 'SUBSCRIPTION_UPDATE',
           entityType: 'Store',
           entityId: storeId,
-          details: {
+          changes: JSON.stringify({
             oldPlan: store.subscriptionPlan,
             newPlan: data.plan,
-          },
+          }),
         },
       });
 

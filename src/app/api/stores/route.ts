@@ -134,7 +134,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             error: {
               code: 'VALIDATION_ERROR',
               message: 'Invalid input data',
-              details: error.errors.map(err => ({
+              changes: error.errors.map(err => ({
                 field: err.path.join('.'),
                 message: err.message,
               })),

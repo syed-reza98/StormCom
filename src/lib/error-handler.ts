@@ -84,7 +84,7 @@ function handleZodError(error: ZodError): ErrorResponse {
     error: {
       code: ErrorCode.VALIDATION_ERROR,
       message: 'Validation failed',
-      details: error.flatten().fieldErrors,
+      changes: error.flatten().fieldErrors,
       timestamp: new Date().toISOString(),
     },
   };
@@ -101,7 +101,7 @@ function handlePrismaError(error: Prisma.PrismaClientKnownRequestError): ErrorRe
       error: {
         code: ErrorCode.ALREADY_EXISTS,
         message: `Resource already exists with the same ${fields.join(', ')}`,
-        details: { fields },
+        changes: JSON.stringify({ fields }),
         timestamp: new Date().toISOString(),
       },
     };
@@ -134,7 +134,7 @@ function handlePrismaError(error: Prisma.PrismaClientKnownRequestError): ErrorRe
     error: {
       code: ErrorCode.DATABASE_ERROR,
       message: 'Database operation failed',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      changes: process.env.NODE_ENV === 'development' ? error.message : undefined,
       timestamp: new Date().toISOString(),
     },
   };
@@ -148,7 +148,7 @@ function handleAppError(error: AppError): ErrorResponse {
     error: {
       code: error.code,
       message: error.message,
-      details: process.env.NODE_ENV === 'development' ? error.details : undefined,
+      changes: process.env.NODE_ENV === 'development' ? error.details : undefined,
       timestamp: new Date().toISOString(),
     },
   };
@@ -165,7 +165,7 @@ function handleUnknownError(error: Error): ErrorResponse {
     error: {
       code: ErrorCode.INTERNAL_ERROR,
       message: 'An unexpected error occurred',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      changes: process.env.NODE_ENV === 'development' ? error.message : undefined,
       timestamp: new Date().toISOString(),
     },
   };

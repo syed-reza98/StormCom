@@ -159,7 +159,7 @@ export async function GET(
     );
 
   } catch (error) {
-    console.error('Error retrieving store details:', error);
+    console.error('Error retrieving store changes:', error);
 
     // Handle known service errors
     if (error instanceof StoreServiceError) {
@@ -286,7 +286,7 @@ export async function PUT(
             error: {
               code: 'VALIDATION_ERROR',
               message: 'Invalid input data',
-              details: error.errors,
+              changes: error.errors,
             },
           },
           { status: 400 }

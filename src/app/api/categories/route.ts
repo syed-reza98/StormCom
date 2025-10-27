@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', details: error.errors } },
+        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', changes: error.errors } },
         { status: 400 }
       );
     }
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', details: error.errors } },
+        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', changes: error.errors } },
         { status: 400 }
       );
     }

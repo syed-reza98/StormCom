@@ -241,12 +241,12 @@ export class StoreService {
             entityId: newStore.id,
             storeId: newStore.id,
             userId: createdBy,
-            details: {
+            changes: JSON.stringify({
               storeName: newStore.name,
               slug: newStore.slug,
               ownerId: validatedInput.ownerId,
               subscriptionPlan: newStore.subscriptionPlan,
-            },
+            }),
           },
         });
 
@@ -468,10 +468,10 @@ export class StoreService {
             entityId: storeId,
             storeId,
             userId: requestingUserId,
-            details: {
+            changes: JSON.stringify({
               changes: validatedInput,
               previousName: existingStore.name,
-            },
+            }),
           },
         });
 
@@ -548,11 +548,11 @@ export class StoreService {
             entityId: storeId,
             storeId,
             userId: requestingUserId,
-            details: {
+            changes: JSON.stringify({
               storeName: store.name,
               slug: store.slug,
               deletedAt,
-            },
+            }),
           },
         });
       });
@@ -636,11 +636,11 @@ export class StoreService {
             entityId: validatedInput.userId,
             storeId,
             userId: requestingUserId,
-            details: {
+            changes: JSON.stringify({
               assignedUserId: validatedInput.userId,
               assignedRole: validatedInput.role,
               storeName: store.name,
-            },
+            }),
           },
         });
 
@@ -719,10 +719,10 @@ export class StoreService {
             entityId: userId,
             storeId,
             userId: requestingUserId,
-            details: {
+            changes: JSON.stringify({
               removedUserId: userId,
               previousRole: user.role,
-            },
+            }),
           },
         });
       });

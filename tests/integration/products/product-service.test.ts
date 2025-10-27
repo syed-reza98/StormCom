@@ -43,6 +43,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category for integration test',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -85,6 +86,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -95,6 +97,7 @@ describe('ProductService Integration Tests', () => {
         price: 50.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -120,6 +123,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -130,6 +134,7 @@ describe('ProductService Integration Tests', () => {
         price: 100.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -164,6 +169,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -174,6 +180,7 @@ describe('ProductService Integration Tests', () => {
         price: 75.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -197,6 +204,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -208,6 +216,7 @@ describe('ProductService Integration Tests', () => {
         price: 50.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -224,6 +233,7 @@ describe('ProductService Integration Tests', () => {
           price: 60.00,
           categoryId: category.id,
           isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -242,6 +252,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'electronics',
         description: 'Electronics category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -250,6 +261,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'clothing',
         description: 'Clothing category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 1,
       });
 
@@ -430,6 +442,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -440,6 +453,7 @@ describe('ProductService Integration Tests', () => {
         price: 50.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -460,6 +474,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -470,6 +485,7 @@ describe('ProductService Integration Tests', () => {
         price: 75.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -490,6 +506,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -500,6 +517,7 @@ describe('ProductService Integration Tests', () => {
         price: 25.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -520,6 +538,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -530,6 +549,7 @@ describe('ProductService Integration Tests', () => {
         price: 40.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -550,6 +570,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -560,6 +581,7 @@ describe('ProductService Integration Tests', () => {
         price: 30.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -575,6 +597,7 @@ describe('ProductService Integration Tests', () => {
         price: 35.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -627,6 +650,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -638,6 +662,7 @@ describe('ProductService Integration Tests', () => {
         price: 60.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -687,6 +712,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'test-category',
         description: 'Test category',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -697,6 +723,7 @@ describe('ProductService Integration Tests', () => {
         price: 45.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -736,6 +763,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'store-1-category',
         description: 'Category in store 1',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -745,6 +773,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'store-2-category',
         description: 'Category in store 2',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -756,6 +785,7 @@ describe('ProductService Integration Tests', () => {
         price: 100.00,
         categoryId: category1.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -771,6 +801,7 @@ describe('ProductService Integration Tests', () => {
         price: 200.00,
         categoryId: category2.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
@@ -810,6 +841,7 @@ describe('ProductService Integration Tests', () => {
         slug: 'store-2-category',
         description: 'Category in store 2',
         isPublished: true,
+        isFeatured: false,
         sortOrder: 0,
       });
 
@@ -820,6 +852,7 @@ describe('ProductService Integration Tests', () => {
         price: 150.00,
         categoryId: category.id,
         isPublished: true,
+        isFeatured: false,
           trackInventory: true,
           images: [],
           metaKeywords: [],
