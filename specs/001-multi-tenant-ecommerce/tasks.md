@@ -180,9 +180,9 @@
 
 **Tasks**:
 
-- [ ] T081 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
-- [ ] T082 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
-- [ ] T083 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
+- [x] T081 [US1] Create StoreService in src/services/store-service.ts with create, list, get, update, delete (soft delete), and assign admin operations
+- [x] T082 [US1] [P] Create API route POST /api/stores in src/app/api/stores/route.ts for creating new stores with subdomain validation
+- [x] T083 [US1] [P] Create API route GET /api/stores in src/app/api/stores/route.ts for listing all stores (Super Admin) or assigned stores (Store Admin)
 - [ ] T084 [US1] [P] Create API route GET /api/stores/[id] in src/app/api/stores/[id]/route.ts for retrieving store details
 - [ ] T085 [US1] [P] Create API route PUT /api/stores/[id] in src/app/api/stores/[id]/route.ts for updating store settings (name, logo, theme, contact info)
 - [ ] T086 [US1] [P] Create API route DELETE /api/stores/[id] in src/app/api/stores/[id]/route.ts for soft deleting stores
