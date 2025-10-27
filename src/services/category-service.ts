@@ -127,7 +127,7 @@ export class CategoryService {
     ]);
 
     return {
-      categories,
+      categories: categories as CategoryWithRelations[],
       pagination: {
         page,
         perPage,
@@ -141,7 +141,7 @@ export class CategoryService {
    * Get single category by ID
    */
   async getCategoryById(categoryId: string, storeId: string): Promise<CategoryWithRelations | null> {
-    return prisma.category.findFirst({
+    const category = await prisma.category.findFirst({
       where: {
         id: categoryId,
         storeId,
@@ -167,13 +167,14 @@ export class CategoryService {
         },
       },
     });
+    return category as CategoryWithRelations | null;
   }
 
   /**
    * Get category by slug
    */
   async getCategoryBySlug(slug: string, storeId: string): Promise<CategoryWithRelations | null> {
-    return prisma.category.findFirst({
+    const category = await prisma.category.findFirst({
       where: {
         slug,
         storeId,
@@ -199,6 +200,7 @@ export class CategoryService {
         },
       },
     });
+    return category as CategoryWithRelations | null;
   }
 
   /**
@@ -234,14 +236,14 @@ export class CategoryService {
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
-    return this.buildCategoryTree(categories);
+    return this.buildCategoryTree(categories as unknown as CategoryWithRelations[]);
   }
 
   /**
    * Get root categories (categories without parent)
    */
   async getRootCategories(storeId: string): Promise<CategoryWithRelations[]> {
-    return prisma.category.findMany({
+    const categories = await prisma.category.findMany({
       where: {
         storeId,
         parentId: null,
@@ -265,6 +267,7 @@ export class CategoryService {
       },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
+    return categories as unknown as CategoryWithRelations[];
   }
 
   /**
@@ -275,7 +278,7 @@ export class CategoryService {
     let currentCategoryId: string | null = categoryId;
 
     while (currentCategoryId) {
-      const category = await prisma.category.findFirst({
+      const category: any = await prisma.category.findFirst({
         where: {
           id: currentCategoryId,
           storeId,
@@ -285,7 +288,6 @@ export class CategoryService {
           parent: {
             select: { id: true, name: true, slug: true },
           },
-          children: [],
         },
       });
 
@@ -309,24 +311,22 @@ export class CategoryService {
     // Validate input
     const validatedData = createCategorySchema.parse(data);
     
-    // Generate slug if not provided
-    if (!validatedData.slug) {
-      validatedData.slug = await this.generateUniqueSlug(storeId, validatedData.name);
-    }
+    // Generate slug if not provided (required by Prisma)
+    const slug = validatedData.slug || await this.generateUniqueSlug(storeId, validatedData.name);
 
     // Validate business rules
-    await this.validateBusinessRules(storeId, validatedData);
+    await this.validateBusinessRules(storeId, { ...validatedData, slug });
 
     const category = await prisma.category.create({
       data: {
         ...validatedData,
+        slug,
         storeId,
       },
       include: {
         parent: {
           select: { id: true, name: true, slug: true },
         },
-        children: [],
         _count: {
           select: {
             products: {
@@ -340,7 +340,7 @@ export class CategoryService {
       },
     });
 
-    return category;
+    return category as unknown as CategoryWithRelations;
   }
 
   /**
@@ -370,8 +370,7 @@ export class CategoryService {
     }
 
     // Remove id from update data
-    const updateData = { ...validatedData };
-    delete updateData.id;
+    const { id: _, ...updateData } = validatedData;
 
     const category = await prisma.category.update({
       where: { id: categoryId },
