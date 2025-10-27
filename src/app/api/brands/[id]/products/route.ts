@@ -41,7 +41,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       data: result,
-      message: `${result.count} products assigned to brand successfully`,
+      message: `${result.updated} products assigned to brand successfully`,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -103,7 +103,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({
       data: result,
-      message: `${result.count} products removed from brand successfully`,
+      message: `${result.updated} products removed from brand successfully`,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

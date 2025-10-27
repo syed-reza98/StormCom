@@ -355,9 +355,9 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
                 {searchParams.action === 'create' ? 'Create Attribute' : 'Edit Attribute'}
               </h2>
               <AttributeForm
-                initialData={editingAttribute}
-                onSubmit={async (data: any) => {
-                  console.log('Submit attribute:', data);
+                attribute={editingAttribute}
+                onSubmit={async (_data: any) => {
+                  // TODO: Implement attribute submission
                 }}
                 onCancel={() => {
                   // Handle cancel

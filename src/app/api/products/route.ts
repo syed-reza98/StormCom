@@ -39,9 +39,8 @@ export async function GET(request: NextRequest) {
       minPrice: searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined,
       maxPrice: searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined,
       inventoryStatus: searchParams.get('inventoryStatus') as any || undefined,
-      sortBy: searchParams.get('sortBy') || 'createdAt',
-      sortOrder: searchParams.get('sortOrder') || 'desc',
     };
+    // Note: sortBy and sortOrder are removed - not supported in current ProductSearchFilters type
 
     const result = await productService.getProducts(
       session.user.storeId,

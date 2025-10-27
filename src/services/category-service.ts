@@ -708,6 +708,17 @@ export class CategoryService {
       where: { id: categoryId },
     });
   }
+
+  // --------------------------------------------------------------------------
+  // METHOD ALIASES (for backward compatibility with tests)
+  // --------------------------------------------------------------------------
+
+  /**
+   * Alias for createCategory
+   */
+  async create(storeId: string, data: CreateCategoryData): Promise<CategoryWithRelations> {
+    return this.createCategory(storeId, data);
+  }
 }
 
 // Export singleton instance

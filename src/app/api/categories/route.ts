@@ -2,7 +2,9 @@
 // API routes for category management
 // Supports hierarchical categories with parent-child relationships
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
 import { categoryService } from '@/services/category-service';
 
@@ -23,99 +25,84 @@ const createCategorySchema = z.object({
   sortOrder: z.number().int().min(0).default(0),
 });
 
-const getCategoriesSchema = z.object({
-  storeId: z.string().uuid('Store ID must be a valid UUID'),
-  parentId: z.string().uuid('Parent ID must be a valid UUID').optional(),
-  includeUnpublished: z.boolean().default(false),
-  includeProductCounts: z.boolean().default(false),
-  flat: z.boolean().default(false), // Return flat list instead of tree
-});
-
 // ============================================================================
 // GET /api/categories - List Categories
 // ============================================================================
 
 export async function GET(request: NextRequest) {
   try {
-    // Parse and validate query parameters
-    const url = new URL(request.url);
-    const queryParams = {
-      storeId: url.searchParams.get('storeId'),
-      parentId: url.searchParams.get('parentId'),
-      includeUnpublished: url.searchParams.get('includeUnpublished') === 'true',
-      includeProductCounts: url.searchParams.get('includeProductCounts') === 'true',
-      flat: url.searchParams.get('flat') === 'true',
-    };
-
-    const validatedParams = getCategoriesSchema.parse(queryParams);
-
-    // Get current user and validate authentication
-    const user = await getCurrentUser();
-    if (!user) {
-      return createApiError('Unauthorized', 401);
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.storeId) {
+      return NextResponse.json(
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
+      );
     }
 
-    // Use user's storeId if not provided in query
-    const storeId = validatedParams.storeId || user.storeId;
-    if (!storeId) {
-      return createApiError('Store ID is required', 400);
-    }
-
-    // Validate store access
-    const hasAccess = await validateStoreAccess(user.id, storeId, ['STORE_ADMIN', 'STAFF', 'CUSTOMER']);
-    if (!hasAccess) {
-      return createApiError('Access denied to this store', 403);
-    }
+    const { searchParams } = new URL(request.url);
 
     // Check if requesting tree structure
-    const treeMode = url.searchParams.get('tree') === 'true';
+    const treeMode = searchParams.get('tree') === 'true';
     if (treeMode) {
-      const tree = await categoryService.getCategoryTree(storeId);
-      return createApiResponse({ categories: tree, meta: { structure: 'tree' } }, 'Category tree retrieved successfully');
+      const tree = await categoryService.getCategoryTree(session.user.storeId);
+      return NextResponse.json({ 
+        data: { categories: tree, meta: { structure: 'tree' } },
+        message: 'Category tree retrieved successfully'
+      });
     }
 
     // Check if requesting root categories only
-    const rootOnly = url.searchParams.get('rootOnly') === 'true';
+    const rootOnly = searchParams.get('rootOnly') === 'true';
     if (rootOnly) {
-      const rootCategories = await categoryService.getRootCategories(storeId);
-      return createApiResponse({ categories: rootCategories, meta: { structure: 'root' } }, 'Root categories retrieved successfully');
+      const rootCategories = await categoryService.getRootCategories(session.user.storeId);
+      return NextResponse.json({ 
+        data: { categories: rootCategories, meta: { structure: 'root' } },
+        message: 'Root categories retrieved successfully'
+      });
     }
 
     // Parse pagination parameters
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const perPage = Math.min(parseInt(url.searchParams.get('perPage') || '10'), 100);
+    const page = parseInt(searchParams.get('page') || '1');
+    const perPage = Math.min(parseInt(searchParams.get('perPage') || '10'), 100);
     
     // Parse filter parameters
     const filters = {
-      search: url.searchParams.get('search') || undefined,
-      parentId: url.searchParams.get('parentId') === 'null' ? null : url.searchParams.get('parentId') || undefined,
-      isPublished: url.searchParams.get('isPublished') === 'true' ? true 
-                  : url.searchParams.get('isPublished') === 'false' ? false 
+      search: searchParams.get('search') || undefined,
+      parentId: searchParams.get('parentId') === 'null' ? null : searchParams.get('parentId') || undefined,
+      isPublished: searchParams.get('isPublished') === 'true' ? true 
+                  : searchParams.get('isPublished') === 'false' ? false 
                   : undefined,
-      sortBy: url.searchParams.get('sortBy') || 'sortOrder',
-      sortOrder: url.searchParams.get('sortOrder') || 'asc',
     };
 
     const result = await categoryService.getCategories(
-      storeId,
+      session.user.storeId,
       filters,
       page,
       perPage
     );
 
-    return createApiResponse({
-      categories: result.categories,
-      meta: result.pagination,
-    }, 'Categories retrieved successfully');
+    return NextResponse.json({
+      data: {
+        categories: result.categories,
+        meta: result.pagination,
+      },
+      message: 'Categories retrieved successfully'
+    });
 
   } catch (error) {
     console.error('Get categories error:', error);
 
     if (error instanceof z.ZodError) {
-      return createApiError('Validation failed', 400, error.errors);
+      return NextResponse.json(
+        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', details: error.errors } },
+        { status: 400 }
+      );
     }
 
-    return createApiError('Internal server error', 500);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } },
+      { status: 500 }
+    );
   }
 }
 
@@ -125,61 +112,48 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get current user and validate authentication
-    const user = await getCurrentUser();
-    if (!user) {
-      return createApiError('Unauthorized', 401);
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.storeId) {
+      return NextResponse.json(
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
+      );
     }
 
     // Parse and validate request body
     const body = await request.json();
     const validatedData = createCategorySchema.parse(body);
 
-    // Extract storeId from request (could be from body, query, or header)
-    const url = new URL(request.url);
-    const storeId = body.storeId || url.searchParams.get('storeId') || user.storeId;
-    
-    if (!storeId) {
-      return createApiError('Store ID is required', 400);
-    }
+    const category = await categoryService.createCategory(session.user.storeId, validatedData);
 
-    // Validate store access
-    const hasAccess = await validateStoreAccess(user.id, storeId, ['STORE_ADMIN', 'STAFF']);
-    if (!hasAccess) {
-      return createApiError('Access denied to this store', 403);
-    }
-
-    const category = await categoryService.createCategory(storeId, validatedData);
-
-    // Create audit log
-    await createAuditLog({
-      userId: user.id,
-      storeId,
-      action: 'create',
-      entityType: 'Category',
-      entityId: category.id,
-      changes: {
-        created: {
-          name: category.name,
-          slug: category.slug,
-          parentId: category.parentId,
-        },
+    return NextResponse.json(
+      {
+        data: category,
+        message: 'Category created successfully'
       },
-    });
-
-    return createApiResponse(category, 'Category created successfully', 201);
+      { status: 201 }
+    );
 
   } catch (error) {
     console.error('Create category error:', error);
 
     if (error instanceof z.ZodError) {
-      return createApiError('Validation failed', 400, error.errors);
+      return NextResponse.json(
+        { error: { code: 'VALIDATION_ERROR', message: 'Validation failed', details: error.errors } },
+        { status: 400 }
+      );
     }
 
     if (error instanceof Error && error.message.includes('already exists')) {
-      return createApiError('A category with this slug already exists in this store', 409);
+      return NextResponse.json(
+        { error: { code: 'CONFLICT', message: 'A category with this slug already exists in this store' } },
+        { status: 409 }
+      );
     }
 
-    return createApiError('Internal server error', 500);
+    return NextResponse.json(
+      { error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } },
+      { status: 500 }
+    );
   }
 }

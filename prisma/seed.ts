@@ -2,6 +2,8 @@
 // StormCom Database Seed Script
 // Seeds database with initial test data for development
 
+/* eslint-disable no-console */
+
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 

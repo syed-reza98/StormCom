@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
             <CardTitle>Check your email</CardTitle>
             <CardDescription className="space-y-2">
               <p>
-                If an account exists with <strong className="text-foreground">{submittedEmail}</strong>, we've sent
+                If an account exists with <strong className="text-foreground">{submittedEmail}</strong>, we&apos;ve sent
                 password reset instructions.
               </p>
               <p className="text-sm">
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Didn't receive the email?{' '}
+              Didn&apos;t receive the email?{' '}
               <button
                 onClick={() => setSuccess(false)}
                 className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
@@ -134,7 +134,7 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <CardTitle>Forgot password?</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </CardDescription>
         </CardHeader>
 

@@ -4,6 +4,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -159,12 +160,13 @@ export function BrandsTable({
                 
                 <td className="p-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
                       {brand.logo ? (
-                        <img
+                        <Image
                           src={brand.logo}
                           alt={brand.name}
-                          className="w-full h-full object-cover rounded-lg"
+                          fill
+                          className="object-cover"
                         />
                       ) : (
                         <span className="text-lg">🏷️</span>

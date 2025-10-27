@@ -67,6 +67,7 @@ export function PasswordStrengthIndicator({
       const timer = setTimeout(() => setAnnounced(false), 100);
       return () => clearTimeout(timer);
     }
+    return undefined;  // Explicitly return undefined when password is falsy
   }, [strength.label, password]);
 
   if (!password) {

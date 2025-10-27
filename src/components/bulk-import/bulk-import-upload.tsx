@@ -102,11 +102,7 @@ export function BulkImportUpload() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Mock success
-      console.log('Upload completed:', {
-        file: file.name,
-        settings,
-      });
+      // Mock success - upload completed successfully
 
       // Reset form
       setFile(null);

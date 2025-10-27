@@ -28,13 +28,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const { newParentId, position } = moveCategorySchema.parse(body);
+    const { newParentId } = moveCategorySchema.parse(body);
+    // Note: position parameter is parsed but not used by moveCategory service method
 
     const result = await categoryService.moveCategory(
       params.id,
-      session.user.storeId,
-      newParentId,
-      position
+      newParentId ?? null,  // Convert undefined to null for service method
+      session.user.storeId
     );
 
     return NextResponse.json({

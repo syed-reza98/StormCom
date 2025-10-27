@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { z } from 'zod';
 import { storeNameSchema } from '@/lib/validation';
 
@@ -178,7 +179,11 @@ export function StoreSettingsForm({
     primaryColor: themeSettings.primaryColor || '',
     secondaryColor: themeSettings.secondaryColor || '',
     accentColor: themeSettings.accentColor || '',
-    fontFamily: themeSettings.fontFamily,
+    fontFamily: (themeSettings.fontFamily && 
+      ['inter', 'roboto', 'poppins', 'montserrat', 'playfair', 'opensans'].includes(themeSettings.fontFamily)
+      ? themeSettings.fontFamily as 'inter' | 'roboto' | 'poppins' | 'montserrat' | 'playfair' | 'opensans'
+      : undefined
+    ),
   });
   
   const [errors, setErrors] = useState<FormErrors>({});
@@ -522,11 +527,14 @@ export function StoreSettingsForm({
             {/* Logo Preview */}
             <div className="flex-shrink-0">
               {logoPreview ? (
-                <img
-                  src={logoPreview}
-                  alt="Store logo preview"
-                  className="h-20 w-20 object-cover rounded-lg border border-gray-300"
-                />
+                <div className="h-20 w-20 relative border border-gray-300 rounded-lg overflow-hidden">
+                  <Image
+                    src={logoPreview}
+                    alt="Store logo preview"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="h-20 w-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
                   <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

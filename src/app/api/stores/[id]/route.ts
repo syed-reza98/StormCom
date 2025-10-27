@@ -30,7 +30,7 @@ import { storeService, StoreServiceError, UpdateStoreSchema } from '@/services/s
  */
 
 // Mock authentication function (to be replaced with real auth system)
-async function getAuthenticatedUser(request: NextRequest) {
+async function getAuthenticatedUser(_request: NextRequest) {
   // TODO: Replace with actual authentication logic
   // For now, return a mock Super Admin user
   return {

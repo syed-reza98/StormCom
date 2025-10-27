@@ -12,7 +12,7 @@ interface RouteParams {
 }
 
 // GET /api/brands/[id] - Get single brand
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {

@@ -243,7 +243,7 @@ export function CreateStoreForm() {
           <p className="mt-1 text-sm text-red-600">{errors.name}</p>
         )}
         <p className="mt-1 text-sm text-gray-500">
-          This will be displayed as your store's public name
+          This will be displayed as your store{'\''}s public name
         </p>
       </div>
 

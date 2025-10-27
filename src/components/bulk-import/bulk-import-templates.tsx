@@ -70,7 +70,6 @@ const templates: Template[] = [
 export function BulkImportTemplates() {
   const handleDownload = (template: Template) => {
     // In a real app, this would trigger a download
-    console.log('Downloading template:', template.name);
     
     // Mock download by creating a blob and triggering download
     const csvContent = generateSampleCSV(template);

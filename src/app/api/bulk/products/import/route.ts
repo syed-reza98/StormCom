@@ -58,11 +58,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse configuration
-    let config = {};
+    // Parse configuration (currently not used - placeholder for future implementation)
     if (configData) {
       try {
-        config = importConfigSchema.parse(JSON.parse(configData));
+        importConfigSchema.parse(JSON.parse(configData));
       } catch (error) {
         return NextResponse.json(
           { error: { code: 'VALIDATION_ERROR', message: 'Invalid configuration format' } },

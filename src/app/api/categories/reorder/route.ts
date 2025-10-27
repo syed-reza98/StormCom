@@ -27,9 +27,9 @@ export async function PATCH(request: NextRequest) {
     const { categoryIds, parentId } = reorderCategoriesSchema.parse(body);
 
     const result = await categoryService.reorderCategories(
-      categoryIds,
       session.user.storeId,
-      parentId
+      parentId ?? null,  // Convert undefined to null
+      categoryIds
     );
 
     return NextResponse.json({

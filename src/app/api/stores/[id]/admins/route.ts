@@ -24,7 +24,7 @@ import { storeService, StoreServiceError, AssignAdminSchema } from '@/services/s
  */
 
 // Mock authentication function (to be replaced with real auth system)
-async function getAuthenticatedUser(request: NextRequest) {
+async function getAuthenticatedUser(_request: NextRequest) {
   // TODO: Replace with actual authentication logic
   // For now, return a mock Super Admin user
   return {
@@ -208,8 +208,8 @@ export async function POST(
  * - Graceful role transitions
  */
 export async function DELETE(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  _request: NextRequest,
+  _context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   return NextResponse.json(
     {
@@ -234,8 +234,8 @@ export async function DELETE(
  * - Admin activity tracking
  */
 export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  _request: NextRequest,
+  _context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   return NextResponse.json(
     {

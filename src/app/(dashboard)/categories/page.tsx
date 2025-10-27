@@ -210,8 +210,8 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
               <CategoryForm
                 initialData={editingCategory}
                 categories={categories}
-                onSubmit={async (data: any) => {
-                  console.log('Submit category:', data);
+                onSubmit={async (_data: any) => {
+                  // TODO: Implement category submission
                 }}
                 onCancel={() => {
                   // Handle cancel

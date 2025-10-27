@@ -336,7 +336,7 @@ function ThemeSettingsTab() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg leading-6 font-medium text-gray-900">Theme & Branding</h3>
-        <p className="mt-1 text-sm text-gray-600">Customize your store's appearance and branding.</p>
+        <p className="mt-1 text-sm text-gray-600">Customize your store{'\''}s appearance and branding.</p>
       </div>
 
       <div className="text-center text-gray-500 py-12">

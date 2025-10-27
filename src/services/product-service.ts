@@ -660,6 +660,112 @@ export class ProductService {
       }
     }
   }
+
+  // --------------------------------------------------------------------------
+  // METHOD ALIASES (for backward compatibility with tests)
+  // --------------------------------------------------------------------------
+
+  /**
+   * Alias for createProduct
+   */
+  async create(storeId: string, data: CreateProductData): Promise<ProductWithRelations> {
+    return this.createProduct(storeId, data);
+  }
+
+  /**
+   * Alias for updateProduct
+   */
+  async update(storeId: string, productId: string, data: Partial<CreateProductData>): Promise<ProductWithRelations> {
+    return this.updateProduct(productId, storeId, data);
+  }
+
+  /**
+   * Alias for deleteProduct
+   */
+  async delete(storeId: string, productId: string): Promise<void> {
+    return this.deleteProduct(productId, storeId);
+  }
+
+  /**
+   * Alias for getProducts (with simplified parameters)
+   */
+  async list(
+    storeId: string, 
+    options: ProductSearchFilters & { page?: number; perPage?: number } = {}
+  ): Promise<ProductListResult> {
+    const { page = 1, perPage = 10, ...filters } = options;
+    return this.getProducts(storeId, filters, page, perPage);
+  }
+
+  /**
+   * Update product stock quantity
+   */
+  async updateStock(storeId: string, productId: string, quantity: number): Promise<ProductWithRelations> {
+    const product = await this.getProductById(productId, storeId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return prisma.product.update({
+      where: { id: productId },
+      data: { stock: quantity },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        brand: { select: { id: true, name: true, slug: true } },
+        variants: { where: { deletedAt: null }, orderBy: { isDefault: 'desc' } },
+        _count: {
+          select: {
+            orderItems: true,
+            reviews: true,
+            wishlistItems: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Decrease product stock quantity
+   */
+  async decreaseStock(storeId: string, productId: string, quantity: number): Promise<ProductWithRelations> {
+    const product = await this.getProductById(productId, storeId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    const newStock = product.stock - quantity;
+    if (newStock < 0) {
+      throw new Error('Insufficient stock');
+    }
+
+    return prisma.product.update({
+      where: { id: productId },
+      data: { stock: newStock },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        brand: { select: { id: true, name: true, slug: true } },
+        variants: { where: { deletedAt: null }, orderBy: { isDefault: 'desc' } },
+        _count: {
+          select: {
+            orderItems: true,
+            reviews: true,
+            wishlistItems: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Check if product is in stock for given quantity
+   */
+  async isInStock(storeId: string, productId: string, quantity: number): Promise<boolean> {
+    const product = await this.getProductById(productId, storeId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+    return product.stock >= quantity;
+  }
 }
 
 // Export singleton instance

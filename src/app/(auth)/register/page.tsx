@@ -17,7 +17,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { FormError } from '@/components/auth/form-error';
-import { FormSuccess } from '@/components/auth/form-success';
 import { PasswordStrengthIndicator } from '@/components/auth/password-strength-indicator';
 
 // Validation schema
@@ -112,7 +111,7 @@ export default function RegisterPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-balance">Registration Successful!</CardTitle>
             <CardDescription className="space-y-2">
-              <p>We've sent a verification email to:</p>
+              <p>We{'\''}ve sent a verification email to:</p>
               <p className="text-lg font-semibold text-foreground">{registeredEmail}</p>
               <p className="text-sm">
                 Please check your inbox and click the verification link to activate your account.
@@ -129,7 +128,7 @@ export default function RegisterPage() {
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Didn't receive the email?{' '}
+              Didn{'\''}t receive the email?{' '}
               <button
                 onClick={() => setSuccess(false)}
                 className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
