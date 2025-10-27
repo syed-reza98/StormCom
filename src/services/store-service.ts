@@ -68,7 +68,7 @@ export const UpdateStoreSchema = z.object({
   timezone: z.string().optional(),
   locale: z.string().optional(),
   subscriptionPlan: z.enum(['FREE', 'BASIC', 'PRO', 'ENTERPRISE']).optional(),
-  subscriptionStatus: z.enum(['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED']).optional(),
+  subscriptionStatus: z.enum(['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'PAUSED']).optional(),
 });
 
 export const ListStoresSchema = z.object({
@@ -76,7 +76,7 @@ export const ListStoresSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20),
   search: z.string().optional(),
   subscriptionPlan: z.enum(['FREE', 'BASIC', 'PRO', 'ENTERPRISE']).optional(),
-  subscriptionStatus: z.enum(['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED']).optional(),
+  subscriptionStatus: z.enum(['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'PAUSED']).optional(),
   sortBy: z.enum(['name', 'createdAt', 'updatedAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -467,7 +467,7 @@ export class StoreService {
             entityType: 'Store',
             entityId: storeId,
             storeId,
-            userId: requestingUserId,
+            userId: _requestingUserId,
             changes: JSON.stringify({
               changes: validatedInput,
               previousName: existingStore.name,
@@ -547,7 +547,7 @@ export class StoreService {
             entityType: 'Store',
             entityId: storeId,
             storeId,
-            userId: requestingUserId,
+            userId: _requestingUserId,
             changes: JSON.stringify({
               storeName: store.name,
               slug: store.slug,
@@ -635,7 +635,7 @@ export class StoreService {
             entityType: 'User',
             entityId: validatedInput.userId,
             storeId,
-            userId: requestingUserId,
+            userId: _requestingUserId,
             changes: JSON.stringify({
               assignedUserId: validatedInput.userId,
               assignedRole: validatedInput.role,
@@ -718,7 +718,7 @@ export class StoreService {
             entityType: 'User',
             entityId: userId,
             storeId,
-            userId: requestingUserId,
+            userId: _requestingUserId,
             changes: JSON.stringify({
               removedUserId: userId,
               previousRole: user.role,

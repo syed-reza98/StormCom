@@ -281,7 +281,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       limit: Math.min(parseInt(searchParams.get('limit') || '20'), 100), // Max 100 items per page
       search: searchParams.get('search') || undefined,
       subscriptionPlan: searchParams.get('subscriptionPlan') as 'FREE' | 'BASIC' | 'PRO' | 'ENTERPRISE' | undefined,
-      subscriptionStatus: searchParams.get('subscriptionStatus') as 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'CANCELLED' | 'EXPIRED' | undefined,
+      subscriptionStatus: searchParams.get('subscriptionStatus') as 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'CANCELED' | 'PAUSED' | undefined,
       sortBy: (searchParams.get('sortBy') || 'createdAt') as 'name' | 'createdAt' | 'updatedAt',
       sortOrder: (searchParams.get('sortOrder') || 'desc') as 'asc' | 'desc',
     };
@@ -351,7 +351,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Validate subscription status filter
     if (queryInput.subscriptionStatus && 
-        !['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED'].includes(queryInput.subscriptionStatus)) {
+        !['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'PAUSED'].includes(queryInput.subscriptionStatus)) {
       return NextResponse.json(
         {
           error: {
