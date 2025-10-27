@@ -1,11 +1,11 @@
 # Implementation Tasks: StormCom Multi-tenant E-commerce Platform
 
 **Feature**: 001-multi-tenant-ecommerce  
-**Status**: Phase 5 (US2 Product Catalog) - 96/260 tasks complete (36.9%) - Store management complete, product catalog next  
+**Status**: Phase 5 (US2 Product Catalog) - 101/260 tasks complete (38.8%) - Store management complete, product catalog API routes in progress  
 **Created**: 2025-10-24  
 **Updated**: 2025-10-27  
 **Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)  
-**Overall Progress**: 96/260 tasks complete (36.9%)
+**Overall Progress**: 101/260 tasks complete (38.8%)
 
 **✅ MILESTONE ACHIEVED**: Phase 4 US1 Store Management complete (T091-T096). Authentication and store management foundations established. Ready for Phase 5 US2 Product Catalog.
 
@@ -23,7 +23,7 @@
   - ✅ E2E test suites (T055-T079) - 25/25 complete (spec.md defines 25 scenarios)
   - ✅ Accessibility tests (T080) - 1/1 complete (constitution requirement)
 - ✅ **Phase 4: US1 Store Management (T081-T096)** - 16/16 complete (100%)
-- ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 0/31 complete
+- ⏳ **Phase 5: US2 Product Catalog (T097-T127)** - 5/31 complete (16.1%) - API routes for categories, brands, and attributes complete
 - ⏳ **Phase 6+**: US6, US3a, US3, US4, US5, US7, US8, US9 - 0/153 complete
 
 ## Implementation Strategy
@@ -222,11 +222,11 @@
 - [ ] T105 [US2] [P] Create API route GET /api/products/[id] in src/app/api/products/[id]/route.ts for retrieving product details with variants
 - [ ] T106 [US2] [P] Create API route PUT /api/products/[id] in src/app/api/products/[id]/route.ts for updating product details
 - [ ] T107 [US2] [P] Create API route DELETE /api/products/[id] in src/app/api/products/[id]/route.ts for soft deleting products
-- [ ] T108 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
-- [ ] T109 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
-- [ ] T110 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
-- [ ] T111 [US2] [P] Create API route GET /api/brands in src/app/api/brands/route.ts for listing brands
-- [ ] T112 [US2] [P] Create API route POST /api/attributes in src/app/api/attributes/route.ts for creating product attributes
+- [x] T108 [US2] [P] Create API route POST /api/categories in src/app/api/categories/route.ts for creating categories with parent-child relationships
+- [x] T109 [US2] [P] Create API route GET /api/categories in src/app/api/categories/route.ts for listing categories in tree structure
+- [x] T110 [US2] [P] Create API route POST /api/brands in src/app/api/brands/route.ts for creating brands
+- [x] T111 [US2] [P] Create API route GET /api/brands in src/app/api/brands/route.ts for listing brands
+- [x] T112 [US2] [P] Create API route POST /api/attributes in src/app/api/attributes/route.ts for creating product attributes
 - [ ] T113 [US2] [P] Create API route GET /api/attributes in src/app/api/attributes/route.ts for listing attributes with values
 - [ ] T114 [US2] [P] Create API route POST /api/products/import in src/app/api/products/import/route.ts for bulk product import from CSV
 - [ ] T115 [US2] [P] Create API route GET /api/products/export in src/app/api/products/export/route.ts for bulk product export to CSV
