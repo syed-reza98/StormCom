@@ -474,8 +474,8 @@ test.describe('Store Management', () => {
           slug: `test-product-${i + 1}-${Date.now()}`,
           storeId: freeStore.id,
           price: 1000, // $10.00
-          inventory: 100,
-          isActive: true,
+          inventoryQty: 100,
+          isPublished: true,
         },
       });
     }

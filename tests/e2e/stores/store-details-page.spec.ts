@@ -186,7 +186,7 @@ test.describe('Store Details Page', () => {
           storeId: testStore.id,
           price: 1000 + (i * 500), // $10.00, $15.00, etc.
           inventoryQty: 50,
-          isActive: true,
+          isPublished: true,
         },
       });
       products.push(product);
@@ -198,7 +198,7 @@ test.describe('Store Details Page', () => {
       const customer = await createCustomer(testStore.id, {
         email: `customer${i + 1}@stormcom-test.local`,
         // firstName: `Customer`, // Not a valid field in CreateTestUserOptions
-        lastName: `${i + 1}`,
+        // lastName: `${i + 1}`, // Not a valid field in CreateTestUserOptions
       });
       customers.push(customer);
     }
@@ -213,10 +213,9 @@ test.describe('Store Details Page', () => {
           customerId: customers[i].id,
           status: 'DELIVERED',
           subtotal: 1000,
-          tax: 100,
-          shipping: 500,
-          total: 1600,
-          currency: 'USD',
+          taxAmount: 100,
+          shippingAmount: 500,
+          totalAmount: 1600,
         },
       });
       orders.push(order);
@@ -311,7 +310,7 @@ test.describe('Store Details Page', () => {
           storeId: limitStore.id,
           price: 1000,
           inventoryQty: 100,
-          isActive: true,
+          isPublished: true,
         },
       });
     }
