@@ -279,16 +279,21 @@
 
 **Tasks**:
 
-- [ ] T113 [US3a] [P] Create Storefront Homepage in src/app/(storefront)/page.tsx with featured products, categories, and hero banner
-- [ ] T114 [US3a] [P] Create Product Listing page in src/app/(storefront)/products/page.tsx with product grid, filters, and pagination
-- [ ] T115 [US3a] [P] Create Product Details page in src/app/(storefront)/products/[slug]/page.tsx with image gallery, variants, and add to cart
-- [ ] T116 [US3a] [P] Create Category page in src/app/(storefront)/categories/[slug]/page.tsx with category products and breadcrumbs
-- [ ] T117 [US3a] [P] Create Search Results page in src/app/(storefront)/search/page.tsx with search query highlighting and filters
-- [ ] T118 [US3a] [P] Create Cart page in src/app/(storefront)/cart/page.tsx with cart items, quantity controls, and checkout button
-- [ ] T119 [US3a] [P] Create useCart hook in src/hooks/use-cart.ts with add, remove, update quantity, and cart state management
-- [ ] T120 [US3a] [P] Create ProductCard component in src/components/storefront/product-card.tsx with image, name, price, and quick view
-- [ ] T121 [US3a] Create E2E test "Customer can browse products and view details" in tests/e2e/storefront/browse-products.spec.ts
-- [ ] T122 [US3a] Create E2E test "Customer can add product to cart" in tests/e2e/storefront/add-to-cart.spec.ts
+- [x] T113 [US3a] Create StorefrontService in src/services/storefront-service.ts with public product catalog, search, filtering, and category navigation - **COMPLETE**: 6 functions (getPublishedProducts, getProductBySlug, getCategoryTree, getCategoryBySlug, getFeaturedProducts, getRelatedProducts)
+- [x] T114 [US3a] [P] Create Product Listing page in src/app/(storefront)/products/page.tsx with product grid, filters, sorting, and pagination - **COMPLETE**: Server Component with async data fetching, responsive grid, ProductFilters, ProductSort, Pagination components
+- [x] **NEW**: T114a [US3a] Create ProductCard component in src/components/storefront/product-card.tsx - **COMPLETE**: Product display with image, price, discount badge, stock status, add to cart button
+- [x] **NEW**: T114b [US3a] Create ProductFilters component in src/components/storefront/product-filters.tsx - **COMPLETE**: Category, price range, stock status filters with apply/clear actions
+- [x] **NEW**: T114c [US3a] Create ProductSort component in src/components/storefront/product-sort.tsx - **COMPLETE**: Sorting dropdown (newest, oldest, name, price, popular)
+- [x] **NEW**: T114d [US3a] Create Pagination component in src/components/ui/pagination.tsx - **COMPLETE**: Page navigation with prev/next buttons and page numbers
+- [x] **NEW**: T114e [US3a] Create Skeleton component in src/components/ui/skeleton.tsx - **COMPLETE**: Loading placeholder component
+- [x] T115 [US3a] [P] Create Product Details page in src/app/(storefront)/products/[slug]/page.tsx with image gallery, variants, and add to cart - **COMPLETE**: 5 components (ProductImageGallery, ProductInfo, ProductTabs, RelatedProducts + main page) with breadcrumbs, variant selection, quantity controls, zoom functionality
+- [x] T116 [US3a] [P] Create Category page in src/app/(storefront)/categories/[slug]/page.tsx with category products and breadcrumbs - **COMPLETE**: Server Component with breadcrumb navigation, subcategories display, product filtering, sorting, pagination
+- [x] T117 [US3a] [P] Create Search Results page in src/app/(storefront)/search/page.tsx with search query highlighting and filters - **COMPLETE**: Server Component with search header, query highlighting, empty state, search tips, product grid with filters
+- [x] T118 [US3a] [P] Create Cart page in src/app/(storefront)/cart/page.tsx with cart items, quantity controls, and checkout button - **COMPLETE**: Client Component with cart items list, quantity controls (+/-), remove button, subtotal/total display, checkout CTA, empty state
+- [x] T119 [US3a] [P] Create useCart hook in src/hooks/use-cart.ts with add, remove, update quantity, and cart state management - **COMPLETE**: localStorage persistence, addItem, removeItem, updateQuantity, clearCart, getItem, isInCart, totalItems, totalPrice calculations
+- [x] T120 [US3a] [P] Create Homepage in src/app/(storefront)/page.tsx with featured products, categories, and hero banner - **COMPLETE**: Hero section, featured products grid (8 items), category showcase (6 categories), CTAs, responsive layout
+- [x] T121 [US3a] Create E2E test "Customer can browse products and view details" in tests/e2e/storefront/browse-products.spec.ts - **COMPLETE**: 14 test scenarios covering homepage display, product grid navigation, category/price filtering, sorting, product detail page, image gallery navigation, product tabs, breadcrumb navigation, related products, search functionality, empty state handling, pagination filter persistence
+- [x] T122 [US3a] Create E2E test "Customer can add product to cart" in tests/e2e/storefront/add-to-cart.spec.ts - **COMPLETE**: 14 test scenarios covering quick add from product card with toast notification, add from detail page with variant selection, cart display with items/quantities/totals, quantity updates (increase/decrease), remove items, empty cart state, cart persistence across reloads/navigation, out-of-stock prevention, loading skeleton, multiple items subtotal calculation, maximum quantity limit enforcement
 
 ---
 
