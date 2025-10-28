@@ -32,7 +32,6 @@ import {
   createProStore,
   createExpiredTrialStore,
   deleteTestStore,
-  assignUserToStore,
 } from '../fixtures/stores';
 
 test.describe('Store Details Page', () => {
@@ -186,7 +185,7 @@ test.describe('Store Details Page', () => {
           slug: `test-product-${i + 1}-${Date.now()}`,
           storeId: testStore.id,
           price: 1000 + (i * 500), // $10.00, $15.00, etc.
-          inventory: 50,
+          inventoryQty: 50,
           isActive: true,
         },
       });
@@ -198,7 +197,7 @@ test.describe('Store Details Page', () => {
     for (let i = 0; i < 3; i++) {
       const customer = await createCustomer(testStore.id, {
         email: `customer${i + 1}@stormcom-test.local`,
-        firstName: `Customer`,
+        // firstName: `Customer`, // Not a valid field in CreateTestUserOptions
         lastName: `${i + 1}`,
       });
       customers.push(customer);
@@ -212,7 +211,7 @@ test.describe('Store Details Page', () => {
           orderNumber: `ORD-${Date.now()}-${i + 1}`,
           storeId: testStore.id,
           customerId: customers[i].id,
-          status: 'COMPLETED',
+          status: 'DELIVERED',
           subtotal: 1000,
           tax: 100,
           shipping: 500,
@@ -311,7 +310,7 @@ test.describe('Store Details Page', () => {
           slug: `limit-product-${i + 1}-${Date.now()}`,
           storeId: limitStore.id,
           price: 1000,
-          inventory: 100,
+          inventoryQty: 100,
           isActive: true,
         },
       });

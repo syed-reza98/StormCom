@@ -29,7 +29,6 @@ import {
 import {
   createTestStore,
   createBasicStore,
-  createProStore,
   deleteTestStore,
   generateUniqueSlug,
 } from '../fixtures/stores';
@@ -131,7 +130,7 @@ test.describe('Store Management', () => {
     });
 
     expect(auditLog).not.toBeNull();
-    expect(auditLog?.details).toMatchObject({
+    expect(auditLog?.changes).toMatchObject({
       storeName: storeData.name,
       storeSlug: storeData.subdomain,
     });
@@ -259,7 +258,7 @@ test.describe('Store Management', () => {
       });
 
       expect(auditLog).not.toBeNull();
-      expect(auditLog?.details).toMatchObject({
+      expect(auditLog?.changes).toMatchObject({
         updatedFields: expect.arrayContaining(['name', 'description', 'phone', 'website']),
       });
     } finally {
