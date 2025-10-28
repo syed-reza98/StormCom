@@ -55,8 +55,8 @@ test.describe('Product Browsing', () => {
   test('should filter products by category', async ({ page }) => {
     await page.goto('/products');
     
-    // Get initial product count
-    const initialProducts = await page.locator('[data-testid="product-card"]').count();
+    // Get initial product count (unused but shows products loaded)
+    await page.locator('[data-testid="product-card"]').count();
     
     // Select a category filter (assuming first radio button is a category)
     const firstCategory = page.locator('input[type="radio"]').first();
@@ -112,8 +112,8 @@ test.describe('Product Browsing', () => {
     expect(page.url()).toContain('sortBy=price');
     expect(page.url()).toContain('sortOrder=asc');
     
-    // Get all product prices
-    const prices = await page.locator('[data-testid="product-card"]').allTextContents();
+    // Get all product prices (unused but verifies products loaded)
+    await page.locator('[data-testid="product-card"]').allTextContents();
     // Note: In a real test, we'd extract and verify prices are sorted
   });
 

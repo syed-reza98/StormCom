@@ -353,10 +353,13 @@ export async function getCategoryBySlug(
   });
 
   // Build breadcrumbs (parent hierarchy)
+  // Limit depth to prevent infinite loops
   const breadcrumbs: Array<{ name: string; slug: string }> = [];
   let currentCategory = category;
+  const maxDepth = 10;
+  let depth = 0;
 
-  while (currentCategory.parentId) {
+  while (currentCategory.parentId && depth < maxDepth) {
     const parent = await prisma.category.findUnique({
       where: { id: currentCategory.parentId },
     });
@@ -364,6 +367,7 @@ export async function getCategoryBySlug(
     if (parent) {
       breadcrumbs.unshift({ name: parent.name, slug: parent.slug });
       currentCategory = parent;
+      depth++;
     } else {
       break;
     }
@@ -384,11 +388,15 @@ export async function getCategoryBySlug(
 
 /**
  * Get featured products for homepage
+ * @param limit Maximum number of products (1-100, default 8)
  */
 export async function getFeaturedProducts(
   storeId: string,
   limit: number = 8
 ): Promise<StorefrontProduct[]> {
+  // Validate and cap limit
+  const safeLimit = Math.min(Math.max(1, limit), 100);
+
   const products = await prisma.product.findMany({
     where: {
       storeId,
@@ -421,7 +429,7 @@ export async function getFeaturedProducts(
       },
     },
     orderBy: { createdAt: 'desc' },
-    take: limit,
+    take: safeLimit,
   });
 
   return products.map((product) => ({
@@ -432,12 +440,16 @@ export async function getFeaturedProducts(
 
 /**
  * Get related products based on category
+ * @param limit Maximum number of products (1-100, default 4)
  */
 export async function getRelatedProducts(
   storeId: string,
   productId: string,
   limit: number = 4
 ): Promise<StorefrontProduct[]> {
+  // Validate and cap limit
+  const safeLimit = Math.min(Math.max(1, limit), 100);
+
   // Get current product to find related items
   const currentProduct = await prisma.product.findUnique({
     where: { id: productId },
@@ -480,7 +492,7 @@ export async function getRelatedProducts(
         },
       },
     },
-    take: limit,
+    take: safeLimit,
   });
 
   return products.map((product) => ({

@@ -59,10 +59,13 @@ function saveCart(items: CartItem[]): void {
 
 /**
  * Calculate cart totals
+ * Note: Rounds totalPrice to 2 decimal places to avoid floating point errors
  */
 function calculateTotals(items: CartItem[]): { totalItems: number; totalPrice: number } {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = Math.round(
+    items.reduce((sum, item) => sum + item.price * item.quantity, 0) * 100
+  ) / 100;
   return { totalItems, totalPrice };
 }
 
@@ -88,8 +91,19 @@ export function useCart() {
 
   /**
    * Add item to cart or increase quantity if already exists
+   * Validates item data before adding
    */
   const addItem = useCallback((item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
+    // Validate item data
+    if (item.price < 0) {
+      console.error('Invalid item price: must be non-negative');
+      return;
+    }
+    if (item.maxQuantity <= 0) {
+      console.error('Invalid maxQuantity: must be positive');
+      return;
+    }
+
     setItems((currentItems) => {
       const existingItemIndex = currentItems.findIndex(
         (i) => i.productId === item.productId && i.variantId === item.variantId

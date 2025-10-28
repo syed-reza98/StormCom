@@ -356,7 +356,7 @@ test.describe('Shopping Cart', () => {
     const skeleton = page.locator('[data-testid="skeleton"]').or(page.locator('.animate-pulse'));
     
     // Try to catch loading state, but don't fail if cart loads instantly
-    const isVisible = await skeleton.first().isVisible().catch(() => false);
+    await skeleton.first().isVisible().catch(() => false);
     
     // Test passes regardless - loading state is optional to catch
     expect(true).toBe(true);
