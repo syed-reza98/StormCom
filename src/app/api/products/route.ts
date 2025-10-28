@@ -7,12 +7,29 @@ import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
+import { SessionService } from '@/services/session-service';
 
 // GET /api/products - List products with pagination and filtering
 export async function GET(request: NextRequest) {
   try {
+    // Try NextAuth session first
     const session = await getServerSession(authOptions);
-    if (!session?.user?.storeId) {
+
+    // Determine storeId from NextAuth session or fallback to custom session service
+    let storeId: string | undefined = session?.user?.storeId;
+
+    if (!storeId) {
+      // Support both 'session_token' (SessionService) and legacy 'sessionId' cookie
+      const sessionToken = request.cookies.get('session_token')?.value || request.cookies.get('sessionId')?.value;
+      if (sessionToken) {
+        const userFromSession = await SessionService.getUserFromSession(sessionToken);
+        if (userFromSession) {
+          storeId = userFromSession.storeId || undefined;
+        }
+      }
+    }
+
+    if (!storeId) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
@@ -43,14 +60,58 @@ export async function GET(request: NextRequest) {
     // Note: sortBy and sortOrder are removed - not supported in current ProductSearchFilters type
 
     const result = await productService.getProducts(
-      session.user.storeId,
+      storeId as string,
       filters,
       page,
       perPage
     );
 
+    // Log for debugging: ensure images were normalized to arrays
+    try {
+      if (result.products && result.products.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log('Products API - sample images type:', typeof (result.products[0] as any).images);
+        // eslint-disable-next-line no-console
+        console.log('Products API - sample images value:', (result.products[0] as any).images);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Ensure response shapes are normalized at the API edge as a safeguard
+    const normalizedProducts = result.products.map((p: any) => {
+      const prod = { ...p };
+      try {
+        if (typeof prod.images === 'string') {
+          const parsed = JSON.parse(prod.images);
+          prod.images = Array.isArray(parsed) ? parsed : (prod.images ? [prod.images] : []);
+        } else if (!Array.isArray(prod.images)) {
+          prod.images = [];
+        }
+      } catch (e) {
+        prod.images = prod.images ? [String(prod.images)] : [];
+      }
+
+      try {
+        if (typeof prod.metaKeywords === 'string') {
+          const parsed = JSON.parse(prod.metaKeywords);
+          prod.metaKeywords = Array.isArray(parsed) ? parsed : (prod.metaKeywords ? [prod.metaKeywords] : []);
+        } else if (!Array.isArray(prod.metaKeywords)) {
+          prod.metaKeywords = [];
+        }
+      } catch (e) {
+        prod.metaKeywords = prod.metaKeywords ? [String(prod.metaKeywords)] : [];
+      }
+
+      if ((!prod.thumbnailUrl || prod.thumbnailUrl === '') && Array.isArray(prod.images) && prod.images.length > 0) {
+        prod.thumbnailUrl = prod.images[0];
+      }
+
+      return prod;
+    });
+
     return NextResponse.json({
-      data: result.products,
+      data: normalizedProducts,
       meta: result.pagination,
     });
   } catch (error) {

@@ -473,9 +473,12 @@ test.describe('Store Management', () => {
           name: `Test Product ${i + 1}`,
           slug: `test-product-${i + 1}-${Date.now()}`,
           storeId: freeStore.id,
+          sku: `SKU-FREE-${Date.now()}-${i + 1}`,
           price: 1000, // $10.00
           inventoryQty: 100,
           isPublished: true,
+          images: '[]',
+          metaKeywords: '[]',
         },
       });
     }

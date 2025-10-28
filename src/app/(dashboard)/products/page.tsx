@@ -1,14 +1,14 @@
 // src/app/(dashboard)/products/page.tsx
 // Products List Dashboard Page - Data table with search, filters, and bulk actions
 
-import { Suspense } from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ProductsTable } from '@/components/products/products-table';
 import { ProductsFilters } from '@/components/products/products-filters';
 import { ProductsBulkActions } from '@/components/products/products-bulk-actions';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 // ============================================================================
 // METADATA
@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: 'Products | Dashboard',
   description: 'Manage your store products, inventory, and pricing',
 };
+
+// Force dynamic rendering since this page contains client components
+export const dynamic = 'force-dynamic';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -56,75 +59,36 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
         
         <div className="flex items-center gap-3">
           {/* Import/Export Actions */}
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/products/import">
-              📤 Import
-            </Link>
-          </Button>
-          
+          <Link
+            href="/dashboard/products/import"
+            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+          >
+            📤 Import
+          </Link>
+
           <Button variant="outline" size="sm">
             📥 Export
           </Button>
-          
+
           {/* Add Product Button */}
-          <Button asChild>
-            <Link href="/dashboard/products/new">
-              ➕ Add Product
-            </Link>
-          </Button>
+          <Link href="/dashboard/products/new" className={cn(buttonVariants({}))}>
+            ➕ Add Product
+          </Link>
         </div>
       </div>
 
       {/* Filters Section */}
       <Card className="p-6">
-        <Suspense fallback={<div>Loading filters...</div>}>
-          <ProductsFilters searchParams={searchParams} />
-        </Suspense>
+        <ProductsFilters searchParams={searchParams} />
       </Card>
 
       {/* Bulk Actions */}
-      <Suspense fallback={<div>Loading bulk actions...</div>}>
-        <ProductsBulkActions />
-      </Suspense>
+      <ProductsBulkActions />
 
       {/* Products Data Table */}
       <Card>
-        <Suspense fallback={<ProductsTableSkeleton />}>
-          <ProductsTable searchParams={searchParams} />
-        </Suspense>
+        <ProductsTable searchParams={searchParams} />
       </Card>
-    </div>
-  );
-}
-
-// ============================================================================
-// LOADING SKELETON
-// ============================================================================
-
-function ProductsTableSkeleton() {
-  return (
-    <div className="p-6">
-      <div className="space-y-4">
-        {/* Table Header Skeleton */}
-        <div className="flex items-center justify-between">
-          <div className="h-8 w-40 bg-muted rounded animate-pulse" />
-          <div className="h-8 w-32 bg-muted rounded animate-pulse" />
-        </div>
-        
-        {/* Table Rows Skeleton */}
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 py-4 border-b">
-            <div className="h-12 w-12 bg-muted rounded animate-pulse" />
-            <div className="flex-1 space-y-2">
-              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
-              <div className="h-3 w-32 bg-muted rounded animate-pulse" />
-            </div>
-            <div className="h-4 w-20 bg-muted rounded animate-pulse" />
-            <div className="h-4 w-16 bg-muted rounded animate-pulse" />
-            <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

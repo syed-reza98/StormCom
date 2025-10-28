@@ -6,12 +6,27 @@
 import Image from 'next/image';
 
 interface ProductImagesProps {
-  images: string[];
+  images: string[] | string;
   productName: string;
 }
 
 export function ProductImages({ images, productName }: ProductImagesProps) {
-  if (images.length === 0) {
+  // Normalize images: accept an array or a JSON-encoded string from legacy seed data
+  let imgs: string[] = [];
+
+  if (typeof images === 'string') {
+    try {
+      const parsed = JSON.parse(images);
+      imgs = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      // If parsing fails, try to use the string as a single src
+      imgs = images ? [images] : [];
+    }
+  } else if (Array.isArray(images)) {
+    imgs = images;
+  }
+
+  if (imgs.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 bg-muted rounded-lg">
         <p className="text-muted-foreground">No images uploaded</p>
@@ -24,7 +39,7 @@ export function ProductImages({ images, productName }: ProductImagesProps) {
       {/* Main Image */}
       <div className="aspect-square w-full max-w-md mx-auto rounded-lg overflow-hidden bg-muted">
         <Image
-          src={images[0]}
+          src={imgs[0]}
           alt={productName}
           width={400}
           height={400}
@@ -33,9 +48,9 @@ export function ProductImages({ images, productName }: ProductImagesProps) {
       </div>
       
       {/* Thumbnail Gallery */}
-      {images.length > 1 && (
+      {imgs.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
-          {images.slice(1).map((image, index) => (
+          {imgs.slice(1).map((image, index) => (
             <div key={index} className="aspect-square rounded-lg overflow-hidden bg-muted">
               <Image
                 src={image}

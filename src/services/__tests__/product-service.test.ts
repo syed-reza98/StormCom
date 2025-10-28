@@ -202,6 +202,7 @@ describe('ProductService', () => {
         slug: 'new-product',
         storeId: mockStoreId,
         inventoryStatus: InventoryStatus.IN_STOCK,
+        // Prisma returns legacy JSON-encoded strings in DB; service normalizes them
         images: '[]',
         metaKeywords: '[]',
         publishedAt: new Date(),
@@ -211,11 +212,19 @@ describe('ProductService', () => {
         _count: { orderItems: 0, reviews: 0, wishlistItems: 0 },
       };
 
+      // The DB mock returns JSON strings for images/metaKeywords but the service
+      // will normalize them into arrays for consumers.
       prismaMock.product.create.mockResolvedValue(mockCreatedProduct as any);
 
       const result = await productService.createProduct(mockStoreId, validProductData);
 
-      expect(result).toEqual(mockCreatedProduct);
+      const expected = {
+        ...mockCreatedProduct,
+        images: [],
+        metaKeywords: [],
+      };
+
+      expect(result).toEqual(expected);
       expect(prismaMock.product.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           name: validProductData.name,

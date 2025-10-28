@@ -1,98 +1,19 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  8,
-                    "exitCode":  2,
-                    "timestamp":  "2025-10-28T09:10:56Z",
+                    "totalErrors":  0,
+                    "exitCode":  0,
+                    "timestamp":  "2025-10-28T14:12:00Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  12
+                    "totalLines":  4
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit",
-                      "",
-                      "tests/e2e/stores/store-details-page.spec.ts(190,11): error TS2353: Object literal may only specify known properties, and \u0027isActive\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027.",
-                      "tests/e2e/stores/store-details-page.spec.ts(201,9): error TS2353: Object literal may only specify known properties, and \u0027firstName\u0027 does not exist in type \u0027Partial\u003cCreateTestUserOptions\u003e\u0027.",
-                      "tests/e2e/stores/store-details-page.spec.ts(215,11): error TS2322: Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027OrderStatus | undefined\u0027.",
-                      "tests/e2e/stores/store-details-page.spec.ts(314,11): error TS2561: Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
-                      "tests/e2e/stores/store-management.spec.ts(32,3): error TS6133: \u0027createProStore\u0027 is declared but its value is never read.",
-                      "tests/e2e/stores/store-management.spec.ts(134,22): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                      "tests/e2e/stores/store-management.spec.ts(262,24): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                      "tests/e2e/stores/store-management.spec.ts(478,11): error TS2561: Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?"
+                      ""
                   ],
     "errors":  [
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027isActive\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027.",
-                       "column":  11,
-                       "line":  190,
-                       "fullText":  "tests/e2e/stores/store-details-page.spec.ts(190,11): error TS2353: Object literal may only specify known properties, and \u0027isActive\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-details-page.spec.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027firstName\u0027 does not exist in type \u0027Partial\u003cCreateTestUserOptions\u003e\u0027.",
-                       "column":  9,
-                       "line":  201,
-                       "fullText":  "tests/e2e/stores/store-details-page.spec.ts(201,9): error TS2353: Object literal may only specify known properties, and \u0027firstName\u0027 does not exist in type \u0027Partial\u003cCreateTestUserOptions\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-details-page.spec.ts"
-                   },
-                   {
-                       "message":  "Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027OrderStatus | undefined\u0027.",
-                       "column":  11,
-                       "line":  215,
-                       "fullText":  "tests/e2e/stores/store-details-page.spec.ts(215,11): error TS2322: Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027OrderStatus | undefined\u0027.",
-                       "code":  "TS2322",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-details-page.spec.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
-                       "column":  11,
-                       "line":  314,
-                       "fullText":  "tests/e2e/stores/store-details-page.spec.ts(314,11): error TS2561: Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
-                       "code":  "TS2561",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-details-page.spec.ts"
-                   },
-                   {
-                       "message":  "\u0027createProStore\u0027 is declared but its value is never read.",
-                       "column":  3,
-                       "line":  32,
-                       "fullText":  "tests/e2e/stores/store-management.spec.ts(32,3): error TS6133: \u0027createProStore\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-management.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                       "column":  22,
-                       "line":  134,
-                       "fullText":  "tests/e2e/stores/store-management.spec.ts(134,22): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-management.spec.ts"
-                   },
-                   {
-                       "message":  "Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                       "column":  24,
-                       "line":  262,
-                       "fullText":  "tests/e2e/stores/store-management.spec.ts(262,24): error TS2339: Property \u0027details\u0027 does not exist on type \u0027{ userAgent: string | null; id: string; storeId: string | null; createdAt: Date; changes: string | null; userId: string | null; ipAddress: string | null; action: string; entityType: string; entityId: string; }\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-management.spec.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
-                       "column":  11,
-                       "line":  478,
-                       "fullText":  "tests/e2e/stores/store-management.spec.ts(478,11): error TS2561: Object literal may only specify known properties, but \u0027inventory\u0027 does not exist in type \u0027Without\u003cProductCreateInput, ProductUncheckedCreateInput\u003e \u0026 ProductUncheckedCreateInput\u0027. Did you mean to write \u0027inventoryQty\u0027?",
-                       "code":  "TS2561",
-                       "severity":  "error",
-                       "file":  "tests/e2e/stores/store-management.spec.ts"
-                   }
+
                ]
 }

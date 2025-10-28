@@ -1,4 +1,5 @@
-import { Suspense } from 'react';
+'use client';
+
 import Link from 'next/link';
 
 /**
@@ -251,35 +252,6 @@ function StoresDataTable({ stores }: { stores: Store[] }) {
 }
 
 /**
- * Stores List Loading Component
- */
-function StoresListLoading() {
-  return (
-    <div className="space-y-6">
-      {/* Header skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <div className="h-8 w-32 bg-gray-200 animate-pulse rounded" />
-          <div className="h-4 w-48 bg-gray-200 animate-pulse rounded" />
-        </div>
-        <div className="h-10 w-28 bg-gray-200 animate-pulse rounded" />
-      </div>
-
-      {/* Search skeleton */}
-      <div className="h-10 w-80 bg-gray-200 animate-pulse rounded" />
-
-      {/* Table skeleton */}
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="h-12 bg-gray-200 animate-pulse rounded-t-lg" />
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-16 border-t border-gray-200 bg-gray-100 animate-pulse" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/**
  * Main Stores List Page Component
  */
 export default function StoresPage() {
@@ -388,9 +360,7 @@ export default function StoresPage() {
               </p>
             </div>
             <div className="p-6">
-              <Suspense fallback={<StoresListLoading />}>
-                <StoresDataTable stores={mockStores} />
-              </Suspense>
+              <StoresDataTable stores={mockStores} />
             </div>
           </div>
 

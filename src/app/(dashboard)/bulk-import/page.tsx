@@ -1,7 +1,6 @@
 // app/(dashboard)/bulk-import/page.tsx
 // Bulk Import Page - Dashboard page for bulk importing products
 
-import { Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -9,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { BulkImportUpload } from '@/components/bulk-import/bulk-import-upload';
 import { BulkImportHistory } from '@/components/bulk-import/bulk-import-history';
 import { BulkImportTemplates } from '@/components/bulk-import/bulk-import-templates';
+
+// Force dynamic rendering since this page contains client components
+export const dynamic = 'force-dynamic';
 
 // Mock data for demonstration
 const importStats = {
@@ -157,9 +159,7 @@ export default function BulkImportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<div>Loading upload component...</div>}>
-                <BulkImportUpload />
-              </Suspense>
+              <BulkImportUpload />
             </CardContent>
           </Card>
 
@@ -172,9 +172,7 @@ export default function BulkImportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<div>Loading import history...</div>}>
-                <BulkImportHistory imports={recentImports} />
-              </Suspense>
+              <BulkImportHistory imports={recentImports} />
             </CardContent>
           </Card>
         </div>
@@ -223,9 +221,7 @@ export default function BulkImportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<div>Loading templates...</div>}>
-                <BulkImportTemplates />
-              </Suspense>
+              <BulkImportTemplates />
             </CardContent>
           </Card>
 

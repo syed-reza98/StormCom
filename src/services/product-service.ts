@@ -147,8 +147,11 @@ export class ProductService {
       prisma.product.count({ where }),
     ]);
 
+    // Normalize fields for consumers (images/metaKeywords)
+    const normalized = products.map((p) => this.normalizeProductFields(p));
+
     return {
-      products,
+      products: normalized as unknown as ProductWithRelations[],
       pagination: {
         page,
         perPage,
@@ -162,7 +165,7 @@ export class ProductService {
    * Get single product by ID
    */
   async getProductById(productId: string, storeId: string): Promise<ProductWithRelations | null> {
-    return prisma.product.findFirst({
+    const product = await prisma.product.findFirst({
       where: {
         id: productId,
         storeId,
@@ -193,13 +196,17 @@ export class ProductService {
         },
       },
     });
+
+    if (!product) return null;
+
+    return this.normalizeProductFields(product) as unknown as ProductWithRelations;
   }
 
   /**
    * Get product by slug
    */
   async getProductBySlug(slug: string, storeId: string): Promise<ProductWithRelations | null> {
-    return prisma.product.findFirst({
+    const product = await prisma.product.findFirst({
       where: {
         slug,
         storeId,
@@ -225,8 +232,11 @@ export class ProductService {
         },
       },
     });
-  }
 
+    if (!product) return null;
+
+    return this.normalizeProductFields(product) as unknown as ProductWithRelations;
+  }
   /**
    * Get total product count for a store
    */
@@ -290,7 +300,7 @@ export class ProductService {
       },
     });
 
-    return product;
+    return this.normalizeProductFields(product) as unknown as ProductWithRelations;
   }
 
   /**
@@ -369,7 +379,7 @@ export class ProductService {
       },
     });
 
-    return product;
+    return this.normalizeProductFields(product) as unknown as ProductWithRelations;
   }
 
   /**
@@ -466,12 +476,57 @@ export class ProductService {
       },
     });
 
-    return updatedProduct;
+    return this.normalizeProductFields(updatedProduct) as unknown as ProductWithRelations;
   }
 
   // --------------------------------------------------------------------------
   // HELPER METHODS
   // --------------------------------------------------------------------------
+
+  /**
+   * Normalize product fields returned from the database to application-friendly shapes.
+   * - `images` and `metaKeywords` are stored as JSON strings in the DB for legacy reasons.
+   * - This helper parses them into arrays and provides sensible fallbacks (thumbnailUrl).
+   */
+  private normalizeProductFields(product: any) {
+    if (!product) return product;
+
+    const p: any = { ...product };
+
+    // Normalize images: JSON string -> string[]; if it's a single URL string, wrap it
+    try {
+      if (typeof p.images === 'string') {
+        // eslint-disable-next-line no-console
+        console.log('normalizeProductFields: parsing images string for product id=', p.id);
+        const parsed = JSON.parse(p.images);
+        p.images = Array.isArray(parsed) ? parsed : (p.images ? [p.images] : []);
+      } else if (!Array.isArray(p.images)) {
+        p.images = [];
+      }
+    } catch (e) {
+      // If parse fails, treat as single image URL or empty
+      p.images = p.images ? [String(p.images)] : [];
+    }
+
+    // Normalize metaKeywords
+    try {
+      if (typeof p.metaKeywords === 'string') {
+        const parsed = JSON.parse(p.metaKeywords);
+        p.metaKeywords = Array.isArray(parsed) ? parsed : (p.metaKeywords ? [p.metaKeywords] : []);
+      } else if (!Array.isArray(p.metaKeywords)) {
+        p.metaKeywords = [];
+      }
+    } catch (e) {
+      p.metaKeywords = p.metaKeywords ? [String(p.metaKeywords)] : [];
+    }
+
+    // Ensure thumbnailUrl falls back to first image when empty
+    if ((!p.thumbnailUrl || p.thumbnailUrl === '') && Array.isArray(p.images) && p.images.length > 0) {
+      p.thumbnailUrl = p.images[0];
+    }
+
+    return p;
+  }
 
   /**
    * Build Prisma where clause from filters
@@ -730,7 +785,7 @@ export class ProductService {
       },
     });
     
-    return updated as unknown as ProductWithRelations;
+    return this.normalizeProductFields(updated) as unknown as ProductWithRelations;
   }
 
   /**
@@ -747,7 +802,7 @@ export class ProductService {
       throw new Error('Insufficient stock');
     }
 
-    return prisma.product.update({
+    const decreased = await prisma.product.update({
       where: { id: productId },
       data: { inventoryQty: newStock },
       include: {
@@ -763,6 +818,8 @@ export class ProductService {
         },
       },
     });
+
+    return this.normalizeProductFields(decreased) as unknown as ProductWithRelations;
   }
 
   /**

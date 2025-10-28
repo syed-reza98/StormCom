@@ -255,6 +255,7 @@ test.describe('Customer Login and Account Redirect - T068', () => {
     // Skip if no orders exist
     const hasOrders = await accountPage.hasOrderHistory();
     if (!hasOrders) {
+      // eslint-disable-next-line no-console
       console.log('No orders available for search/filter testing - skipping test');
       return;
     }
@@ -299,6 +300,7 @@ test.describe('Customer Login and Account Redirect - T068', () => {
     // Skip if no orders exist
     const hasOrders = await accountPage.hasOrderHistory();
     if (!hasOrders) {
+      // eslint-disable-next-line no-console
       console.log('No orders available for detail viewing - skipping test');
       return;
     }

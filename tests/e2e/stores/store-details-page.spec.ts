@@ -184,9 +184,12 @@ test.describe('Store Details Page', () => {
           name: `Test Product ${i + 1}`,
           slug: `test-product-${i + 1}-${Date.now()}`,
           storeId: testStore.id,
+          sku: `SKU-${Date.now()}-${i + 1}`,
           price: 1000 + (i * 500), // $10.00, $15.00, etc.
           inventoryQty: 50,
           isPublished: true,
+          images: '[]',
+          metaKeywords: '[]',
         },
       });
       products.push(product);
@@ -308,9 +311,12 @@ test.describe('Store Details Page', () => {
           name: `Limit Product ${i + 1}`,
           slug: `limit-product-${i + 1}-${Date.now()}`,
           storeId: limitStore.id,
+          sku: `SKU-LIMIT-${Date.now()}-${i + 1}`,
           price: 1000,
           inventoryQty: 100,
           isPublished: true,
+          images: '[]',
+          metaKeywords: '[]',
         },
       });
     }
