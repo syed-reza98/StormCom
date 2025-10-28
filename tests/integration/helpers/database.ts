@@ -152,13 +152,10 @@ export async function seedTestDatabase(): Promise<void> {
       name: 'Test Store',
       slug: 'test-store',
       description: 'Default test store',
-      domain: 'test.localhost',
-      isActive: true,
-      settings: {
-        currency: 'USD',
-        timezone: 'UTC',
-        language: 'en',
-      },
+      email: 'test@example.com',
+      currency: 'USD',
+      timezone: 'UTC',
+      locale: 'en',
     },
   });
   
@@ -167,10 +164,10 @@ export async function seedTestDatabase(): Promise<void> {
     data: {
       email: 'admin@test.com',
       name: 'Test Admin',
-      password: 'hashedpassword123', // In real tests, use proper bcrypt hash
-      role: 'ADMIN',
+      password: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/6Btj6OgUu', // bcrypt hash of "password"
+      role: 'STORE_ADMIN',
       storeId: defaultStore.id,
-      isActive: true,
+      emailVerified: true,
     },
   });
   
@@ -191,17 +188,18 @@ export async function getTestDatabaseStats(): Promise<Record<string, number>> {
   
   const stats: Record<string, number> = {};
   
-  // Count rows in major tables
+  // Count rows in major tables (using Prisma @map names from schema)
   const tables = [
     'stores',
     'users',
     'categories', 
     'products',
-    'attributes',
-    'attributeValues',
-    'productAttributes',
+    'product_attributes',
+    'product_attribute_values',
     'orders',
-    'orderItems',
+    'order_items',
+    'customers',
+    'brands',
   ];
   
   for (const table of tables) {
@@ -223,7 +221,7 @@ export async function getTestDatabaseStats(): Promise<Record<string, number>> {
  * @returns Promise resolving to operation result
  */
 export async function withTestTransaction<T>(
-  operations: (tx: PrismaClient) => Promise<T>
+  operations: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$extends'>) => Promise<T>
 ): Promise<T> {
   if (!prisma) {
     throw new Error('Test database not initialized. Call setupTestDatabase() first.');

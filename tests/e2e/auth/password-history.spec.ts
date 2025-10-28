@@ -253,6 +253,7 @@ test.describe('Password History Prevention - T073', () => {
     // Try to reset to a recent password from history
     const newPasswordInput = page.locator('[data-testid="new-password"], input[type="password"]').first();
     const confirmPasswordInput = page.locator('[data-testid="confirm-password"], input[type="password"]').last();
+    const submitButton = page.locator('button[type="submit"]');
 
     // Test resetting to each recent password
     for (let i = 0; i <= 3; i++) {
@@ -263,7 +264,6 @@ test.describe('Password History Prevention - T073', () => {
       await confirmPasswordInput.clear();
       await confirmPasswordInput.fill(oldPassword);
 
-      const submitButton = page.locator('button[type="submit"]');
       await submitButton.click();
       await page.waitForTimeout(1000);
 

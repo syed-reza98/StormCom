@@ -115,13 +115,16 @@
   
   input[type="number"] {
     -moz-appearance: textfield;
+    appearance: textfield;
   }
 }
 
 @layer utilities {
   /* Text balance for headings */
-  .text-balance {
-    text-wrap: balance;
+  @supports (text-wrap: balance) {
+    .text-balance {
+      text-wrap: balance;
+    }
   }
   
   /* Screen reader only text */

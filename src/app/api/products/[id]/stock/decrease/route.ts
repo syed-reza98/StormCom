@@ -88,12 +88,13 @@ export async function POST(request: NextRequest, context: RouteParams) {
         data: {
           storeId: session.user!.storeId!,
           productId: id,
-          changeType: 'SALE',
-          quantityChange: -validatedData.quantity,
-          quantityBefore: product.inventoryQty,
-          quantityAfter: newQuantity,
-          reason: validatedData.reason || 'Stock decreased via API',
-          orderId: validatedData.orderId,
+          previousQty: product.inventoryQty,
+          newQty: newQuantity,
+          changeQty: -validatedData.quantity,
+          reason: validatedData.reason || 'Sale',
+          note: validatedData.orderId 
+            ? `Order ID: ${validatedData.orderId}` 
+            : undefined,
           userId: session.user!.id,
         },
       });

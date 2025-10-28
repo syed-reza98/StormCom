@@ -20,7 +20,6 @@
 
 import { describe, test, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { db } from '../../src/lib/db';
-import { StoreService } from '../../src/services/store-service';
 import { ValidationError, NotFoundError, UnauthorizedError, ConflictError } from '../../src/lib/errors';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
@@ -144,7 +143,7 @@ class MockStoreService {
    */
   async updateStore(storeId: string, data: UpdateStoreData, userId: string): Promise<any> {
     // Check store exists and user has access
-    const store = await this.getStoreById(storeId, userId);
+    await this.getStoreById(storeId, userId);
     
     // Validate update data
     await this.validateUpdateData(data);
@@ -666,8 +665,7 @@ describe('Store Service Integration Tests', () => {
       data: {
         email: 'superadmin-store-service@stormcom-test.local',
         password: 'hashedpassword',
-        name: 'Super',
-        lastName: 'Admin',
+        name: 'Super Admin',
         role: 'SUPER_ADMIN',
         emailVerified: true,
       },
@@ -678,8 +676,7 @@ describe('Store Service Integration Tests', () => {
       data: {
         email: 'storeadmin-store-service@stormcom-test.local',
         password: 'hashedpassword',
-        name: 'Store',
-        lastName: 'Admin',
+        name: 'Store Admin',
         role: 'STORE_ADMIN',
         emailVerified: true,
       },
@@ -912,7 +909,7 @@ describe('Store Service Integration Tests', () => {
         },
       });
 
-      const store2 = await db.store.create({
+      await db.store.create({
         data: {
           name: 'Access Store 2',
           slug: `access-store-2-${Date.now()}`,
@@ -1220,8 +1217,11 @@ describe('Store Service Integration Tests', () => {
               name: `Product ${i + 1}`,
               slug: `product-${i + 1}-${Date.now()}`,
               storeId: testStoreId,
+              sku: `STATS-SKU-${i + 1}`,
               price: 1000,
               inventoryQty: 100,
+              images: '[]',
+              metaKeywords: '[]',
             },
           })
         ),
@@ -1231,8 +1231,7 @@ describe('Store Service Integration Tests', () => {
             data: {
               email: `customer${i + 1}-stats@stormcom-test.local`,
               password: 'hashedpassword',
-              name: `Customer`,
-              lastName: `${i + 1}`,
+              name: `Customer ${i + 1}`,
               storeId: testStoreId,
               emailVerified: true,
             },
@@ -1255,9 +1254,9 @@ describe('Store Service Integration Tests', () => {
               customerId: customer.id,
               status: 'DELIVERED',
               subtotal: 1500,
-              tax: 150,
-              shipping: 500,
-              currency: 'USD',
+              taxAmount: 150,
+              shippingAmount: 500,
+              totalAmount: 2150,
             },
           })
         )
@@ -1343,8 +1342,8 @@ describe('Store Service Integration Tests', () => {
               sku: `LIM-${i + 1}`,
               trackInventory: true,
               lowStockThreshold: 5,
-              images: [],
-              metaKeywords: [],
+              images: '[]',
+              metaKeywords: '[]',
               isFeatured: false,
             },
           })
@@ -1378,8 +1377,8 @@ describe('Store Service Integration Tests', () => {
               sku: `MAX-${i + 1}`,
               trackInventory: true,
               lowStockThreshold: 5,
-              images: [],
-              metaKeywords: [],
+              images: '[]',
+              metaKeywords: '[]',
               isFeatured: false,
             },
           })

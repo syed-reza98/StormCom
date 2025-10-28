@@ -1,0 +1,624 @@
+{
+  "analysisDate": "2025-01-26T00:00:00Z",
+  "analysisVersion": "2.0",
+  "totalErrors": 59,
+  "errorsByCategory": {
+    "accessibility": 12,
+    "typescript": 44,
+    "linting": 3
+  },
+  "errorsBySeverity": {
+    "critical": 12,
+    "high": 44,
+    "low": 3
+  },
+  "summary": {
+    "wcagViolations": "10 select elements and 2 form inputs missing accessible names - WCAG 2.1 AA Level compliance violations",
+    "compilationErrors": "44 TypeScript errors preventing test file compilation - schema field mismatches and undefined variables",
+    "styleIssues": "3 linting warnings - 1 property order, 2 false positives for valid React patterns"
+  },
+  "criticalIssues": [
+    "10 select elements missing accessible names (WCAG 2.1 AA violation - blocks production deployment)",
+    "2 form inputs missing proper labels (WCAG 2.1 AA violation - blocks production deployment)",
+    "44 TypeScript compilation errors in test files (prevents test execution)"
+  ],
+  "fixPriority": {
+    "p0_critical_wcag": {
+      "description": "Accessibility fixes for WCAG 2.1 Level AA compliance",
+      "impact": "Blocks production deployment, affects screen reader users",
+      "effort": "Low - simple aria-label or Label component additions",
+      "files": 5,
+      "errors": 12
+    },
+    "p1_high_compilation": {
+      "description": "TypeScript errors preventing test compilation",
+      "impact": "Prevents test execution and CI/CD pipeline",
+      "effort": "Medium - field name corrections and variable cleanup",
+      "files": 13,
+      "errors": 44
+    },
+    "p2_low_linting": {
+      "description": "Property order and false positives",
+      "impact": "Style consistency, documentation needed",
+      "effort": "Minimal - 1 property swap, 2 documentation entries",
+      "files": 3,
+      "errors": 3
+    }
+  },
+  "accessibilityErrors": [
+    {
+      "file": "src/components/products/products-filters.tsx",
+      "line": 153,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Category filter select",
+      "fix": "Add aria-label=\"Filter by category\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/products-filters.tsx",
+      "line": 173,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Brand filter select",
+      "fix": "Add aria-label=\"Filter by brand\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/products-filters.tsx",
+      "line": 193,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Price range filter select",
+      "fix": "Add aria-label=\"Filter by price range\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/products-filters.tsx",
+      "line": 210,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Stock status filter select",
+      "fix": "Add aria-label=\"Filter by stock status\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/product-form.tsx",
+      "line": 320,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Category selector in product form",
+      "fix": "Add aria-label=\"Select product category\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/product-form.tsx",
+      "line": 340,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Brand selector in product form",
+      "fix": "Add aria-label=\"Select product brand\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/product-form.tsx",
+      "line": 582,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Status selector in product form",
+      "fix": "Add aria-label=\"Select product status\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/products/product-form.tsx",
+      "line": 628,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Visibility selector in product form",
+      "fix": "Add aria-label=\"Select product visibility\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/attributes/attribute-form.tsx",
+      "line": 358,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "1.3.1 Info and Relationships",
+      "issue": "Form input missing associated label",
+      "context": "Input field in attribute form",
+      "fix": "Wrap with Label component or add aria-label",
+      "status": "pending"
+    },
+    {
+      "file": "src/app/(dashboard)/categories/page.tsx",
+      "line": 186,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "4.1.2 Name, Role, Value",
+      "issue": "Select element missing accessible name",
+      "context": "Bulk actions select",
+      "fix": "Add aria-label=\"Select bulk action\"",
+      "status": "pending"
+    },
+    {
+      "file": "src/components/stores/store-settings-form.tsx",
+      "line": 549,
+      "severity": "critical",
+      "wcagLevel": "AA",
+      "wcagCriterion": "1.3.1 Info and Relationships",
+      "issue": "Form input missing associated label",
+      "context": "Input field in store settings",
+      "fix": "Wrap with Label component or add aria-label",
+      "status": "pending"
+    },
+    {
+      "file": "src/app/globals.css",
+      "line": 117,
+      "severity": "low",
+      "issue": "Property 'appearance' should be listed after '-moz-appearance'",
+      "context": "CSS property ordering",
+      "fix": "Swap property order for consistency",
+      "status": "pending"
+    }
+  ],
+  "typescriptErrors": [
+    {
+      "file": "tests/e2e/auth/mfa-recovery.spec.ts",
+      "errors": [
+        {
+          "line": 22,
+          "issue": "Property 'mfaRecoveryToken' does not exist on type 'User'",
+          "rootCause": "Field doesn't exist in Prisma User model",
+          "fix": "Remove mfaRecoveryToken reference - use mfaBackupCodes relation instead",
+          "status": "pending"
+        },
+        {
+          "line": 23,
+          "issue": "Property 'mfaRecoveryExpires' does not exist on type 'User'",
+          "rootCause": "Field doesn't exist in Prisma User model",
+          "fix": "Remove mfaRecoveryExpires reference",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/password-history.spec.ts",
+      "errors": [
+        {
+          "line": 32,
+          "issue": "Property 'passwordHash' does not exist on type 'PasswordHistory'",
+          "rootCause": "Field name is 'hashedPassword' not 'passwordHash' in schema",
+          "fix": "Change passwordHash to hashedPassword",
+          "status": "pending"
+        },
+        {
+          "line": 45,
+          "issue": "Property 'passwordHash' does not exist on type 'PasswordHistory'",
+          "rootCause": "Field name is 'hashedPassword' not 'passwordHash' in schema",
+          "fix": "Change passwordHash to hashedPassword",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/password-reset.spec.ts",
+      "errors": [
+        {
+          "line": 18,
+          "issue": "Variable 'accountPage' is declared but never used",
+          "rootCause": "Unused import or variable declaration",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 47,
+          "issue": "Variable 'loginPage' is declared but never used",
+          "rootCause": "Unused import or variable declaration",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 127,
+          "issue": "Property 'passwordHash' does not exist on type 'PasswordHistory'",
+          "rootCause": "Field name is 'hashedPassword' not 'passwordHash' in schema",
+          "fix": "Change passwordHash to hashedPassword",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/register-duplicate.spec.ts",
+      "errors": [
+        {
+          "line": 12,
+          "issue": "Expected 1 arguments, but got 2",
+          "rootCause": "Function signature mismatch",
+          "fix": "Remove extra argument or update function signature",
+          "status": "pending"
+        },
+        {
+          "line": 16,
+          "issue": "'submitButton' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 39,
+          "issue": "'submitButton' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/session-security.spec.ts",
+      "errors": [
+        {
+          "line": 67,
+          "issue": "Property 'details' does not exist on type 'AuditLog'",
+          "rootCause": "AuditLog model doesn't have 'details' field - has 'changes' instead",
+          "fix": "Change details to changes (JSON field)",
+          "status": "pending"
+        },
+        {
+          "line": 95,
+          "issue": "Property 'details' does not exist on type 'AuditLog'",
+          "rootCause": "AuditLog model doesn't have 'details' field - has 'changes' instead",
+          "fix": "Change details to changes (JSON field)",
+          "status": "pending"
+        },
+        {
+          "line": 96,
+          "issue": "Property 'details' does not exist on type 'AuditLog'",
+          "rootCause": "AuditLog model doesn't have 'details' field - has 'changes' instead",
+          "fix": "Change details to changes (JSON field)",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/account-lockout.spec.ts",
+      "errors": [
+        {
+          "line": 45,
+          "issue": "Property 'waitForPageLoad' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change waitForPageLoad to waitForLoad",
+          "status": "pending"
+        },
+        {
+          "line": 79,
+          "issue": "Property 'waitForPageLoad' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change waitForPageLoad to waitForLoad",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/email-verification.spec.ts",
+      "errors": [
+        {
+          "line": 23,
+          "issue": "Variable 'loginPage' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 56,
+          "issue": "Variable 'loginPage' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/login-security.spec.ts",
+      "errors": [
+        {
+          "line": 48,
+          "issue": "Property 'waitForPageLoad' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change waitForPageLoad to waitForLoad",
+          "status": "pending"
+        },
+        {
+          "line": 65,
+          "issue": "Property 'details' does not exist on type 'AuditLog'",
+          "rootCause": "AuditLog model doesn't have 'details' field - has 'changes' instead",
+          "fix": "Change details to changes (JSON field)",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/login.spec.ts",
+      "errors": [
+        {
+          "line": 21,
+          "issue": "Variable 'dashboardPage' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 116,
+          "issue": "Property 'waitForPageLoad' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change waitForPageLoad to waitForLoad",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/mfa.spec.ts",
+      "errors": [
+        {
+          "line": 58,
+          "issue": "Expected 1-2 arguments, but got 3",
+          "rootCause": "Function signature mismatch",
+          "fix": "Remove extra argument",
+          "status": "pending"
+        },
+        {
+          "line": 106,
+          "issue": "Property 'details' does not exist on type 'AuditLog'",
+          "rootCause": "AuditLog model doesn't have 'details' field - has 'changes' instead",
+          "fix": "Change details to changes (JSON field)",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/password-change.spec.ts",
+      "errors": [
+        {
+          "line": 19,
+          "issue": "Variable 'accountPage' is declared but never used",
+          "rootCause": "Unused variable",
+          "fix": "Remove unused variable declaration",
+          "status": "pending"
+        },
+        {
+          "line": 56,
+          "issue": "Property 'navigateToPasswordSection' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change navigateToPasswordSection to navigateToPasswordTab",
+          "status": "pending"
+        },
+        {
+          "line": 83,
+          "issue": "Property 'passwordHash' does not exist on type 'PasswordHistory'",
+          "rootCause": "Field name is 'hashedPassword' not 'passwordHash' in schema",
+          "fix": "Change passwordHash to hashedPassword",
+          "status": "pending"
+        },
+        {
+          "line": 102,
+          "issue": "Property 'navigateToPasswordSection' does not exist",
+          "rootCause": "Method name incorrect",
+          "fix": "Change navigateToPasswordSection to navigateToPasswordTab",
+          "status": "pending"
+        },
+        {
+          "line": 136,
+          "issue": "Property 'passwordHash' does not exist on type 'PasswordHistory'",
+          "rootCause": "Field name is 'hashedPassword' not 'passwordHash' in schema",
+          "fix": "Change passwordHash to hashedPassword",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/auth/register.spec.ts",
+      "errors": [
+        {
+          "line": 12,
+          "issue": "Property 'emailField' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 13,
+          "issue": "Property 'passwordField' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 14,
+          "issue": "Property 'confirmPasswordField' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 15,
+          "issue": "Property 'nameField' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 16,
+          "issue": "Property 'phoneField' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 17,
+          "issue": "Property 'submitButton' has no initializer",
+          "rootCause": "RegisterPage class properties not initialized",
+          "fix": "Add definite assignment assertion (!) or initialize in constructor",
+          "status": "pending"
+        },
+        {
+          "line": 43,
+          "issue": "Argument of type 'string | null' is not assignable to parameter of type 'string'",
+          "rootCause": "Null safety - env variable may be null",
+          "fix": "Add null check or use non-null assertion",
+          "status": "pending"
+        },
+        {
+          "line": 51,
+          "issue": "Expected 1 arguments, but got 2",
+          "rootCause": "Function signature mismatch",
+          "fix": "Remove extra argument",
+          "status": "pending"
+        },
+        {
+          "line": 81,
+          "issue": "This comparison appears to be unintentional (test.skip)",
+          "rootCause": "test.skip() called incorrectly",
+          "fix": "Fix test.skip syntax - should be test.skip('description', async () => {...})",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "file": "tests/e2e/security/security-headers.spec.ts",
+      "errors": [
+        {
+          "line": 8,
+          "issue": "Cannot find name 'securityHeaders'",
+          "rootCause": "Variable not defined or imported",
+          "fix": "Import securityHeaders or define the variable",
+          "status": "pending"
+        },
+        {
+          "line": 15,
+          "issue": "Cannot find name 'securityHeaders'",
+          "rootCause": "Variable not defined or imported",
+          "fix": "Import securityHeaders or define the variable",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "file": "src/components/brands/brands-bulk-actions.tsx",
+      "line": 109,
+      "issue": "Inline style for 'width' property",
+      "reason": "Valid use case - progress bar width is dynamic based on selection count. Cannot use Tailwind for runtime dynamic values.",
+      "code": "style={{ width: `${(selectedCount / totalCount) * 100}%` }}",
+      "resolution": "Accept as valid pattern - suppress linter or add exception comment"
+    },
+    {
+      "file": "src/components/auth/password-strength-indicator.tsx",
+      "line": 78,
+      "issue": "aria-live attribute should be static",
+      "reason": "False positive - React allows dynamic ARIA attributes. Linter doesn't understand React's JSX transformation.",
+      "code": "aria-live={strength.score > 2 ? 'polite' : 'assertive'}",
+      "resolution": "Code is correct per ARIA spec - suppress linter warning"
+    },
+    {
+      "file": "src/components/auth/password-strength-indicator.tsx",
+      "line": 82,
+      "issue": "aria-valuenow attribute should be static",
+      "reason": "False positive - React allows dynamic ARIA attributes. Value changes based on password strength.",
+      "code": "aria-valuenow={strength.score}",
+      "resolution": "Code is correct per ARIA spec - suppress linter warning"
+    },
+    {
+      "file": "src/components/attributes/attribute-form.tsx",
+      "line": 387,
+      "issue": "Inline style for 'width' property",
+      "reason": "Valid use case - dynamic width based on component state or props",
+      "resolution": "Review if can be refactored to Tailwind classes, otherwise accept as valid"
+    }
+  ],
+  "schemaFieldMapping": {
+    "User": {
+      "removed": ["mfaRecoveryToken", "mfaRecoveryExpires"],
+      "renamed": [],
+      "note": "Use mfaBackupCodes relation instead of recovery token fields"
+    },
+    "PasswordHistory": {
+      "removed": [],
+      "renamed": [
+        {
+          "old": "passwordHash",
+          "new": "hashedPassword"
+        }
+      ],
+      "note": "Field name changed to match bcrypt hashing convention"
+    },
+    "Product": {
+      "removed": [],
+      "renamed": [
+        {
+          "old": "inventory",
+          "new": "inventoryQty"
+        }
+      ],
+      "note": "Already fixed in test-data.ts"
+    },
+    "AuditLog": {
+      "removed": ["details"],
+      "renamed": [],
+      "note": "Use 'changes' field (JSON string) instead of 'details'"
+    },
+    "OrderStatus": {
+      "removed": ["COMPLETED"],
+      "validValues": ["PENDING", "PAYMENT_FAILED", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELED", "REFUNDED"],
+      "note": "Use DELIVERED instead of COMPLETED"
+    },
+    "UserRole": {
+      "removed": ["ADMIN"],
+      "renamed": [
+        {
+          "old": "ADMIN",
+          "new": "STORE_ADMIN"
+        }
+      ],
+      "note": "Already fixed in test-data.ts and database.ts"
+    }
+  },
+  "fixStatus": {
+    "completed": 0,
+    "pending": 59,
+    "verified": 0
+  },
+  "estimatedEffort": {
+    "accessibility": "9 minutes (10 aria-labels + 2 Label components)",
+    "typescript": "44 minutes (44 individual fixes)",
+    "linting": "1 minute (property order)",
+    "total": "~54 minutes"
+  },
+  "verificationSteps": [
+    "Run npm run lint to verify accessibility fixes",
+    "Run npm run type-check to verify TypeScript fixes",
+    "Run npm run test to verify test files compile and execute",
+    "Manual accessibility testing with screen reader (NVDA/JAWS/VoiceOver)",
+    "Update fixStatus counters in this JSON after completion"
+  ],
+  "references": {
+    "schema": "prisma/schema.prisma",
+    "constitution": ".specify/memory/constitution.md",
+    "wcagStandards": "WCAG 2.1 Level AA compliance required",
+    "browserSupport": "Chrome 90+, Safari 14+, Firefox 88+, Edge 90+"
+  }
+}

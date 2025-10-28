@@ -260,6 +260,7 @@ export function ImageUpload({
             onChange={handleFileSelect}
             className="hidden"
             disabled={disabled}
+            aria-label="Upload images"
           />
           
           <div className="space-y-2">

@@ -215,7 +215,6 @@ test.describe('Categories Management', () => {
       
       // Get initial order
       const categories = page.locator('[data-testid="category-node"]');
-      const firstCategoryName = await categories.first().locator('[data-testid="category-name"]').textContent();
       const secondCategoryName = await categories.nth(1).locator('[data-testid="category-name"]').textContent();
       
       // Drag first category to second position
@@ -245,14 +244,14 @@ test.describe('Categories Management', () => {
       
       // Move source under target
       const sourceCategory = page.locator('[data-testid="category-node"]').filter({ hasText: 'Source Category' });
-      const targetCategory = page.locator('[data-testid="category-node"]').filter({ hasText: 'Target Category' });
       
       await sourceCategory.hover();
       await sourceCategory.locator('[data-testid="move-category"]').click();
       
       // Select new parent
       await page.click('[data-testid="parent-select"]');
-      await page.click('[data-testid="parent-option"]').filter({ hasText: 'Target Category' });
+      const parentOption = page.locator('[data-testid="parent-option"]').filter({ hasText: 'Target Category' });
+      await parentOption.click();
       await page.click('[data-testid="confirm-move"]');
       
       // Verify move
@@ -311,7 +310,8 @@ test.describe('Categories Management', () => {
       // Choose to reassign products
       await page.click('[data-testid="reassign-products"]');
       await page.click('[data-testid="target-category-select"]');
-      await page.click('[data-testid="target-category-option"]').first();
+      const targetOption = page.locator('[data-testid="target-category-option"]').first();
+      await targetOption.click();
       await page.click('[data-testid="confirm-delete-reassign"]');
       
       // Verify deletion and reassignment

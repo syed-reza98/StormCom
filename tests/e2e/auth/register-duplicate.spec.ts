@@ -1,6 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
 import { RegisterPage } from '../pages/RegisterPage';
-import { LoginPage } from '../pages/LoginPage';
 
 /**
  * E2E Tests: Registration Duplicate Email Handling
@@ -36,7 +35,6 @@ import { LoginPage } from '../pages/LoginPage';
 test.describe('Registration Duplicate Email Handling - T075', () => {
   let page: Page;
   let registerPage: RegisterPage;
-  let loginPage: LoginPage;
 
   // Test data
   const existingUser = {
@@ -77,7 +75,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
   test.beforeEach(async ({ page: testPage }) => {
     page = testPage;
     registerPage = new RegisterPage(page);
-    loginPage = new LoginPage(page);
 
     // Setup: Ensure existing user is registered
     await registerPage.goto();
@@ -106,7 +103,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
       'John',
       'Doe',
       existingUser.email, // Duplicate email
-      'JohnDoe123!',
       'JohnDoe123!'
     );
 
@@ -191,7 +187,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
         'Test',
         'User',
         attempt.email,
-        'TestUser123!',
         'TestUser123!'
       );
 
@@ -250,11 +245,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
     // can exist in different stores/tenants
 
     // Arrange: Try to register same email for different store
-    const differentStoreUser = {
-      ...existingUser,
-      storeId: 'store-002' // Different store tenant
-    };
-
     // Check if store selection is available in registration
     const storeSelector = page.locator('[data-testid="store-selector"], select[name*="store"], input[name*="store"]');
     
@@ -264,7 +254,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
         'Store2',
         'User',
         existingUser.email, // Same email
-        'Store2User123!',
         'Store2User123!'
       );
 
@@ -295,7 +284,7 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
       }
     } else {
       // If multi-tenant UI isn't available, skip this test
-      test.skip('Multi-tenant store selection not available in registration form');
+      test.skip(true, 'Multi-tenant store selection not available in registration form');
     }
   });
 
@@ -466,7 +455,6 @@ test.describe('Registration Duplicate Email Handling - T075', () => {
       'Rapid',
       'Test',
       existingUser.email,
-      'RapidTest123!',
       'RapidTest123!'
     );
 

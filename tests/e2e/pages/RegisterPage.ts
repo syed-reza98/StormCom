@@ -11,11 +11,12 @@ export class RegisterPage {
   readonly page: Page;
 
   // Form field locators
-  readonly nameInput: Locator;          // Updated: single name field (schema has 'name', not firstName/lastName)
+  // readonly nameInput: Locator;          
+  // Updated: single name field (schema has 'name', not firstName/lastName)
   readonly firstNameInput: Locator;     // Kept for backward compatibility
   readonly lastNameInput: Locator;      // Kept for backward compatibility
   readonly emailInput: Locator;
-  readonly phoneInput: Locator;         // Added: phone field (in schema)
+  // readonly phoneInput: Locator;         // Added: phone field (in schema)
   readonly passwordInput: Locator;
   readonly confirmPasswordInput: Locator; // Password confirmation field (re-added for test compatibility)
   readonly submitButton: Locator;

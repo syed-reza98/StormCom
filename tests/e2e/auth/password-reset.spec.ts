@@ -195,7 +195,7 @@ test.describe('Password Reset', () => {
       await db.passwordHistory.create({
         data: {
           userId: user.id,
-          passwordHash,
+          hashedPassword: passwordHash,
         },
       });
 

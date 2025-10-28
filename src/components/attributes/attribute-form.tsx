@@ -357,6 +357,7 @@ export function AttributeForm({
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
+                    aria-label="Select color value"
                     value={newValueColor}
                     onChange={(e) => setNewValueColor(e.target.value)}
                     className="w-10 h-10 border rounded cursor-pointer"

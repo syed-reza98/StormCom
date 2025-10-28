@@ -151,6 +151,7 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
             Category
           </label>
           <select
+            aria-label="Filter by category"
             value={searchParams.categoryId || ''}
             onChange={(e) => handleFilterChange('categoryId', e.target.value || undefined)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -171,6 +172,7 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
             Brand
           </label>
           <select
+            aria-label="Filter by brand"
             value={searchParams.brandId || ''}
             onChange={(e) => handleFilterChange('brandId', e.target.value || undefined)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -191,6 +193,7 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
             Status
           </label>
           <select
+            aria-label="Filter by price range"
             value={searchParams.status || ''}
             onChange={(e) => handleFilterChange('status', e.target.value || undefined)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -208,6 +211,7 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
             Inventory
           </label>
           <select
+            aria-label="Filter by stock status"
             value={searchParams.inventoryStatus || ''}
             onChange={(e) => handleFilterChange('inventoryStatus', e.target.value || undefined)}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"

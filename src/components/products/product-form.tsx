@@ -319,6 +319,7 @@ export function ProductForm({
             <Label htmlFor="categoryId">Category *</Label>
             <select
               id="categoryId"
+              aria-label="Select product category"
               value={formData.categoryId}
               onChange={(e) => updateFormData('categoryId', e.target.value)}
               className={`w-full px-3 py-2 border border-input bg-background rounded-md ${
@@ -339,6 +340,7 @@ export function ProductForm({
             <Label htmlFor="brandId">Brand</Label>
             <select
               id="brandId"
+              aria-label="Select product brand"
               value={formData.brandId || ''}
               onChange={(e) => updateFormData('brandId', e.target.value || undefined)}
               className="w-full px-3 py-2 border border-input bg-background rounded-md"
@@ -581,6 +583,7 @@ export function ProductForm({
                 {attribute.type === 'select' && (
                   <select
                     id={`attribute_${attribute.id}`}
+                    aria-label={`Select ${attribute.name.toLowerCase()}`}
                     value={formData.attributes[attribute.id] || ''}
                     onChange={(e) => handleAttributeChange(attribute.id, e.target.value)}
                     className={`w-full px-3 py-2 border border-input bg-background rounded-md ${
@@ -627,6 +630,7 @@ export function ProductForm({
             <Label htmlFor="status">Product Status</Label>
             <select
               id="status"
+              aria-label="Select product status"
               value={formData.status}
               onChange={(e) => updateFormData('status', e.target.value as 'draft' | 'active' | 'archived')}
               className="w-full px-3 py-2 border border-input bg-background rounded-md"

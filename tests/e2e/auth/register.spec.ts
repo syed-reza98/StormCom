@@ -129,7 +129,7 @@ test.describe('User Registration', () => {
     
     // Assert loading state is active (if submission takes time)
     // Note: This may be false if submission is very fast
-    const isLoadingDuringSubmit = await registerPage.isLoading();
+    // const isLoadingDuringSubmit = await registerPage.isLoading();
     
     // Wait for submission to complete
     await submitPromise;

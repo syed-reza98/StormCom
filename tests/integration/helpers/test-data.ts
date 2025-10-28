@@ -16,15 +16,10 @@ export async function createTestStore(name?: string, customData?: any) {
     name: name || `Test Store ${randomBytes(4).toString('hex')}`,
     slug: `test-store-${randomBytes(4).toString('hex')}`,
     description: 'Test store for integration testing',
-    domain: `test-${randomBytes(4).toString('hex')}.localhost`,
-    isActive: true,
-    settings: {
-      currency: 'USD',
-      timezone: 'UTC',
-      language: 'en',
-      allowRegistration: true,
-      requireEmailVerification: false,
-    },
+    email: `test-${randomBytes(4).toString('hex')}@example.com`,
+    currency: 'USD',
+    timezone: 'UTC',
+    locale: 'en',
     createdAt: new Date(),
     updatedAt: new Date(),
     ...customData,
@@ -47,10 +42,9 @@ export async function createTestUser(storeId: string, customData?: any) {
   const userData = {
     email: `test-${randomBytes(4).toString('hex')}@example.com`,
     name: `Test User ${randomBytes(4).toString('hex')}`,
-    password: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/6Btj6OgUu', // 'password123'
-    role: 'USER',
+    password: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/6Btj6OgUu', // hashed "password"
+    role: 'CUSTOMER',
     storeId,
-    isActive: true,
     emailVerified: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -72,7 +66,7 @@ export async function createTestUser(storeId: string, customData?: any) {
  */
 export async function createTestAdmin(storeId: string, customData?: any) {
   return await createTestUser(storeId, {
-    role: 'ADMIN',
+    role: 'STORE_ADMIN',
     name: `Test Admin ${randomBytes(4).toString('hex')}`,
     ...customData,
   });
@@ -89,8 +83,7 @@ export async function createTestCategory(storeId: string, customData?: any) {
     name: `Test Category ${randomBytes(4).toString('hex')}`,
     slug: `test-category-${randomBytes(4).toString('hex')}`,
     description: 'Test category for integration testing',
-    isActive: true,
-    isFeatured: false,
+    isPublished: true,
     sortOrder: 0,
     storeId,
     createdAt: new Date(),
@@ -120,21 +113,20 @@ export async function createTestProduct(storeId: string, categoryId: string, cus
     shortDescription: 'Test product short description',
     sku: `TEST-${randomBytes(4).toString('hex').toUpperCase()}`,
     price: 99.99,
-    salePrice: 79.99,
+    compareAtPrice: 79.99,
     categoryId,
     storeId,
-    brand: 'Test Brand',
     weight: 1.0,
-    dimensions: '10x10x5',
-    tags: ['test', 'integration'],
-    isActive: true,
+    length: 10.0,
+    width: 10.0,
+    height: 5.0,
+    images: JSON.stringify([]),
+    metaKeywords: JSON.stringify(['test', 'integration']),
+    isPublished: true,
     isFeatured: false,
-    stockQuantity: 100,
+    inventoryQty: 100,
     lowStockThreshold: 10,
-    manageStock: true,
-    allowBackorders: false,
-    trackQuantity: true,
-    soldIndividually: false,
+    trackInventory: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...customData,
@@ -148,54 +140,44 @@ export async function createTestProduct(storeId: string, categoryId: string, cus
 }
 
 /**
- * Create a test attribute for a store
- * @param storeId Store ID to associate attribute with
+ * Create a test product attribute for testing
  * @param customData Optional attribute data overrides
- * @returns Created attribute object
+ * @returns Created product attribute object
  */
-export async function createTestAttribute(storeId: string, customData?: any) {
+export async function createTestAttribute(customData?: any) {
   const attributeData = {
     name: `Test Attribute ${randomBytes(4).toString('hex')}`,
-    slug: `test-attribute-${randomBytes(4).toString('hex')}`,
-    type: 'text',
-    description: 'Test attribute for integration testing',
-    required: false,
-    isActive: true,
-    sortOrder: 0,
-    storeId,
+    values: JSON.stringify(['Small', 'Medium', 'Large']),
     createdAt: new Date(),
     updatedAt: new Date(),
     ...customData,
   };
 
   return await prisma().$transaction(async (tx) => {
-    return await tx.attribute.create({
+    return await tx.productAttribute.create({
       data: attributeData,
     });
   });
 }
 
 /**
- * Create a test attribute value for an attribute
+ * Create a test product attribute value for a product
+ * @param productId Product ID to associate value with
  * @param attributeId Attribute ID to associate value with
  * @param customData Optional value data overrides
- * @returns Created attribute value object
+ * @returns Created product attribute value object
  */
-export async function createTestAttributeValue(attributeId: string, customData?: any) {
+export async function createTestAttributeValue(productId: string, attributeId: string, customData?: any) {
   const valueData = {
-    value: `Test Value ${randomBytes(4).toString('hex')}`,
-    slug: `test-value-${randomBytes(4).toString('hex')}`,
-    description: 'Test attribute value',
-    sortOrder: 0,
-    isActive: true,
+    productId,
     attributeId,
+    value: 'Medium',
     createdAt: new Date(),
-    updatedAt: new Date(),
     ...customData,
   };
 
   return await prisma().$transaction(async (tx) => {
-    return await tx.attributeValues.create({
+    return await tx.productAttributeValue.create({
       data: valueData,
     });
   });
@@ -213,8 +195,6 @@ export async function createTestCustomer(storeId: string, customData?: any) {
     firstName: `Customer ${randomBytes(4).toString('hex')}`,
     lastName: 'Test',
     phone: '+1234567890',
-    dateOfBirth: new Date('1990-01-01'),
-    isActive: true,
     storeId,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -244,32 +224,9 @@ export async function createTestOrder(customerId: string, storeId: string, custo
     shippingAmount: 10.00,
     discountAmount: 0.00,
     totalAmount: 117.99,
-    currency: 'USD',
     paymentStatus: 'PENDING',
     customerId,
     storeId,
-    billingAddress: {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      phone: '+1234567890',
-      addressLine1: '123 Test St',
-      city: 'Test City',
-      state: 'Test State',
-      postalCode: '12345',
-      country: 'US',
-    },
-    shippingAddress: {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      phone: '+1234567890',
-      addressLine1: '123 Test St',
-      city: 'Test City',
-      state: 'Test State',
-      postalCode: '12345',
-      country: 'US',
-    },
     createdAt: new Date(),
     updatedAt: new Date(),
     ...customData,
@@ -291,16 +248,16 @@ export async function createTestOrder(customerId: string, storeId: string, custo
  */
 export async function createTestOrderItem(orderId: string, productId: string, customData?: any) {
   const itemData = {
-    quantity: 2,
-    unitPrice: 99.99,
-    totalPrice: 199.98,
     orderId,
     productId,
-    productSnapshot: {
-      name: 'Test Product',
-      sku: 'TEST-001',
-      price: 99.99,
-    },
+    productName: 'Test Product',
+    sku: 'TEST-001',
+    price: 99.99,
+    quantity: 2,
+    subtotal: 199.98,
+    taxAmount: 16.00,
+    discountAmount: 0.00,
+    totalAmount: 215.98,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...customData,
@@ -387,15 +344,14 @@ export async function cleanupTestData(storeId: string): Promise<void> {
     // Delete in reverse dependency order
     await tx.orderItem.deleteMany({ where: { order: { storeId } } });
     await tx.order.deleteMany({ where: { storeId } });
+    await tx.payment.deleteMany({ where: { storeId } });
+    await tx.review.deleteMany({ where: { storeId } });
     await tx.customer.deleteMany({ where: { storeId } });
-    await tx.productAttribute.deleteMany({ where: { product: { storeId } } });
+    await tx.productAttributeValue.deleteMany({ where: { product: { storeId } } });
     await tx.product.deleteMany({ where: { storeId } });
-    // Note: Update table names based on actual Prisma schema
-    // await tx.attributeValues.deleteMany({ where: { attribute: { storeId } } });
-    await tx.attribute.deleteMany({ where: { storeId } });
     await tx.category.deleteMany({ where: { storeId } });
-    // Note: Update user model based on actual schema
-    // await tx.user.deleteMany({ where: { storeId } });
+    await tx.brand.deleteMany({ where: { storeId } });
+    await tx.user.deleteMany({ where: { storeId } });
     await tx.store.delete({ where: { id: storeId } });
   });
 }

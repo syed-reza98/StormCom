@@ -245,7 +245,8 @@ test.describe('Password Change Session Invalidation - T070', () => {
     // Arrange: Create third session
     const thirdContext = await primaryPage.context().browser()?.newContext();
     if (!thirdContext) {
-      test.skip('Could not create third browser context');
+      test.skip(true, 'Could not create third browser context');
+      return;
     }
     
     const thirdPage = await thirdContext!.newPage();
@@ -295,7 +296,8 @@ test.describe('Password Change Session Invalidation - T070', () => {
     });
     
     if (!mobileContext) {
-      test.skip('Could not create mobile browser context');
+      test.skip(true, 'Could not create mobile browser context');
+      return;
     }
 
     const mobilePage = await mobileContext!.newPage();

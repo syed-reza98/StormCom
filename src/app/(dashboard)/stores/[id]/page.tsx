@@ -242,9 +242,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
 
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
         <div className="sm:col-span-3">
-          <label className="block text-sm font-medium text-gray-700">Store Name</label>
+          <label htmlFor="store-name" className="block text-sm font-medium text-gray-700">Store Name</label>
           <div className="mt-1">
             <input
+              id="store-name"
               type="text"
               defaultValue={store.name}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -253,9 +254,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
         </div>
 
         <div className="sm:col-span-3">
-          <label className="block text-sm font-medium text-gray-700">Store Slug</label>
+          <label htmlFor="store-slug" className="block text-sm font-medium text-gray-700">Store Slug</label>
           <div className="mt-1">
             <input
+              id="store-slug"
               type="text"
               defaultValue={store.slug}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -264,9 +266,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
         </div>
 
         <div className="sm:col-span-6">
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label htmlFor="store-description" className="block text-sm font-medium text-gray-700">Description</label>
           <div className="mt-1">
             <textarea
+              id="store-description"
               rows={3}
               defaultValue={store.description}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -275,9 +278,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
         </div>
 
         <div className="sm:col-span-3">
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label htmlFor="store-email" className="block text-sm font-medium text-gray-700">Email</label>
           <div className="mt-1">
             <input
+              id="store-email"
               type="email"
               defaultValue={store.email}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -286,9 +290,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
         </div>
 
         <div className="sm:col-span-3">
-          <label className="block text-sm font-medium text-gray-700">Phone</label>
+          <label htmlFor="store-phone" className="block text-sm font-medium text-gray-700">Phone</label>
           <div className="mt-1">
             <input
+              id="store-phone"
               type="tel"
               defaultValue={store.phone}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -297,9 +302,10 @@ function GeneralSettingsTab({ store }: { store: Store }) {
         </div>
 
         <div className="sm:col-span-6">
-          <label className="block text-sm font-medium text-gray-700">Website</label>
+          <label htmlFor="store-website" className="block text-sm font-medium text-gray-700">Website</label>
           <div className="mt-1">
             <input
+              id="store-website"
               type="url"
               defaultValue={store.website}
               className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"

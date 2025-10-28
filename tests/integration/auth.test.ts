@@ -29,8 +29,8 @@
  * - Error Handling Integration
  */
 
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
 // Mock implementations for services that may not exist yet
@@ -669,7 +669,7 @@ describe('Authentication Services Integration - T079', () => {
   describe('User Login Integration', () => {
     beforeEach(async () => {
       // Setup verified user for login tests
-      const { user, verification } = await authService.register(testUser);
+      const { verification } = await authService.register(testUser);
       await authService.verifyEmail(verification.token);
     });
 
@@ -754,7 +754,7 @@ describe('Authentication Services Integration - T079', () => {
 
     beforeEach(async () => {
       // Setup user and login to get session
-      const { user, verification } = await authService.register(testUser);
+      const { verification } = await authService.register(testUser);
       await authService.verifyEmail(verification.token);
       
       const loginResult = await authService.login({
@@ -828,7 +828,7 @@ describe('Authentication Services Integration - T079', () => {
   describe('Password Reset Integration', () => {
     beforeEach(async () => {
       // Setup verified user
-      const { user, verification } = await authService.register(testUser);
+      const { verification } = await authService.register(testUser);
       await authService.verifyEmail(verification.token);
     });
 
@@ -949,7 +949,7 @@ describe('Authentication Services Integration - T079', () => {
 
     beforeEach(async () => {
       // Setup unverified user
-      const { user, verification } = await authService.register(testUser);
+      const { verification } = await authService.register(testUser);
       verificationToken = verification.token;
     });
 

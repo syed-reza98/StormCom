@@ -184,6 +184,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
                   className="w-64"
                 />
                 <select
+                  aria-label="Filter by status"
                   defaultValue={searchParams.status || 'all'}
                   className="px-3 py-2 border border-input bg-background rounded-md"
                 >

@@ -711,14 +711,14 @@ class MockStoreApiRoutes {
       const revenueResult = await db.order.aggregate({
         where: {
           storeId,
-          status: 'COMPLETED',
+          status: 'DELIVERED',
         },
         _sum: {
-          total: true,
+          totalAmount: true,
         },
       });
 
-      const revenue = revenueResult._sum.total || 0;
+      const revenue = revenueResult._sum?.totalAmount || 0;
       const averageOrderValue = orderCount > 0 ? revenue / orderCount : 0;
       const conversionRate = customerCount > 0 ? (orderCount / customerCount) * 100 : 0;
 
@@ -923,8 +923,7 @@ describe('Store API Routes Integration Tests', () => {
       data: {
         email: 'superadmin-api@stormcom-test.local',
         password: 'hashedpassword',
-        firstName: 'Super',
-        lastName: 'Admin',
+        name: 'Super Admin',
         role: 'SUPER_ADMIN',
         emailVerified: true,
       },
@@ -935,8 +934,7 @@ describe('Store API Routes Integration Tests', () => {
       data: {
         email: 'storeadmin-api@stormcom-test.local',
         password: 'hashedpassword',
-        firstName: 'Store',
-        lastName: 'Admin',
+        name: 'Store Admin',
         role: 'STORE_ADMIN',
         emailVerified: true,
       },
@@ -947,8 +945,7 @@ describe('Store API Routes Integration Tests', () => {
       data: {
         email: 'customer-api@stormcom-test.local',
         password: 'hashedpassword',
-        firstName: 'Test',
-        lastName: 'Customer',
+        name: 'Test Customer',
         role: 'CUSTOMER',
         emailVerified: true,
       },
@@ -1524,9 +1521,12 @@ describe('Store API Routes Integration Tests', () => {
               name: `API Product ${i + 1}`,
               slug: `api-product-${i + 1}-${Date.now()}`,
               storeId: testStoreId,
+              sku: `API-SKU-${i + 1}`,
               price: 1000,
-              inventory: 100,
-              isActive: true,
+              inventoryQty: 100,
+              isPublished: true,
+              images: '[]',
+              metaKeywords: '[]',
             },
           })
         ),
@@ -1535,8 +1535,7 @@ describe('Store API Routes Integration Tests', () => {
           data: {
             email: `api-customer@stormcom-test.local`,
             password: 'hashedpassword',
-            firstName: 'API',
-            lastName: 'Customer',
+            name: 'API Customer',
             role: 'CUSTOMER',
             storeId: testStoreId,
             emailVerified: true,
@@ -1555,12 +1554,11 @@ describe('Store API Routes Integration Tests', () => {
             orderNumber: `API-ORD-${Date.now()}`,
             storeId: testStoreId,
             customerId: customer.id,
-            status: 'COMPLETED',
+            status: 'DELIVERED',
             subtotal: 1500,
-            tax: 150,
-            shipping: 500,
-            total: 2150,
-            currency: 'USD',
+            taxAmount: 150,
+            shippingAmount: 500,
+            totalAmount: 2150,
           },
         });
       }

@@ -96,7 +96,7 @@ test.describe('Role-Based Redirects', () => {
       });
 
       expect(auditLog).not.toBeNull();
-      expect(auditLog?.details).toMatchObject({
+      expect(auditLog?.changes).toMatchObject({
         attemptedStoreId: store2.id,
         assignedStoreId: store1.id,
       });

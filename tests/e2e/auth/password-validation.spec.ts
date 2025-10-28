@@ -1,7 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { RegisterPage } from '../pages/RegisterPage';
 import { LoginPage } from '../pages/LoginPage';
-import { AccountPage } from '../pages/AccountPage';
 import { SettingsPage } from '../pages/SettingsPage';
 
 /**
@@ -38,7 +37,6 @@ test.describe('Password Validation Requirements - T072', () => {
   let page: Page;
   let registerPage: RegisterPage;
   let loginPage: LoginPage;
-  let accountPage: AccountPage;
   let settingsPage: SettingsPage;
 
   // Test data
@@ -120,7 +118,6 @@ test.describe('Password Validation Requirements - T072', () => {
     page = testPage;
     registerPage = new RegisterPage(page);
     loginPage = new LoginPage(page);
-    accountPage = new AccountPage(page);
     settingsPage = new SettingsPage(page);
   });
 
@@ -136,8 +133,7 @@ test.describe('Password Validation Requirements - T072', () => {
         validUser.firstName,
         validUser.lastName,
         validUser.email,
-        testCase.password,
-        testCase.password // confirmPassword
+        testCase.password
       );
 
       // Submit form to trigger validation
@@ -212,10 +208,10 @@ test.describe('Password Validation Requirements - T072', () => {
 
     // Navigate to settings after login
     await settingsPage.goto();
-    await settingsPage.waitForPageLoad();
+    await settingsPage.waitForLoad();
 
     // Navigate to password change section
-    await settingsPage.navigateToPasswordSection();
+    await settingsPage.navigateToPasswordTab();
 
     // Test invalid password cases in settings
     for (const testCase of invalidPasswords.slice(0, 5)) { // Test subset for efficiency
