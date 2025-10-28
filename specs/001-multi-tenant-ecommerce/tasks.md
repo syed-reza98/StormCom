@@ -257,12 +257,13 @@
 
 **Tasks**:
 
-- [x] T107 [US6] Create InventoryService in src/services/inventory-service.ts with stock tracking, adjustments, and low stock detection
+- [x] T107 [US6] Create InventoryService in src/services/inventory-service.ts with stock tracking, adjustments, and low stock detection - **BUG FIX: Removed unsupported `mode: 'insensitive'` from Prisma search filters. Exported `determineInventoryStatus` function for testing.**
 - [x] T108 [US6] [P] Create API route GET /api/inventory in src/app/api/inventory/route.ts for retrieving inventory levels with low stock filter
 - [x] T109 [US6] [P] Create API route POST /api/inventory/adjust in src/app/api/inventory/adjust/route.ts for manual stock adjustments
-- [x] T110 [US6] [P] Create Inventory page in src/app/(dashboard)/inventory/page.tsx with stock levels table and low stock alerts
+- [x] T110 [US6] [P] Create Inventory page in src/app/(dashboard)/inventory/page.tsx with stock levels table and low stock alerts - **ENHANCED: Added data-testid attributes for E2E testing (low-stock-alert, inventory-status, low-stock-filter)**
 - [⏳] T111 [US6] Create E2E test "Stock decreases when order is placed" in tests/e2e/inventory/stock-tracking.spec.ts - **DEFERRED: Requires Phase 8 (US3 - Checkout) implementation. Depends on T123-T131 (CheckoutService, PaymentService, order creation workflow). Stub created with implementation plan.**
 - [x] T112 [US6] Create E2E test "Low stock alert appears when threshold reached" in tests/e2e/inventory/low-stock-alert.spec.ts - **COMPLETE: 5 test scenarios covering alert display, stock adjustments, out-of-stock, filtering, and alert count updates.**
+- [x] **NEW**: T107a [US6] Create unit tests for InventoryService in tests/unit/services/inventory-service.test.ts - **COMPLETE: 15 test cases covering determineInventoryStatus, getInventoryLevels, getLowStockItems, getInventoryHistory, adjustStock validation and operations.**
 
 ---
 

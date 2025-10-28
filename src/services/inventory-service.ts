@@ -89,8 +89,8 @@ export async function getInventoryLevels(
   if (search) {
     (where.AND as Prisma.ProductWhereInput[]).push({
       OR: [
-        { name: { contains: search, mode: 'insensitive' } },
-        { sku: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { sku: { contains: search } },
       ],
     });
   }
@@ -506,7 +506,7 @@ export async function restoreStock(
 /**
  * Determine inventory status based on quantity and threshold
  */
-function determineInventoryStatus(
+export function determineInventoryStatus(
   quantity: number,
   lowStockThreshold: number
 ): InventoryStatus {
