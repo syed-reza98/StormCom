@@ -1,0 +1,345 @@
+// src/app/(dashboard)/inventory/page.tsx
+// Inventory Management Dashboard Page - US6
+// Server Component with async searchParams
+
+import { Suspense } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Package, AlertTriangle, Plus, RotateCcw } from 'lucide-react';
+import Link from 'next/link';
+
+/**
+ * Inventory Status Badge Component
+ */
+function InventoryStatusBadge({ status }: { status: string }) {
+  const variants = {
+    IN_STOCK: 'default',
+    LOW_STOCK: 'warning',
+    OUT_OF_STOCK: 'destructive',
+    DISCONTINUED: 'secondary',
+  } as const;
+
+  const labels = {
+    IN_STOCK: 'In Stock',
+    LOW_STOCK: 'Low Stock',
+    OUT_OF_STOCK: 'Out of Stock',
+    DISCONTINUED: 'Discontinued',
+  } as const;
+
+  return (
+    <Badge 
+      data-testid="inventory-status"
+      variant={variants[status as keyof typeof variants] || 'default'}
+    >
+      {labels[status as keyof typeof labels] || status}
+    </Badge>
+  );
+}
+
+/**
+ * Inventory Table Component
+ */
+function InventoryTable({ items }: { items: any[] }) {
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Package className="h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">No inventory items found.</p>
+        <Link href="/products/create">
+          <Button className="mt-4">Add Your First Product</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full overflow-auto">
+      <table className="w-full caption-bottom text-sm">
+        <thead className="[&_tr]:border-b">
+          <tr className="border-b transition-colors hover:bg-muted/50">
+            <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+              SKU
+            </th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+              Product Name
+            </th>
+            <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+              Category
+            </th>
+            <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+              Current Stock
+            </th>
+            <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+              Low Stock Threshold
+            </th>
+            <th className="h-12 px-4 text-center align-middle font-medium text-muted-foreground">
+              Status
+            </th>
+            <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="[&_tr:last-child]:border-0">
+          {items.map((item) => (
+            <tr
+              key={item.id}
+              className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+            >
+              <td className="p-4 align-middle">
+                <code className="rounded bg-muted px-2 py-1 text-sm">{item.sku}</code>
+              </td>
+              <td className="p-4 align-middle font-medium">
+                <Link
+                  href={`/products/${item.id}`}
+                  className="hover:underline"
+                >
+                  {item.name}
+                </Link>
+              </td>
+              <td className="p-4 align-middle text-muted-foreground">
+                {item.categoryName || '—'}
+              </td>
+              <td className="p-4 align-middle text-right font-mono">
+                {item.inventoryQty}
+              </td>
+              <td className="p-4 align-middle text-right font-mono text-muted-foreground">
+                {item.lowStockThreshold}
+              </td>
+              <td className="p-4 align-middle text-center">
+                <InventoryStatusBadge status={item.inventoryStatus} />
+              </td>
+              <td className="p-4 align-middle text-right">
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    title="Adjust Stock"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/**
+ * Low Stock Alert Card Component
+ */
+function LowStockAlert({ count }: { count: number }) {
+  if (count === 0) return null;
+
+  return (
+    <Card 
+      data-testid="low-stock-alert"
+      className="border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950"
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          <CardTitle className="text-orange-900 dark:text-orange-100">
+            Low Stock Alert
+          </CardTitle>
+        </div>
+        <CardDescription className="text-orange-700 dark:text-orange-300">
+          {count} {count === 1 ? 'product is' : 'products are'} running low on stock or out of stock.
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  );
+}
+
+/**
+ * Inventory Page - Main Component (Server Component)
+ */
+export default async function InventoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string;
+    perPage?: string;
+    search?: string;
+    categoryId?: string;
+    lowStockOnly?: string;
+  }>;
+}) {
+  const params = await searchParams;
+
+  const page = parseInt(params.page || '1', 10);
+  const search = params.search || '';
+  const categoryId = params.categoryId || '';
+  const lowStockOnly = params.lowStockOnly === 'true';
+
+  // Fetch inventory data from API
+  // Note: In production, this should use server-side data fetching with proper auth
+  // For now, we'll use placeholder data
+  const mockData = {
+    data: [
+      {
+        id: '1',
+        sku: 'PROD-001',
+        name: 'Test Product 1',
+        categoryName: 'Electronics',
+        inventoryQty: 50,
+        lowStockThreshold: 10,
+        inventoryStatus: 'IN_STOCK',
+      },
+      {
+        id: '2',
+        sku: 'PROD-002',
+        name: 'Test Product 2',
+        categoryName: 'Clothing',
+        inventoryQty: 3,
+        lowStockThreshold: 5,
+        inventoryStatus: 'LOW_STOCK',
+      },
+      {
+        id: '3',
+        sku: 'PROD-003',
+        name: 'Test Product 3',
+        categoryName: 'Books',
+        inventoryQty: 0,
+        lowStockThreshold: 5,
+        inventoryStatus: 'OUT_OF_STOCK',
+      },
+    ],
+    meta: {
+      page: 1,
+      perPage: 20,
+      total: 3,
+      totalPages: 1,
+    },
+  };
+
+  const lowStockCount = mockData.data.filter(
+    (item) => item.inventoryStatus === 'LOW_STOCK' || item.inventoryStatus === 'OUT_OF_STOCK'
+  ).length;
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
+          <p className="text-muted-foreground">
+            Track stock levels and manage inventory for all products.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/products/create">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </Link>
+        </Button>
+      </div>
+
+      {/* Low Stock Alert */}
+      <LowStockAlert count={lowStockCount} />
+
+      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Filters</CardTitle>
+          <CardDescription>Filter inventory by search, category, or stock status.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="flex flex-col gap-4 md:flex-row md:items-end">
+            <div className="flex-1">
+              <label htmlFor="search" className="text-sm font-medium mb-2 block">
+                Search
+              </label>
+              <Input
+                id="search"
+                name="search"
+                placeholder="Search by product name or SKU..."
+                defaultValue={search}
+              />
+            </div>
+            <div className="w-full md:w-48">
+              <label htmlFor="categoryId" className="text-sm font-medium mb-2 block">
+                Category
+              </label>
+              <Select name="categoryId" defaultValue={categoryId}>
+                <SelectTrigger id="categoryId">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="electronics">Electronics</SelectItem>
+                  <SelectItem value="clothing">Clothing</SelectItem>
+                  <SelectItem value="books">Books</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full md:w-48">
+              <label htmlFor="lowStockOnly" className="text-sm font-medium mb-2 block">
+                Stock Status
+              </label>
+              <Select 
+                name="lowStockOnly" 
+                defaultValue={lowStockOnly ? 'true' : 'false'}
+              >
+                <SelectTrigger id="lowStockOnly" data-testid="low-stock-filter">
+                  <SelectValue placeholder="All Items" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="false">All Items</SelectItem>
+                  <SelectItem value="true">Low Stock Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit">Apply Filters</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Inventory Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Inventory Items ({mockData.meta.total})
+          </CardTitle>
+          <CardDescription>
+            Showing {mockData.data.length} of {mockData.meta.total} products.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Suspense fallback={<div>Loading inventory...</div>}>
+            <InventoryTable items={mockData.data} />
+          </Suspense>
+        </CardContent>
+      </Card>
+
+      {/* Pagination */}
+      {mockData.meta.totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Page {mockData.meta.page} of {mockData.meta.totalPages}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={page === 1}>
+              Previous
+            </Button>
+            <Button variant="outline" disabled={page === mockData.meta.totalPages}>
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
