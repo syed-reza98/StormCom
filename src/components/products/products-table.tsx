@@ -185,9 +185,9 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
         {products.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No products found</p>
-            <Button asChild className="mt-4">
-              <Link href="/dashboard/products/new">Add your first product</Link>
-            </Button>
+            <Link href="/dashboard/products/new">
+              <Button className="mt-4">Add your first product</Button>
+            </Link>
           </div>
         ) : (
           <div className="space-y-2">
@@ -270,16 +270,12 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/dashboard/products/${product.id}`}>
-                      👁️
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/dashboard/products/${product.id}/edit`}>
-                      ✏️
-                    </Link>
-                  </Button>
+                  <Link href={`/dashboard/products/${product.id}`}>
+                    <Button variant="ghost" size="sm">👁️</Button>
+                  </Link>
+                  <Link href={`/dashboard/products/${product.id}/edit`}>
+                    <Button variant="ghost" size="sm">✏️</Button>
+                  </Link>
                   <Button variant="ghost" size="sm">
                     🗑️
                   </Button>
@@ -293,31 +289,27 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
       {/* Pagination */}
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 p-6">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={pagination.page <= 1}
-            asChild
+          <Link 
+            href={pagination.page <= 1 ? '#' : `?${new URLSearchParams({ ...searchParams, page: String(pagination.page - 1) })}`}
+            className={pagination.page <= 1 ? 'pointer-events-none' : ''}
           >
-            <Link href={`?${new URLSearchParams({ ...searchParams, page: String(pagination.page - 1) })}`}>
+            <Button variant="outline" size="sm" disabled={pagination.page <= 1}>
               ← Previous
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           
           <span className="text-sm text-muted-foreground px-4">
             Page {pagination.page} of {pagination.totalPages}
           </span>
           
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={pagination.page >= pagination.totalPages}
-            asChild
+          <Link 
+            href={pagination.page >= pagination.totalPages ? '#' : `?${new URLSearchParams({ ...searchParams, page: String(pagination.page + 1) })}`}
+            className={pagination.page >= pagination.totalPages ? 'pointer-events-none' : ''}
           >
-            <Link href={`?${new URLSearchParams({ ...searchParams, page: String(pagination.page + 1) })}`}>
+            <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages}>
               Next →
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       )}
     </div>

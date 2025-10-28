@@ -8,6 +8,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -150,20 +157,22 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
           <label className="text-sm font-medium text-muted-foreground mb-2 block">
             Category
           </label>
-          <select
-            aria-label="Filter by category"
-            value={searchParams.categoryId || ''}
-            onChange={(e) => handleFilterChange('categoryId', e.target.value || undefined)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          <Select
+            value={searchParams.categoryId || undefined}
+            onValueChange={(val) => handleFilterChange('categoryId', val || undefined)}
             disabled={loading}
           >
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category.value} value={category.value}>
-                {category.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Brand Filter */}
@@ -171,20 +180,22 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
           <label className="text-sm font-medium text-muted-foreground mb-2 block">
             Brand
           </label>
-          <select
-            aria-label="Filter by brand"
-            value={searchParams.brandId || ''}
-            onChange={(e) => handleFilterChange('brandId', e.target.value || undefined)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          <Select
+            value={searchParams.brandId || undefined}
+            onValueChange={(val) => handleFilterChange('brandId', val || undefined)}
             disabled={loading}
           >
-            <option value="">All Brands</option>
-            {brands.map((brand) => (
-              <option key={brand.value} value={brand.value}>
-                {brand.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="All Brands" />
+            </SelectTrigger>
+            <SelectContent>
+              {brands.map((brand) => (
+                <SelectItem key={brand.value} value={brand.value}>
+                  {brand.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Status Filter */}
@@ -192,17 +203,19 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
           <label className="text-sm font-medium text-muted-foreground mb-2 block">
             Status
           </label>
-          <select
-            aria-label="Filter by price range"
-            value={searchParams.status || ''}
-            onChange={(e) => handleFilterChange('status', e.target.value || undefined)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          <Select
+            value={searchParams.status || undefined}
+            onValueChange={(val) => handleFilterChange('status', val || undefined)}
           >
-            <option value="">All Status</option>
-            <option value="PUBLISHED">Published</option>
-            <option value="DRAFT">Draft</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="PUBLISHED">Published</SelectItem>
+              <SelectItem value="DRAFT">Draft</SelectItem>
+              <SelectItem value="ARCHIVED">Archived</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Inventory Status Filter */}
@@ -210,17 +223,19 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
           <label className="text-sm font-medium text-muted-foreground mb-2 block">
             Inventory
           </label>
-          <select
-            aria-label="Filter by stock status"
-            value={searchParams.inventoryStatus || ''}
-            onChange={(e) => handleFilterChange('inventoryStatus', e.target.value || undefined)}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          <Select
+            value={searchParams.inventoryStatus || undefined}
+            onValueChange={(val) => handleFilterChange('inventoryStatus', val || undefined)}
           >
-            <option value="">All Stock Levels</option>
-            <option value="IN_STOCK">In Stock</option>
-            <option value="LOW_STOCK">Low Stock</option>
-            <option value="OUT_OF_STOCK">Out of Stock</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="All Stock Levels" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="IN_STOCK">In Stock</SelectItem>
+              <SelectItem value="LOW_STOCK">Low Stock</SelectItem>
+              <SelectItem value="OUT_OF_STOCK">Out of Stock</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

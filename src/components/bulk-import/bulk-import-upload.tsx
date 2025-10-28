@@ -171,10 +171,11 @@ export function BulkImportUpload() {
               </p>
             </div>
             <div className="flex justify-center">
-              <Label htmlFor="file-input" className="cursor-pointer">
-                <Button variant="outline" asChild>
-                  <span>Choose File</span>
-                </Button>
+              <Label 
+                htmlFor="file-input" 
+                className="cursor-pointer inline-block px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
+              >
+                Choose File
               </Label>
               <Input
                 id="file-input"

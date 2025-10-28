@@ -188,9 +188,9 @@ export default function MFAEnrollPage() {
             <CardDescription className="text-destructive">{serverError}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/dashboard/settings">Back to Settings</Link>
-            </Button>
+            <Link href="/dashboard/settings" className="w-full">
+              <Button className="w-full">Back to Settings</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

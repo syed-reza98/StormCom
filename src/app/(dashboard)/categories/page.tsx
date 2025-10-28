@@ -150,11 +150,12 @@ async function getCategories(searchParams: CategoriesPageProps['searchParams']):
   return filteredCategories;
 }
 
-export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
-  const categories = await getCategories(searchParams);
-  const isFormOpen = searchParams.action === 'create' || searchParams.action === 'edit';
-  const editingCategory = searchParams.action === 'edit' && searchParams.id 
-    ? mockCategories.find(cat => cat.id === searchParams.id)
+export default async function CategoriesPage({ searchParams }: { searchParams: Promise<CategoriesPageProps['searchParams']> }) {
+  const params = await searchParams;
+  const categories = await getCategories(params);
+  const isFormOpen = params.action === 'create' || params.action === 'edit';
+  const editingCategory = params.action === 'edit' && params.id 
+    ? mockCategories.find(cat => cat.id === params.id)
     : undefined;
 
   return (
@@ -180,12 +181,12 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
               <div className="flex items-center gap-2">
                 <Input
                   placeholder="Search categories..."
-                  defaultValue={searchParams.search}
+                  defaultValue={params.search}
                   className="w-64"
                 />
                 <select
                   aria-label="Filter by status"
-                  defaultValue={searchParams.status || 'all'}
+                  defaultValue={params.status || 'all'}
                   className="px-3 py-2 border border-input bg-background rounded-md"
                 >
                   <option value="all">All Categories</option>
@@ -206,7 +207,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
           {isFormOpen ? (
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-4">
-                {searchParams.action === 'create' ? 'Create Category' : 'Edit Category'}
+                {params.action === 'create' ? 'Create Category' : 'Edit Category'}
               </h2>
               <CategoryForm
                 initialData={editingCategory}

@@ -154,11 +154,9 @@ export default function ResetPasswordPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <Button asChild className="w-full">
-              <Link href="/forgot-password">
-                Request New Reset Link
-              </Link>
-            </Button>
+            <Link href="/forgot-password" className="w-full">
+              <Button className="w-full">Request New Reset Link</Button>
+            </Link>
 
             <p className="text-center text-sm text-muted-foreground">
               <Link

@@ -45,7 +45,8 @@ interface ProductsPageProps {
 // MAIN COMPONENT
 // ============================================================================
 
-export default function ProductsPage({ searchParams }: ProductsPageProps) {
+export default async function ProductsPage({ searchParams }: { searchParams: Promise<ProductsPageProps['searchParams']> }) {
+  const params = await searchParams;
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Page Header */}
@@ -79,7 +80,7 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
 
       {/* Filters Section */}
       <Card className="p-6">
-        <ProductsFilters searchParams={searchParams} />
+        <ProductsFilters searchParams={params} />
       </Card>
 
       {/* Bulk Actions */}
@@ -87,7 +88,7 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
 
       {/* Products Data Table */}
       <Card>
-        <ProductsTable searchParams={searchParams} />
+        <ProductsTable searchParams={params} />
       </Card>
     </div>
   );
