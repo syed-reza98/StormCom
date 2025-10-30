@@ -39,31 +39,109 @@ describe('GET /api/orders/[id]', () => {
     orderNumber: 'ORD-001',
     storeId: 'store-1',
     customerId: 'customer-1',
+    userId: 'user-1',
     status: OrderStatus.PENDING,
-    paymentStatus: PaymentStatus.PENDING,
-    shippingStatus: ShippingStatus.PENDING,
-    totalAmount: 150.0,
+    shippingAddressId: 'addr-1',
+    billingAddressId: 'addr-2',
     subtotal: 120.0,
-    shippingFee: 20.0,
     taxAmount: 10.0,
+    shippingAmount: 20.0,
+    discountAmount: 0.0,
+    totalAmount: 150.0,
+    discountCode: null,
+    paymentMethod: null,
+    paymentGateway: null,
+    paymentStatus: PaymentStatus.PENDING,
+    shippingMethod: null,
+    shippingStatus: ShippingStatus.PENDING,
+    trackingNumber: null,
+    trackingUrl: null,
+    fulfilledAt: null,
+    canceledAt: null,
+    cancelReason: null,
+    customerNote: null,
+    adminNote: null,
+    ipAddress: null,
+    createdAt: new Date('2025-10-01'),
+    updatedAt: new Date('2025-10-01'),
+    deletedAt: null,
+    // Required relations from getOrderById
+    user: {
+      id: 'user-1',
+      email: 'admin@store.com',
+      name: 'Admin User',
+      phone: null,
+    },
     customer: {
       id: 'customer-1',
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
+      phone: null,
     },
     items: [
       {
         id: 'item-1',
+        orderId: 'order-1',
         productId: 'product-1',
-        quantity: 2,
+        variantId: null,
+        productName: 'Product 1',
+        variantName: null,
+        sku: 'SKU-001',
+        image: null,
         price: 60.0,
+        quantity: 2,
+        subtotal: 120.0,
+        taxAmount: 0.0,
+        discountAmount: 0.0,
+        totalAmount: 120.0,
+        createdAt: new Date('2025-10-01'),
+        updatedAt: new Date('2025-10-01'),
         product: {
           id: 'product-1',
           name: 'Product 1',
+          slug: 'product-1',
         },
+        variant: null,
       },
     ],
+    payments: [],
+    shippingAddress: {
+      id: 'addr-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      company: null,
+      address1: '123 Main St',
+      address2: null,
+      city: 'New York',
+      state: 'NY',
+      postalCode: '10001',
+      country: 'US',
+      phone: null,
+      isDefault: false,
+      createdAt: new Date('2025-10-01'),
+      updatedAt: new Date('2025-10-01'),
+      userId: null,
+      customerId: 'customer-1',
+    },
+    billingAddress: {
+      id: 'addr-2',
+      firstName: 'John',
+      lastName: 'Doe',
+      company: null,
+      address1: '123 Main St',
+      address2: null,
+      city: 'New York',
+      state: 'NY',
+      postalCode: '10001',
+      country: 'US',
+      phone: null,
+      isDefault: false,
+      createdAt: new Date('2025-10-01'),
+      updatedAt: new Date('2025-10-01'),
+      userId: null,
+      customerId: 'customer-1',
+    },
     createdAt: new Date('2025-10-01'),
     updatedAt: new Date('2025-10-01'),
   };
@@ -77,7 +155,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -89,7 +167,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(getServerSession).mockResolvedValue({ user: null } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -107,7 +185,7 @@ describe('GET /api/orders/[id]', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -125,7 +203,7 @@ describe('GET /api/orders/[id]', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -145,7 +223,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -157,7 +235,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -175,7 +253,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -192,7 +270,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -211,7 +289,7 @@ describe('GET /api/orders/[id]', () => {
       );
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-999');
-      const response = await GET(request, { params: { id: 'order-999' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-999' }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -226,7 +304,7 @@ describe('GET /api/orders/[id]', () => {
       const request = new NextRequest(
         `http://localhost:3000/api/orders/${testOrderId}`
       );
-      await GET(request, { params: { id: testOrderId } });
+      await GET(request, { params: Promise.resolve({ id: testOrderId }) });
 
       expect(orderService.getOrderById).toHaveBeenCalledWith(testOrderId, 'store-1');
     });
@@ -238,7 +316,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      await GET(request, { params: { id: 'order-1' } });
+      await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.getOrderById).toHaveBeenCalledWith('order-1', 'store-1');
     });
@@ -255,7 +333,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(mockOrder);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      await GET(request, { params: { id: 'order-1' } });
+      await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.getOrderById).toHaveBeenCalledWith('order-1', null);
     });
@@ -266,7 +344,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockResolvedValue(null as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       // Route should return 404 when order is not found (null)
@@ -287,7 +365,7 @@ describe('GET /api/orders/[id]', () => {
       );
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -299,7 +377,7 @@ describe('GET /api/orders/[id]', () => {
       vi.mocked(orderService.getOrderById).mockRejectedValue('Unknown error');
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -316,7 +394,7 @@ describe('GET /api/orders/[id]', () => {
 
     it('should return order with complete details', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -329,7 +407,7 @@ describe('GET /api/orders/[id]', () => {
 
     it('should include nested customer information', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(data.data.customer.firstName).toBe('John');
@@ -339,7 +417,7 @@ describe('GET /api/orders/[id]', () => {
 
     it('should include order items with product details', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(data.data.items).toHaveLength(1);

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     // Convert date strings to Date objects
     const queryParams = {
-      storeId: storeId!,
+      storeId: storeId || undefined,
       page: params.page,
       perPage: params.perPage,
       status: params.status,

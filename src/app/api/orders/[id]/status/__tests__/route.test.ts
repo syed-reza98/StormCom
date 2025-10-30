@@ -38,11 +38,68 @@ describe('PUT /api/orders/[id]/status', () => {
     id: 'order-1',
     orderNumber: 'ORD-001',
     storeId: 'store-1',
+    customerId: 'customer-1',
+    userId: 'user-1',
     status: OrderStatus.PROCESSING,
+    shippingAddressId: null,
+    billingAddressId: null,
+    subtotal: 100.0,
+    taxAmount: 0.0,
+    shippingAmount: 0.0,
+    discountAmount: 0.0,
+    totalAmount: 100.0,
+    discountCode: null,
+    paymentMethod: null,
+    paymentGateway: null,
+    paymentStatus: 'PENDING' as any,
+    shippingMethod: null,
+    shippingStatus: 'PENDING' as any,
     trackingNumber: null,
     trackingUrl: null,
+    fulfilledAt: null,
+    canceledAt: null,
+    cancelReason: null,
+    customerNote: null,
     adminNote: null,
+    ipAddress: null,
+    createdAt: new Date('2025-10-01'),
     updatedAt: new Date('2025-10-02'),
+    deletedAt: null,
+    user: {
+      id: 'user-1',
+      email: 'admin@store.com',
+      name: 'Admin User',
+      password: '$2a$12$hashedpassword',
+      phone: null,
+      role: 'STORE_ADMIN' as any,
+      storeId: 'store-1',
+      mfaEnabled: false,
+      mfaMethod: null,
+      totpSecret: null,
+      emailVerified: true,
+      emailVerifiedAt: new Date('2025-01-01'),
+      verificationToken: null,
+      verificationExpires: null,
+      resetToken: null,
+      resetExpires: null,
+      lastLoginAt: new Date('2025-10-01'),
+      lastLoginIP: '127.0.0.1',
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      passwordChangedAt: new Date('2025-01-01'),
+      createdAt: new Date('2025-01-01'),
+      updatedAt: new Date('2025-10-01'),
+      deletedAt: null,
+    },
+    customer: {
+      id: 'customer-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      phone: null,
+    },
+    payments: [],
+    items: [],
   };
 
   beforeEach(() => {
@@ -57,7 +114,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -72,7 +129,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -93,7 +150,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -113,7 +170,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -134,7 +191,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -157,7 +214,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -172,7 +229,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -190,7 +247,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: 'INVALID_STATUS' }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -203,7 +260,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({}),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -225,7 +282,7 @@ describe('PUT /api/orders/[id]/status', () => {
           trackingNumber: 'TRACK123',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -249,7 +306,7 @@ describe('PUT /api/orders/[id]/status', () => {
           trackingNumber: longTracking,
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -272,7 +329,7 @@ describe('PUT /api/orders/[id]/status', () => {
           trackingUrl: 'https://tracking.example.com/TRACK123',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -288,7 +345,7 @@ describe('PUT /api/orders/[id]/status', () => {
           trackingUrl: 'not-a-url',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -309,7 +366,7 @@ describe('PUT /api/orders/[id]/status', () => {
           adminNote: 'Customer requested expedited shipping',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -325,7 +382,7 @@ describe('PUT /api/orders/[id]/status', () => {
           adminNote: longNote,
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -346,7 +403,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -371,7 +428,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-999' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-999' }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -388,7 +445,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.DELIVERED }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(422);
@@ -405,7 +462,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.SHIPPED }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -423,7 +480,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      await PUT(request, { params: { id: 'order-1' } });
+      await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.updateOrderStatus).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -449,7 +506,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      await PUT(request, { params: { id: 'order-1' } });
+      await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.updateOrderStatus).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -475,7 +532,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -490,7 +547,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -510,7 +567,7 @@ describe('PUT /api/orders/[id]/status', () => {
         method: 'PUT',
         body: JSON.stringify({ status: OrderStatus.PROCESSING }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -535,7 +592,7 @@ describe('PUT /api/orders/[id]/status', () => {
           trackingUrl: 'https://tracking.example.com/TRACK123',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(data.data.trackingNumber).toBe('TRACK123');
@@ -555,7 +612,7 @@ describe('PUT /api/orders/[id]/status', () => {
           adminNote: 'Expedited shipping requested',
         }),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(data.data.adminNote).toBe('Expedited shipping requested');

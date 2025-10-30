@@ -94,11 +94,6 @@ test.describe('Accessibility Tests - WCAG 2.2 AA', () => {
   test('Color contrast should meet WCAG AA standards', async ({ page }) => {
     await page.goto('http://localhost:3000/');
     
-    const accessibilityScanResults = await new AxeBuilder({ page })
-      .withTags(['wcag2aa'])
-      .disableRules(['color-contrast']) // Disable to check separately
-      .analyze();
-
     // Check color contrast specifically
     const contrastResults = await new AxeBuilder({ page })
       .include('body')

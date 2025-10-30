@@ -8,17 +8,20 @@
  * @returns {OrderDetailsResponse} Complete order details
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getOrderById } from '@/services/order-service';
 import { apiResponse } from '@/lib/api-response';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Extract params
+    const { id: orderId } = await context.params;
+
     // Authentication check
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -36,10 +39,8 @@ export async function GET(
       return apiResponse.forbidden('No store assigned');
     }
 
-    const orderId = params.id;
-
     // Fetch order details
-    const order = await getOrderById(orderId, storeId!);
+    const order = await getOrderById(orderId, storeId || undefined);
 
     // Check if order exists
     if (!order) {
@@ -50,7 +51,7 @@ export async function GET(
       message: 'Order retrieved successfully',
     });
   } catch (error) {
-    console.error(`[GET /api/orders/${params.id}] Error:`, error);
+    console.error('[GET /api/orders/[id]] Error:', error);
     
     if (error instanceof Error && error.message === 'Order not found') {
       return apiResponse.notFound('Order not found');
