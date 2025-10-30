@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { PersonIcon, EnvelopeClosedIcon, LockClosedIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -168,7 +170,11 @@ export default function RegisterPage() {
             <div className="space-y-4">
               {/* First Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
+                <Label htmlFor="firstName">
+                  <Flex align="center" gap="2">
+                    <PersonIcon /> First name
+                  </Flex>
+                </Label>
                 <Input
                   {...register('firstName')}
                   id="firstName"
@@ -188,7 +194,11 @@ export default function RegisterPage() {
 
               {/* Last Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last name</Label>
+                <Label htmlFor="lastName">
+                  <Flex align="center" gap="2">
+                    <PersonIcon /> Last name
+                  </Flex>
+                </Label>
                 <Input
                   {...register('lastName')}
                   id="lastName"
@@ -208,7 +218,11 @@ export default function RegisterPage() {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">
+                  <Flex align="center" gap="2">
+                    <EnvelopeClosedIcon /> Email address
+                  </Flex>
+                </Label>
                 <Input
                   {...register('email')}
                   id="email"
@@ -228,7 +242,11 @@ export default function RegisterPage() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">
+                  <Flex align="center" gap="2">
+                    <LockClosedIcon /> Password
+                  </Flex>
+                </Label>
                 <Input
                   {...register('password')}
                   id="password"
@@ -281,6 +299,8 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </Flex>
+  </Container>
+</Section>
   );
 }
