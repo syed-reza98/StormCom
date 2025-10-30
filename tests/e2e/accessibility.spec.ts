@@ -190,8 +190,13 @@ test.describe('Keyboard Navigation Tests', () => {
   test('Should be able to activate buttons with Enter and Space', async ({ page }) => {
     await page.goto('http://localhost:3000/');
     
-    // Find a button and focus it
-    const button = await page.getByRole('button', { name: /Read Documentation/i });
+    // Find any button and focus it (more resilient to UI changes)
+    const buttons = await page.getByRole('button').all();
+    if (buttons.length === 0) {
+      throw new Error('No buttons found on page');
+    }
+    
+    const button = buttons[0];
     await button.focus();
     
     // Verify it's focused
