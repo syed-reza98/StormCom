@@ -154,6 +154,7 @@ export async function validateCart(
     // Determine stock and price
     const availableStock = variant?.stock ?? product.inventoryQty;
     const price = variant?.price ?? product.price;
+    const trackInventory = variant?.trackInventory ?? product.trackInventory;
 
     // Validate quantity
     if (item.quantity <= 0) {
@@ -161,7 +162,8 @@ export async function validateCart(
       continue;
     }
 
-    if (item.quantity > availableStock) {
+    // Check stock only if inventory tracking is enabled
+    if (trackInventory && item.quantity > availableStock) {
       errors.push(
         `Insufficient stock for ${product.name}. Available: ${availableStock}, Requested: ${item.quantity}`
       );

@@ -89,7 +89,7 @@ describe('CheckoutService - validateCart', () => {
     const result = await validateCart(storeId, cartItems);
 
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Product invalid-prod not found');
+    expect(result.errors).toContain('Product invalid-prod not found or unavailable');
     expect(result.items).toHaveLength(0);
   });
 
@@ -112,7 +112,7 @@ describe('CheckoutService - validateCart', () => {
     const result = await validateCart(storeId, cartItems);
 
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Product 1: Only 10 in stock, but 15 requested');
+    expect(result.errors).toContain('Insufficient stock for Product 1. Available: 10, Requested: 15');
   });
 
   it('should validate variant stock correctly', async () => {
@@ -173,7 +173,7 @@ describe('CheckoutService - validateCart', () => {
     const result = await validateCart(storeId, cartItems);
 
     expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Product 1 (Size M): Only 5 in stock, but 10 requested');
+    expect(result.errors).toContain('Insufficient stock for Product 1. Available: 5, Requested: 10');
   });
 
   it('should skip stock validation when trackInventory is false', async () => {
@@ -385,6 +385,25 @@ describe('CheckoutService - createOrder', () => {
       paymentMethod: 'CREDIT_CARD',
     };
 
+    // Mock product lookup for validateCart
+    vi.mocked(db.product.findFirst).mockResolvedValue({
+      id: 'prod-1',
+      name: 'Product 1',
+      slug: 'product-1',
+      price: 29.99,
+      inventoryQty: 100,
+      trackInventory: true,
+      storeId: 'store-123',
+      variants: [],
+    } as any);
+
+    // Mock address creation (outside transaction)
+    vi.mocked(db.address.create).mockResolvedValue({
+      id: 'addr-1',
+      storeId: 'store-123',
+      type: 'SHIPPING',
+    } as any);
+
     // Mock transaction
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
       const mockTx = {
@@ -395,19 +414,16 @@ describe('CheckoutService - createOrder', () => {
             orderNumber: 'ORD-00001',
             storeId: 'store-123',
             customerId: 'customer-456',
-            items: [
-              {
-                id: 'item-1',
-                productId: 'prod-1',
-                productName: 'Product 1',
-                quantity: 2,
-                price: 29.99,
-              },
-            ],
           }),
         },
-        address: {
-          create: vi.fn().mockResolvedValue({ id: 'addr-1' }),
+        orderItem: {
+          create: vi.fn().mockResolvedValue({
+            id: 'item-1',
+            productId: 'prod-1',
+            productName: 'Product 1',
+            quantity: 2,
+            price: 29.99,
+          }),
         },
         product: {
           update: vi.fn(),
@@ -455,7 +471,29 @@ describe('CheckoutService - createOrder', () => {
       paymentMethod: 'CREDIT_CARD',
     };
 
+    // Mock product lookup for validateCart
+    vi.mocked(db.product.findFirst).mockResolvedValue({
+      id: 'prod-1',
+      name: 'Product 1',
+      slug: 'product-1',
+      price: 29.99,
+      inventoryQty: 100,
+      trackInventory: true,
+      storeId: 'store-123',
+      variants: [],
+    } as any);
+
+    // Mock address creation (outside transaction)
     let addressCreateCallCount = 0;
+    vi.mocked(db.address.create).mockImplementation(async () => {
+      addressCreateCallCount++;
+      return {
+        id: `addr-${addressCreateCallCount}`,
+        storeId: 'store-123',
+        type: addressCreateCallCount === 1 ? 'SHIPPING' : 'BILLING',
+      } as any;
+    });
+
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
       const mockTx = {
         order: {
@@ -463,13 +501,15 @@ describe('CheckoutService - createOrder', () => {
           create: vi.fn().mockResolvedValue({
             id: 'order-789',
             orderNumber: 'ORD-00001',
-            items: [],
           }),
         },
-        address: {
-          create: vi.fn().mockImplementation(() => {
-            addressCreateCallCount++;
-            return Promise.resolve({ id: `addr-${addressCreateCallCount}` });
+        orderItem: {
+          create: vi.fn().mockResolvedValue({
+            id: 'item-1',
+            productId: 'prod-1',
+            productName: 'Product 1',
+            quantity: 1,
+            price: 29.99,
           }),
         },
         product: { update: vi.fn() },

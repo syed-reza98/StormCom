@@ -13,24 +13,31 @@ import {
   verifyWebhookSignature,
 } from '@/services/payment-service';
 
-// Create shared Stripe mock instance
+// Create mock Stripe instance
+const mockPaymentIntents = {
+  create: vi.fn(),
+  retrieve: vi.fn(),
+};
+
+const mockRefunds = {
+  create: vi.fn(),
+};
+
+const mockWebhooks = {
+  constructEvent: vi.fn(),
+};
+
 const mockStripeInstance = {
-  paymentIntents: {
-    create: vi.fn(),
-    retrieve: vi.fn(),
-  },
-  refunds: {
-    create: vi.fn(),
-  },
-  webhooks: {
-    constructEvent: vi.fn(),
-  },
+  paymentIntents: mockPaymentIntents,
+  refunds: mockRefunds,
+  webhooks: mockWebhooks,
 };
 
 // Mock Stripe
 vi.mock('stripe', () => {
-  const MockStripe = vi.fn(() => mockStripeInstance);
-  return { default: MockStripe };
+  return {
+    default: vi.fn(() => mockStripeInstance),
+  };
 });
 
 // Mock Prisma client
@@ -79,7 +86,7 @@ describe('PaymentService - createPaymentIntent', () => {
       },
     };
 
-    mockStripeInstance.paymentIntents.create.mockResolvedValue(mockPaymentIntent as any);
+    mockPaymentIntents.create.mockResolvedValue(mockPaymentIntent as any);
 
     vi.mocked(db.payment.create).mockResolvedValue({
       id: 'payment-1',
@@ -123,7 +130,7 @@ describe('PaymentService - createPaymentIntent', () => {
 
     vi.mocked(db.order.findUnique).mockResolvedValue(mockOrder as any);
 
-    mockStripeInstance.paymentIntents.create.mockResolvedValue({
+    mockPaymentIntents.create.mockResolvedValue({
       id: 'pi_123',
       client_secret: 'secret',
       amount: 9999,
@@ -138,7 +145,7 @@ describe('PaymentService - createPaymentIntent', () => {
       amount: 99.99,
     });
 
-    expect(mockStripeInstance.paymentIntents.create).toHaveBeenCalledWith(
+    expect(mockPaymentIntents.create).toHaveBeenCalledWith(
       expect.objectContaining({
         amount: 9999, // 99.99 * 100
       })
@@ -158,7 +165,7 @@ describe('PaymentService - handlePaymentSucceeded', () => {
       latest_charge: 'ch_456',
     };
 
-    mockStripeInstance.paymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
+    mockPaymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
 
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
       const mockTx = {
@@ -183,7 +190,7 @@ describe('PaymentService - handlePaymentSucceeded', () => {
       metadata: {},
     };
 
-    mockStripeInstance.paymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
+    mockPaymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
 
     await expect(handlePaymentSucceeded('pi_123')).rejects.toThrow(
       'Order ID not found in payment intent metadata'
@@ -202,7 +209,7 @@ describe('PaymentService - handlePaymentFailed', () => {
       metadata: { orderId: 'order-123' },
     };
 
-    mockStripeInstance.paymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
+    mockPaymentIntents.retrieve.mockResolvedValue(mockPaymentIntent as any);
 
     vi.mocked(db.$transaction).mockImplementation(async (callback: any) => {
       const mockTx = {
@@ -243,7 +250,7 @@ describe('PaymentService - refundPayment', () => {
 
     vi.mocked(db.payment.findUnique).mockResolvedValue(mockPayment as any);
 
-    mockStripeInstance.refunds.create.mockResolvedValue({
+    mockRefunds.create.mockResolvedValue({
       id: 'ref_123',
       amount: 10000,
       status: 'succeeded',
@@ -285,7 +292,7 @@ describe('PaymentService - refundPayment', () => {
 
     vi.mocked(db.payment.findUnique).mockResolvedValue(mockPayment as any);
 
-    mockStripeInstance.refunds.create.mockResolvedValue({
+    mockRefunds.create.mockResolvedValue({
       id: 'ref_123',
       amount: 5000,
       status: 'succeeded',
@@ -305,7 +312,7 @@ describe('PaymentService - refundPayment', () => {
       reason: 'Partial return',
     });
 
-    expect(mockStripeInstance.refunds.create).toHaveBeenCalledWith(
+    expect(mockRefunds.create).toHaveBeenCalledWith(
       expect.objectContaining({
         amount: 5000, // 50 * 100
       })
@@ -368,12 +375,12 @@ describe('PaymentService - verifyWebhookSignature', () => {
       data: { object: {} },
     };
 
-    mockStripeInstance.webhooks.constructEvent.mockReturnValue(mockEvent as any);
+    mockWebhooks.constructEvent.mockReturnValue(mockEvent as any);
 
     const result = verifyWebhookSignature(payload, signature, secret);
 
     expect(result).toEqual(mockEvent);
-    expect(mockStripeInstance.webhooks.constructEvent).toHaveBeenCalledWith(
+    expect(mockWebhooks.constructEvent).toHaveBeenCalledWith(
       payload,
       signature,
       secret
@@ -385,7 +392,7 @@ describe('PaymentService - verifyWebhookSignature', () => {
     const signature = 'invalid_signature';
     const secret = 'webhook_secret';
 
-    mockStripeInstance.webhooks.constructEvent.mockImplementation(() => {
+    mockWebhooks.constructEvent.mockImplementation(() => {
       throw new Error('Invalid signature');
     });
 
