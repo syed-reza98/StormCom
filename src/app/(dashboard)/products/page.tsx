@@ -3,6 +3,8 @@
 
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { PlusIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import { ProductsTable } from '@/components/products/products-table';
 import { ProductsFilters } from '@/components/products/products-filters';
 import { ProductsBulkActions } from '@/components/products/products-bulk-actions';
@@ -48,48 +50,57 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<ProductsPageProps['searchParams']> }) {
   const params = await searchParams;
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-muted-foreground">
-            Manage your store products, inventory, and pricing
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {/* Import/Export Actions */}
-          <Link
-            href="/dashboard/products/import"
-            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
-          >
-            📤 Import
-          </Link>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          {/* Page Header */}
+          <Flex direction="column" gap="2">
+            <Flex justify="between" align="start">
+              <Flex direction="column" gap="1">
+                <Heading size="8" weight="bold">Products</Heading>
+                <Text size="3" color="gray">
+                  Manage your store products, inventory, and pricing
+                </Text>
+              </Flex>
+              
+              <Flex gap="3" align="center">
+                {/* Import/Export Actions */}
+                <Link
+                  href="/dashboard/products/import"
+                  className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                >
+                  <UploadIcon className="mr-2 h-4 w-4" />
+                  Import
+                </Link>
 
-          <Button variant="outline" size="sm">
-            📥 Export
-          </Button>
+                <Button variant="outline" size="sm">
+                  <DownloadIcon className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
 
-          {/* Add Product Button */}
-          <Link href="/dashboard/products/new" className={cn(buttonVariants({}))}>
-            ➕ Add Product
-          </Link>
-        </div>
-      </div>
+                {/* Add Product Button */}
+                <Link href="/dashboard/products/new" className={cn(buttonVariants({}))}>
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  Add Product
+                </Link>
+              </Flex>
+            </Flex>
+          </Flex>
 
-      {/* Filters Section */}
-      <Card className="p-6">
-        <ProductsFilters searchParams={params} />
-      </Card>
+          {/* Filters Section */}
+          <Card className="p-6">
+            <ProductsFilters searchParams={params} />
+          </Card>
 
-      {/* Bulk Actions */}
-      <ProductsBulkActions />
+          {/* Bulk Actions */}
+          <ProductsBulkActions />
 
-      {/* Products Data Table */}
-      <Card>
-        <ProductsTable searchParams={params} />
-      </Card>
-    </div>
+          {/* Products Data Table */}
+          <Card>
+            <ProductsTable searchParams={params} />
+          </Card>
+        </Flex>
+      </Container>
+    </Section>
   );
 }
