@@ -1,19 +1,231 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  0,
-                    "exitCode":  0,
-                    "timestamp":  "2025-10-28T14:12:00Z",
+                    "totalErrors":  21,
+                    "exitCode":  2,
+                    "timestamp":  "2025-10-30T18:58:28Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  4
+                    "totalLines":  28
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit",
-                      ""
+                      "",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(47,9): error TS6133: \u0027payment\u0027 is declared but its value is never read.",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(72,105): error TS2339: Property \u0027email\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(137,58): error TS2339: Property \u0027totalPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(138,68): error TS2339: Property \u0027unitPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(150,39): error TS2339: Property \u0027fullName\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                      "src/app/(storefront)/orders/[id]/confirmation/page.tsx(173,34): error TS2339: Property \u0027shippingCost\u0027 does not exist on type \u0027{ payments: { id: string; storeId: string; createdAt: Date; updatedAt: Date; status: PaymentStatus; currency: string; orderId: string; amount: number; method: PaymentMethod; ... 8 more ...; failureMessage: string | null; }[]; shippingAddress: { ...; } | null; items: ({ ...; } \u0026 { ...; })[]; } \u0026 { ...; }\u0027.",
+                      "src/components/checkout/order-review.tsx(125,31): error TS2339: Property \u0027fullName\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                      "src/components/checkout/order-review.tsx(132,28): error TS2339: Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                      "src/components/checkout/order-review.tsx(132,64): error TS2339: Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                      "src/services/__tests__/checkout-service.test.ts(372,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                      "src/services/__tests__/checkout-service.test.ts(451,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                      "src/services/__tests__/checkout-service.test.ts(459,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                      "src/services/__tests__/checkout-service.test.ts(488,53): error TS2345: Argument of type \u0027() =\u003e Promise\u003cany\u003e\u0027 is not assignable to parameter of type \u0027NormalizedProcedure\u003c(\u003cT extends AddressCreateArgs\u003e(args: SelectSubset\u003cT, AddressCreateArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__AddressClient\u003cGetFindResult\u003c$AddressPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e, never, DefaultArgs, PrismaClientOptions\u003e)\u003e\u0027.",
+                      "  Type \u0027Promise\u003cany\u003e\u0027 is missing the following properties from type \u0027Prisma__AddressClient\u003c{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }, never, DefaultArgs, PrismaClientOptions\u003e\u0027: user, customer, shippingOrders, billingOrders",
+                      "src/services/checkout-service.ts(12,1): error TS6133: \u0027Decimal\u0027 is declared but its value is never read.",
+                      "src/services/checkout-service.ts(204,3): error TS6133: \u0027storeId\u0027 is declared but its value is never read.",
+                      "src/services/checkout-service.ts(317,7): error TS2322: Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027.",
+                      "  Type \u0027undefined\u0027 is not assignable to type \u0027string\u0027.",
+                      "src/services/checkout-service.ts(334,11): error TS2322: Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027.",
+                      "  Type \u0027undefined\u0027 is not assignable to type \u0027string\u0027.",
+                      "src/services/checkout-service.ts(400,13): error TS2353: Object literal may only specify known properties, and \u0027stock\u0027 does not exist in type \u0027(Without\u003cProductVariantUpdateInput, ProductVariantUncheckedUpdateInput\u003e \u0026 ProductVariantUncheckedUpdateInput) | (Without\u003c...\u003e \u0026 ProductVariantUpdateInput)\u0027.",
+                      "src/services/payment-service.ts(136,9): error TS2322: Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027PaymentStatus | EnumPaymentStatusFieldUpdateOperationsInput | undefined\u0027.",
+                      "src/services/payment-service.ts(229,9): error TS6133: \u0027refund\u0027 is declared but its value is never read.",
+                      "src/services/payment-service.ts(255,9): error TS2820: Type \u0027\"CANCELLED\"\u0027 is not assignable to type \u0027OrderStatus | EnumOrderStatusFieldUpdateOperationsInput | undefined\u0027. Did you mean \u0027\"CANCELED\"\u0027?"
                   ],
     "errors":  [
-
+                   {
+                       "message":  "\u0027payment\u0027 is declared but its value is never read.",
+                       "column":  9,
+                       "line":  47,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(47,9): error TS6133: \u0027payment\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027email\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                       "column":  105,
+                       "line":  72,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(72,105): error TS2339: Property \u0027email\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027totalPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                       "column":  58,
+                       "line":  137,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(137,58): error TS2339: Property \u0027totalPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027unitPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                       "column":  68,
+                       "line":  138,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(138,68): error TS2339: Property \u0027unitPrice\u0027 does not exist on type \u0027{ product: { name: string; images: string; } | null; variant: { name: string; } | null; } \u0026 { id: string; createdAt: Date; updatedAt: Date; subtotal: number; taxAmount: number; discountAmount: number; ... 9 more ...; quantity: number; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027fullName\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                       "column":  39,
+                       "line":  150,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(150,39): error TS2339: Property \u0027fullName\u0027 does not exist on type \u0027{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027shippingCost\u0027 does not exist on type \u0027{ payments: { id: string; storeId: string; createdAt: Date; updatedAt: Date; status: PaymentStatus; currency: string; orderId: string; amount: number; method: PaymentMethod; ... 8 more ...; failureMessage: string | null; }[]; shippingAddress: { ...; } | null; items: ({ ...; } \u0026 { ...; })[]; } \u0026 { ...; }\u0027.",
+                       "column":  34,
+                       "line":  173,
+                       "fullText":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx(173,34): error TS2339: Property \u0027shippingCost\u0027 does not exist on type \u0027{ payments: { id: string; storeId: string; createdAt: Date; updatedAt: Date; status: PaymentStatus; currency: string; orderId: string; amount: number; method: PaymentMethod; ... 8 more ...; failureMessage: string | null; }[]; shippingAddress: { ...; } | null; items: ({ ...; } \u0026 { ...; })[]; } \u0026 { ...; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/app/(storefront)/orders/[id]/confirmation/page.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027fullName\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "column":  31,
+                       "line":  125,
+                       "fullText":  "src/components/checkout/order-review.tsx(125,31): error TS2339: Property \u0027fullName\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/components/checkout/order-review.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "column":  28,
+                       "line":  132,
+                       "fullText":  "src/components/checkout/order-review.tsx(132,28): error TS2339: Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/components/checkout/order-review.tsx"
+                   },
+                   {
+                       "message":  "Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "column":  64,
+                       "line":  132,
+                       "fullText":  "src/components/checkout/order-review.tsx(132,64): error TS2339: Property \u0027phone\u0027 does not exist on type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/components/checkout/order-review.tsx"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "column":  9,
+                       "line":  372,
+                       "fullText":  "src/services/__tests__/checkout-service.test.ts(372,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/__tests__/checkout-service.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "column":  9,
+                       "line":  451,
+                       "fullText":  "src/services/__tests__/checkout-service.test.ts(451,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/__tests__/checkout-service.test.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "column":  9,
+                       "line":  459,
+                       "fullText":  "src/services/__tests__/checkout-service.test.ts(459,9): error TS2353: Object literal may only specify known properties, and \u0027fullName\u0027 does not exist in type \u0027ShippingAddress\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/__tests__/checkout-service.test.ts"
+                   },
+                   {
+                       "fullText":  "src/services/__tests__/checkout-service.test.ts(488,53): error TS2345: Argument of type \u0027() =\u003e Promise\u003cany\u003e\u0027 is not assignable to parameter of type \u0027NormalizedProcedure\u003c(\u003cT extends AddressCreateArgs\u003e(args: SelectSubset\u003cT, AddressCreateArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__AddressClient\u003cGetFindResult\u003c$AddressPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e, never, DefaultArgs, PrismaClientOptions\u003e)\u003e\u0027.",
+                       "file":  "src/services/__tests__/checkout-service.test.ts",
+                       "code":  "TS2345",
+                       "line":  488,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027() =\u003e Promise\u003cany\u003e\u0027 is not assignable to parameter of type \u0027NormalizedProcedure\u003c(\u003cT extends AddressCreateArgs\u003e(args: SelectSubset\u003cT, AddressCreateArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__AddressClient\u003cGetFindResult\u003c$AddressPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e, never, DefaultArgs, PrismaClientOptions\u003e)\u003e\u0027. Type \u0027Promise\u003cany\u003e\u0027 is missing the following properties from type \u0027Prisma__AddressClient\u003c{ id: string; phone: string | null; createdAt: Date; updatedAt: Date; userId: string | null; customerId: string | null; city: string; state: string; postalCode: string; country: string; ... 5 more ...; isDefault: boolean; }, never, DefaultArgs, PrismaClientOptions\u003e\u0027: user, customer, shippingOrders, billingOrders",
+                       "column":  53
+                   },
+                   {
+                       "message":  "\u0027Decimal\u0027 is declared but its value is never read.",
+                       "column":  1,
+                       "line":  12,
+                       "fullText":  "src/services/checkout-service.ts(12,1): error TS6133: \u0027Decimal\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "src/services/checkout-service.ts"
+                   },
+                   {
+                       "message":  "\u0027storeId\u0027 is declared but its value is never read.",
+                       "column":  3,
+                       "line":  204,
+                       "fullText":  "src/services/checkout-service.ts(204,3): error TS6133: \u0027storeId\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "src/services/checkout-service.ts"
+                   },
+                   {
+                       "fullText":  "src/services/checkout-service.ts(317,7): error TS2322: Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027.",
+                       "file":  "src/services/checkout-service.ts",
+                       "code":  "TS2322",
+                       "line":  317,
+                       "severity":  "error",
+                       "message":  "Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027. Type \u0027undefined\u0027 is not assignable to type \u0027string\u0027.",
+                       "column":  7
+                   },
+                   {
+                       "fullText":  "src/services/checkout-service.ts(334,11): error TS2322: Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027.",
+                       "file":  "src/services/checkout-service.ts",
+                       "code":  "TS2322",
+                       "line":  334,
+                       "severity":  "error",
+                       "message":  "Type \u0027string | undefined\u0027 is not assignable to type \u0027string\u0027. Type \u0027undefined\u0027 is not assignable to type \u0027string\u0027.",
+                       "column":  11
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027stock\u0027 does not exist in type \u0027(Without\u003cProductVariantUpdateInput, ProductVariantUncheckedUpdateInput\u003e \u0026 ProductVariantUncheckedUpdateInput) | (Without\u003c...\u003e \u0026 ProductVariantUpdateInput)\u0027.",
+                       "column":  13,
+                       "line":  400,
+                       "fullText":  "src/services/checkout-service.ts(400,13): error TS2353: Object literal may only specify known properties, and \u0027stock\u0027 does not exist in type \u0027(Without\u003cProductVariantUpdateInput, ProductVariantUncheckedUpdateInput\u003e \u0026 ProductVariantUncheckedUpdateInput) | (Without\u003c...\u003e \u0026 ProductVariantUpdateInput)\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/checkout-service.ts"
+                   },
+                   {
+                       "message":  "Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027PaymentStatus | EnumPaymentStatusFieldUpdateOperationsInput | undefined\u0027.",
+                       "column":  9,
+                       "line":  136,
+                       "fullText":  "src/services/payment-service.ts(136,9): error TS2322: Type \u0027\"COMPLETED\"\u0027 is not assignable to type \u0027PaymentStatus | EnumPaymentStatusFieldUpdateOperationsInput | undefined\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "src/services/payment-service.ts"
+                   },
+                   {
+                       "message":  "\u0027refund\u0027 is declared but its value is never read.",
+                       "column":  9,
+                       "line":  229,
+                       "fullText":  "src/services/payment-service.ts(229,9): error TS6133: \u0027refund\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "src/services/payment-service.ts"
+                   },
+                   {
+                       "message":  "Type \u0027\"CANCELLED\"\u0027 is not assignable to type \u0027OrderStatus | EnumOrderStatusFieldUpdateOperationsInput | undefined\u0027. Did you mean \u0027\"CANCELED\"\u0027?",
+                       "column":  9,
+                       "line":  255,
+                       "fullText":  "src/services/payment-service.ts(255,9): error TS2820: Type \u0027\"CANCELLED\"\u0027 is not assignable to type \u0027OrderStatus | EnumOrderStatusFieldUpdateOperationsInput | undefined\u0027. Did you mean \u0027\"CANCELED\"\u0027?",
+                       "code":  "TS2820",
+                       "severity":  "error",
+                       "file":  "src/services/payment-service.ts"
+                   }
                ]
 }
