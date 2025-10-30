@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { LockClosedIcon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -108,121 +110,147 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Sign in to StormCom</CardTitle>
-          <CardDescription>
-            Or{' '}
-            <Link
-              href="/register"
-              className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
-            >
-              create a new account
-            </Link>
-          </CardDescription>
-        </CardHeader>
+    <Section size="2" className="min-h-screen flex items-center justify-center">
+      <Container size="1">
+        <Flex direction="column" gap="6" align="center">
+          {/* Logo/Brand */}
+          <Flex direction="column" gap="2" align="center">
+            <LockClosedIcon width="48" height="48" color="teal" />
+            <Heading size="8" weight="bold" align="center">
+              Welcome Back
+            </Heading>
+            <Text size="3" color="gray" align="center">
+              Sign in to your StormCom account
+            </Text>
+          </Flex>
 
-        <CardContent>
-          {/* Login Form */}
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            {/* Server Error Message */}
-            <FormError
-              message={
-                serverError
-                  ? lockedUntil
-                    ? `${serverError} Your account is locked until ${lockedUntil.toLocaleString()}`
-                    : serverError
-                  : undefined
-              }
-            />
-
-            <div className="space-y-4">
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
-                <Input
-                  {...register('email')}
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  error={!!errors.email}
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                />
-                {errors.email && (
-                  <p
-                    className="text-sm text-destructive"
-                    id="email-error"
-                    role="alert"
-                  >
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  {...register('password')}
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  error={!!errors.password}
-                  aria-invalid={errors.password ? 'true' : 'false'}
-                  aria-describedby={errors.password ? 'password-error' : undefined}
-                />
-                {errors.password && (
-                  <p
-                    className="text-sm text-destructive"
-                    id="password-error"
-                    role="alert"
-                  >
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Forgot Password Link */}
-            <div className="flex items-center justify-end">
-              <Link
-                href="/forgot-password"
-                className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={loading}
-              loading={loading}
-              className="w-full"
-              aria-label={loading ? 'Signing in...' : 'Sign in'}
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </Button>
-
-            {/* Footer Links */}
-            <div className="text-center text-sm text-muted-foreground">
-              <p>
-                Don{'\''}t have an account?{' '}
+          {/* Login Card */}
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle>Sign in to continue</CardTitle>
+              <CardDescription>
+                Or{' '}
                 <Link
                   href="/register"
                   className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
                 >
-                  Create account
+                  create a new account
                 </Link>
-              </p>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              {/* Login Form */}
+              <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+                {/* Server Error Message */}
+                <FormError
+                  message={
+                    serverError
+                      ? lockedUntil
+                        ? `${serverError} Your account is locked until ${lockedUntil.toLocaleString()}`
+                        : serverError
+                      : undefined
+                  }
+                />
+
+                <div className="space-y-4">
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">
+                      <Flex align="center" gap="2">
+                        <EnvelopeClosedIcon />
+                        Email address
+                      </Flex>
+                    </Label>
+                    <Input
+                      {...register('email')}
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      error={!!errors.email}
+                      aria-invalid={errors.email ? 'true' : 'false'}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
+                    />
+                    {errors.email && (
+                      <p
+                        className="text-sm text-destructive"
+                        id="email-error"
+                        role="alert"
+                      >
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Password Field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="password">
+                      <Flex align="center" gap="2">
+                        <LockClosedIcon />
+                        Password
+                      </Flex>
+                    </Label>
+                    <Input
+                      {...register('password')}
+                      id="password"
+                      type="password"
+                      autoComplete="current-password"
+                      placeholder="••••••••"
+                      error={!!errors.password}
+                      aria-invalid={errors.password ? 'true' : 'false'}
+                      aria-describedby={errors.password ? 'password-error' : undefined}
+                    />
+                    {errors.password && (
+                      <p
+                        className="text-sm text-destructive"
+                        id="password-error"
+                        role="alert"
+                      >
+                        {errors.password.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Forgot Password Link */}
+                <div className="flex items-center justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  loading={loading}
+                  className="w-full"
+                  aria-label={loading ? 'Signing in...' : 'Sign in'}
+                >
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </Button>
+
+                {/* Footer Links */}
+                <div className="text-center text-sm text-muted-foreground">
+                  <p>
+                    Don{'\''}t have an account?{' '}
+                    <Link
+                      href="/register"
+                      className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                    >
+                      Create account
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </Flex>
+      </Container>
+    </Section>
   );
 }
