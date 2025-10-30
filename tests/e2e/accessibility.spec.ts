@@ -81,11 +81,12 @@ test.describe('Accessibility Tests - WCAG 2.2 AA', () => {
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
       .analyze();
 
-    // Log violations for debugging
+    // Attach violations to test report for debugging (avoid console statements)
     if (accessibilityScanResults.violations.length > 0) {
-      console.log('Accessibility violations found:', 
-        JSON.stringify(accessibilityScanResults.violations, null, 2)
-      );
+      await test.info().attach('accessibility-violations', {
+        body: JSON.stringify(accessibilityScanResults.violations, null, 2),
+        contentType: 'application/json',
+      });
     }
 
     expect(accessibilityScanResults.violations).toEqual([]);
@@ -100,15 +101,20 @@ test.describe('Accessibility Tests - WCAG 2.2 AA', () => {
       .withRules(['color-contrast'])
       .analyze();
 
-    // Log contrast violations if any
+    // Attach contrast violations to test report for debugging (avoid console statements)
     if (contrastResults.violations.length > 0) {
-      console.log('Color contrast violations:', 
-        contrastResults.violations.map(v => ({
-          impact: v.impact,
-          description: v.description,
-          nodes: v.nodes.map(n => n.html)
-        }))
-      );
+      await test.info().attach('color-contrast-violations', {
+        body: JSON.stringify(
+          contrastResults.violations.map((v) => ({
+            impact: v.impact,
+            description: v.description,
+            nodes: v.nodes.map((n) => n.html),
+          })),
+          null,
+          2
+        ),
+        contentType: 'application/json',
+      });
     }
 
     expect(contrastResults.violations).toEqual([]);
