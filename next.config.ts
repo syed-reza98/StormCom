@@ -66,16 +66,16 @@ const nextConfig: NextConfig = {
   },
   
   /* Performance Optimization */
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: [
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-select',
-      '@radix-ui/react-toast',
-      'lucide-react',
-    ],
-  },
+  // experimental: {
+  //   optimizeCss: true,
+  //   optimizePackageImports: [
+  //     '@radix-ui/react-dialog',
+  //     '@radix-ui/react-dropdown-menu',
+  //     '@radix-ui/react-select',
+  //     '@radix-ui/react-toast',
+  //     'lucide-react',
+  //   ],
+  // },
 };
 
 export default nextConfig;
