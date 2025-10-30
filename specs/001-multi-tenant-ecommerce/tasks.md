@@ -312,20 +312,20 @@
 
 **Tasks**:
 
-- [ ] T123 [US3] Create CheckoutService in src/services/checkout-service.ts with cart validation, shipping calculation, and order creation
-- [ ] T124 [US3] Create PaymentService in src/services/payment-service.ts with Stripe integration (payment intents, webhooks, refunds)
-- [ ] T125 [US3] [P] Create API route POST /api/checkout/validate in src/app/api/checkout/validate/route.ts for cart and stock validation
-- [ ] T126 [US3] [P] Create API route POST /api/checkout/shipping in src/app/api/checkout/shipping/route.ts for shipping options and rates
-- [ ] T127 [US3] [P] Create API route POST /api/checkout/payment-intent in src/app/api/checkout/payment-intent/route.ts for creating Stripe payment intent
-- [ ] T128 [US3] [P] Create API route POST /api/checkout/complete in src/app/api/checkout/complete/route.ts for finalizing order and creating Order record
-- [ ] T129 [US3] [P] Create API route POST /api/webhooks/stripe in src/app/api/webhooks/stripe/route.ts for Stripe webhook events (payment succeeded, failed)
-- [ ] T130 [US3] [P] Create Checkout page in src/app/(storefront)/checkout/page.tsx with multi-step form (shipping, payment, review)
-- [ ] T131 [US3] [P] Create Shipping Address form in src/components/checkout/shipping-address-form.tsx with address validation
-- [ ] T132 [US3] [P] Create Payment Method selector in src/components/checkout/payment-method-selector.tsx with Stripe Elements integration
-- [ ] T133 [US3] [P] Create Order Review component in src/components/checkout/order-review.tsx with order summary and place order button
-- [ ] T134 [US3] [P] Create Order Confirmation page in src/app/(storefront)/orders/[id]/confirmation/page.tsx with order details and tracking
-- [ ] T135 [US3] Create E2E test "Customer can complete checkout with credit card" in tests/e2e/checkout/complete-checkout.spec.ts
-- [ ] T136 [US3] Create E2E test "Checkout fails when stock is insufficient" in tests/e2e/checkout/stock-validation.spec.ts
+- [x] T123 [US3] Create CheckoutService in src/services/checkout-service.ts with cart validation, shipping calculation, and order creation ✅ **COMPLETED** (464 lines: validateCart, calculateShipping, calculateTax, generateOrderNumber, createOrder)
+- [x] T124 [US3] Create PaymentService in src/services/payment-service.ts with Stripe integration (payment intents, webhooks, refunds) ✅ **COMPLETED** (280 lines: createPaymentIntent, handlePaymentSucceeded, handlePaymentFailed, refundPayment, verifyWebhookSignature)
+- [x] T125 [US3] [P] Create API route POST /api/checkout/validate in src/app/api/checkout/validate/route.ts for cart and stock validation ✅ **COMPLETED** (Zod validation, calls CheckoutService.validateCart)
+- [x] T126 [US3] [P] Create API route POST /api/checkout/shipping in src/app/api/checkout/shipping/route.ts for shipping options and rates ✅ **COMPLETED** (Zod validation, calls CheckoutService.calculateShipping)
+- [x] T127 [US3] [P] Create API route POST /api/checkout/payment-intent in src/app/api/checkout/payment-intent/route.ts for creating Stripe payment intent ✅ **COMPLETED** (Zod validation, calls PaymentService.createPaymentIntent)
+- [x] T128 [US3] [P] Create API route POST /api/checkout/complete in src/app/api/checkout/complete/route.ts for finalizing order and creating Order record ✅ **COMPLETED** (Zod validation, calls CheckoutService.createOrder)
+- [x] T129 [US3] [P] Create API route POST /api/webhooks/stripe in src/app/api/webhooks/stripe/route.ts for Stripe webhook events (payment succeeded, failed) ✅ **COMPLETED** (Signature verification, event handling for payment_intent.succeeded, payment_intent.payment_failed, charge.refunded)
+- [x] T130 [US3] [P] Create Checkout page in src/app/(storefront)/checkout/page.tsx with multi-step form (shipping, payment, review) ✅ **COMPLETED** (Multi-step UI with progress indicator, step navigation, state management)
+- [x] T131 [US3] [P] Create Shipping Address form in src/components/checkout/shipping-address-form.tsx with address validation ✅ **COMPLETED** (React Hook Form + Zod validation, 9 form fields, comprehensive validation)
+- [x] T132 [US3] [P] Create Payment Method selector in src/components/checkout/payment-method-selector.tsx with Stripe Elements integration ✅ **COMPLETED** (Stripe Elements, PaymentElement, error handling) ⚠️ **NOTE**: Missing @stripe/stripe-js and @stripe/react-stripe-js packages (requires npm install)
+- [x] T133 [US3] [P] Create Order Review component in src/components/checkout/order-review.tsx with order summary and place order button ✅ **COMPLETED** (Order items display, shipping address, price breakdown, place order action, Image optimized with next/image)
+- [x] T134 [US3] [P] Create Order Confirmation page in src/app/(storefront)/orders/[id]/confirmation/page.tsx with order details and tracking ✅ **COMPLETED** (Success message, order details, items, shipping address, order summary, actions, Image optimized with next/image)
+- [x] T135 [US3] Create E2E test "Customer can complete checkout with credit card" in tests/e2e/checkout/complete-checkout.spec.ts ✅ **COMPLETED** (3 test cases: single item checkout, multiple items checkout, navigation back through steps)
+- [x] T136 [US3] Create E2E test "Checkout fails when stock is insufficient" in tests/e2e/checkout/stock-validation.spec.ts ✅ **COMPLETED** (6 test cases: insufficient stock, cart validation failure, multiple items with stock issues, out of stock products, variant stock validation, error message details)
 
 ---
 
