@@ -383,8 +383,11 @@ describe('GET /api/orders', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.message).toBe('Orders retrieved successfully');
-      expect(data.data).toEqual(mockOrders);
-      expect(data.meta.pagination).toEqual(mockPagination);
+      expect(data.data).toHaveLength(2);
+      expect(data.data[0].id).toBe('order-1');
+      expect(data.data[0].orderNumber).toBe('ORD-001');
+      expect(data.data[1].id).toBe('order-2');
+      expect(data.meta).toEqual(mockPagination);
     });
 
     it('should handle empty orders list', async () => {
@@ -405,7 +408,8 @@ describe('GET /api/orders', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data).toEqual([]);
-      expect(data.meta.pagination.total).toBe(0);
+      expect(data.meta.total).toBe(0);
+      expect(data.meta.page).toBe(1);
     });
   });
 

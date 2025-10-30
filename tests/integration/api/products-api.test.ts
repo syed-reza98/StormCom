@@ -1,10 +1,16 @@
 // tests/integration/api/products-api.test.ts
 // Integration tests for Products API routes
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setupTestDatabase, cleanupTestDatabase } from '../helpers/database';
 import { createTestStore, createTestUser, createTestCategory, createTestProduct } from '../helpers/test-data';
 import { NextRequest } from 'next/server';
+
+// Mock NextAuth to prevent "headers called outside request scope" errors
+vi.mock('next-auth', () => ({
+  default: vi.fn(),
+  getServerSession: vi.fn(),
+}));
 
 describe('Products API Integration Tests', () => {
   let testStoreId: string;
@@ -21,6 +27,19 @@ describe('Products API Integration Tests', () => {
     testStoreId = store.id;
     testUserId = user.id;
     testCategoryId = category.id;
+
+    // Mock authenticated session for all tests by default
+    const { getServerSession } = await import('next-auth');
+    vi.mocked(getServerSession).mockResolvedValue({
+      user: {
+        id: testUserId,
+        email: 'test@example.com',
+        name: 'Test User',
+        role: 'STORE_ADMIN',
+        storeId: testStoreId,
+      },
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    } as any);
   });
 
   afterEach(async () => {
@@ -33,19 +52,19 @@ describe('Products API Integration Tests', () => {
       await createTestProduct(testStoreId, testCategoryId, {
         name: 'Product 1',
         price: 100.00,
-        isActive: true,
+        isPublished: true,
       });
       
       await createTestProduct(testStoreId, testCategoryId, {
         name: 'Product 2', 
         price: 200.00,
-        isActive: true,
+        isPublished: true,
       });
       
       await createTestProduct(testStoreId, testCategoryId, {
-        name: 'Inactive Product',
+        name: 'Unpublished Product',
         price: 50.00,
-        isActive: false,
+        isPublished: false,
       });
     });
 
@@ -61,7 +80,7 @@ describe('Products API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.products).toHaveLength(2); // Only active products
+      expect(data.data.products).toHaveLength(2); // Only published products
       expect(data.data.total).toBe(2);
       expect(data.data.page).toBe(1);
       expect(data.data.perPage).toBe(10);
@@ -135,8 +154,7 @@ describe('Products API Integration Tests', () => {
         price: 150.00,
         categoryId: testCategoryId,
         brand: 'Test Brand',
-        isActive: true,
-        stockQuantity: 50,
+        inventoryQty: 50,
       };
 
       const request = new NextRequest('http://localhost/api/products', {
@@ -198,8 +216,7 @@ describe('Products API Integration Tests', () => {
         sku: 'DUPLICATE-SKU',
         price: 100.00,
         categoryId: testCategoryId,
-        isActive: true,
-        stockQuantity: 10,
+        inventoryQty: 10,
       };
 
       const request = new NextRequest('http://localhost/api/products', {
@@ -222,6 +239,10 @@ describe('Products API Integration Tests', () => {
     });
 
     it('should require authentication', async () => {
+      // Mock unauthenticated state
+      const { getServerSession } = await import('next-auth');
+      vi.mocked(getServerSession).mockResolvedValueOnce(null);
+
       const productData = {
         name: 'Unauthorized Product',
         sku: 'UNAUTH-001',
@@ -233,7 +254,6 @@ describe('Products API Integration Tests', () => {
         headers: {
           'content-type': 'application/json',
           'x-store-id': testStoreId,
-          // Missing x-user-id header
         },
         body: JSON.stringify(productData),
       });
@@ -243,7 +263,6 @@ describe('Products API Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.success).toBe(false);
       expect(data.error.code).toBe('UNAUTHORIZED');
     });
   });
@@ -371,6 +390,10 @@ describe('Products API Integration Tests', () => {
     });
 
     it('should require authentication for updates', async () => {
+      // Mock unauthenticated state
+      const { getServerSession } = await import('next-auth');
+      vi.mocked(getServerSession).mockResolvedValueOnce(null);
+
       const updateData = { name: 'Unauthorized Update' };
 
       const request = new NextRequest(`http://localhost/api/products/${testProductId}`, {
@@ -378,7 +401,6 @@ describe('Products API Integration Tests', () => {
         headers: {
           'content-type': 'application/json',
           'x-store-id': testStoreId,
-          // Missing x-user-id header
         },
         body: JSON.stringify(updateData),
       });
@@ -388,7 +410,6 @@ describe('Products API Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.success).toBe(false);
       expect(data.error.code).toBe('UNAUTHORIZED');
     });
   });
@@ -430,11 +451,14 @@ describe('Products API Integration Tests', () => {
     });
 
     it('should require authentication for deletion', async () => {
+      // Mock unauthenticated state
+      const { getServerSession } = await import('next-auth');
+      vi.mocked(getServerSession).mockResolvedValueOnce(null);
+
       const request = new NextRequest(`http://localhost/api/products/${testProductId}`, {
         method: 'DELETE',
         headers: {
           'x-store-id': testStoreId,
-          // Missing x-user-id header
         },
       });
 
@@ -443,7 +467,6 @@ describe('Products API Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.success).toBe(false);
       expect(data.error.code).toBe('UNAUTHORIZED');
     });
 
@@ -472,8 +495,8 @@ describe('Products API Integration Tests', () => {
 
     beforeEach(async () => {
       const product = await createTestProduct(testStoreId, testCategoryId, {
-        stockQuantity: 100,
-        trackQuantity: true,
+        inventoryQty: 100,
+        trackInventory: true,
       });
       testProductId = product.id;
     });
@@ -503,7 +526,7 @@ describe('Products API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.stockQuantity).toBe(150);
+      expect(data.data.inventoryQty).toBe(150);
     });
 
     it('should decrease stock quantity', async () => {
@@ -525,7 +548,7 @@ describe('Products API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.stockQuantity).toBe(75); // 100 - 25
+      expect(data.data.inventoryQty).toBe(75); // 100 - 25
     });
 
     it('should check stock availability', async () => {

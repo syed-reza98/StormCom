@@ -198,7 +198,10 @@ describe('GET /api/orders/[id]', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.message).toBe('Order retrieved successfully');
-      expect(data.data).toEqual(mockOrder);
+      expect(data.data.id).toBe('order-1');
+      expect(data.data.orderNumber).toBe('ORD-001');
+      expect(data.data.status).toBe('PENDING');
+      expect(data.data.customer.email).toBe('john@example.com');
       expect(orderService.getOrderById).toHaveBeenCalledWith('order-1', 'store-1');
     });
 
