@@ -224,7 +224,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <p className="text-sm text-muted-foreground">
             Category:{' '}
             <a
-              href={`/categories/${product.category.slug}`}
+              href={`/shop/categories/${product.category.slug}`}
               className="text-foreground hover:underline font-medium"
             >
               {product.category.name}

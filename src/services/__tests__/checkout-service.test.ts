@@ -485,7 +485,7 @@ describe('CheckoutService - createOrder', () => {
 
     // Mock address creation (outside transaction)
     let addressCreateCallCount = 0;
-    vi.mocked(db.address.create).mockImplementation(async () => {
+    (vi.mocked(db.address.create) as any).mockImplementation(async () => {
       addressCreateCallCount++;
       return {
         id: `addr-${addressCreateCallCount}`,

@@ -32,13 +32,13 @@ export default async function Homepage() {
               Discover amazing products at unbeatable prices. Shop the latest trends and enjoy fast, free shipping on orders over $50.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <Link href="/products">
+              <Link href="/shop/products">
                 <Button size="lg">
                   Shop Now
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/categories">
+              <Link href="/shop/categories">
                 <Button size="lg" variant="outline">
                   Browse Categories
                 </Button>
@@ -88,7 +88,7 @@ export default async function Homepage() {
                   Handpicked favorites just for you
                 </p>
               </div>
-              <Link href="/products">
+              <Link href="/shop/products">
                 <Button variant="outline">
                   View All
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -137,7 +137,7 @@ export default async function Homepage() {
 
             {categories.length > 8 && (
               <div className="text-center mt-8">
-                <Link href="/categories">
+                <Link href="/shop/categories">
                   <Button variant="outline" size="lg">
                     View All Categories
                     <ArrowRight className="ml-2 h-4 w-4" />

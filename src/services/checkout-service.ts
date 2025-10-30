@@ -9,7 +9,6 @@
  */
 
 import { db } from '@/lib/db';
-import type { Decimal } from '@prisma/client/runtime/library';
 
 /**
  * Cart item structure for checkout validation
@@ -25,6 +24,12 @@ export interface CartItem {
  * Shipping address for calculation
  */
 export interface ShippingAddress {
+  // Accept either a fullName (commonly used in UI/tests) or firstName/lastName (database canonical)
+  fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+
   country: string;
   state?: string;
   city: string;
@@ -82,6 +87,11 @@ export interface CreateOrderInput {
   discountCode?: string;
   customerNote?: string;
   ipAddress?: string;
+  // Optional fields sometimes provided by tests/UI helpers
+  subtotal?: number;
+  taxAmount?: number;
+  discountAmount?: number;
+  paymentMethod?: string;
 }
 
 /**
@@ -151,10 +161,11 @@ export async function validateCart(
       continue;
     }
 
-    // Determine stock and price
-    const availableStock = variant?.stock ?? product.inventoryQty;
-    const price = variant?.price ?? product.price;
-    const trackInventory = variant?.trackInventory ?? product.trackInventory;
+  // Determine stock and price
+  // Variants use `inventoryQty` in the schema; product controls trackInventory
+  const availableStock = (variant as any)?.inventoryQty ?? product.inventoryQty;
+  const price = (variant as any)?.price ?? product.price;
+  const trackInventory = product.trackInventory;
 
     // Validate quantity
     if (item.quantity <= 0) {
@@ -201,7 +212,7 @@ export async function validateCart(
  * Calculate shipping options based on address and cart weight
  */
 export async function calculateShipping(
-  storeId: string,
+  _storeId: string,
   shippingAddress: ShippingAddress,
   cartItems: CartItem[]
 ): Promise<ShippingOption[]> {
@@ -306,19 +317,22 @@ export async function createOrder(
   // Generate order number
   const orderNumber = await generateOrderNumber(input.storeId);
 
-  // Create addresses first
+  // Create addresses first (use provided names when available)
+  const shippingFirstName = input.shippingAddress.firstName ?? input.shippingAddress.fullName?.split(' ')[0] ?? 'Customer';
+  const shippingLastName = input.shippingAddress.lastName ?? input.shippingAddress.fullName?.split(' ').slice(1).join(' ') ?? 'Name';
+
   const shippingAddressRecord = await db.address.create({
     data: {
-      storeId: input.storeId,
-      type: 'SHIPPING',
-      firstName: 'Customer', // TODO: Get from customer record
-      lastName: 'Name',
+      firstName: shippingFirstName,
+      lastName: shippingLastName,
       country: input.shippingAddress.country,
-      state: input.shippingAddress.state,
-      city: input.shippingAddress.city,
-      postalCode: input.shippingAddress.postalCode,
-      address1: input.shippingAddress.address1,
-      address2: input.shippingAddress.address2,
+      // Prisma Address.state is required (string) in the schema, provide a safe fallback
+      state: input.shippingAddress.state ?? '',
+      city: input.shippingAddress.city ?? '',
+      postalCode: input.shippingAddress.postalCode ?? '',
+      address1: input.shippingAddress.address1 ?? '',
+      address2: input.shippingAddress.address2 ?? undefined,
+      phone: input.shippingAddress.phone ?? null,
       isDefault: false,
     },
   });
@@ -326,16 +340,15 @@ export async function createOrder(
   const billingAddressRecord = input.billingAddress
     ? await db.address.create({
         data: {
-          storeId: input.storeId,
-          type: 'BILLING',
-          firstName: 'Customer',
-          lastName: 'Name',
+          firstName: input.billingAddress.firstName ?? input.billingAddress.fullName?.split(' ')[0] ?? shippingFirstName,
+          lastName: input.billingAddress.lastName ?? input.billingAddress.fullName?.split(' ').slice(1).join(' ') ?? shippingLastName,
           country: input.billingAddress.country,
-          state: input.billingAddress.state,
-          city: input.billingAddress.city,
-          postalCode: input.billingAddress.postalCode,
-          address1: input.billingAddress.address1,
-          address2: input.billingAddress.address2,
+          state: input.billingAddress.state ?? '',
+          city: input.billingAddress.city ?? '',
+          postalCode: input.billingAddress.postalCode ?? '',
+          address1: input.billingAddress.address1 ?? '',
+          address2: input.billingAddress.address2 ?? undefined,
+          phone: input.billingAddress.phone ?? null,
           isDefault: false,
         },
       })
@@ -393,11 +406,11 @@ export async function createOrder(
     // Reduce inventory for each item
     for (const item of validated.items) {
       if (item.variantId) {
-        // Update variant stock
+        // Update variant inventory (schema uses inventoryQty)
         await tx.productVariant.update({
           where: { id: item.variantId },
           data: {
-            stock: {
+            inventoryQty: {
               decrement: item.quantity,
             },
           },

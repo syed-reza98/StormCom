@@ -133,7 +133,8 @@ export async function handlePaymentSucceeded(
         gatewayPaymentId: paymentIntentId,
       },
       data: {
-        status: 'COMPLETED',
+        // Prisma PaymentStatus uses 'PAID' for completed captured payments
+        status: 'PAID',
         gatewayChargeId: paymentIntent.latest_charge as string,
       },
     });
@@ -226,7 +227,7 @@ export async function refundPayment(
   const refundAmountCents = Math.round(refundAmount * 100);
 
   // Create Stripe refund
-  const refund = await stripe.refunds.create({
+  await stripe.refunds.create({
     payment_intent: payment.gatewayPaymentId,
     amount: refundAmountCents,
     reason: input.reason as any,
@@ -250,9 +251,10 @@ export async function refundPayment(
     // Update order payment status
     await tx.order.update({
       where: { id: payment.orderId },
-      data: {
+        data: {
         paymentStatus: 'REFUNDED',
-        status: 'CANCELLED',
+        // Prisma OrderStatus uses 'CANCELED' (single L)
+        status: 'CANCELED',
         canceledAt: new Date(),
         cancelReason: input.reason ?? 'Refund processed',
       },

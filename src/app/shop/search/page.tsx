@@ -182,7 +182,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 </p>
               </div>
               <a
-                href="/products"
+                href="/shop/products"
                 className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
                 Browse All Products

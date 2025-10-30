@@ -33,6 +33,9 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
         },
       },
       shippingAddress: true,
+      customer: {
+        select: { email: true },
+      },
       payments: {
         orderBy: { createdAt: 'desc' },
         take: 1,
@@ -43,8 +46,6 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
   if (!order) {
     notFound();
   }
-
-  const payment = order.payments[0];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -69,7 +70,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
           <div>
             <h1 className="text-2xl font-bold text-green-800">Order Confirmed!</h1>
             <p className="text-green-700">
-              Thank you for your order. We&apos;ve sent a confirmation email to {order.shippingAddress?.email}.
+              Thank you for your order. We&apos;ve sent a confirmation email to {order.customer?.email ?? 'your email'}.
             </p>
           </div>
         </div>
@@ -134,8 +135,8 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
                 <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
               </div>
               <div className="text-right">
-                <p className="font-medium">${Number(item.totalPrice).toFixed(2)}</p>
-                <p className="text-sm text-gray-600">${Number(item.unitPrice).toFixed(2)} each</p>
+                <p className="font-medium">${Number((item as any).totalAmount ?? item.subtotal).toFixed(2)}</p>
+                <p className="text-sm text-gray-600">${Number((item as any).price).toFixed(2)} each</p>
               </div>
             </div>
           ))}
@@ -147,7 +148,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">Shipping Address</h2>
           <div className="text-gray-700">
-            <p>{order.shippingAddress.fullName}</p>
+            <p>{`${order.shippingAddress.firstName ?? ''} ${order.shippingAddress.lastName ?? ''}`.trim()}</p>
             <p>{order.shippingAddress.address1}</p>
             {order.shippingAddress.address2 && <p>{order.shippingAddress.address2}</p>}
             <p>
@@ -170,7 +171,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Shipping</span>
-            <span>${Number(order.shippingCost).toFixed(2)}</span>
+            <span>${Number(order.shippingAmount).toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Tax</span>

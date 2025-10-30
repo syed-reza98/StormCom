@@ -55,7 +55,7 @@ export default function CartPage() {
           <p className="text-muted-foreground mb-6">
             Add some products to get started
           </p>
-          <Link href="/products">
+          <Link href="/shop/products">
             <Button size="lg">
               Browse Products
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -86,7 +86,7 @@ export default function CartPage() {
               <div className="flex gap-4">
                 {/* Product Image */}
                 <Link
-                  href={`/products/${item.productSlug}`}
+                  href={`/shop/products/${item.productSlug}`}
                   className="flex-shrink-0"
                 >
                   <div className="relative w-24 h-24 rounded overflow-hidden bg-muted">
@@ -109,7 +109,7 @@ export default function CartPage() {
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/products/${item.productSlug}`}
+                    href={`/shop/products/${item.productSlug}`}
                     className="font-semibold hover:text-primary transition-colors"
                   >
                     {item.productName}
@@ -209,7 +209,7 @@ export default function CartPage() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
 
-            <Link href="/products">
+            <Link href="/shop/products">
               <Button variant="outline" size="lg" className="w-full">
                 Continue Shopping
               </Button>

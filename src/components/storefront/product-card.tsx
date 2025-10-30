@@ -58,7 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow" data-testid="product-card">
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/shop/products/${product.slug}`}>
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden bg-muted">
           {primaryImage ? (
