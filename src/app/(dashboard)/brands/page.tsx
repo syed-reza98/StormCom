@@ -3,6 +3,15 @@
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { 
+  PlusIcon, 
+  MagnifyingGlassIcon, 
+  FileTextIcon,
+  CheckCircledIcon,
+  ArchiveIcon,
+  BarChartIcon
+} from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BrandsTable } from '@/components/brands/brands-table';
@@ -210,25 +219,31 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
   const totalProducts = mockBrands.reduce((sum, brand) => sum + brand.productsCount, 0);
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Brands</h1>
-          <p className="text-muted-foreground">
-            Manage product brands and their information
-          </p>
-        </div>
-        <Button>
-          ➕ Add Brand
-        </Button>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          <Flex justify="between" align="start">
+            <Flex direction="column" gap="2">
+              <Flex align="center" gap="3">
+                <FileTextIcon width="32" height="32" color="teal" />
+                <Heading size="8">Brands</Heading>
+              </Flex>
+              <Text size="3" color="gray">
+                Manage product brands and their information
+              </Text>
+            </Flex>
+            <Button>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add Brand
+            </Button>
+          </Flex>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              🏷️
+              <FileTextIcon width="20" height="20" color="blue" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Brands</p>
@@ -240,7 +255,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              ✅
+              <CheckCircledIcon width="20" height="20" color="green" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Brands</p>
@@ -252,7 +267,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              📦
+              <ArchiveIcon width="20" height="20" color="purple" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Products</p>
@@ -264,7 +279,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              📊
+              <BarChartIcon width="20" height="20" color="orange" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Avg Products/Brand</p>
@@ -287,7 +302,8 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
                 className="w-64"
               />
               <Button variant="outline">
-                🔍 Search
+                <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                Search
               </Button>
             </div>
           </div>
@@ -317,7 +333,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
           {/* Empty State */}
           {brands.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-4xl mb-4">🏷️</div>
+              <FileTextIcon width="48" height="48" className="mx-auto mb-4" color="gray" />
               <h3 className="text-lg font-medium mb-2">No brands found</h3>
               <p className="text-muted-foreground mb-4">
                 {searchParams.search
@@ -329,7 +345,9 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
           )}
         </div>
       </div>
-    </div>
+    </Flex>
+  </Container>
+</Section>
   );
 }
 

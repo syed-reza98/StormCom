@@ -108,7 +108,11 @@ export default function RegisterPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <Section size="2" className="min-h-screen flex items-center justify-center">
+        <Container size="1">
+          <Flex direction="column" gap="6" align="center">
+            <CheckCircledIcon width="64" height="64" color="green" />
+            <Heading size="8" align="center">Registration Successful!</Heading>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-balance">Registration Successful!</CardTitle>
@@ -140,13 +144,21 @@ export default function RegisterPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
+          </Flex>
+        </Container>
+      </Section>
     );
   }
 
   // Registration form
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <Section size="2" className="min-h-screen flex items-center justify-center">
+      <Container size="1">
+        <Flex direction="column" gap="6" align="center">
+          <PersonIcon width="48" height="48" color="teal" />
+          <Heading size="8" align="center">Create Account</Heading>
+          <Text size="3" color="gray" align="center">Join StormCom and start selling</Text>
+    
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Create your account</CardTitle>
@@ -299,8 +311,8 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
-    </Flex>
-  </Container>
-</Section>
+        </Flex>
+      </Container>
+    </Section>
   );
 }

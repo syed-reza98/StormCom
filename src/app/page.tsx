@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Flex, Heading, Text, Card, Container, Section, Button as RadixButton } from '@radix-ui/themes';
+import { Flex, Heading, Text, Card, Container, Section } from '@radix-ui/themes';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { 
