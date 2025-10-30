@@ -148,7 +148,7 @@ export default async function Homepage() {
                 <Link href="/shop/categories">
                   <Button variant="outline" size="lg">
                     View All Categories
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRightIcon className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>

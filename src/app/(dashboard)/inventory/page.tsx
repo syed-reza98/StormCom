@@ -3,6 +3,8 @@
 // Server Component with async searchParams
 
 import { Suspense } from 'react';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { CubeIcon, ExclamationTriangleIcon, PlusIcon, ReloadIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Package, AlertTriangle, Plus, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 
 /**
@@ -52,7 +53,7 @@ function InventoryTable({ items }: { items: any[] }) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Package className="h-12 w-12 text-muted-foreground mb-4" />
+        <CubeIcon width="48" height="48" color="gray" className="mb-4" />
         <p className="text-muted-foreground">No inventory items found.</p>
         <Link href="/products/create">
           <Button className="mt-4">Add Your First Product</Button>
@@ -125,7 +126,7 @@ function InventoryTable({ items }: { items: any[] }) {
                     size="sm"
                     title="Adjust Stock"
                   >
-                    <RotateCcw className="h-4 w-4" />
+                    <ReloadIcon className="h-4 w-4" />
                   </Button>
                 </div>
               </td>
@@ -150,7 +151,7 @@ function LowStockAlert({ count }: { count: number }) {
     >
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          <ExclamationTriangleIcon width="20" height="20" color="orange" />
           <CardTitle className="text-orange-900 dark:text-orange-100">
             Low Stock Alert
           </CardTitle>
@@ -230,28 +231,33 @@ export default async function InventoryPage({
   ).length;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-          <p className="text-muted-foreground">
-            Track stock levels and manage inventory for all products.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/products/create">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Link>
-        </Button>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          {/* Page Header */}
+          <Flex align="center" justify="between">
+            <Flex direction="column" gap="2">
+              <Flex align="center" gap="3">
+                <CubeIcon width="32" height="32" color="teal" />
+                <Heading size="8">Inventory</Heading>
+              </Flex>
+              <Text size="3" color="gray">
+                Track stock levels and manage inventory for all products
+              </Text>
+            </Flex>
+            <Button asChild>
+              <Link href="/products/create">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Add Product
+              </Link>
+            </Button>
+          </Flex>
 
-      {/* Low Stock Alert */}
-      <LowStockAlert count={lowStockCount} />
+          {/* Low Stock Alert */}
+          <LowStockAlert count={lowStockCount} />
 
-      {/* Filters */}
-      <Card>
+          {/* Filters */}
+          <Card>
         <CardHeader>
           <CardTitle>Filters</CardTitle>
           <CardDescription>Filter inventory by search, category, or stock status.</CardDescription>
@@ -307,8 +313,8 @@ export default async function InventoryPage({
         </CardContent>
       </Card>
 
-      {/* Inventory Table */}
-      <Card>
+          {/* Inventory Table */}
+          <Card>
         <CardHeader>
           <CardTitle>
             Inventory Items ({mockData.meta.total})
@@ -324,22 +330,24 @@ export default async function InventoryPage({
         </CardContent>
       </Card>
 
-      {/* Pagination */}
-      {mockData.meta.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Page {mockData.meta.page} of {mockData.meta.totalPages}
-          </p>
-          <div className="flex gap-2">
-            <Button variant="outline" disabled={page === 1}>
-              Previous
-            </Button>
-            <Button variant="outline" disabled={page === mockData.meta.totalPages}>
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+          {/* Pagination */}
+          {mockData.meta.totalPages > 1 && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Page {mockData.meta.page} of {mockData.meta.totalPages}
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" disabled={page === 1}>
+                  Previous
+                </Button>
+                <Button variant="outline" disabled={page === mockData.meta.totalPages}>
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </Flex>
+      </Container>
+    </Section>
   );
 }

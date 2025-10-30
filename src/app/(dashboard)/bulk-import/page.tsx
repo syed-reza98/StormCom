@@ -1,6 +1,8 @@
 // app/(dashboard)/bulk-import/page.tsx
 // Bulk Import Page - Dashboard page for bulk importing products
 
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { UploadIcon, FileIcon, CheckCircledIcon, BarChartIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -71,81 +73,88 @@ const recentImports = [
 
 export default function BulkImportPage() {
   return (
-    <div className="flex-1 space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Bulk Import</h1>
-          <p className="text-muted-foreground">
-            Import products in bulk using CSV files
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline">
-            📖 Import Guide
-          </Button>
-          <Button variant="outline">
-            📈 View Reports
-          </Button>
-        </div>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          {/* Header */}
+          <Flex align="center" justify="between">
+            <Flex direction="column" gap="2">
+              <Flex align="center" gap="3">
+                <UploadIcon width="32" height="32" color="teal" />
+                <Heading size="8">Bulk Import</Heading>
+              </Flex>
+              <Text size="3" color="gray">
+                Import products in bulk using CSV files
+              </Text>
+            </Flex>
+            <Flex gap="2">
+              <Button variant="outline">
+                <FileIcon className="mr-2 h-4 w-4" />
+                Import Guide
+              </Button>
+              <Button variant="outline">
+                <BarChartIcon className="mr-2 h-4 w-4" />
+                View Reports
+              </Button>
+            </Flex>
+          </Flex>
 
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Imports</CardTitle>
-            <div className="text-2xl">📊</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{importStats.totalImports}</div>
-            <p className="text-xs text-muted-foreground">
-              +3 from last month
-            </p>
-          </CardContent>
-        </Card>
+          {/* Stats Overview */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Imports</CardTitle>
+                <BarChartIcon width="20" height="20" color="blue" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{importStats.totalImports}</div>
+                <p className="text-xs text-muted-foreground">
+                  +3 from last month
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products Imported</CardTitle>
-            <div className="text-2xl">📦</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{importStats.totalProducts.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              +2,350 from last month
-            </p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Products Imported</CardTitle>
+                <UploadIcon width="20" height="20" color="purple" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{importStats.totalProducts.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">
+                  +2,350 from last month
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <div className="text-2xl">✅</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {Math.round((importStats.successfulImports / importStats.totalImports) * 100)}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {importStats.successfulImports} of {importStats.totalImports} imports
-            </p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
+                <CheckCircledIcon width="20" height="20" color="green" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {Math.round((importStats.successfulImports / importStats.totalImports) * 100)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {importStats.successfulImports} of {importStats.totalImports} imports
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Processing Time</CardTitle>
-            <div className="text-2xl">⏱️</div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{importStats.avgProcessingTime}</div>
-            <p className="text-xs text-muted-foreground">
-              -30s from last month
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg Processing Time</CardTitle>
+                <FileIcon width="20" height="20" color="orange" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{importStats.avgProcessingTime}</div>
+                <p className="text-xs text-muted-foreground">
+                  -30s from last month
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Upload Section */}
@@ -263,7 +272,9 @@ export default function BulkImportPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+          </div>
+        </Flex>
+      </Container>
+    </Section>
   );
 }
