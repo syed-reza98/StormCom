@@ -4,6 +4,7 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,7 +18,7 @@ import { ProductInventory } from '@/components/products/product-inventory';
 // ============================================================================
 
 interface ProductDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; // Next.js 16: params is now a Promise
 }
 
 interface Product {
@@ -69,7 +70,9 @@ interface ProductAttribute {
 // ============================================================================
 
 export async function generateMetadata({ params }: ProductDetailsPageProps): Promise<Metadata> {
-  const product = await getProduct(params.id);
+  // Next.js 16: Await params to access route parameters
+  const { id } = await params;
+  const product = await getProduct(id);
   
   if (!product) {
     return {
@@ -88,6 +91,9 @@ export async function generateMetadata({ params }: ProductDetailsPageProps): Pro
 // ============================================================================
 
 async function getProduct(id: string): Promise<Product | null> {
+  // Make this route dynamic - fetches authenticated data at request time
+  await connection();
+  
   try {
     // In a real app, this would use the authenticated API
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/products/${id}`, {
@@ -111,7 +117,9 @@ async function getProduct(id: string): Promise<Product | null> {
 // ============================================================================
 
 export default async function ProductDetailsPage({ params }: ProductDetailsPageProps) {
-  const product = await getProduct(params.id);
+  // Next.js 16: Await params to access route parameters
+  const { id } = await params;
+  const product = await getProduct(id);
 
   if (!product) {
     notFound();

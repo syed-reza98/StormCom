@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* Next.js 16 App Router Configuration */
   reactStrictMode: true,
   
+  /* Cache Components - Dynamic by Default, Opt-in Caching */
+  cacheComponents: true, // Next.js 16.0.0 - enables Cache Components with "use cache"
+  
   /* TypeScript Configuration */
   typescript: {
     ignoreBuildErrors: false,

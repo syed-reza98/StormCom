@@ -9,8 +9,8 @@ import { BulkImportUpload } from '@/components/bulk-import/bulk-import-upload';
 import { BulkImportHistory } from '@/components/bulk-import/bulk-import-history';
 import { BulkImportTemplates } from '@/components/bulk-import/bulk-import-templates';
 
-// Force dynamic rendering since this page contains client components
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = 'force-dynamic' (incompatible with Cache Components)
+// Dynamic by default with Cache Components - will add "use cache" or Suspense boundary after analyzing build errors
 
 // Mock data for demonstration
 const importStats = {
