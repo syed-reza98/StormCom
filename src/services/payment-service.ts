@@ -213,7 +213,7 @@ export async function refundPayment(
     throw new Error(`Payment ${input.paymentId} not found`);
   }
 
-  if (payment.status !== 'COMPLETED') {
+  if (payment.status !== 'PAID') {
     throw new Error('Can only refund completed payments');
   }
 

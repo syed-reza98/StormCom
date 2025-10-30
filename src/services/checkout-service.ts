@@ -233,7 +233,7 @@ export async function calculateShipping(
       0
     );
     if (cartSubtotal >= 50) {
-      options.unshift({
+      options.push({
         id: 'free',
         name: 'Free Shipping',
         description: '7-10 business days',
@@ -271,7 +271,7 @@ export function calculateTax(
 /**
  * Generate unique order number for store
  */
-async function generateOrderNumber(storeId: string): Promise<string> {
+export async function generateOrderNumber(storeId: string): Promise<string> {
   // Get count of orders for this store to generate sequential number
   const orderCount = await db.order.count({
     where: { storeId },
