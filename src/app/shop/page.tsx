@@ -6,7 +6,14 @@
  */
 
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag, TrendingUp, Shield } from 'lucide-react';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { 
+  ArrowRightIcon, 
+  BackpackIcon, 
+  ActivityLogIcon, 
+  LockClosedIcon,
+  RocketIcon
+} from '@radix-ui/react-icons';
 import { getFeaturedProducts, getCategoryTree } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { Button } from '@/components/ui/button';
@@ -22,20 +29,21 @@ export default async function Homepage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/10 via-primary/5 to-background py-20 px-4">
-        <div className="container mx-auto">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6">
-              Welcome to StormCom
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+      <Section size="3" className="bg-gradient-to-r from-primary/10 via-primary/5 to-background">
+        <Container size="4">
+          <Flex direction="column" align="center" gap="6" className="max-w-3xl mx-auto text-center">
+            <Flex align="center" gap="3">
+              <RocketIcon width="48" height="48" color="teal" />
+              <Heading size="9">Welcome to StormCom</Heading>
+            </Flex>
+            <Text size="5" color="gray">
               Discover amazing products at unbeatable prices. Shop the latest trends and enjoy fast, free shipping on orders over $50.
-            </p>
-            <div className="flex gap-4 justify-center flex-wrap">
+            </Text>
+            <Flex gap="4" justify="center" wrap="wrap">
               <Link href="/shop/products">
                 <Button size="lg">
                   Shop Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRightIcon className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/shop/categories">
@@ -43,31 +51,31 @@ export default async function Homepage() {
                   Browse Categories
                 </Button>
               </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+            </Flex>
+          </Flex>
+        </Container>
+      </Section>
 
       {/* Features Section */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6 text-center">
-              <ShoppingBag className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <BackpackIcon className="h-12 w-12 mx-auto mb-4" color="teal" />
               <h3 className="font-semibold mb-2">Free Shipping</h3>
               <p className="text-sm text-muted-foreground">
                 On orders over $50
               </p>
             </Card>
             <Card className="p-6 text-center">
-              <TrendingUp className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <ActivityLogIcon className="h-12 w-12 mx-auto mb-4" color="teal" />
               <h3 className="font-semibold mb-2">Best Prices</h3>
               <p className="text-sm text-muted-foreground">
                 Price match guarantee
               </p>
             </Card>
             <Card className="p-6 text-center">
-              <Shield className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <LockClosedIcon className="h-12 w-12 mx-auto mb-4" color="teal" />
               <h3 className="font-semibold mb-2">Secure Checkout</h3>
               <p className="text-sm text-muted-foreground">
                 100% secure payments
@@ -91,7 +99,7 @@ export default async function Homepage() {
               <Link href="/shop/products">
                 <Button variant="outline">
                   View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRightIcon className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
