@@ -20,6 +20,7 @@ export interface PaginationMeta {
  * Success response format
  */
 export interface SuccessResponse<T = unknown> {
+  success: true;
   data: T;
   message?: string;
   meta?: PaginationMeta;
@@ -37,6 +38,7 @@ export function successResponse<T>(
   }
 ): NextResponse<SuccessResponse<T>> {
   const response: SuccessResponse<T> = {
+    success: true,
     data,
     ...(options?.message && { message: options.message }),
     ...(options?.meta && { meta: options.meta }),
@@ -232,11 +234,157 @@ export function calculatePaginationMeta(
 }
 
 /**
+ * Error response format
+ */
+export interface ErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+}
+
+/**
+ * Create an error response
+ */
+export function errorResponse(
+  message: string,
+  statusCode: number,
+  options?: {
+    code?: string;
+    details?: unknown;
+  }
+): NextResponse<ErrorResponse> {
+  const error: ErrorResponse['error'] = {
+    code: options?.code || getErrorCodeFromStatus(statusCode),
+    message,
+  };
+
+  if (options?.details !== undefined) {
+    error.details = options.details;
+  }
+
+  const response: ErrorResponse = {
+    success: false,
+    error,
+  };
+
+  return NextResponse.json(response, { status: statusCode });
+}
+
+/**
+ * Get error code from HTTP status
+ */
+function getErrorCodeFromStatus(status: number): string {
+  switch (status) {
+    case 400:
+      return 'VALIDATION_ERROR';
+    case 401:
+      return 'UNAUTHORIZED';
+    case 403:
+      return 'FORBIDDEN';
+    case 404:
+      return 'NOT_FOUND';
+    case 409:
+      return 'ALREADY_EXISTS';
+    case 422:
+      return 'UNPROCESSABLE_ENTITY';
+    case 429:
+      return 'RATE_LIMIT_EXCEEDED';
+    case 500:
+      return 'INTERNAL_ERROR';
+    default:
+      return 'ERROR';
+  }
+}
+
+/**
+ * Create an unauthorized (401) response
+ */
+export function unauthorizedResponse(
+  message = 'Unauthorized'
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 401);
+}
+
+/**
+ * Create a forbidden (403) response
+ */
+export function forbiddenResponse(
+  message = 'Insufficient permissions to access this resource'
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 403);
+}
+
+/**
+ * Create a not found (404) response
+ */
+export function notFoundResponse(
+  message = 'Resource not found'
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 404);
+}
+
+/**
+ * Create a bad request (400) response
+ */
+export function badRequestResponse(
+  message: string,
+  details?: unknown
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 400, { details });
+}
+
+/**
+ * Create a validation error (400) response
+ */
+export function validationErrorResponse(
+  message = 'Validation failed',
+  details?: unknown
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 400, {
+    code: 'VALIDATION_ERROR',
+    details,
+  });
+}
+
+/**
+ * Create an unprocessable entity (422) response
+ */
+export function unprocessableEntityResponse(
+  message: string
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 422);
+}
+
+/**
+ * Create an internal server error (500) response
+ */
+export function internalServerErrorResponse(
+  message = 'Internal server error',
+  details?: unknown
+): NextResponse<ErrorResponse> {
+  return errorResponse(message, 500, { details });
+}
+
+/**
  * Common API response helpers
  */
 export const apiResponse = {
+  // Success responses
   success: successResponse,
   created: createdResponse,
   noContent: noContentResponse,
   paginated: paginatedResponse,
+
+  // Error responses
+  error: errorResponse,
+  unauthorized: unauthorizedResponse,
+  forbidden: forbiddenResponse,
+  notFound: notFoundResponse,
+  badRequest: badRequestResponse,
+  validationError: validationErrorResponse,
+  unprocessableEntity: unprocessableEntityResponse,
+  internalServerError: internalServerErrorResponse,
 };
