@@ -1,4 +1,17 @@
 @import 'tailwindcss';
+@import '@radix-ui/colors/slate.css';
+@import '@radix-ui/colors/slate-dark.css';
+@import '@radix-ui/colors/teal.css';
+@import '@radix-ui/colors/teal-dark.css';
+@import '@radix-ui/colors/purple.css';
+@import '@radix-ui/colors/purple-dark.css';
+@import '@radix-ui/colors/grass.css';
+@import '@radix-ui/colors/grass-dark.css';
+@import '@radix-ui/colors/amber.css';
+@import '@radix-ui/colors/amber-dark.css';
+@import '@radix-ui/colors/tomato.css';
+@import '@radix-ui/colors/tomato-dark.css';
+
 /* Tailwind base/components/utilities should be first. */
 @tailwind base;
 @tailwind components;
@@ -13,83 +26,96 @@
 */
 @layer base {
   :root {
-    /* Base colors */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - using Radix Slate scale */
+    --background: var(--slate-1);
+    --foreground: var(--slate-12);
 
     /* Card colors */
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: var(--slate-1);
+    --card-foreground: var(--slate-12);
 
     /* Popover colors */
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: var(--slate-1);
+    --popover-foreground: var(--slate-12);
 
-    /* Primary brand color (customizable per store) */
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary brand color - using Radix Teal scale */
+    --primary: var(--teal-9);
+    --primary-foreground: white;
 
-    /* Secondary/accent color */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary/accent color - using Radix Purple scale */
+    --secondary: var(--purple-3);
+    --secondary-foreground: var(--purple-11);
 
-    /* Muted backgrounds */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted backgrounds - using Radix Slate scale */
+    --muted: var(--slate-3);
+    --muted-foreground: var(--slate-11);
 
     /* Accent highlights */
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: var(--slate-3);
+    --accent-foreground: var(--slate-12);
 
-    /* Destructive/error states */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive/error states - using Radix Tomato scale */
+    --destructive: var(--tomato-9);
+    --destructive-foreground: white;
+
+    /* Success states - using Radix Grass scale */
+    --success: var(--grass-9);
+    --success-foreground: white;
+
+    /* Warning states - using Radix Amber scale */
+    --warning: var(--amber-9);
+    --warning-foreground: var(--amber-12);
 
     /* Border and input colors */
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: var(--slate-6);
+    --input: var(--slate-6);
+    --ring: var(--teal-9);
 
     /* Border radius */
     --radius: 0.5rem;
   }
 
-  /* Prefer scoping dark-mode variables to the root element so Tailwind's
-     `class`-based dark mode (html.dark) works as expected. */
+  /* Dark mode using Radix dark scales */
   :root.dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: var(--slate-1);
+    --foreground: var(--slate-12);
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: var(--slate-2);
+    --card-foreground: var(--slate-12);
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: var(--slate-2);
+    --popover-foreground: var(--slate-12);
 
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: var(--teal-9);
+    --primary-foreground: var(--slate-1);
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: var(--purple-3);
+    --secondary-foreground: var(--purple-11);
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: var(--slate-3);
+    --muted-foreground: var(--slate-11);
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: var(--slate-3);
+    --accent-foreground: var(--slate-12);
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: var(--tomato-9);
+    --destructive-foreground: white;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --success: var(--grass-9);
+    --success-foreground: white;
+
+    --warning: var(--amber-9);
+    --warning-foreground: var(--amber-12);
+
+    --border: var(--slate-6);
+    --input: var(--slate-6);
+    --ring: var(--teal-9);
   }
 
   /* Custom store theme overrides */
   [data-store-theme] {
-    --primary: var(--store-primary, 221.2 83.2% 53.3%);
-    --primary-foreground: var(--store-primary-foreground, 210 40% 98%);
+    --primary: var(--store-primary, var(--teal-9));
+    --primary-foreground: var(--store-primary-foreground, white);
   }
 
   /* Global border default — useful for forms and components that don't
@@ -99,8 +125,8 @@
   }
 
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -108,7 +134,7 @@
      avoiding default outlines. */
   *:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
   }
 
   html {
