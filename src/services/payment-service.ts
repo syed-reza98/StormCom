@@ -11,11 +11,26 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-  typescript: true,
-});
+// Lazily initialize Stripe to avoid build-time crashes when env is missing
+let _stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  // Allow a safe dummy key in test to enable mocking without env setup
+  const key =
+    process.env.STRIPE_SECRET_KEY ||
+    (process.env.NODE_ENV === 'test' ? 'sk_test_dummy' : undefined);
+
+  if (!_stripe) {
+    if (!key) {
+      throw new Error('Stripe secret key not configured');
+    }
+    _stripe = new Stripe(key, {
+      apiVersion: '2025-02-24.acacia',
+      typescript: true,
+    });
+  }
+  return _stripe;
+}
 
 /**
  * Payment intent creation input
@@ -73,7 +88,7 @@ export async function createPaymentIntent(
   const amountInCents = Math.round(input.amount * 100);
 
   // Create Stripe payment intent
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: amountInCents,
     currency: input.currency ?? 'usd',
     metadata: {
@@ -118,7 +133,7 @@ export async function handlePaymentSucceeded(
   paymentIntentId: string
 ): Promise<void> {
   // Retrieve payment intent from Stripe
-  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
   const orderId = paymentIntent.metadata.orderId;
   if (!orderId) {
@@ -159,7 +174,7 @@ export async function handlePaymentFailed(
   failureMessage?: string
 ): Promise<void> {
   // Retrieve payment intent from Stripe
-  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
   const orderId = paymentIntent.metadata.orderId;
   if (!orderId) {
@@ -227,7 +242,7 @@ export async function refundPayment(
   const refundAmountCents = Math.round(refundAmount * 100);
 
   // Create Stripe refund
-  await stripe.refunds.create({
+  await getStripe().refunds.create({
     payment_intent: payment.gatewayPaymentId,
     amount: refundAmountCents,
     reason: input.reason as any,
@@ -281,7 +296,7 @@ export function verifyWebhookSignature(
   webhookSecret: string
 ): Stripe.Event {
   try {
-    return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    return getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (err) {
     throw new Error(`Webhook signature verification failed: ${(err as Error).message}`);
   }
