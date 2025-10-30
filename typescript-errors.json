@@ -1,19 +1,28 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  0,
-                    "exitCode":  0,
-                    "timestamp":  "2025-10-30T21:25:16Z",
+                    "totalErrors":  1,
+                    "exitCode":  1,
+                    "timestamp":  "2025-10-31T02:51:11Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  4
+                    "totalLines":  5
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit",
-                      ""
+                      "",
+                      "tests/e2e/accessibility.spec.ts(97,11): error TS6133: \u0027accessibilityScanResults\u0027 is declared but its value is never read."
                   ],
     "errors":  [
-
+                   {
+                       "message":  "\u0027accessibilityScanResults\u0027 is declared but its value is never read.",
+                       "column":  11,
+                       "line":  97,
+                       "fullText":  "tests/e2e/accessibility.spec.ts(97,11): error TS6133: \u0027accessibilityScanResults\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/accessibility.spec.ts"
+                   }
                ]
 }
