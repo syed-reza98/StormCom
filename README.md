@@ -579,7 +579,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 | Role | Email |
 |------|-------|
-| Super Admin (Development) | `admin@stormcom.io` |
+| Super Admin (Development) | `admin@stormcom.io` `Admin@123` |
 | **Note** | Default credentials - CHANGE IN PRODUCTION |
 
 ### Performance Targets
