@@ -98,7 +98,7 @@ const mockApiResponse = {
 // ============================================================================
 
 describe('OrdersTable', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn<typeof globalThis, 'fetch'>>;
+  let fetchSpy: any;
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(global, 'fetch');

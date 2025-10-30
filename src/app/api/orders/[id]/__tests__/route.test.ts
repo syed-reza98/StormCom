@@ -142,8 +142,6 @@ describe('GET /api/orders/[id]', () => {
       userId: null,
       customerId: 'customer-1',
     },
-    createdAt: new Date('2025-10-01'),
-    updatedAt: new Date('2025-10-01'),
   };
 
   beforeEach(() => {

@@ -40,7 +40,7 @@ export async function PUT(
     }
 
     // Role-based access control (require write permissions)
-    if (!['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.user.role)) {
+    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.user.role)) {
       // Staff can only read, not update orders (unless specific permission granted)
       return apiResponse.forbidden('Insufficient permissions to update orders');
     }
@@ -58,7 +58,7 @@ export async function PUT(
     // Update order status
     const updatedOrder = await updateOrderStatus({
       orderId,
-      storeId: storeId || undefined,
+      storeId,
       newStatus: validatedData.status,
       trackingNumber: validatedData.trackingNumber,
       trackingUrl: validatedData.trackingUrl,

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Role-based access control
-    if (!['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
+    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
       return apiResponse.forbidden('Insufficient permissions');
     }
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     // Convert date strings to Date objects
     const queryParams = {
-      storeId: storeId || undefined,
+      storeId,
       page: params.page,
       perPage: params.perPage,
       status: params.status,

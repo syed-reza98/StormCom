@@ -29,7 +29,7 @@ export async function GET(
     }
 
     // Role-based access control
-    if (!['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
+    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
       return apiResponse.forbidden('Insufficient permissions');
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     }
 
     // Fetch order details
-    const order = await getOrderById(orderId, storeId || undefined);
+    const order = await getOrderById(orderId, storeId);
 
     // Check if order exists
     if (!order) {
