@@ -99,11 +99,10 @@ StormCom/
 │   ├── SPEC_KIT_QUICK_REFERENCE.md # ← NEW: Quick reference
 │   ├── SPEC_KIT_README.md         # ← NEW: This file
 │   └── specifications/
-│       └── 001-stormcom-platform/
-│           ├── spec.md
-│           ├── plan.md
-│           ├── data-model.md
-│           └── api-contracts.md
+│       └── stormcom-platform/
+│           ├── example_spec.md
+│           ├── example_plan.md
+│           └── README.md
 └── README.md                      # ← UPDATED: Added spec-kit section
 ```
 
@@ -127,13 +126,13 @@ specify check
 
 ```bash
 # Create a new feature specification
-mkdir -p docs/specifications/002-new-feature
+mkdir -p docs/specifications/new-feature
 
-# Add specification files (use 001-stormcom-platform as template)
-touch docs/specifications/002-new-feature/spec.md
-touch docs/specifications/002-new-feature/plan.md
-touch docs/specifications/002-new-feature/data-model.md
-touch docs/specifications/002-new-feature/api-contracts.md
+# Add specification files (use stormcom-platform as template)
+touch docs/specifications/new-feature/spec.md
+touch docs/specifications/new-feature/plan.md
+touch docs/specifications/new-feature/data-model.md
+touch docs/specifications/new-feature/api-contracts.md
 ```
 
 ### 3. Follow Project Standards

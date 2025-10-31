@@ -8,10 +8,11 @@
 ---
 
 > **📌 Note**: This document contains the original analysis from crawling the demo site. For implementation specifications, see:
-> - **Feature Spec**: [docs/specifications/001-stormcom-platform/spec.md](specifications/001-stormcom-platform/spec.md)
-> - **Implementation Plan**: [docs/specifications/001-stormcom-platform/plan.md](specifications/001-stormcom-platform/plan.md)  
-> - **Project Standards**: [docs/specifications/.speckit/constitution.md](specifications/.speckit/constitution.md)
-> - **Comprehensive SRS**: [docs/analysis/ecommerce_complete_srs.md](analysis/ecommerce_complete_srs.md)
+> - **Complete SRS**: [docs/analysis/ecommerce_complete_srs.md](analysis/ecommerce_complete_srs.md)
+> - **Feature Spec Template**: [docs/specifications/stormcom-platform/example_spec.md](specifications/stormcom-platform/example_spec.md)
+> - **Implementation Plan Template**: [docs/specifications/stormcom-platform/example_plan.md](specifications/stormcom-platform/example_plan.md)  
+> - **Project Standards**: [.specify/memory/constitution.md](../.specify/memory/constitution.md)
+> - **Documentation Index**: [docs/README.md](README.md)
 
 ---
 

@@ -64,47 +64,122 @@ Built using **Spec-Driven Development** methodology with [GitHub Specs Kit](http
 
 ---
 
-## 📁 Project Structure
+## 📁 Repository Structure
 
 ```
 StormCom/
 ├── docs/                          # 📚 Documentation
-│   ├── specifications/            # Spec-Driven Development
-│   │   ├── 001-stormcom-platform/
-│   │   │   ├── spec.md           # Feature specifications
-│   │   │   ├── plan.md           # Implementation plan
-│   │   │   ├── data-model.md     # Database schema
-│   │   │   └── api-contracts.md  # API documentation
-│   │   └── .speckit/
-│   │       └── constitution.md   # Project standards
-│   ├── analysis/                  # Original SRS analysis
-│   └── references/                # Legacy documentation
+│   ├── specifications/            # Spec-Driven Development specs
+│   │   ├── speckit/              # Spec Kit examples & templates
+│   │   │   ├── example_constitution.md
+│   │   │   └── example_constitution_v2.md
+│   │   └── stormcom-platform/    # StormCom platform specifications
+│   │       ├── example_spec.md   # Feature specification template
+│   │       └── example_plan.md   # Implementation plan template
+│   ├── analysis/                  # SRS analysis documents
+│   │   ├── ecommerce_complete_srs.md   # Complete SRS from demo analysis
+│   │   ├── NAVIGATION_INDEX.md         # Page navigation index
+│   │   └── TASK_COMPLETION_SUMMARY.md  # Task tracking
+│   ├── references/                # Reference documentation
+│   │   ├── ecommerce_dashboard_srs.md         # Original dashboard SRS
+│   │   └── ecommerce_dashboard_srs_copilot.md # Copilot-generated SRS
+│   ├── audit/                     # Demo site audit files (HTML exports)
+│   ├── EcommerceGo_SRS.md        # Original demo analysis
+│   └── SPEC_KIT_*.md             # Spec Kit documentation & guides
 │
-├── src/
-│   ├── app/                       # Next.js App Router
-│   ├── components/                # React components
-│   ├── lib/                       # Utilities & config
-│   ├── services/                  # Business logic
-│   ├── hooks/                     # Custom hooks
-│   └── types/                     # TypeScript types
+├── .specify/                      # Spec Kit configuration
+│   ├── memory/
+│   │   └── constitution.md       # Project standards & conventions
+│   ├── templates/                # Spec Kit templates
+│   └── scripts/                  # Automation scripts
 │
-├── prisma/
-│   ├── schema.prisma              # Database schema
-│   ├── migrations/                # Migrations
-│   └── seed.ts                    # Seed data
+├── .github/                       # GitHub configuration
+│   ├── instructions/             # Context-specific instructions
+│   │   ├── documentation.instructions.md
+│   │   ├── components.instructions.md
+│   │   ├── testing.instructions.md
+│   │   ├── api-routes.instructions.md
+│   │   └── database.instructions.md
+│   ├── prompts/                  # Spec Kit prompt files
+│   └── copilot-instructions.md   # GitHub Copilot configuration
 │
-└── tests/                         # Test files
+└── README.md                      # This file
 ```
+
+> **Note**: This is currently a **documentation-only repository**. Source code implementation (src/, prisma/, tests/) will be added in future phases following the specifications defined in `docs/specifications/`.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
+
+### Current Status
+
+This repository contains comprehensive **documentation and specifications** for the StormCom platform. The actual implementation is planned in future phases.
+
+### What's Available
+
+✅ **Complete SRS Documentation** - Detailed requirements from demo analysis  
+✅ **Spec-Driven Development Setup** - GitHub Spec Kit configuration  
+✅ **Project Standards** - Coding conventions and best practices  
+✅ **Architecture Specifications** - Platform design and technical stack  
+✅ **Reference Documentation** - Examples and templates
+
+### Quick Start Guide
 
 ```bash
 # Clone repository
 git clone https://github.com/syed-reza98/StormCom.git
 cd StormCom
 
+# Explore documentation
+ls docs/                          # View all documentation
+cat docs/analysis/ecommerce_complete_srs.md  # Read complete SRS
+cat .specify/memory/constitution.md          # Review project standards
+
+# Install Spec Kit CLI (optional, for spec-driven development)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install --from git+https://github.com/github/spec-kit.git specify-cli
+specify check  # Verify installation
+```
+
+See [docs/SPEC_KIT_SETUP.md](docs/SPEC_KIT_SETUP.md) for detailed Spec Kit installation instructions.
+
+---
+
+## 📋 Available Documentation
+
+### Core Documentation
+
+- **[Complete SRS](docs/analysis/ecommerce_complete_srs.md)** - Comprehensive software requirements specification
+- **[Project Constitution](/.specify/memory/constitution.md)** - Project standards and conventions
+- **[Navigation Index](docs/analysis/NAVIGATION_INDEX.md)** - Complete page navigation from demo
+- **[Original SRS](docs/EcommerceGo_SRS.md)** - Initial demo analysis
+
+### Specification Templates
+
+- **[Feature Specification Template](docs/specifications/stormcom-platform/example_spec.md)** - How to write feature specs
+- **[Implementation Plan Template](docs/specifications/stormcom-platform/example_plan.md)** - Planning implementation
+- **[Constitution Examples](docs/specifications/speckit/)** - Project standard examples
+
+### Spec Kit Guides
+
+- **[Setup Guide](docs/SPEC_KIT_SETUP.md)** - Installing GitHub Spec Kit CLI
+- **[Usage Guide](docs/SPEC_KIT_USAGE.md)** - Using spec-kit in StormCom
+- **[Quick Reference](docs/SPEC_KIT_QUICK_REFERENCE.md)** - Command cheat sheet
+- **[Installation Summary](docs/SPEC_KIT_INSTALLATION_COMPLETE.md)** - Installation verification
+
+### Reference Documentation
+
+- **[Dashboard SRS](docs/references/ecommerce_dashboard_srs.md)** - Dashboard requirements
+- **[Copilot SRS](docs/references/ecommerce_dashboard_srs_copilot.md)** - AI-generated requirements
+
+---
+
+## 🛠️ Development Setup (Future Phase)
+
+When the implementation phase begins, the following will be available:
+
+```bash
 # Install dependencies
 npm install
 
@@ -119,75 +194,68 @@ npx prisma db seed
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+---
 
-**Default Login:**
-- Email: `admin@example.com`
-- Password: `admin123`
+## 🎯 Implementation Status
+
+### Documentation Phase (Current)
+✅ Complete SRS Documentation  
+✅ Project Constitution & Standards  
+✅ Spec-Driven Development Setup  
+✅ Architecture Specifications  
+✅ Technical Stack Definitions
+
+### Planned Phases
+
+#### Phase 1: Foundation (Not Started)
+- [ ] Next.js 15.5.5 project setup
+- [ ] TypeScript 5.9.3 configuration
+- [ ] Tailwind CSS 4.1.14 integration
+- [ ] Database schema with Prisma
+- [ ] Authentication with NextAuth.js v5
+
+#### Phase 2: Core Features (Not Started)
+- [ ] Dashboard & Analytics
+- [ ] Product Management
+- [ ] Order Processing
+- [ ] Customer CRM
+
+#### Phase 3: Advanced Features (Not Started)
+- [ ] Marketing Campaigns
+- [ ] Reports & Analytics
+- [ ] Content Management
+- [ ] Multi-Store & Themes
+
+See [docs/specifications/stormcom-platform/example_plan.md](docs/specifications/stormcom-platform/example_plan.md) for detailed implementation planning.
 
 ---
 
-## 📋 Commands
-
-```bash
-# Development
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run start        # Start production server
-
-# Database
-npm run db:push      # Sync schema (dev)
-npm run db:studio    # Open Prisma Studio
-npm run db:migrate   # Create migration
-npm run db:seed      # Seed database
-
-# Testing
-npm run test         # Run unit tests
-npm run test:e2e     # Run E2E tests
-npm run test:coverage # Coverage report
-
-# Code Quality
-npm run lint         # Run ESLint
-npm run format       # Run Prettier
-npm run type-check   # TypeScript check
-```
-
----
-
-## 🎯 Features
-
-### Priority 1 (MVP)
-✅ Dashboard & Analytics  
-✅ Product Management  
-✅ Order Processing
-
-### Priority 2 (Important)
-✅ Customer CRM  
-✅ Marketing Campaigns  
-✅ Reports & Analytics
-
-### Priority 3 (Enhanced)
-✅ Content Management  
-✅ Shipping Configuration  
-✅ Point of Sale  
-✅ Staff & Permissions  
-✅ Multi-Store & Themes
-
----
-
-## 📚 Documentation
+## 📋 Available Documentation
 
 ### Core Documentation
-- **Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
-- **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
-- **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
-- **Project Standards**: `.specify/memory/constitution.md`
-- **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
 
-### Spec Kit Documentation
-- **Setup Guide**: `docs/SPEC_KIT_SETUP.md` - How to install GitHub Spec Kit CLI
-- **Usage Guide**: `docs/SPEC_KIT_USAGE.md` - How to use spec-kit in StormCom
-- **Quick Reference**: `docs/SPEC_KIT_QUICK_REFERENCE.md` - Command cheat sheet
+- **[Complete SRS](docs/analysis/ecommerce_complete_srs.md)** - Comprehensive software requirements specification
+- **[Project Constitution](/.specify/memory/constitution.md)** - Project standards and conventions
+- **[Navigation Index](docs/analysis/NAVIGATION_INDEX.md)** - Complete page navigation from demo
+- **[Original SRS](docs/EcommerceGo_SRS.md)** - Initial demo analysis
+
+### Specification Templates
+
+- **[Feature Specification Template](docs/specifications/stormcom-platform/example_spec.md)** - How to write feature specs
+- **[Implementation Plan Template](docs/specifications/stormcom-platform/example_plan.md)** - Planning implementation
+- **[Constitution Examples](docs/specifications/speckit/)** - Project standard examples
+
+### Spec Kit Guides
+
+- **[Setup Guide](docs/SPEC_KIT_SETUP.md)** - Installing GitHub Spec Kit CLI
+- **[Usage Guide](docs/SPEC_KIT_USAGE.md)** - Using spec-kit in StormCom
+- **[Quick Reference](docs/SPEC_KIT_QUICK_REFERENCE.md)** - Command cheat sheet
+- **[Installation Summary](docs/SPEC_KIT_INSTALLATION_COMPLETE.md)** - Installation verification
+
+### Reference Documentation
+
+- **[Dashboard SRS](docs/references/ecommerce_dashboard_srs.md)** - Dashboard requirements
+- **[Copilot SRS](docs/references/ecommerce_dashboard_srs_copilot.md)** - AI-generated requirements
 
 ### Spec-Driven Development
 
@@ -211,37 +279,51 @@ For detailed instructions, see:
 
 ---
 
-## 🚢 Deployment
+## 🚢 Future Deployment
 
-### Vercel (Recommended)
+When implementation is complete, deployment will be on **Vercel**:
 
 1. Push to GitHub
 2. Import in Vercel dashboard
 3. Configure environment variables
 4. Deploy automatically
 
-See `docs/specifications/001-stormcom-platform/plan.md` for details.
+See [docs/specifications/stormcom-platform/example_plan.md](docs/specifications/stormcom-platform/example_plan.md) for deployment details.
 
 ---
 
-## 📊 Metrics
+## 📊 Documentation Metrics
 
 | Metric | Count |
 |--------|-------|
-| User Stories | 11 (P1: 3, P2: 3, P3: 5) |
+| Total Markdown Files | 39 |
+| SRS Pages Analyzed | 148 |
+| Forms Documented | 338 |
+| Data Tables | 157 |
+| User Stories | 11+ |
 | Functional Requirements | 60+ |
-| Database Tables | 40+ |
-| API Endpoints | 100+ |
+| Planned Database Tables | 40+ |
+| Planned API Endpoints | 100+ |
 
 ---
 
 ## 🤝 Contributing
 
+This project welcomes contributions! Here's how to get involved:
+
+### Documentation Contributions
+
 1. Fork the repository
-2. Create feature branch
-3. Make changes with tests
-4. Run `npm run test && npm run lint`
-5. Submit Pull Request
+2. Create a feature branch (`git checkout -b docs/improve-srs`)
+3. Make your documentation improvements
+4. Submit a Pull Request
+
+### Future Code Contributions (When Implementation Starts)
+
+1. Review [.specify/memory/constitution.md](.specify/memory/constitution.md) for coding standards
+2. Follow the Spec-Driven Development process
+3. Write tests alongside implementation
+4. Ensure all linting and type checks pass
 
 ---
 
@@ -258,4 +340,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Next.js 15, TypeScript 5.9, and Prisma**
+**Built with ❤️ for Spec-Driven Development - Documentation powered by comprehensive SRS analysis**

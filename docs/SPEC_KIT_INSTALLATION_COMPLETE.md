@@ -66,7 +66,8 @@ StormCom/
 │   ├── SPEC_KIT_QUICK_REFERENCE.md    # Command reference
 │   ├── SPEC_KIT_README.md             # Installation summary
 │   └── specifications/
-│       └── 001-stormcom-platform/     # Existing specifications
+│       ├── README.md                  # Specifications guide
+│       └── stormcom-platform/         # Platform specification templates
 │
 └── README.md                          # Updated with spec-kit info
 ```
@@ -114,11 +115,10 @@ All documentation files have been updated to reflect the correct structure:
 
 ## Constitution Location
 
-The project constitution has been **moved** from:
-- ❌ Old: `docs/specifications/.speckit/constitution.md`
-- ✅ New: `.specify/memory/constitution.md`
+The project constitution is located at:
+- ✅ Location: `.specify/memory/constitution.md`
 
-The constitution contains all project standards, coding conventions, and development guidelines.
+This was part of the Spec-Driven Development setup and contains all project standards, coding conventions, and development guidelines.
 
 ## How to Use
 
