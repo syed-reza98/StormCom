@@ -6,12 +6,13 @@
  */
 
 import type { Metadata } from 'next';
+import { Section, Container, Flex, Heading, Text } from '@radix-ui/themes';
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { getPublishedProducts } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';
 import { ProductSort } from '@/components/storefront/product-sort';
 import { Pagination } from '@/components/ui/pagination';
-import { Search } from 'lucide-react';
 
 interface SearchPageProps {
   searchParams: Promise<{

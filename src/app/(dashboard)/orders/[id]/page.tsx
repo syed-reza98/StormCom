@@ -6,11 +6,19 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
+import { Section, Container, Flex, Heading, Text, Card, Badge, Button } from '@radix-ui/themes';
+import { 
+  ArrowLeftIcon, 
+  FileTextIcon, 
+  CalendarIcon, 
+  PersonIcon,
+  EnvelopeClosedIcon,
+  HomeIcon,
+  CheckCircledIcon,
+  CrossCircledIcon,
+  ClockIcon
+} from '@radix-ui/react-icons';
 import { UpdateOrderStatusForm } from '@/components/orders/update-status-form';
-import { cn } from '@/lib/utils';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -178,47 +186,47 @@ function formatDate(dateString: string): string {
 }
 
 function getOrderStatusBadge(status: OrderStatus) {
-  const badges: Record<OrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
-    PENDING: { label: 'Pending', variant: 'secondary' },
-    PAID: { label: 'Paid', variant: 'success' },
-    PROCESSING: { label: 'Processing', variant: 'default' },
-    SHIPPED: { label: 'Shipped', variant: 'default' },
-    DELIVERED: { label: 'Delivered', variant: 'success' },
-    CANCELED: { label: 'Canceled', variant: 'destructive' },
-    REFUNDED: { label: 'Refunded', variant: 'warning' },
-    PAYMENT_FAILED: { label: 'Payment Failed', variant: 'destructive' },
+  const badges: Record<OrderStatus, { label: string; color: 'gray' | 'blue' | 'green' | 'red' | 'amber' }> = {
+    PENDING: { label: 'Pending', color: 'gray' },
+    PAID: { label: 'Paid', color: 'green' },
+    PROCESSING: { label: 'Processing', color: 'blue' },
+    SHIPPED: { label: 'Shipped', color: 'blue' },
+    DELIVERED: { label: 'Delivered', color: 'green' },
+    CANCELED: { label: 'Canceled', color: 'red' },
+    REFUNDED: { label: 'Refunded', color: 'amber' },
+    PAYMENT_FAILED: { label: 'Payment Failed', color: 'red' },
   };
 
-  const { label, variant } = badges[status];
-  return <Badge variant={variant}>{label}</Badge>;
+  const { label, color } = badges[status];
+  return <Badge color={color} size="2">{label}</Badge>;
 }
 
 function getPaymentStatusBadge(status: PaymentStatus) {
-  const badges: Record<PaymentStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
-    PENDING: { label: 'Pending', variant: 'secondary' },
-    PAID: { label: 'Paid', variant: 'success' },
-    FAILED: { label: 'Failed', variant: 'destructive' },
-    REFUNDED: { label: 'Refunded', variant: 'warning' },
+  const badges: Record<PaymentStatus, { label: string; color: 'gray' | 'green' | 'red' | 'amber' }> = {
+    PENDING: { label: 'Pending', color: 'gray' },
+    PAID: { label: 'Paid', color: 'green' },
+    FAILED: { label: 'Failed', color: 'red' },
+    REFUNDED: { label: 'Refunded', color: 'amber' },
   };
 
-  const { label, variant } = badges[status];
-  return <Badge variant={variant}>{label}</Badge>;
+  const { label, color } = badges[status];
+  return <Badge color={color} size="2">{label}</Badge>;
 }
 
 function formatAddress(address: Order['shippingAddress']) {
-  if (!address) return 'N/A';
+  if (!address) return <Text size="2" color="gray">N/A</Text>;
   
   return (
-    <div className="text-sm space-y-1">
-      <p className="font-medium">{address.fullName}</p>
-      <p>{address.line1}</p>
-      {address.line2 && <p>{address.line2}</p>}
-      <p>
+    <Flex direction="column" gap="1">
+      <Text size="2" weight="medium">{address.fullName}</Text>
+      <Text size="2" color="gray">{address.line1}</Text>
+      {address.line2 && <Text size="2" color="gray">{address.line2}</Text>}
+      <Text size="2" color="gray">
         {address.city}, {address.state} {address.postalCode}
-      </p>
-      <p>{address.country}</p>
-      {address.phone && <p className="text-muted-foreground">Phone: {address.phone}</p>}
-    </div>
+      </Text>
+      <Text size="2" color="gray">{address.country}</Text>
+      {address.phone && <Text size="2" color="gray">Phone: {address.phone}</Text>}
+    </Flex>
   );
 }
 

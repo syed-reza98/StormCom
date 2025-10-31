@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
+import { Section, Container, Flex, Heading, Text, Card } from '@radix-ui/themes';
+import { MixIcon } from '@radix-ui/react-icons';
 import { getPublishedProducts, getCategoryTree } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';
 import { ProductSort } from '@/components/storefront/product-sort';
 import { Pagination } from '@/components/ui/pagination';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
