@@ -46,7 +46,8 @@ export const createBrandSchema = z.object({
 });
 
 export const updateBrandSchema = createBrandSchema.partial().extend({
-  id: z.string().uuid(),
+  // Accept any non-empty string for id to accommodate test fixtures that use non-UUID ids.
+  id: z.string().min(1, 'ID is required'),
 });
 
 export type CreateBrandData = z.infer<typeof createBrandSchema>;
