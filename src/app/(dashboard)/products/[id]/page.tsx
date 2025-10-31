@@ -6,9 +6,16 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Section, Container, Flex, Heading, Text, Card, Badge, Button } from '@radix-ui/themes';
+import { 
+  ArrowLeftIcon, 
+  Pencil1Icon, 
+  TrashIcon,
+  EyeOpenIcon,
+  EyeNoneIcon,
+  ArchiveIcon,
+  RocketIcon
+} from '@radix-ui/react-icons';
 import { ProductImages } from '@/components/products/product-images';
 import { ProductVariants } from '@/components/products/product-variants';
 import { ProductInventory } from '@/components/products/product-inventory';
