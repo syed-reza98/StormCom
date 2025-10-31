@@ -11,6 +11,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Section, Container, Flex, Heading, Text, Card } from '@radix-ui/themes';
+import { CheckCircledIcon, RocketIcon, LockClosedIcon, FileTextIcon } from '@radix-ui/react-icons';
 import { ShippingAddressForm } from '@/components/checkout/shipping-address-form';
 import { PaymentMethodSelector } from '@/components/checkout/payment-method-selector';
 import { OrderReview } from '@/components/checkout/order-review';
@@ -34,6 +36,8 @@ export default function CheckoutPage() {
     { id: 'review', title: 'Review Order', completed: false },
   ];
 
+  const stepIcons = [RocketIcon, LockClosedIcon, FileTextIcon];
+
   const handleShippingComplete = (address: ShippingAddress) => {
     setShippingAddress(address);
     setCurrentStep(1);
@@ -49,75 +53,100 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Checkout Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
-                <div
-                  className={`
-                    w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium
-                    ${
-                      currentStep === index
-                        ? 'bg-blue-600 text-white'
-                        : step.completed
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-500'
-                    }
-                  `}
-                >
-                  {step.completed ? '✓' : index + 1}
-                </div>
-                <span
-                  className={`
-                    mt-2 text-sm font-medium
-                    ${
-                      currentStep === index
-                        ? 'text-blue-600'
-                        : step.completed
-                        ? 'text-green-500'
-                        : 'text-gray-500'
-                    }
-                  `}
-                >
-                  {step.title}
-                </span>
-              </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={`
-                    h-1 flex-1 mx-4
-                    ${step.completed ? 'bg-green-500' : 'bg-gray-200'}
-                  `}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+    <Section size="2">
+      <Container size="3">
+        <Flex direction="column" gap="6">
+          {/* Page Header */}
+          <Flex direction="column" gap="2">
+            <Heading size="8">Secure Checkout</Heading>
+            <Text size="3" color="gray">
+              Complete your order in 3 simple steps
+            </Text>
+          </Flex>
 
-      {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        {currentStep === 0 && (
-          <ShippingAddressForm onComplete={handleShippingComplete} />
-        )}
-        {currentStep === 1 && shippingAddress && (
-          <PaymentMethodSelector
-            onComplete={handlePaymentComplete}
-            onBack={() => setCurrentStep(0)}
-          />
-        )}
-        {currentStep === 2 && shippingAddress && paymentMethodId && (
-          <OrderReview
-            shippingAddress={shippingAddress}
-            paymentMethodId={paymentMethodId}
-            onComplete={handleOrderComplete}
-            onBack={() => setCurrentStep(1)}
-          />
-        )}
-      </div>
-    </div>
+          {/* Checkout Steps */}
+          <Card>
+            <Flex align="center" justify="between" gap="4">
+              {steps.map((step, index) => {
+                const StepIcon = stepIcons[index];
+                return (
+                  <Flex key={step.id} align="center" style={{ flex: 1 }}>
+                    <Flex direction="column" align="center" gap="2" style={{ flex: 1 }}>
+                      <Flex
+                        align="center"
+                        justify="center"
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          backgroundColor:
+                            currentStep === index
+                              ? 'var(--teal-9)'
+                              : step.completed
+                              ? 'var(--green-9)'
+                              : 'var(--gray-4)',
+                          color: currentStep === index || step.completed ? 'white' : 'var(--gray-11)',
+                        }}
+                      >
+                        {step.completed ? (
+                          <CheckCircledIcon width="20" height="20" />
+                        ) : (
+                          <StepIcon width="20" height="20" />
+                        )}
+                      </Flex>
+                      <Text
+                        size="2"
+                        weight="medium"
+                        style={{
+                          color:
+                            currentStep === index
+                              ? 'var(--teal-11)'
+                              : step.completed
+                              ? 'var(--green-11)'
+                              : 'var(--gray-11)',
+                        }}
+                      >
+                        {step.title}
+                      </Text>
+                    </Flex>
+                    {index < steps.length - 1 && (
+                      <div
+                        style={{
+                          height: '2px',
+                          flex: 1,
+                          margin: '0 16px',
+                          backgroundColor: step.completed ? 'var(--green-9)' : 'var(--gray-6)',
+                        }}
+                      />
+                    )}
+                  </Flex>
+                );
+              })}
+            </Flex>
+          </Card>
+
+          {/* Step Content */}
+          <Card size="3">
+            {currentStep === 0 && (
+              <ShippingAddressForm onComplete={handleShippingComplete} />
+            )}
+            {currentStep === 1 && shippingAddress && (
+              <PaymentMethodSelector
+                onComplete={handlePaymentComplete}
+                onBack={() => setCurrentStep(0)}
+              />
+            )}
+            {currentStep === 2 && shippingAddress && paymentMethodId && (
+              <OrderReview
+                shippingAddress={shippingAddress}
+                paymentMethodId={paymentMethodId}
+                onComplete={handleOrderComplete}
+                onBack={() => setCurrentStep(1)}
+              />
+            )}
+          </Card>
+        </Flex>
+      </Container>
+    </Section>
   );
 }

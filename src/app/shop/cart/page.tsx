@@ -69,7 +69,7 @@ export default function CartPage() {
                   Add some products to get started
                 </Text>
                 <Link href="/shop/products">
-                  <Button size="3">
+                  <Button size="lg">
                     Browse Products
                     <ArrowRightIcon className="ml-2" width="16" height="16" />
                   </Button>
