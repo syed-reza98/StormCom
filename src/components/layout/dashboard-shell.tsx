@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Flex, Text } from '@radix-ui/themes';
-import { CubeIcon, StackIcon, MixIcon, FileTextIcon, HomeIcon, ArchiveIcon, UploadIcon, HamburgerMenuIcon } from '@radix-ui/react-icons';
+import { CubeIcon, StackIcon, MixIcon, FileTextIcon, HomeIcon, ArchiveIcon, UploadIcon, HamburgerMenuIcon, GearIcon } from '@radix-ui/react-icons';
 import { NavLink } from '@/components/ui/nav-link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -56,6 +56,10 @@ export default function DashboardShell({ children }: DashboardShellProps): React
             <UploadIcon className="h-4 w-4" />
             Bulk Import
           </NavLink>
+          <NavLink href="/(dashboard)/settings">
+            <GearIcon className="h-4 w-4" />
+            Settings
+          </NavLink>
         </nav>
       </aside>
 
@@ -91,6 +95,7 @@ export default function DashboardShell({ children }: DashboardShellProps): React
               <NavLink className="whitespace-nowrap" href="/(dashboard)/inventory">Inventory</NavLink>
               <NavLink className="whitespace-nowrap" href="/(dashboard)/orders">Orders</NavLink>
               <NavLink className="whitespace-nowrap" href="/(dashboard)/bulk-import">Bulk Import</NavLink>
+              <NavLink className="whitespace-nowrap" href="/(dashboard)/settings">Settings</NavLink>
             </div>
           </div>
         </header>
