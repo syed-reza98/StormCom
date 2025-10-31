@@ -3,6 +3,14 @@
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { 
+  PlusIcon, 
+  ArchiveIcon, 
+  DownloadIcon, 
+  UploadIcon, 
+  UpdateIcon
+} from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CategoriesTree } from '@/components/categories/categories-tree';
@@ -159,22 +167,28 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
     : undefined;
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Categories</h1>
-          <p className="text-muted-foreground">
-            Manage your product categories with hierarchical organization
-          </p>
-        </div>
-        <Button>
-          ➕ Add Category
-        </Button>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          <Flex justify="between" align="start">
+            <Flex direction="column" gap="2">
+              <Flex align="center" gap="3">
+                <ArchiveIcon width="32" height="32" color="teal" />
+                <Heading size="8">Categories</Heading>
+              </Flex>
+              <Text size="3" color="gray">
+                Manage your product categories with hierarchical organization
+              </Text>
+            </Flex>
+            <Button>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add Category
+            </Button>
+          </Flex>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Categories Tree */}
-        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Categories Tree */}
+            <div className="lg:col-span-2">
           <div className="bg-card rounded-lg border p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Category Tree</h2>
@@ -252,16 +266,20 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
                 <h3 className="font-medium mb-2">Quick Actions</h3>
                 <div className="space-y-2">
                   <Button variant="outline" className="w-full justify-start">
-                    📁 Create Root Category
+                    <ArchiveIcon className="mr-2 h-4 w-4" />
+                    Create Root Category
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    📊 Export Categories
+                    <DownloadIcon className="mr-2 h-4 w-4" />
+                    Export Categories
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    📥 Import Categories
+                    <UploadIcon className="mr-2 h-4 w-4" />
+                    Import Categories
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    🔄 Bulk Update
+                    <UpdateIcon className="mr-2 h-4 w-4" />
+                    Bulk Update
                   </Button>
                 </div>
               </div>
@@ -269,7 +287,9 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
           )}
         </div>
       </div>
-    </div>
+        </Flex>
+      </Container>
+    </Section>
   );
 }
 

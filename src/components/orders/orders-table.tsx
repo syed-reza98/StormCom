@@ -104,7 +104,8 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
 
         if (data.data) {
           setOrders(data.data);
-          setPagination(data.meta || pagination);
+          // Use functional update to avoid referencing `pagination` in the effect
+          setPagination((prev) => data.meta || prev);
         }
       } catch (err) {
         console.error('Error fetching orders:', err);

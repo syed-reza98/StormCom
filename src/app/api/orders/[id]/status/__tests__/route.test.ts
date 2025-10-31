@@ -14,12 +14,12 @@ import { OrderStatus } from '@prisma/client';
 // Mock next-auth
 vi.mock('next-auth', () => ({
   getServerSession: vi.fn(),
-}));
+} as any));
 
 // Mock order service
 vi.mock('@/services/order-service', () => ({
   updateOrderStatus: vi.fn(),
-}));
+} as any));
 
 // Import mocked functions
 import { getServerSession } from 'next-auth';
@@ -38,11 +38,68 @@ describe('PUT /api/orders/[id]/status', () => {
     id: 'order-1',
     orderNumber: 'ORD-001',
     storeId: 'store-1',
+    customerId: 'customer-1',
+    userId: 'user-1',
     status: OrderStatus.PROCESSING,
+    shippingAddressId: null,
+    billingAddressId: null,
+    subtotal: 100.0,
+    taxAmount: 0.0,
+    shippingAmount: 0.0,
+    discountAmount: 0.0,
+    totalAmount: 100.0,
+    discountCode: null,
+    paymentMethod: null,
+    paymentGateway: null,
+    paymentStatus: 'PENDING' as any,
+    shippingMethod: null,
+    shippingStatus: 'PENDING' as any,
     trackingNumber: null,
     trackingUrl: null,
+    fulfilledAt: null,
+    canceledAt: null,
+    cancelReason: null,
+    customerNote: null,
     adminNote: null,
+    ipAddress: null,
+    createdAt: new Date('2025-10-01'),
     updatedAt: new Date('2025-10-02'),
+    deletedAt: null,
+    user: {
+      id: 'user-1',
+      email: 'admin@store.com',
+      name: 'Admin User',
+      password: '$2a$12$hashedpassword',
+      phone: null,
+      role: 'STORE_ADMIN' as any,
+      storeId: 'store-1',
+      mfaEnabled: false,
+      mfaMethod: null,
+      totpSecret: null,
+      emailVerified: true,
+      emailVerifiedAt: new Date('2025-01-01'),
+      verificationToken: null,
+      verificationExpires: null,
+      resetToken: null,
+      resetExpires: null,
+      lastLoginAt: new Date('2025-10-01'),
+      lastLoginIP: '127.0.0.1',
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      passwordChangedAt: new Date('2025-01-01'),
+      createdAt: new Date('2025-01-01'),
+      updatedAt: new Date('2025-10-01'),
+      deletedAt: null,
+    },
+    customer: {
+      id: 'customer-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      phone: null,
+    },
+    payments: [],
+    items: [],
   };
 
   beforeEach(() => {
@@ -55,9 +112,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -70,9 +127,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -91,9 +148,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -111,9 +168,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -132,9 +189,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -151,13 +208,13 @@ describe('PUT /api/orders/[id]/status', () => {
         },
       } as any);
 
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -166,13 +223,13 @@ describe('PUT /api/orders/[id]/status', () => {
 
     it('should allow Store Admin', async () => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -188,9 +245,9 @@ describe('PUT /api/orders/[id]/status', () => {
     it('should return 400 for invalid status enum', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: 'INVALID_STATUS' }),
+        body: JSON.stringify({ status: 'INVALID_STATUS' } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -201,9 +258,9 @@ describe('PUT /api/orders/[id]/status', () => {
     it('should return 400 for missing status field', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({}),
+        body: JSON.stringify({} as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -216,16 +273,16 @@ describe('PUT /api/orders/[id]/status', () => {
         ...mockUpdatedOrder,
         status: OrderStatus.SHIPPED,
         trackingNumber: 'TRACK123',
-      });
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
         body: JSON.stringify({
           status: OrderStatus.SHIPPED,
           trackingNumber: 'TRACK123',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -236,7 +293,7 @@ describe('PUT /api/orders/[id]/status', () => {
           newStatus: OrderStatus.SHIPPED,
           trackingNumber: 'TRACK123',
           storeId: 'store-1',
-        })
+        } as any)
       );
     });
 
@@ -247,9 +304,9 @@ describe('PUT /api/orders/[id]/status', () => {
         body: JSON.stringify({
           status: OrderStatus.SHIPPED,
           trackingNumber: longTracking,
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -262,7 +319,7 @@ describe('PUT /api/orders/[id]/status', () => {
         ...mockUpdatedOrder,
         status: OrderStatus.SHIPPED,
         trackingUrl: 'https://tracking.example.com/TRACK123',
-      });
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
@@ -270,9 +327,9 @@ describe('PUT /api/orders/[id]/status', () => {
           status: OrderStatus.SHIPPED,
           trackingNumber: 'TRACK123',
           trackingUrl: 'https://tracking.example.com/TRACK123',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -286,9 +343,9 @@ describe('PUT /api/orders/[id]/status', () => {
           status: OrderStatus.SHIPPED,
           trackingNumber: 'TRACK123',
           trackingUrl: 'not-a-url',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -300,16 +357,16 @@ describe('PUT /api/orders/[id]/status', () => {
       vi.mocked(orderService.updateOrderStatus).mockResolvedValue({
         ...mockUpdatedOrder,
         adminNote: 'Customer requested expedited shipping',
-      });
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
         body: JSON.stringify({
           status: OrderStatus.PROCESSING,
           adminNote: 'Customer requested expedited shipping',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -323,9 +380,9 @@ describe('PUT /api/orders/[id]/status', () => {
         body: JSON.stringify({
           status: OrderStatus.PROCESSING,
           adminNote: longNote,
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -340,13 +397,13 @@ describe('PUT /api/orders/[id]/status', () => {
     });
 
     it('should update order status successfully', async () => {
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -358,7 +415,7 @@ describe('PUT /api/orders/[id]/status', () => {
           orderId: 'order-1',
           newStatus: OrderStatus.PROCESSING,
           storeId: 'store-1',
-        })
+        } as any)
       );
     });
 
@@ -369,9 +426,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-999/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-999' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-999' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -386,9 +443,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.DELIVERED }),
+        body: JSON.stringify({ status: OrderStatus.DELIVERED } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(422);
@@ -403,9 +460,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.SHIPPED }),
+        body: JSON.stringify({ status: OrderStatus.SHIPPED } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -417,20 +474,20 @@ describe('PUT /api/orders/[id]/status', () => {
   describe('Multi-Tenant Isolation', () => {
     it('should pass storeId to updateOrderStatus for Store Admin', async () => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      await PUT(request, { params: { id: 'order-1' } });
+      await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
 
       expect(orderService.updateOrderStatus).toHaveBeenCalledWith(
         expect.objectContaining({
           orderId: 'order-1',
           newStatus: OrderStatus.PROCESSING,
           storeId: 'store-1',
-        })
+        } as any)
       );
     });
 
@@ -443,20 +500,20 @@ describe('PUT /api/orders/[id]/status', () => {
         },
       } as any);
 
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      await PUT(request, { params: { id: 'order-1' } });
+      await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
 
       expect(orderService.updateOrderStatus).toHaveBeenCalledWith(
         expect.objectContaining({
           orderId: 'order-1',
           newStatus: OrderStatus.PROCESSING,
           storeId: null,
-        })
+        } as any)
       );
     });
   });
@@ -473,9 +530,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -488,9 +545,9 @@ describe('PUT /api/orders/[id]/status', () => {
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -502,15 +559,15 @@ describe('PUT /api/orders/[id]/status', () => {
   describe('Response Format', () => {
     beforeEach(() => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder);
+      vi.mocked(orderService.updateOrderStatus).mockResolvedValue(mockUpdatedOrder as any);
     });
 
     it('should return updated order with new status', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
-        body: JSON.stringify({ status: OrderStatus.PROCESSING }),
+        body: JSON.stringify({ status: OrderStatus.PROCESSING } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -525,7 +582,7 @@ describe('PUT /api/orders/[id]/status', () => {
         status: OrderStatus.SHIPPED,
         trackingNumber: 'TRACK123',
         trackingUrl: 'https://tracking.example.com/TRACK123',
-      });
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
@@ -533,9 +590,9 @@ describe('PUT /api/orders/[id]/status', () => {
           status: OrderStatus.SHIPPED,
           trackingNumber: 'TRACK123',
           trackingUrl: 'https://tracking.example.com/TRACK123',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(data.data.trackingNumber).toBe('TRACK123');
@@ -546,16 +603,16 @@ describe('PUT /api/orders/[id]/status', () => {
       vi.mocked(orderService.updateOrderStatus).mockResolvedValue({
         ...mockUpdatedOrder,
         adminNote: 'Expedited shipping requested',
-      });
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/status', {
         method: 'PUT',
         body: JSON.stringify({
           status: OrderStatus.PROCESSING,
           adminNote: 'Expedited shipping requested',
-        }),
+        } as any),
       });
-      const response = await PUT(request, { params: { id: 'order-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'order-1' } as any) });
       const data = await response.json();
 
       expect(data.data.adminNote).toBe('Expedited shipping requested');

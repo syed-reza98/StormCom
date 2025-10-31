@@ -3,7 +3,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { UpdateOrderStatusForm } from '../update-status-form';
 
 // ============================================================================
@@ -86,7 +85,7 @@ global.alert = vi.fn();
 // ============================================================================
 
 describe('UpdateOrderStatusForm', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
+  let fetchSpy: any;
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(global, 'fetch');

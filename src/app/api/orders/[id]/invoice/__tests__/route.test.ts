@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { GET } from '../route';
 import * as orderService from '@/services/order-service';
-import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '@prisma/client';
 
 // Mock next-auth
 vi.mock('next-auth', () => ({
@@ -36,54 +36,82 @@ describe('GET /api/orders/[id]/invoice', () => {
 
   const mockInvoiceData = {
     orderNumber: 'ORD-001',
-    createdAt: new Date('2025-10-01'),
-    paymentStatus: PaymentStatus.PAID,
-    paymentMethod: 'CREDIT_CARD',
-    transactionId: 'txn_123456',
+    invoiceNumber: 'ORD-001',
+    invoiceDate: new Date('2025-10-01'),
+    dueDate: new Date('2025-10-01'),
+    status: PaymentStatus.PAID as any,
     subtotal: 120.0,
     taxAmount: 10.0,
     shippingAmount: 20.0,
     discountAmount: 0.0,
     totalAmount: 150.0,
-    trackingNumber: 'TRACK123',
-    trackingUrl: 'https://tracking.example.com/TRACK123',
+    paymentMethod: 'CREDIT_CARD',
+    paymentStatus: PaymentStatus.PAID,
+    paymentGateway: 'STRIPE',
     shippingMethod: 'Standard Shipping',
+    trackingNumber: 'TRACK123',
+    customerNote: null,
+    adminNote: null,
     store: {
       name: 'Test Store',
       logo: 'https://example.com/logo.png',
-      address: '123 Main St, City, State 12345',
-      phone: '+1234567890',
       email: 'store@example.com',
-      domain: 'https://teststore.com',
-      taxId: 'TAX123456',
+      phone: '+1234567890',
+      address: '123 Main St',
+      city: 'City',
+      state: 'State',
+      postalCode: '12345',
+      country: 'US',
+    },
+    seller: {
+      name: 'Test Store',
+      email: 'store@example.com',
+      phone: '+1234567890',
+      logo: 'https://example.com/logo.png',
+      address: {
+        street: '123 Main St',
+        city: 'City',
+        state: 'State',
+        postalCode: '12345',
+        country: 'US',
+      },
     },
     customer: {
       name: 'John Doe',
       email: 'john@example.com',
       phone: '+1987654321',
     },
-    billingAddress: {
-      street: '456 Billing Ave',
-      city: 'Billing City',
-      state: 'BC',
-      zipCode: '54321',
-      country: 'USA',
+    buyer: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '+1987654321',
+      address: {
+        street: '456 Billing Ave',
+        city: 'Billing City',
+        state: 'BC',
+        postalCode: '54321',
+        country: 'US',
+      },
     },
     shippingAddress: {
+      name: 'John Doe',
       street: '789 Shipping Rd',
       city: 'Shipping City',
       state: 'SC',
-      zipCode: '98765',
-      country: 'USA',
+      postalCode: '98765',
+      country: 'US',
+      phone: '+1987654321',
     },
     items: [
       {
-        productName: 'Product 1',
-        variantName: 'Size M',
+        description: 'Product 1 - Size M',
         sku: 'SKU-001',
         quantity: 2,
         unitPrice: 60.0,
-        lineTotal: 120.0,
+        subtotal: 120.0,
+        tax: 10.0,
+        discount: 0.0,
+        total: 130.0,
       },
     ],
   };
@@ -97,7 +125,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -109,7 +137,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       vi.mocked(getServerSession).mockResolvedValue({ user: null } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -127,7 +155,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -144,7 +172,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -161,10 +189,10 @@ describe('GET /api/orders/[id]/invoice', () => {
         },
       } as any);
 
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/pdf');
@@ -172,10 +200,10 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should allow Store Admin', async () => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/pdf');
@@ -188,10 +216,10 @@ describe('GET /api/orders/[id]/invoice', () => {
     });
 
     it('should generate PDF invoice for valid order', async () => {
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(response.status).toBe(200);
       expect(orderService.getInvoiceData).toHaveBeenCalledWith('order-1', 'store-1');
@@ -201,7 +229,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       vi.mocked(orderService.getInvoiceData).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-999/invoice');
-      const response = await GET(request, { params: { id: 'order-999' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-999' }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -210,13 +238,13 @@ describe('GET /api/orders/[id]/invoice', () => {
     });
 
     it('should pass orderId from path parameters', async () => {
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const testOrderId = 'test-order-123';
       const request = new NextRequest(
         `http://localhost:3000/api/orders/${testOrderId}/invoice`
       );
-      await GET(request, { params: { id: testOrderId } });
+      await GET(request, { params: Promise.resolve({ id: testOrderId }) });
 
       expect(orderService.getInvoiceData).toHaveBeenCalledWith(testOrderId, 'store-1');
     });
@@ -225,19 +253,19 @@ describe('GET /api/orders/[id]/invoice', () => {
   describe('PDF Response Headers', () => {
     beforeEach(() => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
     });
 
     it('should return Content-Type: application/pdf', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(response.headers.get('Content-Type')).toBe('application/pdf');
     });
 
     it('should return Content-Disposition with filename', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const contentDisposition = response.headers.get('Content-Disposition');
       expect(contentDisposition).toContain('attachment');
@@ -247,7 +275,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should include filename with orderNumber and date', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const contentDisposition = response.headers.get('Content-Disposition');
       const today = new Date().toISOString().split('T')[0];
@@ -257,7 +285,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should return Content-Length header', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const contentLength = response.headers.get('Content-Length');
       expect(contentLength).toBeTruthy();
@@ -266,7 +294,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should return Cache-Control header for private caching', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const cacheControl = response.headers.get('Cache-Control');
       expect(cacheControl).toContain('private');
@@ -277,12 +305,12 @@ describe('GET /api/orders/[id]/invoice', () => {
   describe('PDF Content', () => {
     beforeEach(() => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
     });
 
     it('should return PDF buffer in response body', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -294,7 +322,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should include order number in PDF content', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -305,7 +333,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should include store name in PDF content', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -316,7 +344,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should include customer name in PDF content', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -327,7 +355,7 @@ describe('GET /api/orders/[id]/invoice', () => {
 
     it('should include total amount in PDF content', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -340,10 +368,10 @@ describe('GET /api/orders/[id]/invoice', () => {
   describe('Multi-Tenant Isolation', () => {
     it('should pass storeId to getInvoiceData for Store Admin', async () => {
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any);
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      await GET(request, { params: { id: 'order-1' } });
+      await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.getInvoiceData).toHaveBeenCalledWith('order-1', 'store-1');
     });
@@ -357,10 +385,10 @@ describe('GET /api/orders/[id]/invoice', () => {
         },
       } as any);
 
-      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData);
+      vi.mocked(orderService.getInvoiceData).mockResolvedValue(mockInvoiceData as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      await GET(request, { params: { id: 'order-1' } });
+      await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(orderService.getInvoiceData).toHaveBeenCalledWith('order-1', undefined);
     });
@@ -370,7 +398,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       vi.mocked(orderService.getInvoiceData).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -389,7 +417,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       );
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -401,7 +429,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       vi.mocked(orderService.getInvoiceData).mockRejectedValue('Unknown error');
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      const response = await GET(request, { params: { id: 'order-1' } });
+      const response = await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -416,7 +444,7 @@ describe('GET /api/orders/[id]/invoice', () => {
       );
 
       const request = new NextRequest('http://localhost:3000/api/orders/order-1/invoice');
-      await GET(request, { params: { id: 'order-1' } });
+      await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'Invoice generation error:',

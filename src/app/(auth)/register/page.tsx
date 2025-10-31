@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { PersonIcon, EnvelopeClosedIcon, LockClosedIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -106,7 +108,11 @@ export default function RegisterPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <Section size="2" className="min-h-screen flex items-center justify-center">
+        <Container size="1">
+          <Flex direction="column" gap="6" align="center">
+            <CheckCircledIcon width="64" height="64" color="green" />
+            <Heading size="8" align="center">Registration Successful!</Heading>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-balance">Registration Successful!</CardTitle>
@@ -138,13 +144,21 @@ export default function RegisterPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
+          </Flex>
+        </Container>
+      </Section>
     );
   }
 
   // Registration form
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <Section size="2" className="min-h-screen flex items-center justify-center">
+      <Container size="1">
+        <Flex direction="column" gap="6" align="center">
+          <PersonIcon width="48" height="48" color="teal" />
+          <Heading size="8" align="center">Create Account</Heading>
+          <Text size="3" color="gray" align="center">Join StormCom and start selling</Text>
+    
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Create your account</CardTitle>
@@ -168,7 +182,11 @@ export default function RegisterPage() {
             <div className="space-y-4">
               {/* First Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
+                <Label htmlFor="firstName">
+                  <Flex align="center" gap="2">
+                    <PersonIcon /> First name
+                  </Flex>
+                </Label>
                 <Input
                   {...register('firstName')}
                   id="firstName"
@@ -188,7 +206,11 @@ export default function RegisterPage() {
 
               {/* Last Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last name</Label>
+                <Label htmlFor="lastName">
+                  <Flex align="center" gap="2">
+                    <PersonIcon /> Last name
+                  </Flex>
+                </Label>
                 <Input
                   {...register('lastName')}
                   id="lastName"
@@ -208,7 +230,11 @@ export default function RegisterPage() {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">
+                  <Flex align="center" gap="2">
+                    <EnvelopeClosedIcon /> Email address
+                  </Flex>
+                </Label>
                 <Input
                   {...register('email')}
                   id="email"
@@ -228,7 +254,11 @@ export default function RegisterPage() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">
+                  <Flex align="center" gap="2">
+                    <LockClosedIcon /> Password
+                  </Flex>
+                </Label>
                 <Input
                   {...register('password')}
                   id="password"
@@ -281,6 +311,8 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+        </Flex>
+      </Container>
+    </Section>
   );
 }

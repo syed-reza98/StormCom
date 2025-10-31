@@ -150,10 +150,10 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
         
         <div className="flex items-center gap-3">
           <Link href={`/dashboard/products/${product.id}/edit`}>
-            <Button variant="outline">✏️ Edit Product</Button>
+            <Button variant="outline">Edit Product</Button>
           </Link>
           <Link href={`/store/products/${product.id}`} target="_blank">
-            <Button>👁️ View in Store</Button>
+            <Button>View in Store</Button>
           </Link>
         </div>
       </div>

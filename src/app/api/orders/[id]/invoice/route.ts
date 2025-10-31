@@ -22,10 +22,13 @@ import { getInvoiceData } from '@/services/order-service';
 import { apiResponse } from '@/lib/api-response';
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Extract params
+    const { id: orderId } = await context.params;
+
     // 1. Authentication
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -46,7 +49,6 @@ export async function GET(
       : session.user.storeId;
 
     // 4. Get invoice data
-    const orderId = params.id;
     const invoiceData = await getInvoiceData(orderId, storeId);
 
     if (!invoiceData) {
@@ -60,12 +62,15 @@ export async function GET(
     // 6. Return PDF with proper headers
     const filename = `invoice-${invoiceData.orderNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
     
-    return new NextResponse(pdfBuffer, {
+    // Convert Buffer to Uint8Array for NextResponse compatibility
+    const pdfUint8Array = new Uint8Array(pdfBuffer);
+
+    return new NextResponse(pdfUint8Array, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': pdfBuffer.length.toString(),
+        'Content-Length': pdfUint8Array.length.toString(),
         'Cache-Control': 'private, max-age=0, must-revalidate',
       },
     });
@@ -107,19 +112,10 @@ export async function GET(
 async function generatePDFBuffer(invoiceData: any): Promise<Buffer> {
   // Placeholder PDF with metadata structure
   // This demonstrates the data structure for the actual PDF implementation
-  
-  const metadata = {
-    title: `Invoice ${invoiceData.orderNumber}`,
-    author: invoiceData.store.name,
-    subject: `Invoice for order ${invoiceData.orderNumber}`,
-    keywords: 'invoice, order, receipt',
-    creator: 'StormCom',
-    producer: 'StormCom Multi-Tenant E-Commerce Platform',
-    creationDate: new Date(),
-    modificationDate: new Date(),
-  };
 
   // Invoice structure that should be rendered in actual PDF:
+  // (For reference only - implement with actual PDF library)
+  /*
   const invoiceStructure = {
     // Header Section
     header: {
@@ -192,6 +188,7 @@ async function generatePDFBuffer(invoiceData: any): Promise<Buffer> {
     // Metadata
     metadata,
   };
+  */
 
   // TODO: Replace this with actual PDF generation
   // For now, return a minimal PDF structure as a placeholder

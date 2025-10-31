@@ -142,6 +142,8 @@ export async function listOrders(params: OrderListParams = {}) {
       perPage: limit,
       total,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page < Math.ceil(total / limit),
+      hasPreviousPage: page > 1,
     },
   };
 }

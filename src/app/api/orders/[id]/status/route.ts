@@ -9,7 +9,7 @@
  * @returns {OrderResponse} Updated order details
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 import { authOptions } from '@/lib/auth';
@@ -27,9 +27,12 @@ const updateStatusSchema = z.object({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Extract params
+    const { id: orderId } = await context.params;
+
     // Authentication check
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -37,7 +40,7 @@ export async function PUT(
     }
 
     // Role-based access control (require write permissions)
-    if (!['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.user.role)) {
+    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.user.role)) {
       // Staff can only read, not update orders (unless specific permission granted)
       return apiResponse.forbidden('Insufficient permissions to update orders');
     }
@@ -48,8 +51,6 @@ export async function PUT(
       return apiResponse.forbidden('No store assigned');
     }
 
-    const orderId = params.id;
-
     // Parse and validate request body
     const body = await request.json();
     const validatedData = updateStatusSchema.parse(body);
@@ -57,7 +58,7 @@ export async function PUT(
     // Update order status
     const updatedOrder = await updateOrderStatus({
       orderId,
-      storeId: storeId!,
+      storeId,
       newStatus: validatedData.status,
       trackingNumber: validatedData.trackingNumber,
       trackingUrl: validatedData.trackingUrl,
@@ -87,7 +88,7 @@ export async function PUT(
       });
     }
 
-    console.error(`[PUT /api/orders/${params.id}/status] Error:`, error);
+    console.error('[PUT /api/orders/[id]/status] Error:', error);
 
     if (error instanceof Error) {
       if (error.message === 'Order not found') {

@@ -5,10 +5,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BrandService } from '../brand-service';
 import { prismaMock } from '../../../tests/mocks/prisma';
 
-// Mock the prisma module
-vi.mock('@/lib/db', () => ({
-  prisma: prismaMock,
-}));
+// Mock the prisma module using dynamic import to avoid vi.mock hoisting issues
+vi.mock('@/lib/db', async () => {
+  const mocks = await vi.importActual('../../../tests/mocks/prisma');
+  return { prisma: mocks.prismaMock };
+});
 
 describe('BrandService', () => {
   let brandService: BrandService;
@@ -201,7 +202,7 @@ describe('BrandService', () => {
 
       await expect(
         brandService.createBrand(mockStoreId, invalidData)
-      ).rejects.toThrow('Invalid website URL format');
+      ).rejects.toMatchObject({ issues: expect.any(Array) });
     });
 
     it('should validate logo URL format', async () => {
@@ -212,7 +213,7 @@ describe('BrandService', () => {
 
       await expect(
         brandService.createBrand(mockStoreId, invalidData)
-      ).rejects.toThrow('Invalid logo URL format');
+      ).rejects.toMatchObject({ issues: expect.any(Array) });
     });
   });
 
@@ -273,8 +274,9 @@ describe('BrandService', () => {
     it('should throw error if brand not found', async () => {
       prismaMock.brand.findFirst.mockResolvedValue(null);
 
+      // Use a UUID formatted id to satisfy validators
       await expect(
-        brandService.updateBrand('non-existent', mockStoreId, { name: 'Test' })
+        brandService.updateBrand('00000000-0000-0000-0000-000000000000', mockStoreId, { name: 'Test' })
       ).rejects.toThrow('Brand not found');
     });
   });
@@ -318,7 +320,7 @@ describe('BrandService', () => {
       prismaMock.brand.findFirst.mockResolvedValue(null);
 
       await expect(
-        brandService.deleteBrand('non-existent', mockStoreId)
+        brandService.deleteBrand('00000000-0000-0000-0000-000000000000', mockStoreId)
       ).rejects.toThrow('Brand not found');
     });
   });

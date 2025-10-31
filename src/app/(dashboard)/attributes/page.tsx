@@ -3,6 +3,16 @@
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { 
+  PlusIcon, 
+  MagnifyingGlassIcon, 
+  MixIcon,
+  CheckCircledIcon,
+  ColorWheelIcon,
+  ArchiveIcon,
+  DownloadIcon
+} from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AttributesTable } from '@/components/attributes/attributes-table';
@@ -232,25 +242,31 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
   const totalProducts = mockAttributes.reduce((sum, attr) => sum + attr.productsCount, 0);
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Product Attributes</h1>
-          <p className="text-muted-foreground">
-            Manage product attributes and values for variations and specifications
-          </p>
-        </div>
-        <Button>
-          ➕ Add Attribute
-        </Button>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          <Flex justify="between" align="start">
+            <Flex direction="column" gap="2">
+              <Flex align="center" gap="3">
+                <MixIcon width="32" height="32" color="teal" />
+                <Heading size="8">Product Attributes</Heading>
+              </Flex>
+              <Text size="3" color="gray">
+                Manage product attributes and values for variations and specifications
+              </Text>
+            </Flex>
+            <Button>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add Attribute
+            </Button>
+          </Flex>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              🏷️
+              <MixIcon width="20" height="20" color="blue" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Attributes</p>
@@ -262,7 +278,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              ✅
+              <CheckCircledIcon width="20" height="20" color="green" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Attributes</p>
@@ -274,7 +290,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              🎨
+              <ColorWheelIcon width="20" height="20" color="purple" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Values</p>
@@ -286,7 +302,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
         <div className="bg-card rounded-lg border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              📦
+              <ArchiveIcon width="20" height="20" color="orange" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Products Using</p>
@@ -296,9 +312,9 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Attributes Table */}
-        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Attributes Table */}
+            <div className="lg:col-span-2">
           <div className="bg-card rounded-lg border p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">All Attributes</h2>
@@ -309,7 +325,8 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
                   className="w-64"
                 />
                 <Button variant="outline">
-                  🔍 Search
+                  <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                  Search
                 </Button>
               </div>
             </div>
@@ -334,7 +351,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
             {/* Empty State */}
             {attributes.length === 0 && (
               <div className="text-center py-12">
-                <div className="text-4xl mb-4">🏷️</div>
+                <MixIcon width="48" height="48" className="mx-auto mb-4" color="gray" />
                 <h3 className="text-lg font-medium mb-2">No attributes found</h3>
                 <p className="text-muted-foreground mb-4">
                   {searchParams.search
@@ -423,16 +440,20 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
                 <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
                 <div className="space-y-2">
                   <Button variant="outline" className="w-full justify-start">
-                    🎨 Create Color Attribute
+                    <ColorWheelIcon className="mr-2 h-4 w-4" />
+                    Create Color Attribute
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    📏 Create Size Attribute
+                    <MixIcon className="mr-2 h-4 w-4" />
+                    Create Size Attribute
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    📦 Create Material Attribute
+                    <ArchiveIcon className="mr-2 h-4 w-4" />
+                    Create Material Attribute
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
-                    📊 Export Attributes
+                    <DownloadIcon className="mr-2 h-4 w-4" />
+                    Export Attributes
                   </Button>
                 </div>
               </div>
@@ -440,7 +461,9 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
           )}
         </div>
       </div>
-    </div>
+        </Flex>
+      </Container>
+    </Section>
   );
 }
 

@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+// This route reads cookies and therefore must opt out of prerendering.
+// Force dynamic so the runtime APIs like `request.cookies` and `headers()`
+// work correctly during requests.
+export const dynamic = 'force-dynamic';
 import { SessionService } from '@/services/session-service';
 import { successResponse } from '@/lib/api-response';
 import { db } from '@/lib/db';

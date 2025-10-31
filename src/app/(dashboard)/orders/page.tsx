@@ -2,12 +2,10 @@
 // Orders List Dashboard Page - Data table with search, filters, and status management
 
 import { Metadata } from 'next';
-import Link from 'next/link';
 import { OrdersTable } from '@/components/orders/orders-table';
 import { OrdersFilters } from '@/components/orders/orders-filters';
-import { Button, buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 // ============================================================================
 // METADATA

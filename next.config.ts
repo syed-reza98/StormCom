@@ -4,8 +4,12 @@ const nextConfig: NextConfig = {
   /* Next.js 16 App Router Configuration */
   reactStrictMode: true,
   
-  /* Cache Components - Dynamic by Default, Opt-in Caching */
-  cacheComponents: true, // Next.js 16.0.0 - enables Cache Components with "use cache"
+  /* Cache Components - disabled for now to avoid incompatibilities with
+   * route segment config (e.g. `export const dynamic = 'force-dynamic'`).
+   * The project plans to enable Cache Components once all routes are
+   * updated to the new caching primitives. See docs in .github for notes.
+   */
+  cacheComponents: false,
   
   /* TypeScript Configuration */
   typescript: {
@@ -22,6 +26,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '**.public.blob.vercel-storage.com',
+      },
+      // Allow placeholder images used in the demo and fixtures (e.g. placehold.co)
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
       },
     ],
     formats: ['image/webp', 'image/avif'],

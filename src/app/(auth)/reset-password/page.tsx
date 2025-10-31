@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { LockClosedIcon, CheckCircledIcon, CrossCircledIcon, ArrowLeftIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +20,6 @@ import {
 } from '@/components/ui/card';
 import { FormError } from '@/components/auth/form-error';
 import { PasswordStrengthIndicator } from '@/components/auth/password-strength-indicator';
-import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 
 // Validation schema
 const resetPasswordSchema = z.object({
@@ -122,61 +123,82 @@ export default function ResetPasswordPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-4">
-            <CheckCircle className="mx-auto h-12 w-12 text-success" aria-hidden="true" />
-            <CardTitle>Password Reset Successful!</CardTitle>
-            <CardDescription>
-              Your password has been successfully reset. You can now sign in with your new password.
-            </CardDescription>
-          </CardHeader>
+      <Section size="2" className="min-h-screen flex items-center justify-center">
+        <Container size="1">
+          <Flex direction="column" gap="6" align="center">
+            <CheckCircledIcon width="64" height="64" color="green" />
+            <Card className="w-full max-w-md">
+              <CardHeader className="text-center space-y-4">
+                <CardTitle>Password Reset Successful!</CardTitle>
+                <CardDescription>
+                  Your password has been successfully reset. You can now sign in with your new password.
+                </CardDescription>
+              </CardHeader>
 
-          <CardContent>
-            <Button onClick={() => router.push('/login')} className="w-full">
-              Go to Login
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+              <CardContent>
+                <Button onClick={() => router.push('/login')} className="w-full">
+                  Go to Login
+                </Button>
+              </CardContent>
+            </Card>
+          </Flex>
+        </Container>
+      </Section>
     );
   }
 
   // Invalid token state
   if (!token && serverError) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center space-y-4">
-            <XCircle className="mx-auto h-12 w-12 text-destructive" aria-hidden="true" />
-            <CardTitle>Invalid Reset Link</CardTitle>
-            <CardDescription>{serverError}</CardDescription>
-          </CardHeader>
+      <Section size="2" className="min-h-screen flex items-center justify-center">
+        <Container size="1">
+          <Flex direction="column" gap="6" align="center">
+            <CrossCircledIcon width="64" height="64" color="red" />
+            <Card className="w-full max-w-md">
+              <CardHeader className="text-center space-y-4">
+                <CardTitle>Invalid Reset Link</CardTitle>
+                <CardDescription>{serverError}</CardDescription>
+              </CardHeader>
 
-          <CardContent className="space-y-4">
-            <Link href="/forgot-password" className="w-full">
-              <Button className="w-full">Request New Reset Link</Button>
-            </Link>
+              <CardContent className="space-y-4">
+                <Link href="/forgot-password" className="w-full">
+                  <Button className="w-full">Request New Reset Link</Button>
+                </Link>
 
-            <p className="text-center text-sm text-muted-foreground">
-              <Link
-                href="/login"
-                className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
-              >
-                Back to Login
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  <Link
+                    href="/login"
+                    className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                  >
+                    Back to Login
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+          </Flex>
+        </Container>
+      </Section>
     );
   }
 
   // Reset password form
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <Section size="2" className="min-h-screen flex items-center justify-center">
+      <Container size="1">
+        <Flex direction="column" gap="6" align="center">
+          {/* Logo/Brand */}
+          <Flex direction="column" gap="2" align="center">
+            <LockClosedIcon width="48" height="48" color="teal" />
+            <Heading size="8" weight="bold" align="center">
+              Set New Password
+            </Heading>
+            <Text size="3" color="gray" align="center">
+              Choose a strong password for your account
+            </Text>
+          </Flex>
+
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
           <CardTitle>Reset your password</CardTitle>
           <CardDescription>
             Enter your new password below.
@@ -191,7 +213,11 @@ export default function ResetPasswordPage() {
             <div className="space-y-4">
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password">New password</Label>
+                <Label htmlFor="password">
+                  <Flex align="center" gap="2">
+                    <LockClosedIcon /> New password
+                  </Flex>
+                </Label>
                 <Input
                   {...register('password')}
                   id="password"
@@ -215,7 +241,11 @@ export default function ResetPasswordPage() {
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm new password</Label>
+                <Label htmlFor="confirmPassword">
+                  <Flex align="center" gap="2">
+                    <LockClosedIcon /> Confirm new password
+                  </Flex>
+                </Label>
                 <Input
                   {...register('confirmPassword')}
                   id="confirmPassword"
@@ -251,13 +281,15 @@ export default function ResetPasswordPage() {
                 href="/login"
                 className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded inline-flex items-center gap-2"
               >
-                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                <ArrowLeftIcon className="h-4 w-4" aria-hidden="true" />
                 Back to Login
               </Link>
             </div>
           </form>
         </CardContent>
       </Card>
-    </div>
+    </Flex>
+  </Container>
+</Section>
   );
 }

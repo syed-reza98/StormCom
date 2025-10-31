@@ -9,6 +9,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+// This route calls authentication helpers which in turn access request
+// headers/cookies. Ensure the route is always dynamic so Next.js does not
+// attempt to prerender it and cause `headers()`/`request.cookies` to fail
+// during the build step.
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 import { authOptions } from '@/lib/auth';
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Role-based access control
-    if (!['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
+    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
       return apiResponse.forbidden('Insufficient permissions');
     }
 
@@ -54,7 +59,7 @@ export async function GET(request: NextRequest) {
 
     // Convert date strings to Date objects
     const queryParams = {
-      storeId: storeId!,
+      storeId,
       page: params.page,
       perPage: params.perPage,
       status: params.status,

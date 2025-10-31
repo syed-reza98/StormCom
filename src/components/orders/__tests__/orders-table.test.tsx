@@ -38,7 +38,7 @@ vi.mock('@/components/ui/skeleton', () => ({
 }));
 
 vi.mock('@/components/ui/pagination', () => ({
-  Pagination: ({ currentPage, totalPages, baseUrl, searchParams }: any) => (
+  Pagination: ({ currentPage, totalPages }: any) => (
     <div data-testid="pagination" data-current-page={currentPage} data-total-pages={totalPages}>
       Pagination
     </div>
@@ -98,7 +98,7 @@ const mockApiResponse = {
 // ============================================================================
 
 describe('OrdersTable', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
+  let fetchSpy: any;
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(global, 'fetch');
