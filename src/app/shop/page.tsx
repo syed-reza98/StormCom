@@ -19,10 +19,11 @@ import { ProductCard } from '@/components/storefront/product-card';
 import { Button } from '@/components/ui/button';
 
 export default async function Homepage() {
-  // Fetch featured products and categories
+  // Fetch featured products and categories using demo store ID
+  const storeId = '6c6dcdca-fecd-430b-93b2-b9ebf4cbff10'; // Demo Store ID
   const [featuredProducts, categories] = await Promise.all([
-    getFeaturedProducts('store-placeholder', 8),
-    getCategoryTree('store-placeholder'),
+    getFeaturedProducts(storeId, 8),
+    getCategoryTree(storeId),
   ]);
 
   return (

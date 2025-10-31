@@ -43,8 +43,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const params = await searchParams;
 
   // TODO: Get storeId from domain/subdomain routing
-  // For now, using a placeholder
-  const storeId = 'store_01'; // Replace with actual store resolution
+  // For now, using the demo store ID from seeded database
+  const storeId = '6c6dcdca-fecd-430b-93b2-b9ebf4cbff10'; // Demo Store ID
 
   // Parse query parameters
   const page = parseInt(params.page || '1');
