@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.public.blob.vercel-storage.com',
       },
+      // Allow placeholder images used in the demo and fixtures (e.g. placehold.co)
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 768, 1024, 1280, 1536, 1920],
