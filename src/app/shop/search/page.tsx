@@ -11,7 +11,6 @@ import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';
 import { ProductSort } from '@/components/storefront/product-sort';
 import { Pagination } from '@/components/ui/pagination';
-import { Search } from 'lucide-react';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -80,7 +79,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Search Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <Search className="h-8 w-8 text-muted-foreground" />
+          <span className="text-4xl">🔍</span>
           <div>
             <h1 className="text-4xl font-bold">
               {query ? (
@@ -176,7 +175,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           {result.products.length === 0 && query && (
             <div className="text-center py-12">
               <div className="mb-6">
-                <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <span className="text-6xl block mb-4">🔍</span>
                 <p className="text-lg text-muted-foreground">
                   We couldn&apos;t find any products matching your search.
                 </p>

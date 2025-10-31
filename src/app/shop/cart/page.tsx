@@ -10,7 +10,15 @@
 import { useCart } from '@/hooks/use-cart';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { 
+  TrashIcon, 
+  BackpackIcon, 
+  ArrowRightIcon,
+  MinusIcon,
+  PlusIcon,
+  CheckCircledIcon
+} from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -29,54 +37,63 @@ export default function CartPage() {
   // Loading state
   if (!isLoaded) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Skeleton className="h-10 w-48 mb-8" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Skeleton className="h-48 mb-4" />
-            <Skeleton className="h-48 mb-4" />
+      <Section size="2">
+        <Container size="4">
+          <Skeleton className="h-10 w-48 mb-8" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <Skeleton className="h-48 mb-4" />
+              <Skeleton className="h-48 mb-4" />
+            </div>
+            <div>
+              <Skeleton className="h-64" />
+            </div>
           </div>
-          <div>
-            <Skeleton className="h-64" />
-          </div>
-        </div>
-      </div>
+        </Container>
+      </Section>
     );
   }
 
   // Empty cart state
   if (items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-        <Card className="p-12 text-center">
-          <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
-          <p className="text-muted-foreground mb-6">
-            Add some products to get started
-          </p>
-          <Link href="/shop/products">
-            <Button size="lg">
-              Browse Products
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-        </Card>
-      </div>
+      <Section size="2">
+        <Container size="3">
+          <Flex direction="column" gap="6">
+            <Heading size="8">Shopping Cart</Heading>
+            <Card className="p-12">
+              <Flex direction="column" align="center" gap="4">
+                <BackpackIcon width="64" height="64" color="gray" />
+                <Heading size="6" align="center">Your cart is empty</Heading>
+                <Text size="3" color="gray" align="center">
+                  Add some products to get started
+                </Text>
+                <Link href="/shop/products">
+                  <Button size="lg">
+                    Browse Products
+                    <ArrowRightIcon className="ml-2" width="16" height="16" />
+                  </Button>
+                </Link>
+              </Flex>
+            </Card>
+          </Flex>
+        </Container>
+      </Section>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">
-          Shopping Cart ({totalItems} {totalItems === 1 ? 'item' : 'items'})
-        </h1>
-        <Button variant="outline" onClick={clearCart}>
-          Clear Cart
-        </Button>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        {/* Header */}
+        <Flex align="center" justify="between" mb="6">
+          <Heading size="8">
+            Shopping Cart ({totalItems} {totalItems === 1 ? 'item' : 'items'})
+          </Heading>
+          <Button variant="outline" onClick={clearCart}>
+            Clear Cart
+          </Button>
+        </Flex>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
@@ -138,7 +155,7 @@ export default function CartPage() {
                       disabled={item.quantity <= 1}
                       aria-label="Decrease quantity"
                     >
-                      -
+                      <MinusIcon width="16" height="16" />
                     </Button>
                     <span className="w-12 text-center font-medium">
                       {item.quantity}
@@ -156,7 +173,7 @@ export default function CartPage() {
                       disabled={item.quantity >= item.maxQuantity}
                       aria-label="Increase quantity"
                     >
-                      +
+                      <PlusIcon width="16" height="16" />
                     </Button>
                     <span className="text-xs text-muted-foreground ml-2">
                       Max: {item.maxQuantity}
@@ -175,7 +192,7 @@ export default function CartPage() {
                     onClick={() => removeItem(item.productId, item.variantId)}
                     className="text-destructive hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
+                    <TrashIcon className="h-4 w-4 mr-2" />
                     Remove
                   </Button>
                 </div>
@@ -206,7 +223,7 @@ export default function CartPage() {
 
             <Button size="lg" className="w-full mb-3">
               Proceed to Checkout
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRightIcon className="ml-2" width="16" height="16" />
             </Button>
 
             <Link href="/shop/products">
@@ -218,21 +235,22 @@ export default function CartPage() {
             {/* Trust Badges */}
             <div className="mt-6 pt-6 border-t space-y-2 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
+                <CheckCircledIcon width="16" height="16" color="green" />
                 Secure checkout
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
+                <CheckCircledIcon width="16" height="16" color="green" />
                 Free shipping on orders over $50
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
+                <CheckCircledIcon width="16" height="16" color="green" />
                 30-day return policy
               </p>
             </div>
           </Card>
         </div>
       </div>
-    </div>
+    </Container>
+  </Section>
   );
 }

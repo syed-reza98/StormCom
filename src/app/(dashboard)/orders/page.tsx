@@ -2,10 +2,10 @@
 // Orders List Dashboard Page - Data table with search, filters, and status management
 
 import { Metadata } from 'next';
+import { Section, Container, Flex, Heading, Text, Card, Button } from '@radix-ui/themes';
+import { FileTextIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { OrdersTable } from '@/components/orders/orders-table';
 import { OrdersFilters } from '@/components/orders/orders-filters';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 // ============================================================================
 // METADATA
@@ -44,40 +44,50 @@ export default async function OrdersPage({
   const params = await searchParams;
   
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
-          <p className="text-muted-foreground">
-            Manage customer orders, fulfillment, and order status
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {/* Export to CSV Action */}
-          <form action="/api/orders" method="GET" target="_blank">
-            <input type="hidden" name="export" value="csv" />
-            {params.status && <input type="hidden" name="status" value={params.status} />}
-            {params.search && <input type="hidden" name="search" value={params.search} />}
-            {params.dateFrom && <input type="hidden" name="dateFrom" value={params.dateFrom} />}
-            {params.dateTo && <input type="hidden" name="dateTo" value={params.dateTo} />}
-            <Button type="submit" variant="outline" size="sm">
-              📥 Export CSV
-            </Button>
-          </form>
-        </div>
-      </div>
+    <Section size="2">
+      <Container size="4">
+        <Flex direction="column" gap="6">
+          {/* Page Header */}
+          <Flex direction="column" gap="2">
+            <Flex align="center" gap="3" justify="between">
+              <Flex align="center" gap="3">
+                <FileTextIcon width="32" height="32" color="teal" />
+                <div>
+                  <Heading size="8">Orders</Heading>
+                  <Text size="3" color="gray">
+                    Manage customer orders, fulfillment, and order status
+                  </Text>
+                </div>
+              </Flex>
+              
+              <div className="flex items-center gap-3">
+                {/* Export to CSV Action */}
+                <form action="/api/orders" method="GET" target="_blank">
+                  <input type="hidden" name="export" value="csv" />
+                  {params.status && <input type="hidden" name="status" value={params.status} />}
+                  {params.search && <input type="hidden" name="search" value={params.search} />}
+                  {params.dateFrom && <input type="hidden" name="dateFrom" value={params.dateFrom} />}
+                  {params.dateTo && <input type="hidden" name="dateTo" value={params.dateTo} />}
+                  <Button type="submit" variant="outline" size="2">
+                    <DownloadIcon width="16" height="16" />
+                    Export CSV
+                  </Button>
+                </form>
+              </div>
+            </Flex>
+          </Flex>
 
-      {/* Filters Section */}
-      <Card className="p-6">
-        <OrdersFilters searchParams={params} />
-      </Card>
+          {/* Filters Section */}
+          <Card size="2">
+            <OrdersFilters searchParams={params} />
+          </Card>
 
-      {/* Orders Data Table */}
-      <Card>
-        <OrdersTable searchParams={params} />
-      </Card>
-    </div>
+          {/* Orders Data Table */}
+          <Card>
+            <OrdersTable searchParams={params} />
+          </Card>
+        </Flex>
+      </Container>
+    </Section>
   );
 }

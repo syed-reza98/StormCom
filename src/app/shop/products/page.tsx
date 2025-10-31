@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
+import { Card } from '@radix-ui/themes';
 import { getPublishedProducts, getCategoryTree } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';
 import { ProductSort } from '@/components/storefront/product-sort';
 import { Pagination } from '@/components/ui/pagination';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /**
@@ -43,8 +43,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const params = await searchParams;
 
   // TODO: Get storeId from domain/subdomain routing
-  // For now, using a placeholder
-  const storeId = 'store_01'; // Replace with actual store resolution
+  // For now, using the demo store ID from seeded database
+  const storeId = 'fa30516f-dd0d-4b24-befe-e4c7606b841e'; // Demo Store ID
 
   // Parse query parameters
   const page = parseInt(params.page || '1');

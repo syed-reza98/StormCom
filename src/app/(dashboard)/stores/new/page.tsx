@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
+import { Section, Container, Flex, Heading, Text, Card } from '@radix-ui/themes';
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { CreateStoreForm } from '@/components/stores';
 
 export const metadata: Metadata = {
@@ -15,36 +17,37 @@ export const metadata: Metadata = {
  */
 export default function CreateStorePage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="space-y-6">
+    <Section size="2">
+      <Container size="3">
+        <Flex direction="column" gap="6">
           {/* Page Header */}
-          <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Create New Store</h1>
-            <p className="mt-2 text-lg text-gray-600">
+          <Flex direction="column" align="center" gap="2">
+            <Flex align="center" gap="3">
+              <PlusCircledIcon width="32" height="32" color="teal" />
+              <Heading size="8">Create New Store</Heading>
+            </Flex>
+            <Text size="4" color="gray" align="center">
               Set up a new store for your e-commerce platform
-            </p>
-          </div>
+            </Text>
+          </Flex>
 
           {/* Create Store Form */}
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-            <div className="px-6 py-8">
-              <Suspense
-                fallback={
-                  <div className="space-y-6">
-                    <div className="h-20 bg-gray-200 animate-pulse rounded" />
-                    <div className="h-20 bg-gray-200 animate-pulse rounded" />
-                    <div className="h-20 bg-gray-200 animate-pulse rounded" />
-                    <div className="h-10 bg-gray-200 animate-pulse rounded w-32" />
-                  </div>
-                }
-              >
-                <CreateStoreForm />
-              </Suspense>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Card size="3">
+            <Suspense
+              fallback={
+                <Flex direction="column" gap="6">
+                  <div style={{ height: '80px', backgroundColor: 'var(--gray-3)', borderRadius: '8px' }} />
+                  <div style={{ height: '80px', backgroundColor: 'var(--gray-3)', borderRadius: '8px' }} />
+                  <div style={{ height: '80px', backgroundColor: 'var(--gray-3)', borderRadius: '8px' }} />
+                  <div style={{ height: '40px', backgroundColor: 'var(--gray-3)', borderRadius: '8px', width: '128px' }} />
+                </Flex>
+              }
+            >
+              <CreateStoreForm />
+            </Suspense>
+          </Card>
+        </Flex>
+      </Container>
+    </Section>
   );
 }

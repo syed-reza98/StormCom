@@ -6,9 +6,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, Badge, Button } from '@radix-ui/themes';
 import { ProductImages } from '@/components/products/product-images';
 import { ProductVariants } from '@/components/products/product-variants';
 import { ProductInventory } from '@/components/products/product-inventory';
@@ -136,11 +134,11 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant={product.status === 'PUBLISHED' ? 'success' : 'secondary'}>
+              <Badge color={product.status === 'PUBLISHED' ? 'green' : 'gray'}>
                 {product.status}
               </Badge>
-              {!product.isVisible && <Badge variant="secondary">Hidden</Badge>}
-              {product.isFeatured && <Badge variant="outline">Featured</Badge>}
+              {!product.isVisible && <Badge color="gray">Hidden</Badge>}
+              {product.isFeatured && <Badge color="amber">Featured</Badge>}
               {product.sku && (
                 <span className="text-sm text-muted-foreground">SKU: {product.sku}</span>
               )}
@@ -323,19 +321,19 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span>Status:</span>
-                <Badge variant={product.status === 'PUBLISHED' ? 'success' : 'secondary'}>
+                <Badge color={product.status === 'PUBLISHED' ? 'green' : 'gray'}>
                   {product.status}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span>Visibility:</span>
-                <Badge variant={product.isVisible ? 'success' : 'secondary'}>
+                <Badge color={product.isVisible ? 'green' : 'gray'}>
                   {product.isVisible ? 'Visible' : 'Hidden'}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span>Featured:</span>
-                <Badge variant={product.isFeatured ? 'success' : 'outline'}>
+                <Badge color={product.isFeatured ? 'green' : 'gray'}>
                   {product.isFeatured ? 'Yes' : 'No'}
                 </Badge>
               </div>

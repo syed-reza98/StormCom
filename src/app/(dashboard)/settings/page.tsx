@@ -3,7 +3,7 @@
 
 import { Metadata } from 'next';
 import { Flex, Heading, Text, Container, Section, Tabs, Card, Switch } from '@radix-ui/themes';
-import { GearIcon, PersonIcon, BellIcon, LockClosedIcon, CreditCardIcon } from '@radix-ui/react-icons';
+import { GearIcon, PersonIcon, BellIcon, LockClosedIcon, IdCardIcon } from '@radix-ui/react-icons';
 
 // ============================================================================
 // METADATA
@@ -57,7 +57,7 @@ export default function SettingsPage() {
               </Tabs.Trigger>
               <Tabs.Trigger value="billing">
                 <Flex align="center" gap="2">
-                  <CreditCardIcon />
+                  <IdCardIcon />
                   Billing
                 </Flex>
               </Tabs.Trigger>
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                       <div>
                         <Text weight="medium" size="3">Payment Method</Text>
                         <div className="mt-2 p-4 border rounded-md flex items-center gap-3">
-                          <CreditCardIcon width="24" height="24" />
+                          <IdCardIcon width="24" height="24" />
                           <div>
                             <Text size="3">•••• •••• •••• 4242</Text>
                             <Text size="2" color="gray">Expires 12/25</Text>
