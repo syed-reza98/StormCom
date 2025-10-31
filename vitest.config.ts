@@ -10,6 +10,13 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
+    env: {
+      // Test environment variables
+      NODE_ENV: 'test',
+      DATABASE_URL: 'file:./test.db',
+      NEXTAUTH_SECRET: 'test-secret-key-for-unit-testing-only',
+      NEXTAUTH_URL: 'http://localhost:3000',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
