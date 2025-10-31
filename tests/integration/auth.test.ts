@@ -206,7 +206,8 @@ class MockUserService {
   }
 
   async verifyEmail(token: string): Promise<boolean> {
-    const verification = this.emailVerifications.find(ev => ev.token === token);
+    // Enforce single-use and expiration
+    const verification = await this.findEmailVerification(token);
     if (!verification) return false;
 
     verification.verified = true;
@@ -258,6 +259,12 @@ class MockAuthService {
     // Validate input
     if (!userData.email || !userData.password || !userData.firstName || !userData.lastName) {
       throw new Error('Missing required fields');
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      throw new Error('Invalid email format');
     }
 
     if (userData.password.length < 8) {
