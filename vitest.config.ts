@@ -10,6 +10,10 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
+    // Run tests in a single thread to avoid Prisma generate race conditions on Windows
+    singleThread: true,
+    // Give async hooks (DB setup/reset) more time
+    hookTimeout: 30000,
     env: {
       // Test environment variables
       NODE_ENV: 'test',

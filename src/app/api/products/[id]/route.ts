@@ -19,7 +19,7 @@ export async function GET(_request: NextRequest, context: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -28,16 +28,16 @@ export async function GET(_request: NextRequest, context: RouteParams) {
 
     if (!product) {
       return NextResponse.json(
-        { error: { code: 'NOT_FOUND', message: 'Product not found' } },
+        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ data: product });
+    return NextResponse.json({ success: true, data: product });
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch product' } },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch product' } },
       { status: 500 }
     );
   }
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -66,20 +66,11 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       validatedData
     );
 
-    return NextResponse.json({
-      data: product,
-      message: 'Product updated successfully',
-    });
+    return NextResponse.json({ success: true, data: product, message: 'Product updated successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          error: { 
-            code: 'VALIDATION_ERROR', 
-            message: 'Invalid input', 
-            details: error.errors 
-          } 
-        },
+        { success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid input', details: error.errors } },
         { status: 400 }
       );
     }
@@ -88,14 +79,14 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       // Handle business logic errors
       if (error.message === 'Product not found') {
         return NextResponse.json(
-          { error: { code: 'NOT_FOUND', message: error.message } },
+          { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
           { status: 404 }
         );
       }
 
       if (error.message.includes('already exists')) {
         return NextResponse.json(
-          { error: { code: 'BUSINESS_ERROR', message: error.message } },
+          { success: false, error: { code: 'BUSINESS_ERROR', message: error.message } },
           { status: 400 }
         );
       }
@@ -103,7 +94,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
 
     console.error('Error updating product:', error);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: 'Failed to update product' } },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to update product' } },
       { status: 500 }
     );
   }
@@ -116,7 +107,7 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -133,20 +124,11 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
       validatedData
     );
 
-    return NextResponse.json({
-      data: product,
-      message: 'Product updated successfully',
-    });
+    return NextResponse.json({ success: true, data: product, message: 'Product updated successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          error: { 
-            code: 'VALIDATION_ERROR', 
-            message: 'Invalid input', 
-            details: error.errors 
-          } 
-        },
+        { success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid input', details: error.errors } },
         { status: 400 }
       );
     }
@@ -155,14 +137,14 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
       // Handle business logic errors
       if (error.message === 'Product not found') {
         return NextResponse.json(
-          { error: { code: 'NOT_FOUND', message: error.message } },
+          { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
           { status: 404 }
         );
       }
 
       if (error.message.includes('already exists')) {
         return NextResponse.json(
-          { error: { code: 'BUSINESS_ERROR', message: error.message } },
+          { success: false, error: { code: 'BUSINESS_ERROR', message: error.message } },
           { status: 400 }
         );
       }
@@ -170,7 +152,7 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
 
     console.error('Error updating product:', error);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: 'Failed to update product' } },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to update product' } },
       { status: 500 }
     );
   }
@@ -183,7 +165,7 @@ export async function DELETE(_request: NextRequest, context: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -191,20 +173,20 @@ export async function DELETE(_request: NextRequest, context: RouteParams) {
     await productService.deleteProduct(id, session.user.storeId);
 
     return NextResponse.json(
-      { message: 'Product deleted successfully' },
+      { success: true, message: 'Product deleted successfully' },
       { status: 200 }
     );
   } catch (error) {
     if (error instanceof Error && error.message === 'Product not found') {
       return NextResponse.json(
-        { error: { code: 'NOT_FOUND', message: error.message } },
+        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
         { status: 404 }
       );
     }
 
     console.error('Error deleting product:', error);
     return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: 'Failed to delete product' } },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to delete product' } },
       { status: 500 }
     );
   }

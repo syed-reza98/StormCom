@@ -32,7 +32,8 @@ export async function setupTestDatabase(): Promise<void> {
   
   // Run database migrations
   try {
-    execSync('npx prisma db push --force-reset', {
+    // Important on Windows: skip client generation to avoid EPERM rename races
+    execSync('npx prisma db push --force-reset --skip-generate', {
       env: { ...process.env, DATABASE_URL: testDatabaseUrl },
       stdio: 'inherit',
     });
