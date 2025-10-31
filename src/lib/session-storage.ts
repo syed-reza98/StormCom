@@ -30,6 +30,7 @@ const SESSION_CONFIG = {
   maxAge: 12 * 60 * 60, // 12 hours
   idleTimeout: 7 * 24 * 60 * 60, // 7 days idle timeout
   prefix: 'session:', // Redis key prefix
+  cookieName: 'session-id', // Cookie name for session ID
 };
 
 /**
@@ -265,6 +266,31 @@ export async function getUserSessions(userId: string): Promise<SessionData[]> {
   }
 
   return sessions;
+}
+
+/**
+ * Get session from NextRequest (extract session ID from cookie)
+ */
+export async function getSessionFromRequest(request: Request): Promise<SessionData | null> {
+  const sessionId = extractSessionId(request);
+  if (!sessionId) return null;
+  return getSession(sessionId);
+}
+
+/**
+ * Extract session ID from request cookies
+ */
+function extractSessionId(request: Request): string | null {
+  const cookieHeader = request.headers.get('cookie');
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split('=');
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return cookies[SESSION_CONFIG.cookieName] || null;
 }
 
 /**

@@ -373,17 +373,17 @@
 
 **Tasks**:
 
-- [ ] T147 [US5] Create SubscriptionService in src/services/subscription-service.ts with plan assignment, limit enforcement, and usage tracking
-- [ ] T148 [US5] Create Stripe subscription integration in src/lib/stripe-subscription.ts with plan creation, checkout sessions, and webhooks
-- [ ] T149 [US5] [P] Create API route POST /api/subscriptions in src/app/api/subscriptions/route.ts for creating Stripe checkout session
-- [ ] T150 [US5] [P] Create API route GET /api/subscriptions/[storeId] in src/app/api/subscriptions/[storeId]/route.ts for retrieving subscription status
-- [ ] T151 [US5] [P] Create API route POST /api/subscriptions/[storeId]/cancel in src/app/api/subscriptions/[storeId]/cancel/route.ts for canceling subscriptions
-- [ ] T152 [US5] [P] Create API route POST /api/webhooks/stripe/subscription in src/app/api/webhooks/stripe/subscription/route.ts for subscription events
-- [ ] T153 [US5] [P] Create Subscription Plans page in src/app/(dashboard)/subscription/plans/page.tsx with plan comparison table and upgrade buttons
-- [ ] T154 [US5] [P] Create Billing page in src/app/(dashboard)/subscription/billing/page.tsx with current plan, usage, and payment history
-- [ ] T155 [US5] Create plan enforcement middleware in src/lib/plan-enforcement.ts to check limits before operations
-- [ ] T156 [US5] Create E2E test "Store cannot exceed plan limits" in tests/e2e/subscriptions/plan-limits.spec.ts
-- [ ] T157 [US5] Create E2E test "Store can upgrade subscription plan" in tests/e2e/subscriptions/upgrade-plan.spec.ts
+- [x] T147 [US5] Create SubscriptionService in src/services/subscription-service.ts with plan assignment, limit enforcement, and usage tracking
+- [x] T148 [US5] Create Stripe subscription integration in src/lib/stripe-subscription.ts with plan creation, checkout sessions, and webhooks
+- [x] T149 [US5] [P] Create API route POST /api/subscriptions in src/app/api/subscriptions/route.ts for creating Stripe checkout session
+- [x] T150 [US5] [P] Create API route GET /api/subscriptions/[storeId] in src/app/api/subscriptions/[storeId]/route.ts for retrieving subscription status
+- [x] T151 [US5] [P] Create API route POST /api/subscriptions/[storeId]/cancel in src/app/api/subscriptions/[storeId]/cancel/route.ts for canceling subscriptions
+- [x] T152 [US5] [P] Create API route POST /api/webhooks/stripe/subscription in src/app/api/webhooks/stripe/subscription/route.ts for subscription events
+- [x] T153 [US5] [P] Create Subscription Plans page in src/app/(dashboard)/subscription/plans/page.tsx with plan comparison table and upgrade buttons
+- [x] T154 [US5] [P] Create Billing page in src/app/(dashboard)/subscription/billing/page.tsx with current plan, usage, and payment history
+- [x] T155 [US5] Create plan enforcement middleware in src/lib/plan-enforcement.ts to check limits before operations
+- [x] T156 [US5] Create E2E test "Store cannot exceed plan limits" in tests/e2e/subscriptions/plan-limits.spec.ts
+- [x] T157 [US5] Create E2E test "Store can upgrade subscription plan" in tests/e2e/subscriptions/upgrade-plan.spec.ts
 
 ---
 
