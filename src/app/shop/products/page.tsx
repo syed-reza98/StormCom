@@ -44,7 +44,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   // TODO: Get storeId from domain/subdomain routing
   // For now, using the demo store ID from seeded database
-  const storeId = '6c6dcdca-fecd-430b-93b2-b9ebf4cbff10'; // Demo Store ID
+  const storeId = 'fa30516f-dd0d-4b24-befe-e4c7606b841e'; // Demo Store ID
 
   // Parse query parameters
   const page = parseInt(params.page || '1');
