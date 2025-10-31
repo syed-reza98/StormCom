@@ -1,16 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Section, Container, Flex, Heading, Text, Card, Badge, Button, Tabs } from '@radix-ui/themes';
-import { 
-  HomeIcon, 
-  GearIcon, 
-  ColorWheelIcon, 
-  CreditCardIcon, 
-  PersonIcon,
-  ArrowLeftIcon,
-  Pencil1Icon
-} from '@radix-ui/react-icons';
 
 /**
  * Store Details Page

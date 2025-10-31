@@ -7,8 +7,6 @@
 
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Section, Container, Flex, Heading, Text } from '@radix-ui/themes';
-import { ArchiveIcon, HomeIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { getCategoryBySlug, getPublishedProducts } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';

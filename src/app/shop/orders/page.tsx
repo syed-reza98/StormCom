@@ -12,7 +12,6 @@ import {
   CalendarIcon, 
   DownloadIcon,
   ReloadIcon,
-  CheckCircledIcon,
   ClockIcon
 } from '@radix-ui/react-icons';
 

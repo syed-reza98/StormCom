@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import { Section, Container, Flex, Heading, Text, Card } from '@radix-ui/themes';
-import { MixIcon } from '@radix-ui/react-icons';
+import { Card } from '@radix-ui/themes';
 import { getPublishedProducts, getCategoryTree } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ProductFilters } from '@/components/storefront/product-filters';
