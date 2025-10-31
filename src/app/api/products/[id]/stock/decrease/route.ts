@@ -6,11 +6,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 
-interface RouteParams {
-  params: Promise<{ id: string }>;
-}
+interface RouteParams { params: { id: string } }
 
-export async function POST(request: NextRequest, context: RouteParams) {
+export async function POST(request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
@@ -20,7 +18,15 @@ export async function POST(request: NextRequest, context: RouteParams) {
       );
     }
 
-    const { id } = await context.params;
+    const rawParams: any = (context as any)?.params;
+    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
+    const id: string | undefined = resolved?.id;
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
+        { status: 404 }
+      );
+    }
     const body = await request.json();
     const qty = typeof body?.quantity === 'number' ? body.quantity : NaN;
     if (!Number.isFinite(qty) || qty <= 0) {

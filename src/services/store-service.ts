@@ -1,8 +1,8 @@
-import { PrismaClient, Store, User, UserRole, SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+import { Store, User, UserRole, SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+import { db as prisma } from '@/lib/db';
 import { z } from 'zod';
 
-// Initialize Prisma Client - should be singleton in production
-const prisma = new PrismaClient();
+// Use the shared Prisma Client singleton
 
 /**
  * StoreService

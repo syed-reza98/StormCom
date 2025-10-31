@@ -286,7 +286,7 @@ export async function PUT(
             error: {
               code: 'VALIDATION_ERROR',
               message: 'Invalid input data',
-              changes: error.errors,
+              details: error.errors,
             },
           },
           { status: 400 }
@@ -444,17 +444,8 @@ export async function DELETE(
     );
 
     if (isDeleted) {
-      // Return success response
-      return NextResponse.json(
-        {
-          data: {
-            id: storeId,
-            deletedAt: new Date().toISOString(),
-          },
-          message: 'Store soft deleted successfully',
-        },
-        { status: 200 }
-      );
+      // No content on successful delete
+      return new NextResponse(null, { status: 204 });
     } else {
       return NextResponse.json(
         {
