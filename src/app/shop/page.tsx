@@ -6,7 +6,7 @@
  */
 
 import Link from 'next/link';
-import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
+import { Flex, Heading, Text, Container, Section, Card } from '@radix-ui/themes';
 import { 
   ArrowRightIcon, 
   BackpackIcon, 
@@ -17,7 +17,6 @@ import {
 import { getFeaturedProducts, getCategoryTree } from '@/services/storefront-service';
 import { ProductCard } from '@/components/storefront/product-card';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 
 export default async function Homepage() {
   // Fetch featured products and categories
