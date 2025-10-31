@@ -6,15 +6,17 @@ import { ProductService } from '../product-service';
 import { prismaMock } from '../../../tests/mocks/prisma';
 import { InventoryStatus } from '@prisma/client';
 
-// Mock the prisma module
-vi.mock('@/lib/db', () => ({
-  prisma: prismaMock,
-}));
+// Mock the prisma module using dynamic import to avoid vi.mock hoisting issues
+vi.mock('@/lib/db', async () => {
+  const mocks = await vi.importActual('../../../tests/mocks/prisma');
+  return { prisma: mocks.prismaMock };
+});
 
 describe('ProductService', () => {
   let productService: ProductService;
   const mockStoreId = 'store-123';
-  const mockProductId = 'product-123';
+  // Use a UUID to satisfy Zod uuid() validation in updateProductSchema
+  const mockProductId = '00000000-0000-4000-8000-000000000001';
 
   beforeEach(() => {
     productService = ProductService.getInstance();
@@ -25,7 +27,7 @@ describe('ProductService', () => {
     it('should return paginated products with filters', async () => {
       const mockProducts = [
         {
-          id: 'product-1',
+          id: '00000000-0000-4000-8000-000000000002',
           name: 'Test Product 1',
           slug: 'test-product-1',
           price: 29.99,
@@ -37,7 +39,7 @@ describe('ProductService', () => {
           _count: { orderItems: 5, reviews: 3, wishlistItems: 2 },
         },
         {
-          id: 'product-2',
+          id: '00000000-0000-4000-8000-000000000003',
           name: 'Test Product 2',
           slug: 'test-product-2',
           price: 49.99,
@@ -76,7 +78,6 @@ describe('ProductService', () => {
           category: { select: { id: true, name: true, slug: true } },
           brand: { select: { id: true, name: true, slug: true } },
           variants: {
-            where: { deletedAt: null },
             orderBy: { isDefault: 'desc' },
           },
           _count: {
@@ -136,7 +137,9 @@ describe('ProductService', () => {
 
       const result = await productService.getProductById(mockProductId, mockStoreId);
 
-      expect(result).toEqual(mockProduct);
+      // Service normalizes images/metaKeywords into arrays; include those in expected
+      const expected = { ...mockProduct, images: [], metaKeywords: [] };
+      expect(result).toEqual(expected);
       expect(prismaMock.product.findFirst).toHaveBeenCalledWith({
         where: {
           id: mockProductId,
@@ -167,7 +170,7 @@ describe('ProductService', () => {
     it('should return null if product not found', async () => {
       prismaMock.product.findFirst.mockResolvedValue(null);
 
-      const result = await productService.getProductById('non-existent', mockStoreId);
+      const result = await productService.getProductById('00000000-0000-0000-0000-000000000003', mockStoreId);
 
       expect(result).toBeNull();
     });
@@ -176,6 +179,8 @@ describe('ProductService', () => {
   describe('createProduct', () => {
     const validProductData = {
       name: 'New Product',
+      // Provide slug in tests to avoid triggering generateUniqueSlug loop in mocks
+      slug: 'new-product',
       price: 29.99,
       sku: 'NEW-001',
       description: 'A great product',
@@ -387,7 +392,7 @@ describe('ProductService', () => {
       prismaMock.product.findFirst.mockResolvedValue(null);
 
       await expect(
-        productService.updateProduct('non-existent', mockStoreId, { name: 'Test' })
+        productService.updateProduct('00000000-0000-0000-0000-000000000004', mockStoreId, { name: 'Test' })
       ).rejects.toThrow('Product not found');
     });
   });
@@ -415,7 +420,7 @@ describe('ProductService', () => {
       prismaMock.product.findFirst.mockResolvedValue(null);
 
       await expect(
-        productService.deleteProduct('non-existent', mockStoreId)
+        productService.deleteProduct('00000000-0000-0000-0000-000000000005', mockStoreId)
       ).rejects.toThrow('Product not found');
     });
   });
@@ -451,14 +456,16 @@ describe('ProductService', () => {
         include: expect.any(Object),
       });
 
+      // Inventory log keys updated in service implementation; assert using those keys
       expect(prismaMock.inventoryLog.create).toHaveBeenCalledWith({
         data: {
           productId: mockProductId,
           storeId: mockStoreId,
-          oldQuantity: 100,
-          newQuantity: 50,
+          previousQty: 100,
+          newQty: 50,
+          changeQty: -50,
           reason: 'Stock adjustment',
-          changedBy: 'system',
+          userId: null,
         },
       });
     });

@@ -9,6 +9,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+// This route calls authentication helpers which in turn access request
+// headers/cookies. Ensure the route is always dynamic so Next.js does not
+// attempt to prerender it and cause `headers()`/`request.cookies` to fail
+// during the build step.
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 import { authOptions } from '@/lib/auth';

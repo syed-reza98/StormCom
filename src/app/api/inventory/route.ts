@@ -3,6 +3,11 @@
 // US6 - Inventory Management
 
 import { NextRequest, NextResponse } from 'next/server';
+// This route reads cookies and headers at runtime and must opt out of
+// prerendering. Force dynamic rendering so Next.js does not attempt to
+// prerender this API route which would cause `request.cookies` to fail
+// during the build.
+export const dynamic = 'force-dynamic';
 import { getInventoryLevels } from '@/services/inventory-service';
 import { getUserFromSession } from '@/services/session-service';
 
