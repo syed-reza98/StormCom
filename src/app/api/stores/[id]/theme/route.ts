@@ -40,7 +40,7 @@ const themeUpdateSchema = z.object({
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -52,7 +52,7 @@ export async function PUT(
       );
     }
 
-    const storeId = params.id;
+    const { id: storeId } = await params;
 
     // Parse and validate request body
     const body = await request.json();
@@ -143,7 +143,7 @@ export async function PUT(
  */
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -155,7 +155,7 @@ export async function DELETE(
       );
     }
 
-    const storeId = params.id;
+    const { id: storeId } = await params;
 
     // Reset theme to default
     const theme = await resetStoreTheme(storeId);

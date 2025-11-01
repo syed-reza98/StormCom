@@ -43,14 +43,14 @@ interface Brand {
 }
 
 interface BrandsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     status?: 'active' | 'inactive' | 'all';
     sort?: 'name' | 'products' | 'created' | 'updated';
     order?: 'asc' | 'desc';
     page?: string;
     per_page?: string;
-  };
+  }>;
 }
 
 // Mock data - replace with actual API call
@@ -141,11 +141,14 @@ const mockBrands: Brand[] = [
   },
 ];
 
-async function getBrands(searchParams: BrandsPageProps['searchParams']): Promise<{
+async function getBrands(searchParamsPromise: BrandsPageProps['searchParams']): Promise<{
   brands: Brand[];
   totalCount: number;
   totalPages: number;
 }> {
+  // Await searchParams (Next.js 16 requirement)
+  const searchParams = await searchParamsPromise;
+  
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 100));
   
@@ -212,8 +215,9 @@ async function getBrands(searchParams: BrandsPageProps['searchParams']): Promise
 
 export default async function BrandsPage({ searchParams }: BrandsPageProps) {
   const { brands, totalCount, totalPages } = await getBrands(searchParams);
-  const currentPage = parseInt(searchParams.page || '1');
-  const perPage = parseInt(searchParams.per_page || '10');
+  const params = await searchParams;
+  const currentPage = parseInt(params.page || '1');
+  const perPage = parseInt(params.per_page || '10');
 
   const activeBrands = mockBrands.filter(brand => brand.isActive).length;
   const totalProducts = mockBrands.reduce((sum, brand) => sum + brand.productsCount, 0);
@@ -298,7 +302,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
             <div className="flex items-center gap-2">
               <Input
                 placeholder="Search brands..."
-                defaultValue={searchParams.search}
+                defaultValue={params.search}
                 className="w-64"
               />
               <Button variant="outline">
@@ -310,7 +314,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
 
           {/* Filters */}
           <Suspense fallback={<div>Loading filters...</div>}>
-            <BrandsFilters searchParams={searchParams} />
+            <BrandsFilters searchParams={params} />
           </Suspense>
 
           {/* Bulk Actions */}
@@ -326,7 +330,7 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
               totalPages={totalPages}
               perPage={perPage}
               totalCount={totalCount}
-              searchParams={searchParams}
+              searchParams={params}
             />
           </Suspense>
 
@@ -336,8 +340,8 @@ export default async function BrandsPage({ searchParams }: BrandsPageProps) {
               <FileTextIcon width="48" height="48" className="mx-auto mb-4" color="gray" />
               <h3 className="text-lg font-medium mb-2">No brands found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchParams.search
-                  ? `No brands match your search "${searchParams.search}"`
+                {params.search
+                  ? `No brands match your search "${params.search}"`
                   : 'Create your first brand to organize your products'}
               </p>
               <Button>Create Brand</Button>

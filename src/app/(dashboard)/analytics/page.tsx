@@ -120,9 +120,6 @@ export default async function AnalyticsPage({
       <Suspense fallback={<AnalyticsLoadingSkeleton />}>
         <AnalyticsDashboard
           storeId={session.storeId}
-          startDate={startDate}
-          endDate={endDate}
-          period={period}
         />
       </Suspense>
     </div>

@@ -202,7 +202,7 @@ test.describe('Rate Limiting', () => {
   });
 
   test.describe('Different IPs Different Limits', () => {
-    test.skip('should enforce rate limits per IP address', async ({ request }) => {
+    test.skip('should enforce rate limits per IP address', async ({ request: _request }) => {
       // Note: This test is skipped as Playwright tests run from same IP
       // In production, different IPs get independent rate limit counters
 

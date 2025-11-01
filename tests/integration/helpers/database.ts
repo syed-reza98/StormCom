@@ -283,7 +283,7 @@ export async function cleanupAllTestDatabases(): Promise<void> {
  */
 function cleanupAllDatabases(): void {
   // Synchronous cleanup for process exit
-  for (const [testId, dbInfo] of testDatabases) {
+  for (const [_testId, dbInfo] of testDatabases) {
     try {
       if (existsSync(dbInfo.dbPath)) {
         unlinkSync(dbInfo.dbPath);

@@ -24,7 +24,7 @@ import { generateCsrfToken, CSRF_CONFIG } from '@/lib/csrf';
  * @see src/lib/csrf.ts
  * @see specs/001-multi-tenant-ecommerce/spec.md (Security Requirements)
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Generate a new CSRF token
     const csrfToken = await generateCsrfToken();
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
  * 
  * CORS preflight handler
  */
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   return new NextResponse(null, {
     status: 204,
     headers: {

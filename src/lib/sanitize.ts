@@ -89,7 +89,7 @@ export function sanitizeHtml(
     pre: ['class'],
   };
 
-  return DOMPurify.sanitize(html, {
+  return String(DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ALLOWED_TAGS,
     ALLOWED_ATTR: ALLOWED_ATTR,
     // Forbid script execution contexts
@@ -101,7 +101,7 @@ export function sanitizeHtml(
     ALLOW_ARIA_ATTR: true, // Allow ARIA for accessibility
     RETURN_DOM: false, // Return string (not DOM)
     RETURN_DOM_FRAGMENT: false,
-  } as any);
+  } as any));
 }
 
 /**
@@ -126,11 +126,11 @@ export function stripHtml(html: string): string {
   }
 
   // Use DOMPurify with ALLOWED_TAGS: [] to strip everything
-  return (DOMPurify.sanitize(html, {
+  return String(DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [], // No tags allowed
     ALLOWED_ATTR: [], // No attributes allowed
     KEEP_CONTENT: true, // Keep text content
-  } as any) as string).trim();
+  } as any)).trim();
 }
 
 /**

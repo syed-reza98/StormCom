@@ -104,7 +104,7 @@ export class GDPRService {
           select: {
             id: true,
             orderNumber: true,
-            total: true,
+            totalAmount: true,
             status: true,
             createdAt: true,
           },
@@ -112,9 +112,8 @@ export class GDPRService {
         addresses: {
           select: {
             id: true,
-            type: true,
-            addressLine1: true,
-            addressLine2: true,
+            address1: true,
+            address2: true,
             city: true,
             state: true,
             postalCode: true,
@@ -157,8 +156,23 @@ export class GDPRService {
         createdAt: user.createdAt,
         lastLoginAt: user.lastLoginAt,
       },
-      orders: user.orders,
-      addresses: user.addresses,
+      orders: user.orders.map((order) => ({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        total: order.totalAmount,
+        status: order.status,
+        createdAt: order.createdAt,
+      })),
+      addresses: user.addresses.map((address) => ({
+        id: address.id,
+        type: 'shipping', // Default type since Prisma schema doesn't have this field
+        addressLine1: address.address1,
+        addressLine2: address.address2,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+        country: address.country,
+      })),
       reviews: user.reviews,
       consentRecords: user.consentRecords.map((record: {
         consentType: string;
@@ -309,7 +323,7 @@ export class GDPRService {
     }
 
     // Perform deletion in transaction
-    const deletedUser = await prisma.$transaction(async (tx: typeof prisma) => {
+    const deletedUser = await prisma.$transaction(async (tx) => {
       // 1. Delete related data (hard delete)
       await tx.address.deleteMany({ where: { userId } });
       await tx.review.deleteMany({ where: { userId } });
@@ -499,7 +513,7 @@ export class GDPRService {
       where: { id: requestId },
       data: {
         status,
-        processedAt: [GdprRequestStatus.COMPLETED, GdprRequestStatus.FAILED].includes(status)
+        processedAt: (status === GdprRequestStatus.COMPLETED || status === GdprRequestStatus.FAILED)
           ? new Date()
           : undefined,
         exportUrl: metadata?.exportUrl,

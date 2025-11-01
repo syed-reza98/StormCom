@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import useToast from '@/hooks/use-toast';
 import { Loader2, Check, RotateCcw } from 'lucide-react';
 import { getThemeStyles } from '@/lib/theme-utils';
 
@@ -123,7 +123,6 @@ export function ThemeEditor({ storeId, initialTheme }: ThemeEditorProps) {
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to save theme',
-        variant: 'destructive',
       });
     } finally {
       setIsSaving(false);
@@ -153,7 +152,6 @@ export function ThemeEditor({ storeId, initialTheme }: ThemeEditorProps) {
       toast({
         title: 'Error',
         description: 'Failed to reset theme',
-        variant: 'destructive',
       });
     } finally {
       setIsResetting(false);

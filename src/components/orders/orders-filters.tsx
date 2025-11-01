@@ -109,12 +109,12 @@ export function OrdersFilters({ searchParams }: OrdersFiltersProps) {
           <label htmlFor="status" className="block text-sm font-medium mb-2">
             Status
           </label>
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status || 'ALL'} onValueChange={(value) => setStatus(value === 'ALL' ? '' : value)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Statuses</SelectItem>
+              <SelectItem value="ALL">All Statuses</SelectItem>
               <SelectItem value="PENDING">Pending</SelectItem>
               <SelectItem value="PAID">Paid</SelectItem>
               <SelectItem value="PROCESSING">Processing</SelectItem>

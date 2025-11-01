@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { POST as exportHandler } from '@/app/api/gdpr/export/route';
 import { POST as deleteHandler } from '@/app/api/gdpr/delete/route';
 import { GET as getConsentHandler, POST as postConsentHandler } from '@/app/api/gdpr/consent/route';
-import { GdprRequestType, GdprRequestStatus, ConsentType, UserRole } from '@prisma/client';
+import { GdprRequestType, ConsentType, UserRole } from '@prisma/client';
 
 // Mock session storage
 vi.mock('@/lib/session-storage', () => ({
@@ -70,8 +70,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/export', {
@@ -106,8 +107,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/export', {
@@ -158,8 +160,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/export', {
@@ -199,8 +202,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/delete', {
@@ -237,8 +241,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/delete', {
@@ -268,8 +273,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/delete', {
@@ -323,8 +329,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request(
@@ -371,8 +378,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/consent', {
@@ -409,8 +417,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/consent', {
@@ -442,8 +451,9 @@ describe('GDPR API Endpoints', () => {
         email: 'gdpr-test@example.com',
         role: 'USER',
         storeId: null,
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new Request('http://localhost:3000/api/gdpr/consent', {
@@ -468,3 +478,4 @@ describe('GDPR API Endpoints', () => {
     });
   });
 });
+

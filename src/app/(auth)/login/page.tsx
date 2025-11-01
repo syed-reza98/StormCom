@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -51,6 +51,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Track client-side mounting to prevent hydration errors
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const {
     register,
@@ -146,7 +152,7 @@ export default function LoginPage() {
                 <FormError
                   message={
                     serverError
-                      ? lockedUntil
+                      ? lockedUntil && isMounted
                         ? `${serverError} Your account is locked until ${lockedUntil.toLocaleString()}`
                         : serverError
                       : undefined
