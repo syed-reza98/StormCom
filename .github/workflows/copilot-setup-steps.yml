@@ -20,13 +20,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up Node 20 (project supports 18.x+, using 20 in CI for consistency and latest features)
+      # Engines: Node >=20, npm >=10
+      - name: Set up Node 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
-      - name: Use npm 11
-        run: npm i -g npm@11
+
+      - name: Use npm 10 (per package.json engines)
+        run: npm i -g npm@10
 
       - name: Copy env file
         run: |
@@ -37,25 +39,44 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ---------- Prisma + SQLite ----------
+      # ---------- Playwright MCP (system deps + browsers) ----------
+      - name: Install Playwright deps & browsers
+        if: ${{ hashFiles('playwright.config.*') != '' || hashFiles('.playwright-mcp/**') != '' }}
+        run: |
+          npx playwright install-deps
+          npx playwright install
+
+      - name: Cache Playwright browsers
+        if: ${{ hashFiles('playwright.config.*') != '' || hashFiles('.playwright-mcp/**') != '' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('playwright.config.*', '.playwright-mcp/**') }}
+
+      # ---------- Prisma + SQLite (prisma/dev.db) ----------
       - name: Generate Prisma client (SQLite)
         env:
-          DATABASE_URL: "file:./dev.db"
+          DATABASE_URL: "file:./prisma/dev.db"
         run: |
           mkdir -p prisma
           npx prisma generate
 
-      - name: Apply migrations (create prisma/dev.db if needed)
+      - name: Init SQLite schema (db push)
         env:
-          DATABASE_URL: "file:./dev.db"
+          DATABASE_URL: "file:./prisma/dev.db"
+        run: npx prisma db push --accept-data-loss
+
+      - name: Apply migrations (optional if present)
+        env:
+          DATABASE_URL: "file:./prisma/dev.db"
         run: |
-          if [ -f "prisma/schema.prisma" ]; then
+          if [ -f "prisma/schema.prisma" ] && [ -d "prisma/migrations" ]; then
             npx prisma migrate deploy || true
           fi
 
       - name: Seed database (uses your npm script)
         env:
-          DATABASE_URL: "file:./dev.db"
+          DATABASE_URL: "file:./prisma/dev.db"
         run: |
           if [ -f "prisma/seed.ts" ]; then
             npm run db:seed
@@ -67,26 +88,14 @@ jobs:
       - name: Type check
         run: npm run type-check
 
-      - name: Save type-check errors to JSON (PowerShell script)
+      - name: Save type-check errors to JSON (PowerShell script with Linux fallback)
         run: |
-          # Run npm script first; if it fails, fall back to direct PowerShell execution
           npm run type-check:save || pwsh -File ./scripts/collect-type-errors.ps1
         shell: bash
 
-      # ---------- Playwright MCP ----------
-      - name: Install Playwright browsers (+ deps)
-        if: ${{ hashFiles('playwright.config.*') != '' || hashFiles('.playwright-mcp/**') != '' }}
-        run: npx playwright install --with-deps
-
-      - name: Cache Playwright browsers
-        if: ${{ hashFiles('playwright.config.*') != '' || hashFiles('.playwright-mcp/**') != '' }}
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('playwright.config.*', '.playwright-mcp/**') }}
-
-      # ---------- Next.js MCP warm start ----------
+      # ---------- Next.js MCP warm start (guarded) ----------
       - name: Warm-start Next.js dev server (time-boxed)
+        if: ${{ hashFiles('app/**','pages/**','src/app/**','src/pages/**') != '' }}
         env:
           NODE_ENV: development
         run: |
