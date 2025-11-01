@@ -345,3 +345,103 @@ export default {
   PLAN_ENFORCEMENT_ERRORS,
   isPlanEnforcementError,
 };
+
+// Compatibility implementations for legacy test/api usage
+// Legacy helpers used by older tests and route handlers
+export async function checkProductCreationLimit(request: NextRequest): Promise<null | NextResponse> {
+  try {
+    const session = await getSessionFromRequest(request);
+    if (!session) {
+      return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
+    }
+
+    const storeId = (session as any).storeId;
+    if (!storeId) {
+      return NextResponse.json({ error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } }, { status: 400 });
+    }
+
+    try {
+      const result = await SubscriptionService.canCreateProduct(storeId);
+      if (result && (result as any).allowed) {
+        return null;
+      }
+
+      return NextResponse.json({ error: { code: 'PLAN_LIMIT_EXCEEDED', message: 'Product creation limit exceeded for your current plan' } }, { status: 403 });
+    } catch (err) {
+      console.error('checkProductCreationLimit error', err);
+      return NextResponse.json({ error: { code: 'PLAN_CHECK_FAILED', message: 'Failed to check plan limits' } }, { status: 500 });
+    }
+  } catch (err) {
+    console.error('checkProductCreationLimit unexpected error', err);
+    return NextResponse.json({ error: { code: 'ENFORCEMENT_ERROR', message: 'Failed to check plan limits' } }, { status: 500 });
+  }
+}
+
+export async function checkOrderCreationLimit(request: NextRequest): Promise<null | NextResponse> {
+  try {
+    const session = await getSessionFromRequest(request);
+    if (!session) {
+      return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
+    }
+
+    const storeId = (session as any).storeId;
+    if (!storeId) {
+      return NextResponse.json({ error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } }, { status: 400 });
+    }
+
+    try {
+      const result = await SubscriptionService.canCreateOrder(storeId);
+      if (result && (result as any).allowed) {
+        return null;
+      }
+
+      return NextResponse.json({ error: { code: 'PLAN_LIMIT_EXCEEDED', message: 'Order creation limit exceeded for your current plan' } }, { status: 403 });
+    } catch (err) {
+      console.error('checkOrderCreationLimit error', err);
+      return NextResponse.json({ error: { code: 'PLAN_CHECK_FAILED', message: 'Failed to check plan limits' } }, { status: 500 });
+    }
+  } catch (err) {
+    console.error('checkOrderCreationLimit unexpected error', err);
+    return NextResponse.json({ error: { code: 'ENFORCEMENT_ERROR', message: 'Failed to check plan limits' } }, { status: 500 });
+  }
+}
+
+export async function enforcePlanLimits(
+  request: NextRequest,
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
+  resource: 'product' | 'order'
+): Promise<NextResponse> {
+  // Validate resource
+  if (resource !== 'product' && resource !== 'order') {
+    return NextResponse.json({ error: { code: 'INVALID_RESOURCE_TYPE', message: 'Invalid resource type for plan enforcement' } }, { status: 400 });
+  }
+
+  // Allow safe methods without enforcement
+  const method = (request && (request as any).method) || 'GET';
+  if (['GET', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    return await handler(request);
+  }
+
+  // Run appropriate check
+  if (resource === 'product') {
+    const check = await checkProductCreationLimit(request);
+    if (check) return check as NextResponse;
+  } else {
+    const check = await checkOrderCreationLimit(request);
+    if (check) return check as NextResponse;
+  }
+
+  // Allowed, call handler
+  return await handler(request);
+}
+
+export function withPlanLimits(
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
+  resource: 'product' | 'order'
+) {
+  return async (request: NextRequest, context?: any) => {
+    // Delegate to enforcePlanLimits which will call the handler when allowed
+    const result = await enforcePlanLimits(request, (req) => handler(req, context), resource);
+    return result;
+  };
+}

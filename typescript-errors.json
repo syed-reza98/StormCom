@@ -1,31 +1,42 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  156,
+                    "totalErrors":  121,
                     "exitCode":  1,
-                    "timestamp":  "2025-11-01T20:23:28Z",
+                    "timestamp":  "2025-11-01T21:02:58Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  176
+                    "totalLines":  149
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit",
                       "",
+                      ".next/dev/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
+                      "  Types of property \u0027PUT\u0027 are incompatible.",
+                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
+                      "      Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible.",
+                      "        Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027.",
+                      "          Types of property \u0027params\u0027 are incompatible.",
+                      "            Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
+                      ".next/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
+                      "  Types of property \u0027PUT\u0027 are incompatible.",
+                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
+                      "      Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible.",
+                      "        Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027.",
+                      "          Types of property \u0027params\u0027 are incompatible.",
+                      "            Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
                       "src/app/(dashboard)/analytics/page.tsx(123,11): error TS2322: Type \u0027{ storeId: string; startDate: string | undefined; endDate: string | undefined; period: \"day\" | \"week\" | \"month\"; }\u0027 is not assignable to type \u0027IntrinsicAttributes \u0026 AnalyticsDashboardProps\u0027.",
                       "  Property \u0027startDate\u0027 does not exist on type \u0027IntrinsicAttributes \u0026 AnalyticsDashboardProps\u0027.",
                       "src/app/api/csrf-token/route.ts(27,27): error TS6133: \u0027request\u0027 is declared but its value is never read.",
                       "src/app/api/csrf-token/route.ts(74,31): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                      "src/components/analytics/top-products.tsx(354,19): error TS2322: Type \u0027({ name, percent }: { name: string; percent: number; }) =\u003e string\u0027 is not assignable to type \u0027PieLabel | undefined\u0027.",
-                      "  Type \u0027({ name, percent }: { name: string; percent: number; }) =\u003e string\u0027 is not assignable to type \u0027(props: PieLabelRenderProps) =\u003e ReactNode | ReactElement\u003cSVGElement, string | JSXElementConstructor\u003cany\u003e\u003e\u0027.",
-                      "    Types of parameters \u0027__0\u0027 and \u0027props\u0027 are incompatible.",
-                      "      Property \u0027percent\u0027 is missing in type \u0027PieLabelRenderProps\u0027 but required in type \u0027{ name: string; percent: number; }\u0027.",
-                      "src/components/theme/theme-editor.tsx(20,26): error TS2307: Cannot find module \u0027@/hooks/use-toast\u0027 or its corresponding type declarations.",
-                      "src/lib/sanitize.ts(94,5): error TS2769: No overload matches this call.",
-                      "  The last overload gave the following error.",
-                      "    Type \u0027Record\u003cstring, string[]\u003e\u0027 is missing the following properties from type \u0027string[]\u0027: length, pop, push, concat, and 35 more.",
+                      "src/components/theme/theme-editor.tsx(20,10): error TS2614: Module \u0027\"@/hooks/use-toast\"\u0027 has no exported member \u0027useToast\u0027. Did you mean to use \u0027import useToast from \"@/hooks/use-toast\"\u0027 instead?",
+                      "src/lib/sanitize.ts(92,3): error TS2322: Type \u0027TrustedHTML\u0027 is not assignable to type \u0027string\u0027.",
+                      "src/lib/sanitize.ts(129,11): error TS2352: Conversion of type \u0027TrustedHTML\u0027 to type \u0027string\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
+                      "tests/__mocks__/mockPrisma.ts(1,10): error TS2305: Module \u0027\"jest-mock-extended\"\u0027 has no exported member \u0027createMock\u0027.",
                       "tests/e2e/security/rate-limiting.spec.ts(205,67): error TS6133: \u0027request\u0027 is declared but its value is never read.",
                       "tests/integration/helpers/database.ts(286,15): error TS6133: \u0027testId\u0027 is declared but its value is never read.",
+                      "tests/support/fixtures.ts(2,31): error TS2307: Cannot find module \u0027@/types\u0027 or its corresponding type declarations.",
                       "tests/unit/app/api/analytics-api.test.ts(58,38): error TS2345: Argument of type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
                       "  Type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, createdAt, lastAccessedAt",
                       "tests/unit/app/api/analytics-api.test.ts(157,40): error TS2345: Argument of type \u0027{ storeId: null; id: string; userId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
@@ -77,53 +88,15 @@
                       "tests/unit/hooks/analytics-hooks.test.ts(560,37): error TS2307: Cannot find module \u0027../../../src/lib/error-utils\u0027 or its corresponding type declarations.",
                       "tests/unit/hooks/use-plan-enforcement.test.ts(6,76): error TS2307: Cannot find module \u0027@/hooks/use-plan-enforcement\u0027 or its corresponding type declarations.",
                       "tests/unit/hooks/use-plan-enforcement.test.ts(21,52): error TS2551: Property \u0027getUsageStatistics\u0027 does not exist on type \u0027typeof SubscriptionService\u0027. Did you mean \u0027getUsageStats\u0027?",
-                      "tests/unit/lib/plan-enforcement.test.ts(7,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027withPlanLimits\u0027. Did you mean to use \u0027import withPlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                      "tests/unit/lib/plan-enforcement.test.ts(8,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027enforcePlanLimits\u0027. Did you mean to use \u0027import enforcePlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                      "tests/unit/lib/plan-enforcement.test.ts(9,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkProductCreationLimit\u0027. Did you mean to use \u0027import checkProductCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
-                      "tests/unit/lib/plan-enforcement.test.ts(10,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkOrderCreationLimit\u0027. Did you mean to use \u0027import checkOrderCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
                       "tests/unit/lib/plan-enforcement.test.ts(13,39): error TS2307: Cannot find module \u0027@/lib/auth-helpers\u0027 or its corresponding type declarations.",
                       "tests/unit/lib/plan-enforcement.test.ts(253,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
                       "tests/unit/lib/plan-enforcement.test.ts(320,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
                       "tests/unit/lib/plan-enforcement.test.ts(355,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
                       "tests/unit/lib/plan-enforcement.test.ts(412,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
                       "tests/unit/lib/plan-enforcement.test.ts(427,43): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/security-headers.test.ts(29,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(36,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(43,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(52,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(60,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(67,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(77,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(84,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(91,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(98,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(105,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(115,35): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(122,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(129,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(136,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(146,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(153,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(163,35): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(170,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(180,33): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(187,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(197,33): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(204,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(211,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(218,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(228,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(235,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(245,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(263,25): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(264,25): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(272,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(273,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(274,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(275,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(276,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(277,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                      "tests/unit/lib/security-headers.test.ts(278,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
+                      "tests/unit/lib/plan-enforcement.test.ts(431,45): error TS2345: Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027.",
+                      "  Type \u0027NextResponse\u003c{ id: any; }\u003e\u0027 is missing the following properties from type \u0027Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027: then, catch, finally, [Symbol.toStringTag]",
+                      "tests/unit/lib/security-headers.test.ts(261,26): error TS1308: \u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
                       "tests/unit/lib/security-headers.test.ts(287,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
                       "tests/unit/lib/security-headers.test.ts(292,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
                       "tests/unit/lib/security-headers.test.ts(311,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
@@ -172,20 +145,38 @@
                       "tests/unit/services/email-service.test.ts(268,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
                       "tests/unit/services/email-service.test.ts(381,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
                       "tests/unit/services/email-service.test.ts(476,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
-                      "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                       "tests/unit/services/email-service.test.ts(550,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
-                      "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; address: string | null; id: string; phone: string | null; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; ... 14 more ...; locale: string; }\u0027: createdAt, address, phone, updatedAt, and 18 more.",
-                      "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
+                      "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                       "tests/unit/services/subscription-service.test.ts(26,16): error TS2352: Conversion of type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027 to type \u0027{ store: { findUnique: MockedFunction\u003cany\u003e; update: MockedFunction\u003cany\u003e; findMany: MockedFunction\u003cany\u003e; }; product: { count: MockedFunction\u003cany\u003e; }; order: { ...; }; }\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
                       "  The types of \u0027store.findUnique\u0027 are incompatible between these types.",
                       "    Type \u0027\u003cT extends StoreFindUniqueArgs\u003e(args: SelectSubset\u003cT, StoreFindUniqueArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__StoreClient\u003cGetFindResult\u003c$StorePayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e | null, null, DefaultArgs, PrismaClientOptions\u003e\u0027 is not comparable to type \u0027MockedFunction\u003cany\u003e\u0027.",
                       "      Type \u0027\u003cT extends StoreFindUniqueArgs\u003e(args: SelectSubset\u003cT, StoreFindUniqueArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__StoreClient\u003cGetFindResult\u003c$StorePayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e | null, null, DefaultArgs, PrismaClientOptions\u003e\u0027 is missing the following properties from type \u0027Mock\u003cany\u003e\u0027: getMockName, mockName, mock, mockClear, and 14 more."
                   ],
     "errors":  [
+                   {
+                       "fullText":  ".next/dev/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
+                       "file":  ".next/dev/types/validator.ts",
+                       "code":  "TS2344",
+                       "line":  882,
+                       "severity":  "error",
+                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
+                       "column":  31
+                   },
+                   {
+                       "fullText":  ".next/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
+                       "file":  ".next/types/validator.ts",
+                       "code":  "TS2344",
+                       "line":  882,
+                       "severity":  "error",
+                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
+                       "column":  31
+                   },
                    {
                        "fullText":  "src/app/(dashboard)/analytics/page.tsx(123,11): error TS2322: Type \u0027{ storeId: string; startDate: string | undefined; endDate: string | undefined; period: \"day\" | \"week\" | \"month\"; }\u0027 is not assignable to type \u0027IntrinsicAttributes \u0026 AnalyticsDashboardProps\u0027.",
                        "file":  "src/app/(dashboard)/analytics/page.tsx",
@@ -214,31 +205,40 @@
                        "file":  "src/app/api/csrf-token/route.ts"
                    },
                    {
-                       "fullText":  "src/components/analytics/top-products.tsx(354,19): error TS2322: Type \u0027({ name, percent }: { name: string; percent: number; }) =\u003e string\u0027 is not assignable to type \u0027PieLabel | undefined\u0027.",
-                       "file":  "src/components/analytics/top-products.tsx",
-                       "code":  "TS2322",
-                       "line":  354,
-                       "severity":  "error",
-                       "message":  "Type \u0027({ name, percent }: { name: string; percent: number; }) =\u003e string\u0027 is not assignable to type \u0027PieLabel | undefined\u0027. Type \u0027({ name, percent }: { name: string; percent: number; }) =\u003e string\u0027 is not assignable to type \u0027(props: PieLabelRenderProps) =\u003e ReactNode | ReactElement\u003cSVGElement, string | JSXElementConstructor\u003cany\u003e\u003e\u0027. Types of parameters \u0027__0\u0027 and \u0027props\u0027 are incompatible. Property \u0027percent\u0027 is missing in type \u0027PieLabelRenderProps\u0027 but required in type \u0027{ name: string; percent: number; }\u0027.",
-                       "column":  19
-                   },
-                   {
-                       "message":  "Cannot find module \u0027@/hooks/use-toast\u0027 or its corresponding type declarations.",
-                       "column":  26,
+                       "message":  "Module \u0027\"@/hooks/use-toast\"\u0027 has no exported member \u0027useToast\u0027. Did you mean to use \u0027import useToast from \"@/hooks/use-toast\"\u0027 instead?",
+                       "column":  10,
                        "line":  20,
-                       "fullText":  "src/components/theme/theme-editor.tsx(20,26): error TS2307: Cannot find module \u0027@/hooks/use-toast\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
+                       "fullText":  "src/components/theme/theme-editor.tsx(20,10): error TS2614: Module \u0027\"@/hooks/use-toast\"\u0027 has no exported member \u0027useToast\u0027. Did you mean to use \u0027import useToast from \"@/hooks/use-toast\"\u0027 instead?",
+                       "code":  "TS2614",
                        "severity":  "error",
                        "file":  "src/components/theme/theme-editor.tsx"
                    },
                    {
-                       "fullText":  "src/lib/sanitize.ts(94,5): error TS2769: No overload matches this call.",
-                       "file":  "src/lib/sanitize.ts",
-                       "code":  "TS2769",
-                       "line":  94,
+                       "message":  "Type \u0027TrustedHTML\u0027 is not assignable to type \u0027string\u0027.",
+                       "column":  3,
+                       "line":  92,
+                       "fullText":  "src/lib/sanitize.ts(92,3): error TS2322: Type \u0027TrustedHTML\u0027 is not assignable to type \u0027string\u0027.",
+                       "code":  "TS2322",
                        "severity":  "error",
-                       "message":  "No overload matches this call. The last overload gave the following error. Type \u0027Record\u003cstring, string[]\u003e\u0027 is missing the following properties from type \u0027string[]\u0027: length, pop, push, concat, and 35 more.",
-                       "column":  5
+                       "file":  "src/lib/sanitize.ts"
+                   },
+                   {
+                       "message":  "Conversion of type \u0027TrustedHTML\u0027 to type \u0027string\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
+                       "column":  11,
+                       "line":  129,
+                       "fullText":  "src/lib/sanitize.ts(129,11): error TS2352: Conversion of type \u0027TrustedHTML\u0027 to type \u0027string\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
+                       "code":  "TS2352",
+                       "severity":  "error",
+                       "file":  "src/lib/sanitize.ts"
+                   },
+                   {
+                       "message":  "Module \u0027\"jest-mock-extended\"\u0027 has no exported member \u0027createMock\u0027.",
+                       "column":  10,
+                       "line":  1,
+                       "fullText":  "tests/__mocks__/mockPrisma.ts(1,10): error TS2305: Module \u0027\"jest-mock-extended\"\u0027 has no exported member \u0027createMock\u0027.",
+                       "code":  "TS2305",
+                       "severity":  "error",
+                       "file":  "tests/__mocks__/mockPrisma.ts"
                    },
                    {
                        "message":  "\u0027request\u0027 is declared but its value is never read.",
@@ -257,6 +257,15 @@
                        "code":  "TS6133",
                        "severity":  "error",
                        "file":  "tests/integration/helpers/database.ts"
+                   },
+                   {
+                       "message":  "Cannot find module \u0027@/types\u0027 or its corresponding type declarations.",
+                       "column":  31,
+                       "line":  2,
+                       "fullText":  "tests/support/fixtures.ts(2,31): error TS2307: Cannot find module \u0027@/types\u0027 or its corresponding type declarations.",
+                       "code":  "TS2307",
+                       "severity":  "error",
+                       "file":  "tests/support/fixtures.ts"
                    },
                    {
                        "fullText":  "tests/unit/app/api/analytics-api.test.ts(58,38): error TS2345: Argument of type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
@@ -655,42 +664,6 @@
                        "file":  "tests/unit/hooks/use-plan-enforcement.test.ts"
                    },
                    {
-                       "message":  "Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027withPlanLimits\u0027. Did you mean to use \u0027import withPlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "column":  3,
-                       "line":  7,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(7,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027withPlanLimits\u0027. Did you mean to use \u0027import withPlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "code":  "TS2614",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "message":  "Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027enforcePlanLimits\u0027. Did you mean to use \u0027import enforcePlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "column":  3,
-                       "line":  8,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(8,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027enforcePlanLimits\u0027. Did you mean to use \u0027import enforcePlanLimits from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "code":  "TS2614",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "message":  "Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkProductCreationLimit\u0027. Did you mean to use \u0027import checkProductCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "column":  3,
-                       "line":  9,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(9,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkProductCreationLimit\u0027. Did you mean to use \u0027import checkProductCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "code":  "TS2614",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "message":  "Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkOrderCreationLimit\u0027. Did you mean to use \u0027import checkOrderCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "column":  3,
-                       "line":  10,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(10,3): error TS2614: Module \u0027\"@/lib/plan-enforcement\"\u0027 has no exported member \u0027checkOrderCreationLimit\u0027. Did you mean to use \u0027import checkOrderCreationLimit from \"@/lib/plan-enforcement\"\u0027 instead?",
-                       "code":  "TS2614",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
                        "message":  "Cannot find module \u0027@/lib/auth-helpers\u0027 or its corresponding type declarations.",
                        "column":  39,
                        "line":  13,
@@ -745,335 +718,20 @@
                        "file":  "tests/unit/lib/plan-enforcement.test.ts"
                    },
                    {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  34,
-                       "line":  29,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(29,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
+                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(431,45): error TS2345: Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027.",
+                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
+                       "code":  "TS2345",
+                       "line":  431,
                        "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
+                       "message":  "Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027. Type \u0027NextResponse\u003c{ id: any; }\u003e\u0027 is missing the following properties from type \u0027Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027: then, catch, finally, [Symbol.toStringTag]",
+                       "column":  45
                    },
                    {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  36,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(36,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  43,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(43,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  52,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(52,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  60,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(60,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  67,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(67,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  77,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(77,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  84,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(84,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  91,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(91,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  98,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(98,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  105,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(105,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  35,
-                       "line":  115,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(115,35): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  29,
-                       "line":  122,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(122,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  29,
-                       "line":  129,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(129,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  29,
-                       "line":  136,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(136,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  34,
-                       "line":  146,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(146,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  153,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(153,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  35,
-                       "line":  163,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(163,35): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  29,
-                       "line":  170,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(170,29): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  33,
-                       "line":  180,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(180,33): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  27,
-                       "line":  187,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(187,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  33,
-                       "line":  197,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(197,33): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  27,
-                       "line":  204,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(204,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  27,
-                       "line":  211,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(211,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  27,
-                       "line":  218,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(218,27): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  34,
-                       "line":  228,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(228,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  28,
-                       "line":  235,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(235,28): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  34,
-                       "line":  245,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(245,34): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  25,
-                       "line":  263,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(263,25): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  25,
-                       "line":  264,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(264,25): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  272,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(272,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  273,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(273,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  274,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(274,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  275,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(275,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  276,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(276,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  277,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(277,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "column":  23,
-                       "line":  278,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(278,23): error TS2339: Property \u0027headers\u0027 does not exist on type \u0027Promise\u003cResponse\u003e\u0027.",
-                       "code":  "TS2339",
+                       "message":  "\u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
+                       "column":  26,
+                       "line":  261,
+                       "fullText":  "tests/unit/lib/security-headers.test.ts(261,26): error TS1308: \u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
+                       "code":  "TS1308",
                        "severity":  "error",
                        "file":  "tests/unit/lib/security-headers.test.ts"
                    },
@@ -1510,28 +1168,28 @@
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  499,
-                       "fullText":  "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  519,
-                       "fullText":  "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  535,
-                       "fullText":  "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
@@ -1546,37 +1204,37 @@
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  573,
-                       "fullText":  "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  593,
-                       "fullText":  "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; address: string | null; id: string; phone: string | null; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; ... 14 more ...; locale: string; }\u0027: createdAt, address, phone, updatedAt, and 18 more.",
+                       "message":  "Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
                        "column":  7,
                        "line":  596,
-                       "fullText":  "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; address: string | null; id: string; phone: string | null; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; ... 14 more ...; locale: string; }\u0027: createdAt, address, phone, updatedAt, and 18 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "column":  7,
                        "line":  609,
-                       "fullText":  "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; createdAt: Date; email: string; role: UserRole; storeId: string | null; id: string; password: string; phone: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 13 more ...; deletedAt: Date | null; }\u0027: createdAt, role, storeId, password, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"

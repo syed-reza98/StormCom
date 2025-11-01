@@ -23,23 +23,23 @@ describe('Security Middleware', () => {
   });
 
   describe('Content-Security-Policy (CSP)', () => {
-    it('should set Content-Security-Policy header', () => {
-      const response = middleware(request);
+    it('should set Content-Security-Policy header', async () => {
+      const response = await middleware(request);
 
       const cspHeader = response.headers.get('Content-Security-Policy');
       expect(cspHeader).toBeDefined();
       expect(cspHeader).toBeTruthy();
     });
 
-    it('should include default-src directive', () => {
-      const response = middleware(request);
+    it('should include default-src directive', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain("default-src 'self'");
     });
 
-    it('should allow unsafe-inline and unsafe-eval for scripts (Next.js requirement)', () => {
-      const response = middleware(request);
+    it('should allow unsafe-inline and unsafe-eval for scripts (Next.js requirement)', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       // Next.js requires these for App Router functionality
@@ -47,23 +47,23 @@ describe('Security Middleware', () => {
       expect(csp).toContain("'unsafe-eval'");
     });
 
-    it('should allow Vercel services in script-src', () => {
-      const response = middleware(request);
+    it('should allow Vercel services in script-src', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('https://vercel.live');
       expect(csp).toContain('https://va.vercel-scripts.com');
     });
 
-    it('should allow Google Fonts in style-src', () => {
-      const response = middleware(request);
+    it('should allow Google Fonts in style-src', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('https://fonts.googleapis.com');
     });
 
-    it('should allow data URIs and HTTPS images in img-src', () => {
-      const response = middleware(request);
+    it('should allow data URIs and HTTPS images in img-src', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('img-src');
@@ -72,36 +72,36 @@ describe('Security Middleware', () => {
       expect(csp).toContain('https:');
     });
 
-    it('should block all plugins with object-src none', () => {
-      const response = middleware(request);
+    it('should block all plugins with object-src none', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain("object-src 'none'");
     });
 
-    it('should deny all frame ancestors', () => {
-      const response = middleware(request);
+    it('should deny all frame ancestors', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain("frame-ancestors 'none'");
     });
 
-    it('should include upgrade-insecure-requests directive', () => {
-      const response = middleware(request);
+    it('should include upgrade-insecure-requests directive', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('upgrade-insecure-requests');
     });
 
-    it('should restrict form actions to self', () => {
-      const response = middleware(request);
+    it('should restrict form actions to self', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain("form-action 'self'");
     });
 
-    it('should restrict base URI to self', () => {
-      const response = middleware(request);
+    it('should restrict base URI to self', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain("base-uri 'self'");
@@ -109,30 +109,30 @@ describe('Security Middleware', () => {
   });
 
   describe('Strict-Transport-Security (HSTS)', () => {
-    it('should set Strict-Transport-Security header', () => {
-      const response = middleware(request);
+    it('should set Strict-Transport-Security header', async () => {
+      const response = await middleware(request);
 
       const hstsHeader = response.headers.get('Strict-Transport-Security');
       expect(hstsHeader).toBeDefined();
       expect(hstsHeader).toBeTruthy();
     });
 
-    it('should enforce HTTPS for 1 year (31536000 seconds)', () => {
-      const response = middleware(request);
+    it('should enforce HTTPS for 1 year (31536000 seconds)', async () => {
+      const response = await middleware(request);
       const hsts = response.headers.get('Strict-Transport-Security') || '';
 
       expect(hsts).toContain('max-age=31536000');
     });
 
-    it('should include subdomains in HSTS policy', () => {
-      const response = middleware(request);
+    it('should include subdomains in HSTS policy', async () => {
+      const response = await middleware(request);
       const hsts = response.headers.get('Strict-Transport-Security') || '';
 
       expect(hsts).toContain('includeSubDomains');
     });
 
-    it('should be eligible for browser preload lists', () => {
-      const response = middleware(request);
+    it('should be eligible for browser preload lists', async () => {
+      const response = await middleware(request);
       const hsts = response.headers.get('Strict-Transport-Security') || '';
 
       expect(hsts).toContain('preload');
@@ -140,16 +140,16 @@ describe('Security Middleware', () => {
   });
 
   describe('X-Frame-Options', () => {
-    it('should set X-Frame-Options header', () => {
-      const response = middleware(request);
+    it('should set X-Frame-Options header', async () => {
+      const response = await middleware(request);
 
       const xfoHeader = response.headers.get('X-Frame-Options');
       expect(xfoHeader).toBeDefined();
       expect(xfoHeader).toBeTruthy();
     });
 
-    it('should deny all framing attempts', () => {
-      const response = middleware(request);
+    it('should deny all framing attempts', async () => {
+      const response = await middleware(request);
       const xfo = response.headers.get('X-Frame-Options');
 
       expect(xfo).toBe('DENY');
@@ -157,16 +157,16 @@ describe('Security Middleware', () => {
   });
 
   describe('X-Content-Type-Options', () => {
-    it('should set X-Content-Type-Options header', () => {
-      const response = middleware(request);
+    it('should set X-Content-Type-Options header', async () => {
+      const response = await middleware(request);
 
       const xctoHeader = response.headers.get('X-Content-Type-Options');
       expect(xctoHeader).toBeDefined();
       expect(xctoHeader).toBeTruthy();
     });
 
-    it('should prevent MIME-type sniffing', () => {
-      const response = middleware(request);
+    it('should prevent MIME-type sniffing', async () => {
+      const response = await middleware(request);
       const xcto = response.headers.get('X-Content-Type-Options');
 
       expect(xcto).toBe('nosniff');
@@ -174,16 +174,16 @@ describe('Security Middleware', () => {
   });
 
   describe('Referrer-Policy', () => {
-    it('should set Referrer-Policy header', () => {
-      const response = middleware(request);
+    it('should set Referrer-Policy header', async () => {
+      const response = await middleware(request);
 
       const rpHeader = response.headers.get('Referrer-Policy');
       expect(rpHeader).toBeDefined();
       expect(rpHeader).toBeTruthy();
     });
 
-    it('should use strict-origin-when-cross-origin policy', () => {
-      const response = middleware(request);
+    it('should use strict-origin-when-cross-origin policy', async () => {
+      const response = await middleware(request);
       const rp = response.headers.get('Referrer-Policy');
 
       expect(rp).toBe('strict-origin-when-cross-origin');
@@ -191,30 +191,30 @@ describe('Security Middleware', () => {
   });
 
   describe('Permissions-Policy', () => {
-    it('should set Permissions-Policy header', () => {
-      const response = middleware(request);
+    it('should set Permissions-Policy header', async () => {
+      const response = await middleware(request);
 
       const ppHeader = response.headers.get('Permissions-Policy');
       expect(ppHeader).toBeDefined();
       expect(ppHeader).toBeTruthy();
     });
 
-    it('should disable camera access', () => {
-      const response = middleware(request);
+    it('should disable camera access', async () => {
+      const response = await middleware(request);
       const pp = response.headers.get('Permissions-Policy') || '';
 
       expect(pp).toContain('camera=()');
     });
 
-    it('should disable microphone access', () => {
-      const response = middleware(request);
+    it('should disable microphone access', async () => {
+      const response = await middleware(request);
       const pp = response.headers.get('Permissions-Policy') || '';
 
       expect(pp).toContain('microphone=()');
     });
 
-    it('should disable geolocation access', () => {
-      const response = middleware(request);
+    it('should disable geolocation access', async () => {
+      const response = await middleware(request);
       const pp = response.headers.get('Permissions-Policy') || '';
 
       expect(pp).toContain('geolocation=()');
@@ -222,16 +222,16 @@ describe('Security Middleware', () => {
   });
 
   describe('X-DNS-Prefetch-Control', () => {
-    it('should set X-DNS-Prefetch-Control header', () => {
-      const response = middleware(request);
+    it('should set X-DNS-Prefetch-Control header', async () => {
+      const response = await middleware(request);
 
       const dnsHeader = response.headers.get('X-DNS-Prefetch-Control');
       expect(dnsHeader).toBeDefined();
       expect(dnsHeader).toBeTruthy();
     });
 
-    it('should enable DNS prefetching', () => {
-      const response = middleware(request);
+    it('should enable DNS prefetching', async () => {
+      const response = await middleware(request);
       const dns = response.headers.get('X-DNS-Prefetch-Control');
 
       expect(dns).toBe('on');
@@ -239,8 +239,8 @@ describe('Security Middleware', () => {
   });
 
   describe('X-Powered-By', () => {
-    it('should remove X-Powered-By header', () => {
-      const response = middleware(request);
+    it('should remove X-Powered-By header', async () => {
+      const response = await middleware(request);
 
       const poweredBy = response.headers.get('X-Powered-By');
       expect(poweredBy).toBeNull();
@@ -256,17 +256,17 @@ describe('Security Middleware', () => {
         'https://example.com/auth/signin',
       ];
 
-      routes.forEach((url) => {
+      for (const url of routes) {
         const req = new NextRequest(new URL(url));
-        const response = middleware(req);
+        const response = await middleware(req);
 
         expect(response.headers.get('Content-Security-Policy')).toBeDefined();
         expect(response.headers.get('X-Frame-Options')).toBeDefined();
-      });
+      }
     });
 
-    it('should return NextResponse with all security headers', () => {
-      const response = middleware(request);
+    it('should return NextResponse with all security headers', async () => {
+      const response = await middleware(request);
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.headers.get('Content-Security-Policy')).toBeTruthy();
