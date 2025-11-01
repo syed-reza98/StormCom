@@ -2,7 +2,7 @@
 
 **Project**: StormCom Multi-tenant E-commerce Platform  
 **Framework**: Next.js 16.0.1 (App Router)  
-**Review Date**: November 2, 2025  
+**Review Date**: November 2, 2025 (Initial) | January 26, 2025 (Deep Analysis Update)  
 **Branch**: 001-multi-tenant-ecommerce  
 **Reviewer**: GitHub Copilot Agent
 
@@ -10,16 +10,21 @@
 
 ## Executive Summary
 
-This comprehensive code review analyzed the StormCom Next.js 16 codebase, examining project structure, API routes, frontend components, UI/UX patterns, security implementation, and performance optimization. The review identified **15 issues** across all severity levels and **12 excellent patterns** that should be maintained.
+This comprehensive code review analyzed the StormCom Next.js 16 codebase across two phases:
+
+1. **Initial Review (November 2, 2025)**: Project structure, API routes, frontend components, UI/UX patterns, security implementation, and performance optimization - identified **15 issues** and **12 excellent patterns**.
+
+2. **Deep Analysis (January 26, 2025)**: File-by-file examination of configuration files, Prisma schema, database layer, API routes, services, lib utilities, and page components - identified **26 additional critical issues**.
 
 ### Key Findings Overview
 
-| Severity | Count | Impact |
-|----------|-------|--------|
-| **CRITICAL** | 4 | Blocks production deployment, breaks functionality |
-| **HIGH** | 4 | Significant code quality/security concerns |
-| **MEDIUM** | 4 | Improvements for maintainability |
-| **LOW** | 3 | Nice-to-have optimizations |
+| Severity | Initial Count | Deep Analysis Count | Total Count | Impact |
+|----------|--------------|---------------------|-------------|--------|
+| **CRITICAL** | 4 | +3 | **7** | Blocks production deployment, security vulnerabilities |
+| **HIGH** | 4 | +8 | **12** | Significant code quality/security concerns |
+| **MEDIUM** | 4 | +10 | **14** | Improvements for maintainability |
+| **LOW** | 3 | +5 | **8** | Nice-to-have optimizations |
+| **TOTAL** | **15** | **+26** | **41** | Comprehensive analysis |
 
 ### Positive Patterns Identified ✅
 
@@ -35,6 +40,466 @@ This comprehensive code review analyzed the StormCom Next.js 16 codebase, examin
 10. **Multi-tenant Isolation** - Automatic storeId filtering in Prisma middleware
 11. **Session Management** - HttpOnly/Secure cookies with proper expiration
 12. **CSS Architecture** - Radix UI color system with CSS variables for theming
+
+---
+
+## ⚠️ NEW FINDINGS FROM DEEP ANALYSIS (January 26, 2025)
+
+The following critical security vulnerabilities and issues were discovered during the second comprehensive file-by-file analysis:
+
+### 🔴 CRITICAL SECURITY VULNERABILITIES
+
+**NEW ISSUE #16: Multi-Tenant Filtering DISABLED (CRITICAL SECURITY VULNERABILITY)**
+
+**Priority**: 🔴🔴🔴 **SHOWSTOPPER** - DO NOT DEPLOY  
+**Effort**: 4 hours  
+**Impact**: **Cross-tenant data leakage** - allows stores to access other stores' data
+
+**Problem**:
+The Prisma middleware responsible for automatic multi-tenant isolation is **completely disabled**, leaving the application vulnerable to cross-tenant data access. This is the most critical security issue in the codebase.
+
+**Current State** (`src/lib/prisma-middleware.ts`):
+```typescript
+export function registerMultiTenantMiddleware(prisma: PrismaClient): PrismaClient {
+  // For now, return the client as-is
+  // Multi-tenant filtering will be enforced at application layer
+  // until we implement proper session context in Phase 3
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('[Prisma] Multi-tenant filtering will be enforced at application layer ✓');
+  }
+  
+  return prisma; // ❌ NO FILTERING APPLIED
+}
+```
+
+**Evidence of Risk**:
+```typescript
+// src/services/product-service.ts
+async getProducts(storeId: string, filters: ProductSearchFilters = {}) {
+  const where = this.buildWhereClause(storeId, filters);
+  
+  // Manual storeId filtering - if developer forgets this in ANY query, data leaks
+  const products = await prisma.product.findMany({
+    where, // Must include storeId in where clause
+  });
+}
+
+// If developer writes this anywhere:
+const products = await prisma.product.findMany(); // ❌ Returns ALL stores' products
+```
+
+**Root Cause Analysis**:
+- Comment mentions "Phase 3" implementation but Phase 3 is marked complete in constitution.md
+- No session context is actually being retrieved (getStoreIdFromContext() returns null)
+- Application-layer filtering is incomplete and error-prone
+- No automated testing to catch missing storeId filters
+
+**Solution - Implement Proper Middleware**:
+
+```typescript
+// src/lib/prisma-middleware.ts
+import { PrismaClient } from '@prisma/client';
+import { AsyncLocalStorage } from 'async_hooks';
+
+// AsyncLocalStorage for request-scoped storeId
+export const requestContext = new AsyncLocalStorage<{ storeId: string }>();
+
+/**
+ * Get storeId from async context
+ */
+export function getStoreIdFromContext(): string | null {
+  return requestContext.getStore()?.storeId || null;
+}
+
+/**
+ * Set storeId in async context (call from middleware.ts)
+ */
+export function setStoreIdContext(storeId: string) {
+  requestContext.enterWith({ storeId });
+}
+
+/**
+ * Tenant-scoped models that require automatic storeId filtering
+ */
+const TENANT_MODELS = [
+  'Product', 'Order', 'Customer', 'Category', 'Brand', 'Review',
+  'Cart', 'Wishlist', 'Inventory', 'Discount', 'FlashSale',
+  'Shipping', 'Tax', 'Page', 'Menu', 'EmailTemplate', 'Newsletter',
+  'Theme', 'Webhook', 'AuditLog', 'GdprRequest', 'ConsentRecord',
+  'OrderItem', 'Payment', 'Address', 'ProductVariant', 'ProductAttribute',
+] as const;
+
+/**
+ * Register multi-tenant client extension on Prisma Client
+ */
+export function registerMultiTenantMiddleware(prisma: PrismaClient): PrismaClient {
+  return prisma.$extends({
+    query: {
+      $allModels: {
+        async findUnique({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.findUnique`);
+            }
+            args.where = { ...args.where, storeId };
+          }
+          return query(args);
+        },
+        
+        async findFirst({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.findFirst`);
+            }
+            args.where = { ...args.where, storeId };
+          }
+          return query(args);
+        },
+        
+        async findMany({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.findMany`);
+            }
+            args.where = { ...args.where, storeId };
+          }
+          return query(args);
+        },
+        
+        async create({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.create`);
+            }
+            args.data = { ...args.data, storeId };
+          }
+          return query(args);
+        },
+        
+        async update({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.update`);
+            }
+            args.where = { ...args.where, storeId };
+          }
+          return query(args);
+        },
+        
+        async delete({ args, query, model }) {
+          if (TENANT_MODELS.includes(model as any)) {
+            const storeId = getStoreIdFromContext();
+            if (!storeId) {
+              throw new Error(`[Multi-Tenant] No storeId in context for ${model}.delete`);
+            }
+            args.where = { ...args.where, storeId };
+          }
+          return query(args);
+        },
+      },
+    },
+  }) as any;
+}
+```
+
+```typescript
+// middleware.ts - Set storeId context from session
+import { setStoreIdContext } from '@/lib/prisma-middleware';
+
+export async function middleware(request: NextRequest) {
+  const session = await getServerSession();
+  
+  if (session?.user?.storeId) {
+    setStoreIdContext(session.user.storeId);
+  }
+  
+  // ... rest of middleware
+}
+```
+
+**Testing Requirements**:
+```typescript
+// tests/integration/multi-tenant-isolation.test.ts
+describe('Multi-tenant Isolation', () => {
+  it('should prevent cross-tenant data access', async () => {
+    const store1 = await createTestStore();
+    const store2 = await createTestStore();
+    
+    const product1 = await createTestProduct(store1.id);
+    const product2 = await createTestProduct(store2.id);
+    
+    // Set store1 context
+    setStoreIdContext(store1.id);
+    
+    const products = await db.product.findMany();
+    
+    // Should only return store1's products
+    expect(products).toHaveLength(1);
+    expect(products[0].id).toBe(product1.id);
+    expect(products).not.toContainEqual(expect.objectContaining({ id: product2.id }));
+  });
+  
+  it('should throw error if no storeId in context', async () => {
+    // Clear context
+    setStoreIdContext(null);
+    
+    await expect(db.product.findMany()).rejects.toThrow(
+      '[Multi-Tenant] No storeId in context for Product.findMany'
+    );
+  });
+});
+```
+
+**Files to Update**:
+- `src/lib/prisma-middleware.ts` - Implement proper client extension with AsyncLocalStorage
+- `middleware.ts` - Set storeId context from session
+- `tests/integration/multi-tenant-isolation.test.ts` - Add comprehensive tests
+- All API routes - Remove manual storeId filtering (now automatic)
+
+**Verification Checklist**:
+- [ ] AsyncLocalStorage context working
+- [ ] All Prisma queries auto-inject storeId
+- [ ] Tests confirm cross-tenant access is blocked
+- [ ] Error thrown when no storeId in context
+- [ ] SuperAdmin bypass mechanism for cross-store queries
+- [ ] Performance impact < 5ms per query
+- [ ] No storeId leakage in error messages
+
+---
+
+**NEW ISSUE #17: Missing Authentication in Payment Route (CRITICAL)**
+
+**Priority**: 🔴 CRITICAL  
+**Effort**: 15 minutes  
+**Impact**: Unauthenticated users can create payment intents for ANY order
+
+**Problem**:
+The payment intent creation route has NO authentication check, allowing anonymous users to create Stripe payment intents for any order ID.
+
+**Current State** (`src/app/api/checkout/payment-intent/route.ts`):
+```typescript
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const input = PaymentIntentSchema.parse(body);
+
+    // ❌ NO SESSION CHECK - anyone can call this!
+    const result = await createPaymentIntent(input);
+
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    // ...
+  }
+}
+```
+
+**Attack Scenario**:
+```bash
+# Attacker can create payment intent for any order
+curl -X POST https://stormcom.com/api/checkout/payment-intent \
+  -H "Content-Type: application/json" \
+  -d '{"orderId":"victim_order_123","amount":100000,"currency":"usd"}'
+  
+# Response contains clientSecret for Stripe checkout
+# Attacker can now hijack victim's payment
+```
+
+**Solution**:
+```typescript
+import { getServerSession } from 'next-auth';
+
+export async function POST(request: NextRequest) {
+  try {
+    // ✅ REQUIRED: Verify authentication
+    const session = await getServerSession();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const input = PaymentIntentSchema.parse(body);
+
+    // ✅ REQUIRED: Verify order ownership
+    const order = await db.order.findFirst({
+      where: {
+        id: input.orderId,
+        storeId: session.user.storeId, // Multi-tenant check
+        customerId: session.user.id,    // Ownership check
+      },
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { error: { code: 'NOT_FOUND', message: 'Order not found' } },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Verify amount matches order total
+    if (input.amount !== order.total) {
+      return NextResponse.json(
+        { error: { code: 'VALIDATION_ERROR', message: 'Amount mismatch' } },
+        { status: 400 }
+      );
+    }
+
+    const result = await createPaymentIntent({
+      ...input,
+      metadata: {
+        orderId: order.id,
+        storeId: session.user.storeId,
+        customerId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    // ...
+  }
+}
+```
+
+**Files to Update**:
+- `src/app/api/checkout/payment-intent/route.ts` - Add auth + ownership checks
+- `src/app/api/checkout/complete/route.ts` - Verify same checks exist
+- `src/app/api/checkout/validate/route.ts` - Verify same checks exist
+
+---
+
+**NEW ISSUE #18: Unlimited Password History Retention (CRITICAL - GDPR/Privacy)**
+
+**Priority**: 🔴 CRITICAL  
+**Effort**: 1 hour  
+**Impact**: Privacy violation, GDPR non-compliance, storage bloat
+
+**Problem**:
+The `PasswordHistory` table stores ALL password hashes indefinitely with no retention limit. This violates GDPR data minimization principles and creates unnecessary storage costs.
+
+**Current State** (`prisma/schema.prisma`):
+```prisma
+model PasswordHistory {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashedPassword String   // Stored forever ❌
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+```
+
+**Evidence**:
+```typescript
+// src/services/auth-service.ts - Only checks last 5 passwords
+const inHistory = await isPasswordInHistory(user.id, data.newPassword);
+
+// src/lib/password.ts - Fetches ALL history but only checks last 5
+export async function isPasswordInHistory(
+  userId: string,
+  newPassword: string
+): Promise<boolean> {
+  const history = await db.passwordHistory.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    take: 5, // ✅ Only checks last 5
+  });
+  
+  // But ALL passwords are still stored in database ❌
+}
+```
+
+**Solution - Add Retention Policy**:
+
+```prisma
+// prisma/schema.prisma - Add comment documenting retention
+model PasswordHistory {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashedPassword String
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  
+  // RETENTION: Keep last 5 passwords per user, delete older entries
+}
+```
+
+```typescript
+// src/lib/password.ts - Add cleanup function
+export async function cleanupOldPasswordHistory(userId: string): Promise<void> {
+  const history = await db.passwordHistory.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: { id: true },
+  });
+
+  // Keep last 5, delete rest
+  const toDelete = history.slice(5).map(h => h.id);
+  
+  if (toDelete.length > 0) {
+    await db.passwordHistory.deleteMany({
+      where: { id: { in: toDelete } },
+    });
+  }
+}
+
+// Call after every password change
+export async function addPasswordToHistory(
+  userId: string,
+  hashedPassword: string
+): Promise<void> {
+  await db.passwordHistory.create({
+    data: { userId, hashedPassword },
+  });
+  
+  // Clean up old history
+  await cleanupOldPasswordHistory(userId);
+}
+```
+
+```typescript
+// src/services/auth-service.ts - Update to use cleanup
+await db.passwordHistory.create({
+  data: {
+    userId: user.id,
+    hashedPassword: password,
+  },
+});
+
+// Add cleanup
+await cleanupOldPasswordHistory(user.id);
+```
+
+**GDPR Compliance**:
+```typescript
+// src/services/gdpr-service.ts - Delete password history on user deletion
+export async function deleteUserData(userId: string): Promise<void> {
+  await db.passwordHistory.deleteMany({
+    where: { userId },
+  });
+  
+  // ... delete other user data
+}
+```
+
+**Files to Update**:
+- `prisma/schema.prisma` - Add retention comment
+- `src/lib/password.ts` - Add cleanupOldPasswordHistory function
+- `src/services/auth-service.ts` - Call cleanup after password changes
+- `src/services/gdpr-service.ts` - Delete history on user deletion
+- Create migration to delete existing old password history
 
 ---
 
@@ -1366,5 +1831,146 @@ The codebase demonstrates strong architectural decisions (database layer, authen
 
 ---
 
-**Review Completed**: November 2, 2025  
-**Next Review**: After Phase 1 & 2 completion
+**Review Completed**: November 2, 2025 (Initial) | January 26, 2025 (Deep Analysis)  
+**Next Review**: After critical security issues (#16-18) are resolved
+
+---
+
+## Appendix A: Additional Deep Analysis Findings (Issues #19-41)
+
+### 🟠 HIGH SEVERITY ISSUES
+
+**#19**: Node.js version inconsistency  
+- **Location**: `package.json` line 6  
+- **Problem**: `engines.node: ">=22.0.0"` conflicts with docs stating `>=18.x` minimum  
+- **Fix**: Change to `">=18.0.0"` to match documented requirements
+
+**#20**: Duplicate dependencies (bloat + confusion)  
+- **Location**: `package.json`  
+- **Problem**: `bcrypt` AND `bcryptjs`, `speakeasy` AND `otpauth`, duplicate type definitions  
+- **Fix**: Remove `bcryptjs`, keep `bcrypt`; remove `otpauth`, keep `speakeasy`; remove duplicate `@types/*`
+
+**#21**: Unused `better-auth@1.3.31` dependency  
+- **Location**: `package.json` line 89  
+- **Problem**: Installed but never imported (no usage in codebase)  
+- **Fix**: `npm uninstall better-auth`
+
+**#22**: `next-auth@4.24.11` with Next.js 16 override (compatibility hack)  
+- **Location**: `package.json` overrides section  
+- **Problem**: NextAuth.js v4 incompatible with Next.js 16, using workaround  
+- **Note**: Custom auth implementation already exists, consider removing NextAuth.js entirely
+
+**#23**: Vitest memory issues  
+- **Location**: `vitest.config.ts` line 22  
+- **Problem**: `maxThreads: 2` with comment "to save memory" indicates memory leak  
+- **Problem**: `hookTimeout: 30000ms` (30 seconds) suggests slow DB operations in tests  
+- **Fix**: Investigate memory leak cause, optimize test DB setup/teardown, restore default thread count
+
+**#24**: Missing composite indexes for common queries  
+- **Location**: `prisma/schema.prisma`  
+- **Problem**: Order queries missing `@@index([storeId, createdAt, status])` for dashboard  
+- **Problem**: Product missing `@@index([storeId, isPublished, isFeatured])` for featured listings  
+- **Fix**: Add migration with composite indexes
+
+**#25**: Incorrect cascade delete behavior  
+- **Location**: `prisma/schema.prisma` ProductVariant model  
+- **Problem**: `onDelete: Cascade` to OrderItem deletes order history when variant removed  
+- **Fix**: Change to `onDelete: SetNull` to preserve order records
+
+**#26**: JSON string storage anti-pattern  
+- **Location**: `prisma/schema.prisma` Product model  
+- **Problem**: `images String` and `metaKeywords String` store JSON as strings  
+- **Fix**: Use `Json` type or create `ProductImage` relation table
+
+### 🟡 MEDIUM SEVERITY ISSUES
+
+**#27**: API routes use inconsistent error field names  
+- **Location**: `src/app/api/auth/login/route.ts` line 33, `register/route.ts` line 33  
+- **Problem**: Uses `changes` instead of standardized `details` (conflicts with `api-response.ts`)  
+- **Fix**: Replace `changes:` with `details:` in all error responses
+
+**#28**: Playwright webServer timeout 120 seconds  
+- **Location**: `playwright.config.ts` line 45  
+- **Problem**: Extremely long dev server startup (2 minutes)  
+- **Fix**: Profile Next.js startup, investigate slow initialization
+
+**#29**: `@axe-core/playwright` installed but unused  
+- **Location**: `package.json` devDependencies  
+- **Problem**: Accessibility testing library installed but no tests configured  
+- **Fix**: Add accessibility test suite or remove dependency
+
+**#30**: Vitest excludes `page.tsx` and `layout.tsx` from coverage  
+- **Location**: `vitest.config.ts` line 35  
+- **Problem**: Page and layout components excluded from test coverage  
+- **Fix**: Add tests for page/layout components, remove exclusion
+
+**#31**: Seed script missing DATABASE_URL validation  
+- **Location**: `prisma/seed.ts`  
+- **Problem**: No check to prevent accidental production database seeding  
+- **Fix**: Add `if (process.env.DATABASE_URL?.includes('production')) throw new Error()`
+
+**#32**: Seed script no per-upsert error handling  
+- **Location**: `prisma/seed.ts`  
+- **Problem**: All-or-nothing approach - single failure aborts entire seed  
+- **Fix**: Wrap each upsert in try/catch, log errors but continue
+
+**#33**: `console.log` in production code  
+- **Location**: `src/services/product-service.ts` line 525  
+- **Problem**: `console.log('normalizeProductFields: parsing images string...')` in production  
+- **Fix**: Remove or replace with conditional logger
+
+**#34**: Broad empty catch blocks  
+- **Location**: `src/services/product-service.ts` lines 529, 540  
+- **Problem**: JSON.parse wrapped in try/catch with empty handler (swallows errors)  
+- **Fix**: Log parsing errors or set default values explicitly
+
+**#35**: Hardcoded error message parsing  
+- **Location**: `src/services/auth-service.ts` line 83  
+- **Problem**: Parses `"ACCOUNT_LOCKED:timestamp"` string instead of structured error  
+- **Fix**: Use error objects with `{ code, metadata }` structure
+
+**#36**: Missing rate limiting in password reset  
+- **Location**: `src/services/auth-service.ts` requestPasswordReset function  
+- **Problem**: FR-145 mentions rate limiting but not implemented  
+- **Fix**: Add rate limit check (5 requests per hour per email)
+
+### 🟢 LOW SEVERITY ISSUES
+
+**#37**: Complex proxy pattern in `db.ts`  
+- **Location**: `src/lib/db.ts` lines 15-40  
+- **Problem**: Dynamic proxy for test DATABASE_URL changes adds complexity  
+- **Note**: Tests use mocks anyway, proxy may be unnecessary  
+- **Consider**: Simplify to standard singleton if tests don't need dynamic URLs
+
+**#38**: `Product.inventoryStatus` enum redundant  
+- **Location**: `prisma/schema.prisma` Product model  
+- **Problem**: `inventoryStatus` can be derived from `inventoryQty` vs `lowStockThreshold`  
+- **Fix**: Remove enum, compute status in getter/service layer
+
+**#39**: Checkout page uses inline styles  
+- **Location**: `src/app/shop/checkout/page.tsx`  
+- **Problem**: Uses `style={{...}}` instead of Tailwind classes  
+- **Fix**: Convert to Tailwind utility classes for consistency
+
+**#40**: Missing `created_by`/`updated_by` audit fields  
+- **Location**: `prisma/schema.prisma` most models  
+- **Problem**: No audit trail for who created/updated records  
+- **Fix**: Add optional audit fields to mutable models
+
+**#41**: Missing `User.email` index  
+- **Location**: `prisma/schema.prisma` User model  
+- **Problem**: Has `@@unique([email])` but explicit `@@index([email])` would help email lookup queries  
+- **Fix**: Add `@@index([email])` for performance
+
+---
+
+### Summary of New Findings
+
+**Critical Security**: 3 issues (#16-18) - **DO NOT DEPLOY** until fixed  
+**High Priority**: 8 issues (#19-26) - Address in next sprint  
+**Medium Priority**: 10 issues (#27-36) - Schedule for upcoming releases  
+**Low Priority**: 5 issues (#37-41) - Technical debt cleanup
+
+**Total Issues**: 41 (15 initial + 26 deep analysis)  
+**Estimated Fix Time**: 3-4 weeks for all non-critical issues  
+**Critical Fix Time**: 1-2 days (issues #16-18 must be resolved before production)
