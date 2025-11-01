@@ -23,9 +23,10 @@ This document defines instructions for the authoritative Next.js best practices 
 - **Node.js**: `18.x or higher`
 
 ### Database & ORM (MANDATORY)
+- **SQLite**: Latest (local development only)
 - **Prisma ORM**: Latest stable (type-safe database access)
 - **PostgreSQL**: `15+` (production on Vercel Postgres)
-- **SQLite**: Latest (local development only)
+
 
 ### Styling & UI (MANDATORY)
 - **Tailwind CSS**: `4.1.14+` (utility-first, CSS-in-JS is PROHIBITED)
