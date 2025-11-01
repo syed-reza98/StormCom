@@ -69,7 +69,7 @@ jobs:
 
       - name: Save type-check errors to JSON (PowerShell script)
         run: |
-          # Try your exact script (calls `powershell ...`), then fall back to pwsh
+          # Run npm script first; if it fails, fall back to direct PowerShell execution
           npm run type-check:save || pwsh -File ./scripts/collect-type-errors.ps1
         shell: bash
 
