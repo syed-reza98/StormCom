@@ -1,8 +1,7 @@
 // src/lib/csrf.ts
 // CSRF (Cross-Site Request Forgery) Protection for StormCom
 // Generates and validates CSRF tokens for state-changing operations
-
-import { randomBytes, createHmac, timingSafeEqual } from 'crypto';
+// Uses Web Crypto API for Edge Runtime compatibility
 
 /**
  * CSRF configuration
@@ -32,19 +31,74 @@ function getCsrfSecret(): string {
 }
 
 /**
+ * Generate random bytes using Web Crypto API
+ */
+function randomBytes(length: number): Uint8Array {
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return bytes;
+}
+
+/**
+ * Convert bytes to hex string
+ */
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/**
+ * Create HMAC signature using Web Crypto API
+ */
+async function createHmac(data: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(data)
+  );
+  
+  return bytesToHex(new Uint8Array(signature));
+}
+
+/**
+ * Timing-safe string comparison
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  
+  return result === 0;
+}
+
+/**
  * Generate a random CSRF token
  */
-export function generateCsrfToken(): string {
+export async function generateCsrfToken(): Promise<string> {
   // Generate random bytes
-  const token = randomBytes(CSRF_CONFIG.tokenLength).toString('hex');
+  const tokenBytes = randomBytes(CSRF_CONFIG.tokenLength);
+  const token = bytesToHex(tokenBytes);
   
   // Get current timestamp
   const timestamp = Date.now().toString();
   
   // Create HMAC signature
-  const hmac = createHmac('sha256', getCsrfSecret());
-  hmac.update(`${token}:${timestamp}`);
-  const signature = hmac.digest('hex');
+  const signature = await createHmac(`${token}:${timestamp}`, getCsrfSecret());
   
   // Combine token, timestamp, and signature
   return `${token}:${timestamp}:${signature}`;
@@ -53,7 +107,7 @@ export function generateCsrfToken(): string {
 /**
  * Validate a CSRF token
  */
-export function validateCsrfToken(token: string | null | undefined): boolean {
+export async function validateCsrfToken(token: string | null | undefined): Promise<boolean> {
   if (!token) {
     return false;
   }
@@ -79,19 +133,10 @@ export function validateCsrfToken(token: string | null | undefined): boolean {
     }
 
     // Verify signature
-    const hmac = createHmac('sha256', getCsrfSecret());
-    hmac.update(`${tokenValue}:${timestamp}`);
-    const expectedSignature = hmac.digest('hex');
+    const expectedSignature = await createHmac(`${tokenValue}:${timestamp}`, getCsrfSecret());
 
     // Use timing-safe comparison to prevent timing attacks
-    if (expectedSignature.length !== signature.length) {
-      return false;
-    }
-
-    return timingSafeEqual(
-      Buffer.from(expectedSignature),
-      Buffer.from(signature)
-    );
+    return timingSafeEqual(expectedSignature, signature);
   } catch (error) {
     console.error('[CSRF] Token validation error:', error);
     return false;
@@ -172,7 +217,7 @@ export function createCsrfError(): Response {
 /**
  * Middleware helper to validate CSRF token
  */
-export function validateCsrfTokenFromRequest(request: Request): boolean {
+export async function validateCsrfTokenFromRequest(request: Request): Promise<boolean> {
   const { method, url } = request;
   const { pathname } = new URL(url);
 
@@ -185,7 +230,7 @@ export function validateCsrfTokenFromRequest(request: Request): boolean {
   const token = extractCsrfToken(request.headers);
 
   // Validate token
-  return validateCsrfToken(token);
+  return await validateCsrfToken(token);
 }
 
 /**

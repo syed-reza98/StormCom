@@ -503,8 +503,8 @@
 - [X] T189 [US12] [P] Setup automated dependency scanning with GitHub Dependabot in .github/dependabot.yml
 - [X] T190 [US12] [P] Create security headers test in tests/integration/security/headers.test.ts to verify CSP, HSTS, X-Frame-Options
 - [X] T191 [US12] [P] Implement input sanitization utility in src/lib/sanitize.ts for XSS prevention
-- [ ] T192 [US12] Create E2E test "CSRF protection blocks unauthorized requests" in tests/e2e/security/csrf-protection.spec.ts
-- [ ] T193 [US12] Create E2E test "Rate limiting enforces request limits" in tests/e2e/security/rate-limiting.spec.ts
+- [X] T192 [US12] Create E2E test "CSRF protection blocks unauthorized requests" in tests/e2e/security/csrf-protection.spec.ts (CSRF endpoint + middleware integration in progress - tests created)
+- [X] T193 [US12] Create E2E test "Rate limiting enforces request limits" in tests/e2e/security/rate-limiting.spec.ts
 
 ---
 

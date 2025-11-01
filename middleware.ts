@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {
+  validateCsrfTokenFromRequest,
+  createCsrfError,
+  requiresCsrfProtection,
+} from './src/lib/csrf';
 
 /**
  * Security Middleware
  * 
  * Applies enterprise-grade security headers to all routes:
  * - Content-Security-Policy (CSP) with strict directives
+ * - CSRF (Cross-Site Request Forgery) protection
  * - X-Frame-Options to prevent clickjacking
  * - X-Content-Type-Options to prevent MIME sniffing
  * - Referrer-Policy to limit referrer information leakage
@@ -132,11 +138,31 @@ const SECURITY_HEADERS = {
 /**
  * Middleware function
  * 
- * Applies security headers to all routes.
+ * Applies security headers and CSRF protection to all routes.
  * Runs on every request before reaching route handlers.
+ * 
+ * **CSRF Protection**:
+ * - Validates CSRF tokens for POST, PUT, PATCH, DELETE requests
+ * - Exempts GET, HEAD, OPTIONS, NextAuth, and webhook routes
+ * - Returns 403 Forbidden if token validation fails
  */
-export function middleware(request: NextRequest) {
-  // Clone the response headers
+export async function middleware(request: NextRequest) {
+  // 1. CSRF Protection: Validate token for state-changing operations
+  const { method, url } = request;
+  const { pathname } = new URL(url);
+
+  // Check if CSRF protection is required for this request
+  if (requiresCsrfProtection(method, pathname)) {
+    // Validate CSRF token (async operation)
+    const isValid = await validateCsrfTokenFromRequest(request);
+
+    if (!isValid) {
+      // Return 403 Forbidden with structured error
+      return createCsrfError();
+    }
+  }
+
+  // 2. Security Headers: Apply to all responses
   const response = NextResponse.next();
 
   // Apply all security headers

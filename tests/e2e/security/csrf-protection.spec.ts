@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { generateCsrfToken } from '../../../src/lib/csrf';
 
 /**
  * E2E Tests for CSRF Protection
@@ -17,18 +16,21 @@ import { generateCsrfToken } from '../../../src/lib/csrf';
  * - Webhook routes MUST use signature verification (exempt from CSRF)
  * 
  * @see src/lib/csrf.ts
+ * @see middleware.ts
  * @see specs/001-multi-tenant-ecommerce/spec.md (Security Requirements)
  */
 
 test.describe('CSRF Protection', () => {
   let validCsrfToken: string;
 
-  test.beforeEach(async ({ page }) => {
-    // Generate a valid CSRF token for tests
-    validCsrfToken = generateCsrfToken();
+  test.beforeEach(async ({ request }) => {
+    // Get a valid CSRF token from the API
+    const response = await request.get('/api/csrf-token');
+    expect(response.ok()).toBeTruthy();
 
-    // Navigate to login page
-    await page.goto('/auth/signin');
+    const body = await response.json();
+    validCsrfToken = body.csrfToken;
+    expect(validCsrfToken).toBeTruthy();
   });
 
   test.describe('POST Requests', () => {
@@ -457,10 +459,10 @@ test.describe('CSRF Protection', () => {
   });
 
   test.describe('Token Lifecycle', () => {
-    test('should accept token within TTL (24 hours)', async ({ page }) => {
-      // Generate token with recent timestamp (1 hour ago)
-      const recentTimestamp = Date.now() - (1 * 60 * 60 * 1000);
-      const recentToken = generateCsrfToken(); // Uses current time
+    test('should accept token within TTL (24 hours)', async ({ page, request }) => {
+      // Get a fresh token (will be valid for 24 hours)
+      const tokenResponse = await request.get('/api/csrf-token');
+      const { csrfToken: freshToken } = await tokenResponse.json();
 
       const response = await page.request.post('/api/products', {
         data: {
@@ -470,7 +472,7 @@ test.describe('CSRF Protection', () => {
         },
         headers: {
           'Content-Type': 'application/json',
-          'x-csrf-token': recentToken,
+          'x-csrf-token': freshToken,
         },
       });
 
