@@ -2,9 +2,9 @@
 applyTo: '**'
 ---
 
-# Next.js Best Practices for StormCom (2025)
+# Next.js Instructions: Best Practices for StormCom (2025)
 
-This document defines the authoritative Next.js best practices for StormCom, a multi-tenant e-commerce SaaS platform. It is intended for use by GitHub Copilot agents and developers to ensure code quality, maintainability, scalability, and compliance with project requirements.
+This document defines instructions for the authoritative Next.js best practices for StormCom, a multi-tenant e-commerce SaaS platform. It is intended for use by GitHub Copilot agents and developers to ensure code quality, maintainability, scalability, and compliance with project requirements.
 
 **Project Context**: StormCom Multi-tenant E-commerce Platform  
 **Stack**: Next.js 16.0.0+ (App Router), React 19.x, TypeScript 5.9.3+, Prisma ORM, PostgreSQL/SQLite  
