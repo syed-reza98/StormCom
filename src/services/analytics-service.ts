@@ -274,16 +274,6 @@ export class AnalyticsService {
       },
     });
 
-    // Check if we have returning customer IDs
-    if (!returningCustomerIds || returningCustomerIds.length === 0) {
-      return {
-        totalCustomers: 0,
-        newCustomers: 0,
-        returningCustomers: 0,
-        customerRetentionRate: 0,
-      };
-    }
-
     // Check which of these customers had orders before the period
     const customerIdsWithPreviousOrders = returningCustomerIds.length > 0 ? await this.db.order.findMany({
       where: {
@@ -344,7 +334,7 @@ export class AnalyticsService {
 
     return {
       salesMetrics,
-      revenueByDay,
+      revenueData: revenueByDay,
       topProducts,
       customerMetrics,
       dateRange,

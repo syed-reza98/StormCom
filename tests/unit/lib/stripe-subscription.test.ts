@@ -1,62 +1,16 @@
+// Set environment variables FIRST (before any imports)
+process.env.STRIPE_SECRET_KEY = 'sk_test_mock_key';
+process.env.STRIPE_WEBHOOK_SECRET = 'whsec_mock_secret';
+process.env.NEXT_PUBLIC_BASE_URL = 'https://example.com';
+
 // tests/unit/lib/stripe-subscription.test.ts
 // Unit tests for Stripe subscription integration
 
 import { describe, it, expect, beforeEach, afterEach, vi, MockedFunction } from 'vitest';
 import { SubscriptionStatus } from '@prisma/client';
+import Stripe from 'stripe';
 
-// Mock the environment and Stripe module
-vi.mock('stripe', () => {
-  const mockStripe = {
-    checkout: {
-      sessions: {
-        create: vi.fn(),
-      },
-    },
-    billingPortal: {
-      sessions: {
-        create: vi.fn(),
-      },
-    },
-    webhooks: {
-      constructEvent: vi.fn(),
-    },
-  };
-  
-  return {
-    default: vi.fn(() => mockStripe),
-  };
-});
-
-// Mock the entire stripe-subscription module to avoid environment checks
-vi.mock('@/lib/stripe-subscription', async () => {
-  const actual = await vi.importActual('@/lib/stripe-subscription');
-  return {
-    ...actual,
-    stripe: {
-      checkout: {
-        sessions: {
-          create: vi.fn(),
-        },
-      },
-      billingPortal: {
-        sessions: {
-          create: vi.fn(),
-        },
-      },
-      webhooks: {
-        constructEvent: vi.fn(),
-      },
-    },
-    createSubscriptionCheckoutSession: vi.fn(),
-    handleStripeWebhook: vi.fn(),
-    createCustomerPortalSession: vi.fn(),
-    mapStripeStatusToPrisma: vi.fn(),
-  };
-});
-
-import { SubscriptionService } from '@/services/subscription-service';
-
-// Mock Stripe
+// Mock Stripe module
 vi.mock('stripe', () => {
   return {
     default: vi.fn().mockImplementation(() => ({
@@ -88,6 +42,15 @@ vi.mock('@/services/subscription-service', () => ({
   },
 }));
 
+// Now import the functions to test (after mocks and env setup)
+import { 
+  createSubscriptionCheckoutSession,
+  createCustomerPortalSession,
+  mapStripeStatusToPrisma,
+  handleStripeWebhook
+} from '@/lib/stripe-subscription';
+import { SubscriptionService } from '@/services/subscription-service';
+
 const mockStripe = {
   checkout: {
     sessions: {
@@ -108,7 +71,7 @@ const mockStripe = {
   },
 } as unknown as Stripe;
 
-const mockSubscriptionService = SubscriptionService as {
+const mockSubscriptionService = SubscriptionService as unknown as {
   assignPlan: MockedFunction<any>;
 };
 

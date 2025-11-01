@@ -82,12 +82,12 @@ export function lightenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
   if (!rgb) return hex;
 
-  const amount = Math.round(255 * (percent / 100));
+  const factor = percent / 100;
   
   return rgbToHex(
-    Math.min(255, rgb.r + amount),
-    Math.min(255, rgb.g + amount),
-    Math.min(255, rgb.b + amount)
+    Math.min(255, Math.round(rgb.r + (255 - rgb.r) * factor)),
+    Math.min(255, Math.round(rgb.g + (255 - rgb.g) * factor)),
+    Math.min(255, Math.round(rgb.b + (255 - rgb.b) * factor))
   );
 }
 
@@ -98,12 +98,12 @@ export function darkenColor(hex: string, percent: number): string {
   const rgb = hexToRgb(hex);
   if (!rgb) return hex;
 
-  const amount = Math.round(255 * (percent / 100));
+  const factor = percent / 100;
   
   return rgbToHex(
-    Math.max(0, rgb.r - amount),
-    Math.max(0, rgb.g - amount),
-    Math.max(0, rgb.b - amount)
+    Math.max(0, Math.round(rgb.r * (1 - factor))),
+    Math.max(0, Math.round(rgb.g * (1 - factor))),
+    Math.max(0, Math.round(rgb.b * (1 - factor)))
   );
 }
 

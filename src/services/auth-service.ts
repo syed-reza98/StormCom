@@ -6,6 +6,7 @@ import { db } from '@/lib/db';
 import { hashPassword, comparePassword, isPasswordInHistory } from '@/lib/password';
 import { setSession, deleteSession, deleteUserSessions } from '@/lib/session-storage';
 import { sendEmail } from '@/lib/email';
+import { sendAccountVerification, sendPasswordReset } from '@/services/email-service';
 import { createAuditLog, AuditAction, AuditResource } from '@/lib/audit';
 import crypto from 'crypto';
 
@@ -91,20 +92,22 @@ export async function register(data: {
     },
   });
 
-  // Send verification email (FR-148)
-  await sendEmail({
-    to: user.email,
-    subject: 'Verify Your Email - StormCom',
-    html: `
-      <h1>Welcome to StormCom!</h1>
-      <p>Please verify your email address by clicking the link below:</p>
-      <a href="${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}">
-        Verify Email
-      </a>
-      <p>This link expires in 24 hours.</p>
-    `,
-    text: `Welcome to StormCom! Verify your email: ${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`,
-  });
+  // Send verification email (FR-148, US9 Email Notifications)
+  try {
+    await sendAccountVerification({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      } as any,
+      verificationToken,
+      expiresAt: verificationExpires,
+      store: data.storeId ? undefined : undefined, // TODO: Fetch store data if storeId provided
+    });
+  } catch (emailError) {
+    // Log email error but don't block registration (US9 FR-077 requirement)
+    console.error('Failed to send verification email:', emailError);
+  }
 
   // Audit log
   await createAuditLog({
@@ -312,21 +315,22 @@ export async function requestPasswordReset(
     },
   });
 
-  // Send reset email
-  await sendEmail({
-    to: user.email,
-    subject: 'Password Reset - StormCom',
-    html: `
-      <h1>Password Reset Request</h1>
-      <p>You requested a password reset. Click the link below to reset your password:</p>
-      <a href="${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}">
-        Reset Password
-      </a>
-      <p>This link expires in 1 hour.</p>
-      <p>If you didn't request this, please ignore this email.</p>
-    `,
-    text: `Reset your password: ${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`,
-  });
+  // Send reset email (US9 Email Notifications)
+  try {
+    await sendPasswordReset({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      } as any,
+      resetToken,
+      expiresAt: resetExpires,
+      ipAddress,
+    });
+  } catch (emailError) {
+    // Log email error but don't block password reset flow (US9 FR-077 requirement)
+    console.error('Failed to send password reset email:', emailError);
+  }
 
   // Audit log
   await createAuditLog({

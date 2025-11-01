@@ -13,6 +13,7 @@
 
 import { prisma } from '@/lib/db';
 import { Prisma, OrderStatus, ShippingStatus } from '@prisma/client';
+import { sendOrderConfirmation, sendShippingConfirmation } from '@/services/email-service';
 
 export type OrderListParams = {
   storeId?: string; // Optional for Super Admin (can query all stores)
@@ -282,13 +283,86 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
     include: {
       customer: true,
       user: true,
-      items: true,
+      items: {
+        include: {
+          product: {
+            select: {
+              name: true,
+              price: true,
+            },
+          },
+        },
+      },
       payments: true,
+      store: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
     },
   });
 
-  // TODO: Send notification email to customer (will be implemented in US9 Email Notifications)
-  // await sendOrderStatusEmail(updatedOrder);
+  // Send email notifications based on status change (US9 Email Notifications)
+  try {
+    if (newStatus === OrderStatus.PROCESSING && updatedOrder.customer?.email) {
+      // Send order confirmation when order moves to PROCESSING status
+      await sendOrderConfirmation({
+        to: updatedOrder.customer.email,
+        customerName: `${updatedOrder.customer.firstName || ''} ${updatedOrder.customer.lastName || ''}`.trim() || 'Valued Customer',
+        orderNumber: updatedOrder.orderNumber,
+        orderDate: updatedOrder.createdAt.toLocaleDateString(),
+        storeName: updatedOrder.store?.name || 'Our Store',
+        storeEmail: updatedOrder.store?.email,
+        orderItems: updatedOrder.items.map((item) => ({
+          name: item.product?.name || 'Product',
+          quantity: item.quantity.toString(),
+          price: item.unitPrice.toNumber(),
+          total: item.totalPrice.toNumber(),
+        })),
+        subtotal: updatedOrder.subtotal.toNumber(),
+        shipping: updatedOrder.shippingAmount?.toNumber() || 0,
+        tax: updatedOrder.taxAmount?.toNumber() || 0,
+        total: updatedOrder.totalAmount.toNumber(),
+        shippingAddress: {
+          line1: updatedOrder.shippingAddress?.line1 || '',
+          line2: updatedOrder.shippingAddress?.line2 || undefined,
+          city: updatedOrder.shippingAddress?.city || '',
+          state: updatedOrder.shippingAddress?.state || '',
+          postalCode: updatedOrder.shippingAddress?.postalCode || '',
+          country: updatedOrder.shippingAddress?.country || 'US',
+        },
+        orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/orders/${updatedOrder.id}`,
+      });
+    }
+
+    if (newStatus === OrderStatus.SHIPPED && updatedOrder.customer?.email) {
+      // Send shipping confirmation when order moves to SHIPPED status
+      await sendShippingConfirmation({
+        to: updatedOrder.customer.email,
+        customerName: `${updatedOrder.customer.firstName || ''} ${updatedOrder.customer.lastName || ''}`.trim() || 'Valued Customer',
+        orderNumber: updatedOrder.orderNumber,
+        trackingNumber: updatedOrder.trackingNumber || 'N/A',
+        carrier: 'Standard Shipping', // TODO: Add carrier field to Order model
+        estimatedDelivery: updatedOrder.estimatedDeliveryDate?.toLocaleDateString(),
+        storeName: updatedOrder.store?.name || 'Our Store',
+        storeEmail: updatedOrder.store?.email,
+        shippingAddress: {
+          line1: updatedOrder.shippingAddress?.line1 || '',
+          line2: updatedOrder.shippingAddress?.line2 || undefined,
+          city: updatedOrder.shippingAddress?.city || '',
+          state: updatedOrder.shippingAddress?.state || '',
+          postalCode: updatedOrder.shippingAddress?.postalCode || '',
+          country: updatedOrder.shippingAddress?.country || 'US',
+        },
+        trackingUrl: updatedOrder.trackingUrl || undefined,
+      });
+    }
+  } catch (emailError) {
+    // Log email error but don't block order status update (US9 FR-077 requirement)
+    console.error('Failed to send order status email:', emailError);
+    // TODO: Log to audit system when available (Phase 14)
+  }
 
   return updatedOrder;
 }
