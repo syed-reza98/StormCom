@@ -157,6 +157,8 @@ model User {
   addresses     Address[]
   wishlistItems WishlistItem[]
   notifications Notification[]
+  gdprRequests  GdprRequest[]
+  consentRecords ConsentRecord[]
 
   @@index([email])
   @@index([storeId])
@@ -277,6 +279,8 @@ model Store {
   payments        Payment[]
   externalConfigs ExternalPlatformConfig[]
   webhooks        Webhook[]
+  gdprRequests    GdprRequest[]
+  consentRecords  ConsentRecord[]
 
   @@index([slug])
   @@index([subscriptionPlan])
@@ -1267,4 +1271,83 @@ model AuditLog {
   @@index([userId, createdAt])
   @@index([entityType, entityId])
   @@map("audit_logs")
+}
+
+// ============================================================================
+// GDPR COMPLIANCE
+// ============================================================================
+
+enum GdprRequestType {
+  EXPORT    // Data export request
+  DELETE    // Account deletion request
+}
+
+enum GdprRequestStatus {
+  PENDING       // Request submitted, awaiting processing
+  PROCESSING    // Currently being processed
+  COMPLETED     // Successfully completed
+  FAILED        // Processing failed
+}
+
+enum ConsentType {
+  ESSENTIAL     // Essential cookies (required for site functionality)
+  ANALYTICS     // Analytics and performance tracking
+  MARKETING     // Marketing and advertising
+  PREFERENCES   // User preferences and personalization
+}
+
+model GdprRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  type      GdprRequestType
+  status    GdprRequestStatus @default(PENDING)
+
+  // Export-specific fields
+  exportUrl String?  // Download URL for exported data (expires after 7 days)
+  expiresAt DateTime? // Export link expiration
+
+  // Processing metadata
+  processedAt DateTime?
+  errorMessage String?
+
+  // Request tracking
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, type, status])
+  @@index([status, createdAt])
+  @@map("gdpr_requests")
+}
+
+model ConsentRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  consentType ConsentType
+  granted     Boolean @default(false)
+
+  // Consent metadata
+  grantedAt   DateTime?
+  revokedAt   DateTime?
+  
+  // Tracking
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, consentType])
+  @@index([userId, storeId])
+  @@map("consent_records")
 }
