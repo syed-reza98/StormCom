@@ -20,10 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up Node 22 (upgrade npm to 11 as required by engines)
+      - name: Set up Node 20 (upgrade npm to 11 as required by engines)
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
           cache: "npm"
       - name: Use npm 11
         run: npm i -g npm@11
