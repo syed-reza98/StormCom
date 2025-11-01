@@ -58,7 +58,7 @@ jobs:
           DATABASE_URL: "file:./dev.db"
         run: |
           if [ -f "prisma/seed.ts" ]; then
-            npm run db:seed || (npx tsx prisma/seed.ts || npx ts-node prisma/seed.ts || npx prisma db seed)
+            npm run db:seed
           else
             echo "No prisma/seed.ts found; skipping."
           fi
