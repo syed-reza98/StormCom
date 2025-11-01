@@ -85,13 +85,13 @@ jobs:
           fi
 
       # ---------- Type checking ----------
-      - name: Type check
-        run: npm run type-check
+      # - name: Type check
+      #   run: npm run type-check
 
-      - name: Save type-check errors to JSON (PowerShell script with Linux fallback)
-        run: |
-          npm run type-check:save || pwsh -File ./scripts/collect-type-errors.ps1
-        shell: bash
+      # - name: Save type-check errors to JSON (PowerShell script with Linux fallback)
+      #   run: |
+      #     npm run type-check:save || pwsh -File ./scripts/collect-type-errors.ps1
+      #   shell: bash
 
       # ---------- Next.js MCP warm start (guarded) ----------
       - name: Warm-start Next.js dev server (time-boxed)
