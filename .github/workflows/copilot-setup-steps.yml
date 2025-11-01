@@ -34,12 +34,6 @@ jobs:
             cp .env.example .env
           fi
 
-      - name: Install Playwright browsers + system deps
-        if: ${{ hashFiles('playwright.config.*') != '' || hashFiles('.playwright-mcp/**') != '' }}
-        run: |
-          npx playwright install-deps
-          npx playwright install
-
       - name: Install dependencies
         run: npm ci
 
