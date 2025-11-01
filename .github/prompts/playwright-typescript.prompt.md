@@ -1,8 +1,8 @@
 ---
 description: 'Automate filling in a form using Playwright MCP'
-mode: agent
-tools: ['playwright']
-model: 'Claude Sonnet 4'
+agent: agent
+tools: ['microsoft/playwright-mcp/*','chromedevtools/chrome-devtools-mcp/*','next-devtools/*']
+model: 'Claude Sonnet 4.5'
 ---
 
 # Automating Filling in a Form with Playwright MCP
