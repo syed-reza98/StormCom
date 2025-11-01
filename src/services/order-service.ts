@@ -283,6 +283,8 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
     include: {
       customer: true,
       user: true,
+      shippingAddress: true,
+      billingAddress: true,
       items: {
         include: {
           product: {
@@ -315,18 +317,18 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
         storeName: updatedOrder.store?.name || 'Our Store',
         storeEmail: updatedOrder.store?.email,
         orderItems: updatedOrder.items.map((item) => ({
-          name: item.product?.name || 'Product',
+          name: item.product?.name || item.productName || 'Product',
           quantity: item.quantity.toString(),
-          price: item.unitPrice.toNumber(),
-          total: item.totalPrice.toNumber(),
+          price: item.price,
+          total: item.totalAmount,
         })),
-        subtotal: updatedOrder.subtotal.toNumber(),
-        shipping: updatedOrder.shippingAmount?.toNumber() || 0,
-        tax: updatedOrder.taxAmount?.toNumber() || 0,
-        total: updatedOrder.totalAmount.toNumber(),
+        subtotal: updatedOrder.subtotal,
+        shipping: updatedOrder.shippingAmount || 0,
+        tax: updatedOrder.taxAmount || 0,
+        total: updatedOrder.totalAmount,
         shippingAddress: {
-          line1: updatedOrder.shippingAddress?.line1 || '',
-          line2: updatedOrder.shippingAddress?.line2 || undefined,
+          line1: updatedOrder.shippingAddress?.address1 || '',
+          line2: updatedOrder.shippingAddress?.address2 || undefined,
           city: updatedOrder.shippingAddress?.city || '',
           state: updatedOrder.shippingAddress?.state || '',
           postalCode: updatedOrder.shippingAddress?.postalCode || '',
@@ -344,12 +346,11 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
         orderNumber: updatedOrder.orderNumber,
         trackingNumber: updatedOrder.trackingNumber || 'N/A',
         carrier: 'Standard Shipping', // TODO: Add carrier field to Order model
-        estimatedDelivery: updatedOrder.estimatedDeliveryDate?.toLocaleDateString(),
         storeName: updatedOrder.store?.name || 'Our Store',
         storeEmail: updatedOrder.store?.email,
         shippingAddress: {
-          line1: updatedOrder.shippingAddress?.line1 || '',
-          line2: updatedOrder.shippingAddress?.line2 || undefined,
+          line1: updatedOrder.shippingAddress?.address1 || '',
+          line2: updatedOrder.shippingAddress?.address2 || undefined,
           city: updatedOrder.shippingAddress?.city || '',
           state: updatedOrder.shippingAddress?.state || '',
           postalCode: updatedOrder.shippingAddress?.postalCode || '',

@@ -32,7 +32,6 @@ test.describe('Order Confirmation Email', () => {
       data: {
         name: 'Test Electronics Store',
         slug: 'test-electronics-e2e',
-        domain: 'test-electronics-e2e.example.com',
         email: 'contact@test-electronics.com',
         subscriptionPlan: 'PRO',
         subscriptionStatus: 'ACTIVE',
@@ -70,8 +69,9 @@ test.describe('Order Confirmation Email', () => {
         slug: 'test-laptop-e2e',
         description: 'High-performance laptop for testing',
         price: 1299.99,
-        stock: 10,
-        status: 'ACTIVE',
+        sku: 'LAPTOP-001',
+        images: JSON.stringify([]),
+        metaKeywords: 'test, laptop',
       },
     });
   });
@@ -96,8 +96,33 @@ test.describe('Order Confirmation Email', () => {
     }
   });
 
-  test('T181-1: Customer receives order confirmation email after placing order', async ({ page, request }) => {
-    // 1. Create order
+  test('T181-1: Customer receives order confirmation email after placing order', async ({ page }) => {
+    // 1. Create addresses first
+    const shippingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        postalCode: '10001',
+        country: 'US',
+      },
+    });
+
+    const billingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        postalCode: '10001',
+        country: 'US',
+      },
+    });
+
+    // 2. Create order
     testOrder = await prisma.order.create({
       data: {
         storeId: testStore.id,
@@ -109,28 +134,18 @@ test.describe('Order Confirmation Email', () => {
         shippingAmount: 20.00,
         taxAmount: 104.00,
         totalAmount: 1423.99,
-        shippingAddress: {
-          line1: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          postalCode: '10001',
-          country: 'US',
-        },
-        billingAddress: {
-          line1: '123 Main St',
-          city: 'New York',
-          state: 'NY',
-          postalCode: '10001',
-          country: 'US',
-        },
+        shippingAddressId: shippingAddress.id,
+        billingAddressId: billingAddress.id,
         items: {
           create: [
             {
               productId: testProduct.id,
               productName: testProduct.name,
+              sku: testProduct.sku,
               quantity: 1,
-              unitPrice: 1299.99,
-              totalPrice: 1299.99,
+              price: 1299.99,
+              subtotal: 1299.99,
+              totalAmount: 1299.99,
             },
           ],
         },
@@ -167,7 +182,7 @@ test.describe('Order Confirmation Email', () => {
     await expect(page.locator('text=Status updated successfully')).toBeVisible();
   });
 
-  test('T181-2: Email includes correct store branding', async ({ page }) => {
+  test('T181-2: Email includes correct store branding', async () => {
     // Verify email content includes store name and email
     // In production, we would parse actual email HTML
     // For now, verify order data includes store information
@@ -185,6 +200,31 @@ test.describe('Order Confirmation Email', () => {
   });
 
   test('T181-3: Duplicate emails prevented by deduplication logic', async ({ page }) => {
+    // Create addresses for new order
+    const shippingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '456 Oak Ave',
+        city: 'Los Angeles',
+        state: 'CA',
+        postalCode: '90001',
+        country: 'US',
+      },
+    });
+
+    const billingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '456 Oak Ave',
+        city: 'Los Angeles',
+        state: 'CA',
+        postalCode: '90001',
+        country: 'US',
+      },
+    });
+
     // Create a new order to test deduplication
     const newOrder = await prisma.order.create({
       data: {
@@ -197,28 +237,18 @@ test.describe('Order Confirmation Email', () => {
         shippingAmount: 15.00,
         taxAmount: 41.25,
         totalAmount: 556.24,
-        shippingAddress: {
-          line1: '456 Oak Ave',
-          city: 'Los Angeles',
-          state: 'CA',
-          postalCode: '90001',
-          country: 'US',
-        },
-        billingAddress: {
-          line1: '456 Oak Ave',
-          city: 'Los Angeles',
-          state: 'CA',
-          postalCode: '90001',
-          country: 'US',
-        },
+        shippingAddressId: shippingAddress.id,
+        billingAddressId: billingAddress.id,
         items: {
           create: [
             {
               productId: testProduct.id,
               productName: testProduct.name,
+              sku: testProduct.sku,
               quantity: 1,
-              unitPrice: 499.99,
-              totalPrice: 499.99,
+              price: 499.99,
+              subtotal: 499.99,
+              totalAmount: 499.99,
             },
           ],
         },
@@ -251,6 +281,31 @@ test.describe('Order Confirmation Email', () => {
     // In production, we would mock Resend API to fail twice then succeed
     // For E2E, we verify the EmailService handles retries gracefully
 
+    // Create addresses for retry order
+    const shippingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '789 Pine Blvd',
+        city: 'Chicago',
+        state: 'IL',
+        postalCode: '60601',
+        country: 'US',
+      },
+    });
+
+    const billingAddress = await prisma.address.create({
+      data: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '789 Pine Blvd',
+        city: 'Chicago',
+        state: 'IL',
+        postalCode: '60601',
+        country: 'US',
+      },
+    });
+
     // Create order with status change
     const retryOrder = await prisma.order.create({
       data: {
@@ -263,28 +318,18 @@ test.describe('Order Confirmation Email', () => {
         shippingAmount: 10.00,
         taxAmount: 24.80,
         totalAmount: 334.79,
-        shippingAddress: {
-          line1: '789 Pine Blvd',
-          city: 'Chicago',
-          state: 'IL',
-          postalCode: '60601',
-          country: 'US',
-        },
-        billingAddress: {
-          line1: '789 Pine Blvd',
-          city: 'Chicago',
-          state: 'IL',
-          postalCode: '60601',
-          country: 'US',
-        },
+        shippingAddressId: shippingAddress.id,
+        billingAddressId: billingAddress.id,
         items: {
           create: [
             {
               productId: testProduct.id,
               productName: testProduct.name,
+              sku: testProduct.sku,
               quantity: 1,
-              unitPrice: 299.99,
-              totalPrice: 299.99,
+              price: 299.99,
+              subtotal: 299.99,
+              totalAmount: 299.99,
             },
           ],
         },
@@ -320,6 +365,31 @@ test.describe('Order Confirmation Email', () => {
       },
     });
 
+    // Create addresses for fallback order
+    const shippingAddress = await prisma.address.create({
+      data: {
+        firstName: 'Anonymous',
+        lastName: 'Customer',
+        address1: '321 Elm St',
+        city: 'Miami',
+        state: 'FL',
+        postalCode: '33101',
+        country: 'US',
+      },
+    });
+
+    const billingAddress = await prisma.address.create({
+      data: {
+        firstName: 'Anonymous',
+        lastName: 'Customer',
+        address1: '321 Elm St',
+        city: 'Miami',
+        state: 'FL',
+        postalCode: '33101',
+        country: 'US',
+      },
+    });
+
     const fallbackOrder = await prisma.order.create({
       data: {
         storeId: testStore.id,
@@ -331,28 +401,18 @@ test.describe('Order Confirmation Email', () => {
         shippingAmount: 8.00,
         taxAmount: 16.64,
         totalAmount: 224.63,
-        shippingAddress: {
-          line1: '321 Elm St',
-          city: 'Miami',
-          state: 'FL',
-          postalCode: '33101',
-          country: 'US',
-        },
-        billingAddress: {
-          line1: '321 Elm St',
-          city: 'Miami',
-          state: 'FL',
-          postalCode: '33101',
-          country: 'US',
-        },
+        shippingAddressId: shippingAddress.id,
+        billingAddressId: billingAddress.id,
         items: {
           create: [
             {
               productId: testProduct.id,
               productName: testProduct.name,
+              sku: testProduct.sku,
               quantity: 1,
-              unitPrice: 199.99,
-              totalPrice: 199.99,
+              price: 199.99,
+              subtotal: 199.99,
+              totalAmount: 199.99,
             },
           ],
         },

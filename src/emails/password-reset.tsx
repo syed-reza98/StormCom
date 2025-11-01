@@ -11,9 +11,7 @@ import {
   Text,
   Heading,
   Button,
-  Link,
 } from '@react-email/components';
-import * as React from 'react';
 
 export interface PasswordResetEmailProps {
   userName: string;
@@ -71,7 +69,7 @@ export default function PasswordResetEmail({
             </Text>
             <Text style={linkText}>{resetUrl}</Text>
 
-            <Text style={paragraph} style={{ marginTop: '30px' }}>
+            <Text style={{ ...paragraph, marginTop: '30px' }}>
               Best regards,
               <br />
               <strong>The StormCom Team</strong>

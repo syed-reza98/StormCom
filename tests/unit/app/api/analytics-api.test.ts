@@ -63,7 +63,7 @@ describe('Analytics API Routes', () => {
     let salesHandler: (request: NextRequest) => Promise<Response>;
 
     beforeEach(async () => {
-      const { GET } = await import('../../../src/app/api/analytics/sales/route');
+      const { GET } = await import('@/app/api/analytics/sales/route');
       salesHandler = GET;
     });
 
@@ -264,7 +264,7 @@ describe('Analytics API Routes', () => {
     let revenueHandler: (request: NextRequest) => Promise<Response>;
 
     beforeEach(async () => {
-      const { GET } = await import('../../../src/app/api/analytics/revenue/route');
+      const { GET } = await import('@/app/api/analytics/revenue/route');
       revenueHandler = GET;
     });
 
@@ -308,7 +308,7 @@ describe('Analytics API Routes', () => {
     let customersHandler: (request: NextRequest) => Promise<Response>;
 
     beforeEach(async () => {
-      const { GET } = await import('../../../src/app/api/analytics/customers/route');
+      const { GET } = await import('@/app/api/analytics/customers/route');
       customersHandler = GET;
     });
 
@@ -346,7 +346,7 @@ describe('Analytics API Routes', () => {
     let productsHandler: (request: NextRequest) => Promise<Response>;
 
     beforeEach(async () => {
-      const { GET } = await import('../../../src/app/api/analytics/products/route');
+      const { GET } = await import('@/app/api/analytics/products/route');
       productsHandler = GET;
     });
 
@@ -395,7 +395,7 @@ describe('Analytics API Routes', () => {
       // Arrange
       mockGetSession.mockRejectedValue(new Error('Session validation failed'));
 
-      const { GET: salesHandler } = await import('../../../src/app/api/analytics/sales/route');
+      const { GET: salesHandler } = await import('@/app/api/analytics/sales/route');
       
       const url = new URL(`http://localhost:3000/api/analytics/sales?startDate=${validDateRange.startDate}&endDate=${validDateRange.endDate}`);
       const request = new NextRequest(url);
@@ -426,7 +426,7 @@ describe('Analytics API Routes', () => {
 
       mockAnalyticsService.getSalesMetrics.mockResolvedValue(mockSalesData);
 
-      const { GET: salesHandler } = await import('../../../src/app/api/analytics/sales/route');
+      const { GET: salesHandler } = await import('@/app/api/analytics/sales/route');
       
       const url = new URL(`http://localhost:3000/api/analytics/sales?startDate=${validDateRange.startDate}&endDate=${validDateRange.endDate}`);
       const request = new NextRequest(url);

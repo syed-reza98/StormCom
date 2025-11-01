@@ -15,7 +15,6 @@ import {
   Row,
   Column,
 } from '@react-email/components';
-import * as React from 'react';
 
 export interface OrderConfirmationEmailProps {
   customerName: string;
@@ -49,7 +48,7 @@ export default function OrderConfirmationEmail({
   orderNumber = '[Order #]',
   orderDate = new Date().toLocaleDateString(),
   storeName = 'Our Store',
-  storeEmail,
+  storeEmail: _storeEmail,
   orderItems = [],
   subtotal = 0,
   shipping = 0,

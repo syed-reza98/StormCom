@@ -1,4 +1,4 @@
-import { Store, User, UserRole, SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+import { Store, User, UserRole, SubscriptionPlan, SubscriptionStatus, PrismaClient } from '@prisma/client';
 import { db as prisma } from '@/lib/db';
 import { z } from 'zod';
 
@@ -198,7 +198,7 @@ export class StoreService {
 
     try {
       // Create store and assign admin in transaction
-      const store = await this.prisma.$transaction(async (tx) => {
+      const store = await this.prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
         // Create the store
         const newStore = await tx.store.create({
           data: {
@@ -447,7 +447,7 @@ export class StoreService {
     }
 
     try {
-      const updatedStore = await this.prisma.$transaction(async (tx) => {
+      const updatedStore = await this.prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
         // Update store
         const store = await tx.store.update({
           where: { id: storeId },
@@ -518,7 +518,7 @@ export class StoreService {
     }
 
     try {
-      await this.prisma.$transaction(async (tx) => {
+      await this.prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
         const deletedAt = new Date();
 
         // Soft delete the store
@@ -618,7 +618,7 @@ export class StoreService {
     }
 
     try {
-      const updatedUser = await this.prisma.$transaction(async (tx) => {
+      const updatedUser = await this.prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
         // Assign user to store
         const updated = await tx.user.update({
           where: { id: validatedInput.userId },
@@ -702,7 +702,7 @@ export class StoreService {
     }
 
     try {
-      await this.prisma.$transaction(async (tx) => {
+      await this.prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
         // Remove user from store (set storeId to null, role to CUSTOMER)
         await tx.user.update({
           where: { id: userId },

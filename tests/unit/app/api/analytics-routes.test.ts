@@ -15,10 +15,10 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
-import { GET as salesHandler } from '../../../src/app/api/analytics/sales/route';
-import { GET as revenueHandler } from '../../../src/app/api/analytics/revenue/route';
-import { GET as customersHandler } from '../../../src/app/api/analytics/customers/route';
-import { GET as productsHandler } from '../../../src/app/api/analytics/products/route';
+import { GET as salesHandler } from '@/app/api/analytics/sales/route';
+import { GET as revenueHandler } from '@/app/api/analytics/revenue/route';
+import { GET as customersHandler } from '@/app/api/analytics/customers/route';
+import { GET as productsHandler } from '@/app/api/analytics/products/route';
 
 // Mock the analytics service
 vi.mock('../../../src/services/analytics-service', () => ({

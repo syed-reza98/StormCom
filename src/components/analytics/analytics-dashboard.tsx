@@ -2,10 +2,34 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { MetricsCards, MetricsData } from './metrics-cards';
-import RevenueChart, { RevenueData } from './revenue-chart';
-import { TopProductsTable, TopProduct } from './top-products-table';
-import { CustomerMetrics, CustomerMetricsData } from './customer-metrics';
+
+export interface MetricsData {
+  totalSales: number;
+  totalRevenue: number;
+  orderCount: number;
+  averageOrderValue: number;
+}
+
+export interface RevenueData {
+  date: string;
+  revenue: number;
+  orderCount: number;
+}
+
+export interface TopProduct {
+  id: string;
+  name: string;
+  totalQuantity: number;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export interface CustomerMetricsData {
+  totalCustomers: number;
+  newCustomers: number;
+  returningCustomers: number;
+  customerRetentionRate: number;
+}
 
 export interface AnalyticsDashboardProps {
   storeId?: string;
@@ -31,14 +55,12 @@ export function AnalyticsDashboard({
   autoRefresh = false,
 }: AnalyticsDashboardProps) {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
         setError(null);
 
         // Try to use fetch for API call (for testing compatibility)
@@ -48,15 +70,11 @@ export function AnalyticsDashboard({
           if (!response.ok && retryCount < 2) {
             // If fetch fails and we haven't exceeded retry limit, retry
             setRetryCount(prev => prev + 1);
-            setTimeout(() => {
-              setIsLoading(false); // Reset loading state before retry
-            }, 1000);
             return;
           } else if (response.ok) {
             const result = await response.json();
             setData(result.data);
             setRetryCount(0); // Reset retry count on success
-            setIsLoading(false);
             return;
           }
         } catch (fetchError) {
@@ -103,10 +121,8 @@ export function AnalyticsDashboard({
         };
 
         setData(mockData);
-        setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
-        setIsLoading(false);
       }
     };
 

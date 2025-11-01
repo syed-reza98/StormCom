@@ -7,7 +7,6 @@ import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
-import { SessionService } from '@/services/session-service';
 
 // GET /api/products - List products with pagination and filtering
 export async function GET(request: NextRequest) {

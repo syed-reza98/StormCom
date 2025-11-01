@@ -4,10 +4,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionUser } from '@/lib/session';
+import { getSessionFromRequest } from '@/lib/session-storage';
 import { prisma } from '@/lib/db';
 import { sendEmail } from '@/services/email-service';
-import { logAuditEvent } from '@/lib/audit';
+import { createAuditLog, AuditAction, AuditResource } from '@/lib/audit';
 
 /**
  * Email send request validation schema
@@ -112,8 +112,8 @@ async function checkRateLimit(
 export async function POST(request: NextRequest) {
   try {
     // 1. Authenticate user
-    const session = await getSessionUser();
-    if (!session) {
+    const session = await getSessionFromRequest(request);
+    if (!session?.userId) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
@@ -121,13 +121,13 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Check permissions (Store Admin, Super Admin only)
-    if (!['STORE_ADMIN', 'SUPER_ADMIN'].includes(session.role)) {
-      await logAuditEvent({
+    if (!['STORE_ADMIN', 'SUPER_ADMIN'].includes(session.role || '')) {
+      await createAuditLog({
         userId: session.userId,
-        action: 'EMAIL_SEND_FORBIDDEN',
-        entityType: 'Email',
-        entityId: 'send',
-        details: { role: session.role },
+        action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_SEND_FORBIDDEN to AuditAction enum
+        resource: AuditResource.USER,
+        storeId: session.storeId || undefined,
+        metadata: { role: session.role, context: 'EMAIL_SEND_FORBIDDEN' },
         ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
       });
 
@@ -197,12 +197,13 @@ export async function POST(request: NextRequest) {
     // 5. Check rate limit
     const rateLimitResult = await checkRateLimit(storeId, plan);
     if (!rateLimitResult.allowed) {
-      await logAuditEvent({
+      await createAuditLog({
         userId: session.userId,
-        action: 'EMAIL_RATE_LIMIT_EXCEEDED',
-        entityType: 'Email',
-        entityId: storeId,
-        details: { plan, resetAt: rateLimitResult.resetAt },
+        action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_RATE_LIMIT_EXCEEDED to AuditAction enum
+        resource: AuditResource.SETTINGS,
+        resourceId: storeId,
+        storeId,
+        metadata: { plan, resetAt: rateLimitResult.resetAt, context: 'EMAIL_RATE_LIMIT_EXCEEDED' },
         ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
       });
 
@@ -230,17 +231,19 @@ export async function POST(request: NextRequest) {
     });
 
     // 7. Log audit event
-    await logAuditEvent({
+    await createAuditLog({
       userId: session.userId,
-      action: result.success ? 'EMAIL_SENT' : 'EMAIL_SEND_FAILED',
-      entityType: 'Email',
-      entityId: result.messageId || 'unknown',
-      details: {
+      action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_SENT/EMAIL_SEND_FAILED to AuditAction enum
+      resource: AuditResource.SETTINGS,
+      resourceId: result.messageId || 'unknown',
+      storeId,
+      metadata: {
         to: emailData.to,
         subject: emailData.subject,
         success: result.success,
         error: result.error,
         remaining: rateLimitResult.remaining,
+        context: result.success ? 'EMAIL_SENT' : 'EMAIL_SEND_FAILED',
       },
       ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
     });

@@ -51,7 +51,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { plan, storeId, successUrl, cancelUrl, trialDays } = validation.data;
+    const { plan, storeId, successUrl, cancelUrl } = validation.data;
+
+    // Get price ID from plan
+    const { SUBSCRIPTION_PLANS } = await import('@/services/subscription-service');
+    const planConfig = SUBSCRIPTION_PLANS[plan as keyof typeof SUBSCRIPTION_PLANS];
+    if (!planConfig || !planConfig.stripePriceId) {
+      return NextResponse.json(
+        { error: { code: 'INVALID_PLAN', message: 'Invalid subscription plan or missing Stripe price ID' } },
+        { status: 400 }
+      );
+    }
 
     // Verify user has access to the store
     const store = await db.store.findFirst({
@@ -114,11 +124,11 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe checkout session
     const checkoutSession = await createSubscriptionCheckoutSession({
+      priceId: planConfig.stripePriceId,
       storeId,
-      plan,
+      customerId: user.email,
       successUrl,
       cancelUrl,
-      trialDays,
     });
 
     return NextResponse.json({

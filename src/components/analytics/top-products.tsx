@@ -351,7 +351,7 @@ export function TopProducts({
                   outerRadius={120}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                   labelLine={false}
                 >
                   {getPieData().map((entry, index) => (

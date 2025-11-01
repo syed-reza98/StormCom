@@ -52,7 +52,7 @@ function getClient(): PrismaClient {
 // Create a dynamic proxy so consumers can import { db } or { prisma } and always
 // operate on the correct underlying client (especially in tests).
 export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop, receiver) {
+  get(_target, prop) {
     const client = getClient() as any;
     const value = client[prop as keyof PrismaClient];
     return typeof value === 'function' ? value.bind(client) : value;

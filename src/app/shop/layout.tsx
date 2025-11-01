@@ -22,7 +22,7 @@ interface StorefrontLayoutProps {
  * Get store from request headers or subdomain
  */
 async function getStore() {
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host') || '';
 
   // Extract subdomain (e.g., "demo-store" from "demo-store.stormcom.io")

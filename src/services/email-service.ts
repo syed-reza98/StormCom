@@ -3,9 +3,7 @@
 // Implements FR-077 (queue with retry), FR-078 (template variables), FR-079 (deduplication)
 
 import { Resend } from 'resend';
-import { render } from '@react-email/components';
-import { prisma } from '@/lib/db';
-import type { Order, User, Store } from '@prisma/client';
+import type { User, Store } from '@prisma/client';
 
 /**
  * Email configuration from environment
@@ -55,32 +53,57 @@ export interface EmailResult {
 }
 
 /**
- * Order confirmation email data
+ * Order confirmation email data (simplified for React Email templates)
  */
 export interface OrderConfirmationData {
-  order: Order & {
-    items: Array<{
-      product: { name: string; image: string | null };
-      quantity: number;
-      price: number;
-      total: number;
-    }>;
-    store: Store;
-    customer: User;
+  to: string;
+  customerName: string;
+  orderNumber: string;
+  orderDate: string;
+  storeName: string;
+  storeEmail?: string;
+  orderItems: Array<{
+    name: string;
+    quantity: string;
+    price: number;
+    total: number;
+  }>;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  shippingAddress: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
   };
+  orderUrl: string;
 }
 
 /**
- * Shipping confirmation email data
+ * Shipping confirmation email data (simplified for React Email templates)
  */
 export interface ShippingConfirmationData {
-  order: Order & {
-    store: Store;
-    customer: User;
-  };
+  to: string;
+  customerName: string;
+  orderNumber: string;
   trackingNumber: string;
   carrier: string;
   estimatedDelivery?: string;
+  storeName: string;
+  storeEmail?: string;
+  shippingAddress: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  trackingUrl?: string;
 }
 
 /**
@@ -213,18 +236,18 @@ export function renderTemplate(
   const lastName = variables.lastName?.toString() || fallbacks.lastName;
   const customerName = `${firstName} ${lastName}`.trim();
 
-  const allVariables = { ...variables, customerName };
+  const allVariables: Record<string, string | number | undefined | null> = { ...variables, customerName };
 
   // Replace {{variableName}} with actual value or fallback
   let rendered = template;
   const variablePattern = /\{\{(\w+)\}\}/g;
 
-  rendered = rendered.replace(variablePattern, (match, varName) => {
+  rendered = rendered.replace(variablePattern, (_match, varName: string) => {
     let value = allVariables[varName];
 
     // Use fallback if variable is missing
     if (value === undefined || value === null || value === '') {
-      value = fallbacks[varName] || '';
+      value = (fallbacks as Record<string, string>)[varName] || '';
     }
 
     // Escape HTML entities for XSS protection
@@ -347,22 +370,15 @@ export async function sendEmail(
 export async function sendOrderConfirmation(
   data: OrderConfirmationData
 ): Promise<EmailResult> {
-  const { order } = data;
-  const { customer, store, items } = order;
-
-  // Calculate totals
-  const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-  const shipping = order.shippingCost || 0;
-  const tax = order.taxAmount || 0;
-  const total = order.totalAmount;
+  const { to, customerName, orderNumber, orderDate, storeName, storeEmail, orderItems, subtotal, shipping, tax, total, shippingAddress, orderUrl } = data;
 
   // Build items HTML
-  const itemsHtml = items
+  const itemsHtml = orderItems
     .map(
       (item) => `
     <tr>
       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">
-        ${item.product.name}
+        ${item.name}
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: center;">
         ${item.quantity}
@@ -387,13 +403,13 @@ export async function sendOrderConfirmation(
           <h1 style="color: white; margin: 0; font-size: 28px;">Order Confirmed! ✓</h1>
         </div>
         <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-          <p style="font-size: 16px;">Hi ${customer.name},</p>
+          <p style="font-size: 16px;">Hi ${customerName},</p>
           <p style="font-size: 16px;">Thank you for your order! We've received your order and are processing it.</p>
           
           <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${order.orderNumber}</p>
-            <p style="margin: 5px 0;"><strong>Order Date:</strong> ${order.createdAt.toLocaleDateString()}</p>
-            <p style="margin: 5px 0;"><strong>Store:</strong> ${store.name}</p>
+            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${orderNumber}</p>
+            <p style="margin: 5px 0;"><strong>Order Date:</strong> ${orderDate}</p>
+            <p style="margin: 5px 0;"><strong>Store:</strong> ${storeName}</p>
           </div>
 
           <h2 style="font-size: 18px; color: #374151; margin-top: 30px;">Order Items</h2>
@@ -431,23 +447,23 @@ export async function sendOrderConfirmation(
 
           <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 30px 0;">
             <h3 style="font-size: 16px; margin-top: 0;">Shipping Address</h3>
-            <p style="margin: 5px 0;">${order.shippingAddressLine1}</p>
-            ${order.shippingAddressLine2 ? `<p style="margin: 5px 0;">${order.shippingAddressLine2}</p>` : ''}
-            <p style="margin: 5px 0;">${order.shippingCity}, ${order.shippingState} ${order.shippingPostalCode}</p>
-            <p style="margin: 5px 0;">${order.shippingCountry}</p>
+            <p style="margin: 5px 0;">${shippingAddress.line1}</p>
+            ${shippingAddress.line2 ? `<p style="margin: 5px 0;">${shippingAddress.line2}</p>` : ''}
+            <p style="margin: 5px 0;">${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postalCode}</p>
+            <p style="margin: 5px 0;">${shippingAddress.country}</p>
           </div>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXTAUTH_URL}/orders/${order.id}" style="background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500;">
+            <a href="${orderUrl}" style="background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500;">
               View Order Details
             </a>
           </div>
 
           <p style="font-size: 14px; color: #6b7280;">We'll send you another email when your order ships.</p>
-          <p style="font-size: 14px;">Best regards,<br><strong>${store.name}</strong></p>
+          <p style="font-size: 14px;">Best regards,<br><strong>${storeName}</strong></p>
         </div>
         <div style="text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px;">
-          <p>${store.name} | Powered by StormCom</p>
+          <p>${storeName} | Powered by StormCom</p>
         </div>
       </body>
     </html>
@@ -455,17 +471,17 @@ export async function sendOrderConfirmation(
 
   return sendEmail(
     {
-      to: customer.email,
-      subject: `Order Confirmation - ${order.orderNumber}`,
+      to,
+      subject: `Order Confirmation - ${orderNumber}`,
       html,
-      from: `${store.name} <${store.contactEmail || EMAIL_CONFIG.from}>`,
-      replyTo: store.contactEmail,
+      from: `${storeName} <${storeEmail || EMAIL_CONFIG.from}>`,
+      replyTo: storeEmail,
       tags: [
         { name: 'category', value: 'order-confirmation' },
-        { name: 'orderNumber', value: order.orderNumber },
+        { name: 'orderNumber', value: orderNumber },
       ],
     },
-    order.id,
+    orderNumber,
     'order-confirmation'
   );
 }
@@ -477,8 +493,7 @@ export async function sendOrderConfirmation(
 export async function sendShippingConfirmation(
   data: ShippingConfirmationData
 ): Promise<EmailResult> {
-  const { order, trackingNumber, carrier, estimatedDelivery } = data;
-  const { customer, store } = order;
+  const { to, customerName, orderNumber, trackingNumber, carrier, estimatedDelivery, storeName, storeEmail, shippingAddress, trackingUrl } = data;
 
   const html = `
     <!DOCTYPE html>
@@ -492,35 +507,35 @@ export async function sendShippingConfirmation(
           <h1 style="color: white; margin: 0; font-size: 28px;">📦 Your Order Has Shipped!</h1>
         </div>
         <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-          <p style="font-size: 16px;">Hi ${customer.name},</p>
+          <p style="font-size: 16px;">Hi ${customerName},</p>
           <p style="font-size: 16px;">Great news! Your order has been shipped and is on its way to you.</p>
           
           <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
-            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${order.orderNumber}</p>
+            <p style="margin: 5px 0;"><strong>Order Number:</strong> ${orderNumber}</p>
             <p style="margin: 5px 0;"><strong>Tracking Number:</strong> ${trackingNumber}</p>
             <p style="margin: 5px 0;"><strong>Carrier:</strong> ${carrier}</p>
             ${estimatedDelivery ? `<p style="margin: 5px 0;"><strong>Estimated Delivery:</strong> ${estimatedDelivery}</p>` : ''}
           </div>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXTAUTH_URL}/orders/${order.id}" style="background: #3b82f6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500;">
+            <a href="${trackingUrl || `${process.env.NEXTAUTH_URL}/orders/${orderNumber}`}" style="background: #3b82f6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500;">
               Track Your Shipment
             </a>
           </div>
 
           <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 30px 0;">
             <h3 style="font-size: 16px; margin-top: 0;">Shipping Address</h3>
-            <p style="margin: 5px 0;">${order.shippingAddressLine1}</p>
-            ${order.shippingAddressLine2 ? `<p style="margin: 5px 0;">${order.shippingAddressLine2}</p>` : ''}
-            <p style="margin: 5px 0;">${order.shippingCity}, ${order.shippingState} ${order.shippingPostalCode}</p>
-            <p style="margin: 5px 0;">${order.shippingCountry}</p>
+            <p style="margin: 5px 0;">${shippingAddress.line1}</p>
+            ${shippingAddress.line2 ? `<p style="margin: 5px 0;">${shippingAddress.line2}</p>` : ''}
+            <p style="margin: 5px 0;">${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postalCode}</p>
+            <p style="margin: 5px 0;">${shippingAddress.country}</p>
           </div>
 
           <p style="font-size: 14px; color: #6b7280;">If you have any questions about your shipment, please contact our support team.</p>
-          <p style="font-size: 14px;">Best regards,<br><strong>${store.name}</strong></p>
+          <p style="font-size: 14px;">Best regards,<br><strong>${storeName}</strong></p>
         </div>
         <div style="text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px;">
-          <p>${store.name} | Powered by StormCom</p>
+          <p>${storeName} | Powered by StormCom</p>
         </div>
       </body>
     </html>
@@ -528,18 +543,18 @@ export async function sendShippingConfirmation(
 
   return sendEmail(
     {
-      to: customer.email,
-      subject: `Your Order Has Shipped - ${order.orderNumber}`,
+      to,
+      subject: `Your Order Has Shipped - ${orderNumber}`,
       html,
-      from: `${store.name} <${store.contactEmail || EMAIL_CONFIG.from}>`,
-      replyTo: store.contactEmail,
+      from: `${storeName} <${storeEmail || EMAIL_CONFIG.from}>`,
+      replyTo: storeEmail,
       tags: [
         { name: 'category', value: 'shipping-confirmation' },
-        { name: 'orderNumber', value: order.orderNumber },
+        { name: 'orderNumber', value: orderNumber },
         { name: 'trackingNumber', value: trackingNumber },
       ],
     },
-    order.id,
+    orderNumber,
     'shipping-confirmation'
   );
 }
@@ -659,8 +674,8 @@ export async function sendAccountVerification(
       to: user.email,
       subject: `Verify Your Email Address - ${store?.name || 'StormCom'}`,
       html,
-      from: store?.contactEmail
-        ? `${store.name} <${store.contactEmail}>`
+      from: store?.email
+        ? `${store.name} <${store.email}>`
         : EMAIL_CONFIG.from,
       tags: [{ name: 'category', value: 'account-verification' }],
     },

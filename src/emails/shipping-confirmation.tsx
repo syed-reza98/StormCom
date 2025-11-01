@@ -12,7 +12,6 @@ import {
   Heading,
   Button,
 } from '@react-email/components';
-import * as React from 'react';
 
 export interface ShippingConfirmationEmailProps {
   customerName: string;
@@ -40,7 +39,7 @@ export default function ShippingConfirmationEmail({
   carrier = 'Carrier',
   estimatedDelivery,
   storeName = 'Our Store',
-  storeEmail,
+  storeEmail: _storeEmail,
   shippingAddress = {
     line1: '',
     city: '',

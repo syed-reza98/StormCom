@@ -11,9 +11,7 @@ import {
   Text,
   Heading,
   Button,
-  Link,
 } from '@react-email/components';
-import * as React from 'react';
 
 export interface AccountVerificationEmailProps {
   userName: string;
@@ -67,7 +65,7 @@ export default function AccountVerificationEmail({
             </Text>
             <Text style={linkText}>{verificationUrl}</Text>
 
-            <Text style={paragraph} style={{ marginTop: '30px' }}>
+            <Text style={{ ...paragraph, marginTop: '30px' }}>
               Best regards,
               <br />
               <strong>{storeName}</strong>
