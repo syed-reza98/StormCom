@@ -1,11 +1,11 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  121,
-                    "exitCode":  1,
-                    "timestamp":  "2025-11-01T21:02:58Z",
+                    "totalErrors":  151,
+                    "exitCode":  2,
+                    "timestamp":  "2025-11-01T21:09:57Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  149
+                    "totalLines":  186
                 },
     "rawOutput":  [
                       "",
@@ -14,14 +14,14 @@
                       "",
                       ".next/dev/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
                       "  Types of property \u0027PUT\u0027 are incompatible.",
-                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
+                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { id: string; storeId: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
                       "      Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible.",
                       "        Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027.",
                       "          Types of property \u0027params\u0027 are incompatible.",
                       "            Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
                       ".next/types/validator.ts(882,31): error TS2344: Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027.",
                       "  Types of property \u0027PUT\u0027 are incompatible.",
-                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
+                      "    Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { id: string; storeId: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027.",
                       "      Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible.",
                       "        Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027.",
                       "          Types of property \u0027params\u0027 are incompatible.",
@@ -33,8 +33,45 @@
                       "src/components/theme/theme-editor.tsx(20,10): error TS2614: Module \u0027\"@/hooks/use-toast\"\u0027 has no exported member \u0027useToast\u0027. Did you mean to use \u0027import useToast from \"@/hooks/use-toast\"\u0027 instead?",
                       "src/lib/sanitize.ts(92,3): error TS2322: Type \u0027TrustedHTML\u0027 is not assignable to type \u0027string\u0027.",
                       "src/lib/sanitize.ts(129,11): error TS2352: Conversion of type \u0027TrustedHTML\u0027 to type \u0027string\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
+                      "src/services/gdpr-service.ts(107,13): error TS2353: Object literal may only specify known properties, and \u0027total\u0027 does not exist in type \u0027OrderSelect\u003cDefaultArgs\u003e\u0027.",
+                      "src/services/gdpr-service.ts(115,13): error TS2353: Object literal may only specify known properties, and \u0027type\u0027 does not exist in type \u0027AddressSelect\u003cDefaultArgs\u003e\u0027.",
+                      "src/services/gdpr-service.ts(160,20): error TS2339: Property \u0027orders\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                      "src/services/gdpr-service.ts(161,23): error TS2339: Property \u0027addresses\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                      "src/services/gdpr-service.ts(162,21): error TS2339: Property \u0027reviews\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                      "src/services/gdpr-service.ts(163,28): error TS2339: Property \u0027consentRecords\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                      "src/services/gdpr-service.ts(312,51): error TS2769: No overload matches this call.",
+                      "  Overload 1 of 2, \u0027(arg: PrismaPromise\u003cany\u003e[], options?: { isolationLevel?: \"Serializable\" | undefined; } | undefined): Promise\u003cany[]\u003e\u0027, gave the following error.",
+                      "    Argument of type \u0027(tx: typeof prisma) =\u003e Promise\u003c{ name: string; id: string; email: string; password: string; phone: string | null; role: $Enums.UserRole; storeId: string | null; ... 16 more ...; deletedAt: Date | null; }\u003e\u0027 is not assignable to parameter of type \u0027PrismaPromise\u003cany\u003e[]\u0027.",
+                      "  Overload 2 of 2, \u0027(fn: (prisma: Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e) =\u003e Promise\u003c...\u003e, options?: { ...; } | undefined): Promise\u003c...\u003e\u0027, gave the following error.",
+                      "    Argument of type \u0027(tx: typeof prisma) =\u003e Promise\u003c{ name: string; id: string; email: string; password: string; phone: string | null; role: $Enums.UserRole; storeId: string | null; ... 16 more ...; deletedAt: Date | null; }\u003e\u0027 is not assignable to parameter of type \u0027(prisma: Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e) =\u003e Promise\u003c...\u003e\u0027.",
+                      "      Types of parameters \u0027tx\u0027 and \u0027prisma\u0027 are incompatible.",
+                      "        Type \u0027Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e\u0027 is missing the following properties from type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027: $on, $connect, $disconnect, $transaction, $extends",
+                      "src/services/gdpr-service.ts(358,5): error TS2740: Type \u0027any[]\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: name, id, email, password, and 20 more.",
+                      "src/services/gdpr-service.ts(502,87): error TS2345: Argument of type \u0027GdprRequestStatus\u0027 is not assignable to parameter of type \u0027\"FAILED\" | \"COMPLETED\"\u0027.",
+                      "  Type \u0027\"PENDING\"\u0027 is not assignable to type \u0027\"FAILED\" | \"COMPLETED\"\u0027.",
                       "tests/__mocks__/mockPrisma.ts(1,10): error TS2305: Module \u0027\"jest-mock-extended\"\u0027 has no exported member \u0027createMock\u0027.",
                       "tests/e2e/security/rate-limiting.spec.ts(205,67): error TS6133: \u0027request\u0027 is declared but its value is never read.",
+                      "tests/integration/gdpr-endpoints.test.ts(10,27): error TS6133: \u0027GdprRequestStatus\u0027 is declared but its value is never read.",
+                      "tests/integration/gdpr-endpoints.test.ts(73,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(74,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(109,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(110,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(161,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(162,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(202,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(203,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(240,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(241,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(271,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(272,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(326,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(327,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(374,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(375,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(412,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(413,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(445,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                      "tests/integration/gdpr-endpoints.test.ts(446,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
                       "tests/integration/helpers/database.ts(286,15): error TS6133: \u0027testId\u0027 is declared but its value is never read.",
                       "tests/support/fixtures.ts(2,31): error TS2307: Cannot find module \u0027@/types\u0027 or its corresponding type declarations.",
                       "tests/unit/app/api/analytics-api.test.ts(58,38): error TS2345: Argument of type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
@@ -145,14 +182,14 @@
                       "tests/unit/services/email-service.test.ts(268,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
                       "tests/unit/services/email-service.test.ts(381,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
                       "tests/unit/services/email-service.test.ts(476,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
-                      "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                       "tests/unit/services/email-service.test.ts(550,17): error TS2540: Cannot assign to \u0027NODE_ENV\u0027 because it is a read-only property.",
-                      "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
-                      "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; logo: string | null; ... 14 more ...; locale: string; }\u0027: phone, createdAt, updatedAt, deletedAt, and 18 more.",
+                      "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                       "tests/unit/services/subscription-service.test.ts(26,16): error TS2352: Conversion of type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027 to type \u0027{ store: { findUnique: MockedFunction\u003cany\u003e; update: MockedFunction\u003cany\u003e; findMany: MockedFunction\u003cany\u003e; }; product: { count: MockedFunction\u003cany\u003e; }; order: { ...; }; }\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
                       "  The types of \u0027store.findUnique\u0027 are incompatible between these types.",
                       "    Type \u0027\u003cT extends StoreFindUniqueArgs\u003e(args: SelectSubset\u003cT, StoreFindUniqueArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__StoreClient\u003cGetFindResult\u003c$StorePayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e | null, null, DefaultArgs, PrismaClientOptions\u003e\u0027 is not comparable to type \u0027MockedFunction\u003cany\u003e\u0027.",
@@ -165,7 +202,7 @@
                        "code":  "TS2344",
                        "line":  882,
                        "severity":  "error",
-                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
+                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { id: string; storeId: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
                        "column":  31
                    },
                    {
@@ -174,7 +211,7 @@
                        "code":  "TS2344",
                        "line":  882,
                        "severity":  "error",
-                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { storeId: string; fontFamily: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
+                       "message":  "Type \u0027typeof import(\"F:/codestorm/stormcom/src/app/api/stores/[id]/theme/route\")\u0027 does not satisfy the constraint \u0027RouteHandlerConfig\u003c\"/api/stores/[id]/theme\"\u003e\u0027. Types of property \u0027PUT\u0027 are incompatible. Type \u0027(request: NextRequest, { params }: { params: { id: string; }; }) =\u003e Promise\u003cNextResponse\u003c{ error: { code: string; message: string; }; }\u003e | NextResponse\u003c{ data: { id: string; storeId: string; ... 13 more ...; customCss: string | null; }; message: string; }\u003e\u003e\u0027 is not assignable to type \u0027(request: NextRequest, context: { params: Promise\u003c{ id: string; }\u003e; }) =\u003e void | Response | Promise\u003cvoid | Response\u003e\u0027. Types of parameters \u0027__1\u0027 and \u0027context\u0027 are incompatible. Type \u0027{ params: Promise\u003c{ id: string; }\u003e; }\u0027 is not assignable to type \u0027{ params: { id: string; }; }\u0027. Types of property \u0027params\u0027 are incompatible. Property \u0027id\u0027 is missing in type \u0027Promise\u003c{ id: string; }\u003e\u0027 but required in type \u0027{ id: string; }\u0027.",
                        "column":  31
                    },
                    {
@@ -232,6 +269,87 @@
                        "file":  "src/lib/sanitize.ts"
                    },
                    {
+                       "message":  "Object literal may only specify known properties, and \u0027total\u0027 does not exist in type \u0027OrderSelect\u003cDefaultArgs\u003e\u0027.",
+                       "column":  13,
+                       "line":  107,
+                       "fullText":  "src/services/gdpr-service.ts(107,13): error TS2353: Object literal may only specify known properties, and \u0027total\u0027 does not exist in type \u0027OrderSelect\u003cDefaultArgs\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "message":  "Object literal may only specify known properties, and \u0027type\u0027 does not exist in type \u0027AddressSelect\u003cDefaultArgs\u003e\u0027.",
+                       "column":  13,
+                       "line":  115,
+                       "fullText":  "src/services/gdpr-service.ts(115,13): error TS2353: Object literal may only specify known properties, and \u0027type\u0027 does not exist in type \u0027AddressSelect\u003cDefaultArgs\u003e\u0027.",
+                       "code":  "TS2353",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "message":  "Property \u0027orders\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "column":  20,
+                       "line":  160,
+                       "fullText":  "src/services/gdpr-service.ts(160,20): error TS2339: Property \u0027orders\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "message":  "Property \u0027addresses\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "column":  23,
+                       "line":  161,
+                       "fullText":  "src/services/gdpr-service.ts(161,23): error TS2339: Property \u0027addresses\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "message":  "Property \u0027reviews\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "column":  21,
+                       "line":  162,
+                       "fullText":  "src/services/gdpr-service.ts(162,21): error TS2339: Property \u0027reviews\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "message":  "Property \u0027consentRecords\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "column":  28,
+                       "line":  163,
+                       "fullText":  "src/services/gdpr-service.ts(163,28): error TS2339: Property \u0027consentRecords\u0027 does not exist on type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027.",
+                       "code":  "TS2339",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "fullText":  "src/services/gdpr-service.ts(312,51): error TS2769: No overload matches this call.",
+                       "file":  "src/services/gdpr-service.ts",
+                       "code":  "TS2769",
+                       "line":  312,
+                       "severity":  "error",
+                       "message":  "No overload matches this call. Overload 1 of 2, \u0027(arg: PrismaPromise\u003cany\u003e[], options?: { isolationLevel?: \"Serializable\" | undefined; } | undefined): Promise\u003cany[]\u003e\u0027, gave the following error. Argument of type \u0027(tx: typeof prisma) =\u003e Promise\u003c{ name: string; id: string; email: string; password: string; phone: string | null; role: $Enums.UserRole; storeId: string | null; ... 16 more ...; deletedAt: Date | null; }\u003e\u0027 is not assignable to parameter of type \u0027PrismaPromise\u003cany\u003e[]\u0027. Overload 2 of 2, \u0027(fn: (prisma: Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e) =\u003e Promise\u003c...\u003e, options?: { ...; } | undefined): Promise\u003c...\u003e\u0027, gave the following error. Argument of type \u0027(tx: typeof prisma) =\u003e Promise\u003c{ name: string; id: string; email: string; password: string; phone: string | null; role: $Enums.UserRole; storeId: string | null; ... 16 more ...; deletedAt: Date | null; }\u003e\u0027 is not assignable to parameter of type \u0027(prisma: Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e) =\u003e Promise\u003c...\u003e\u0027. Types of parameters \u0027tx\u0027 and \u0027prisma\u0027 are incompatible. Type \u0027Omit\u003cPrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e, \"$connect\" | \"$disconnect\" | \"$on\" | \"$transaction\" | \"$extends\"\u003e\u0027 is missing the following properties from type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027: $on, $connect, $disconnect, $transaction, $extends",
+                       "column":  51
+                   },
+                   {
+                       "message":  "Type \u0027any[]\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: name, id, email, password, and 20 more.",
+                       "column":  5,
+                       "line":  358,
+                       "fullText":  "src/services/gdpr-service.ts(358,5): error TS2740: Type \u0027any[]\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: name, id, email, password, and 20 more.",
+                       "code":  "TS2740",
+                       "severity":  "error",
+                       "file":  "src/services/gdpr-service.ts"
+                   },
+                   {
+                       "fullText":  "src/services/gdpr-service.ts(502,87): error TS2345: Argument of type \u0027GdprRequestStatus\u0027 is not assignable to parameter of type \u0027\"FAILED\" | \"COMPLETED\"\u0027.",
+                       "file":  "src/services/gdpr-service.ts",
+                       "code":  "TS2345",
+                       "line":  502,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027GdprRequestStatus\u0027 is not assignable to parameter of type \u0027\"FAILED\" | \"COMPLETED\"\u0027. Type \u0027\"PENDING\"\u0027 is not assignable to type \u0027\"FAILED\" | \"COMPLETED\"\u0027.",
+                       "column":  87
+                   },
+                   {
                        "message":  "Module \u0027\"jest-mock-extended\"\u0027 has no exported member \u0027createMock\u0027.",
                        "column":  10,
                        "line":  1,
@@ -248,6 +366,195 @@
                        "code":  "TS6133",
                        "severity":  "error",
                        "file":  "tests/e2e/security/rate-limiting.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027GdprRequestStatus\u0027 is declared but its value is never read.",
+                       "column":  27,
+                       "line":  10,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(10,27): error TS6133: \u0027GdprRequestStatus\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  73,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(73,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  74,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(74,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  109,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(109,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  110,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(110,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  161,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(161,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  162,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(162,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  202,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(202,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  203,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(203,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  240,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(240,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  241,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(241,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  271,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(271,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  272,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(272,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  326,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(326,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  327,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(327,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  374,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(374,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  375,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(375,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  412,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(412,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  413,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(413,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  445,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(445,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "column":  9,
+                       "line":  446,
+                       "fullText":  "tests/integration/gdpr-endpoints.test.ts(446,9): error TS2322: Type \u0027Date\u0027 is not assignable to type \u0027number\u0027.",
+                       "code":  "TS2322",
+                       "severity":  "error",
+                       "file":  "tests/integration/gdpr-endpoints.test.ts"
                    },
                    {
                        "message":  "\u0027testId\u0027 is declared but its value is never read.",
@@ -1168,28 +1475,28 @@
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  499,
-                       "fullText":  "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(499,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  519,
-                       "fullText":  "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(519,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  535,
-                       "fullText":  "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(535,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
@@ -1204,37 +1511,37 @@
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  573,
-                       "fullText":  "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(573,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  593,
-                       "fullText":  "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(593,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
+                       "message":  "Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; logo: string | null; ... 14 more ...; locale: string; }\u0027: phone, createdAt, updatedAt, deletedAt, and 18 more.",
                        "column":  7,
                        "line":  596,
-                       "fullText":  "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ productLimit: number; orderLimit: number; name: string; locale: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; ... 14 more ...; timezone: string; }\u0027: productLimit, orderLimit, locale, phone, and 18 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(596,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; phone: string | null; createdAt: Date; updatedAt: Date; deletedAt: Date | null; slug: string; description: string | null; logo: string | null; ... 14 more ...; locale: string; }\u0027: phone, createdAt, updatedAt, deletedAt, and 18 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "column":  7,
                        "line":  609,
-                       "fullText":  "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ storeId: string | null; name: string; password: string; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: storeId, password, phone, role, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(609,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ name: string; id: string; email: string; password: string; phone: string | null; role: UserRole; storeId: string | null; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, phone, role, storeId, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
