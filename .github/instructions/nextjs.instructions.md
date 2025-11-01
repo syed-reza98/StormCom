@@ -128,8 +128,6 @@ app/
 
 **CRITICAL**: Enforce these limits to maintain code quality:
 
-- **Maximum file size**: 300 lines per file (enforced by ESLint)
-- **Maximum function size**: 50 lines per function (enforced by ESLint)
 - **Maximum folder depth**: 4 levels
 - **Refactoring trigger**: When approaching 80% of limit (240 lines/40 lines)
 
