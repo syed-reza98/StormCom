@@ -1,25 +1,102 @@
 version: 2
 
 updates:
-  # Enable version updates for npm dependencies
+  # npm dependency updates - DAILY (as per US12 Security requirements)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "tuesday"
-    open-pull-requests-limit: 10
+      interval: "daily" # Changed from weekly to daily for security patches
+      time: "03:00" # Run at 3 AM UTC (off-peak hours)
+    open-pull-requests-limit: 10 # Maximum 10 PRs at a time
+    reviewers:
+      - "CodeStorm-Hub" # Automatically assign reviewer
     labels:
       - "dependencies"
       - "npm"
+      - "automated" # Mark as automated PR
     commit-message:
-      prefix: "chore"
-      include: "scope"
-    # To ignore specific updates, uncomment and configure:
-    # ignore:
-    #   - dependency-name: "*"
-    #     update-types:
-    #       - "version-update:semver-patch"
-    #       - "version-update:semver-minor"
+      prefix: "chore(deps)" # Conventional commit format
+      include: "scope" # Include package name in commit
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      # Group all Next.js related packages together
+      nextjs:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "@next/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group all Prisma related packages together
+      prisma:
+        patterns:
+          - "@prisma/*"
+          - "prisma"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group all testing related packages together
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@testing-library/*"
+          - "playwright"
+          - "@playwright/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group all linting and formatting tools together
+      code-quality:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "prettier"
+          - "typescript"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group all UI library packages together
+      ui-libraries:
+        patterns:
+          - "@radix-ui/*"
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "lucide-react"
+          - "framer-motion"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group all development dependencies
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Ignore major version updates for stable packages (review manually)
+    ignore:
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+    # Allow Dependabot to update lockfile without opening PR for transitive deps
+    versioning-strategy: "increase"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"

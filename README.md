@@ -472,7 +472,28 @@ For detailed setup and usage, refer to:
 
 ### Vercel (Recommended)
 
-Deployment is optimized for Vercel's serverless platform:
+Deployment is optimized for Vercel's serverless platform with **HTTPS-only** enforcement and enterprise-grade security headers.
+
+#### Security Configuration
+
+StormCom enforces HTTPS-only access with the following security measures (configured in `vercel.json`):
+
+**Security Headers Applied**:
+- **Strict-Transport-Security (HSTS)**: `max-age=31536000; includeSubDomains; preload`
+  - Forces HTTPS for 1 year (31,536,000 seconds)
+  - Applies to all subdomains
+  - Eligible for browser preload lists
+- **X-Frame-Options**: `DENY` - Prevents clickjacking attacks
+- **X-Content-Type-Options**: `nosniff` - Prevents MIME-type sniffing
+- **Referrer-Policy**: `strict-origin-when-cross-origin` - Limits referrer information leakage
+- **Permissions-Policy**: Disables camera, microphone, geolocation for privacy
+
+**HTTP to HTTPS Redirect**:
+- All HTTP traffic automatically redirected to HTTPS (permanent 301 redirect)
+- Applies to all routes and paths
+- Enforced at edge network level for performance
+
+#### Deployment Steps
 
 1. **Push to GitHub**
    ```bash
@@ -485,6 +506,7 @@ Deployment is optimized for Vercel's serverless platform:
    - Connect GitHub repository
    - Select `001-multi-tenant-ecommerce` branch
    - Vercel auto-detects Next.js configuration
+   - Security headers from `vercel.json` applied automatically
 
 3. **Configure Environment Variables**
    - Set `DATABASE_URL` to Vercel Postgres connection string
@@ -496,17 +518,65 @@ Deployment is optimized for Vercel's serverless platform:
    - Each commit triggers CI/CD pipeline
    - Runs linting, type-checking, tests
    - Deploys to preview/production URL on success
+   - HTTPS enforced automatically
 
 **Environment Variables Reference**:
 ```
 DATABASE_URL                # Vercel Postgres connection string
 NEXTAUTH_SECRET            # Random 32+ character string
-NEXTAUTH_URL               # https://yourdomain.com
+NEXTAUTH_URL               # https://yourdomain.com (MUST use HTTPS)
 RESEND_API_KEY             # Transactional email service
 VERCEL_BLOB_READ_WRITE_TOKEN # File storage token
 STRIPE_SECRET_KEY          # Stripe payment gateway
 SSLCOMMERZ_STORE_ID        # Bangladesh payment gateway
 SENTRY_AUTH_TOKEN          # Error tracking service
+```
+
+#### Security Verification
+
+After deployment, verify security headers:
+
+```bash
+# Check HSTS header
+curl -I https://yourdomain.com | grep -i strict-transport-security
+
+# Expected output:
+# strict-transport-security: max-age=31536000; includeSubDomains; preload
+
+# Check X-Frame-Options
+curl -I https://yourdomain.com | grep -i x-frame-options
+
+# Expected output:
+# x-frame-options: DENY
+```
+
+Or use online tools:
+- **SecurityHeaders.com**: https://securityheaders.com/?q=yourdomain.com
+- **SSL Labs**: https://www.ssllabs.com/ssltest/analyze.html?d=yourdomain.com
+
+#### Local HTTPS Testing (Optional)
+
+To test HTTPS locally before deployment:
+
+```bash
+# Install mkcert (one-time setup)
+# Windows (Chocolatey):
+choco install mkcert
+
+# macOS (Homebrew):
+brew install mkcert
+
+# Linux:
+# Download from https://github.com/FiloSottile/mkcert/releases
+
+# Create local certificate authority
+mkcert -install
+
+# Generate certificate for localhost
+mkcert localhost 127.0.0.1 ::1
+
+# Start Next.js dev server with HTTPS
+npm run dev -- --experimental-https
 ```
 
 For full setup details, see `specs/001-multi-tenant-ecommerce/plan.md`.

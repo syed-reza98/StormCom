@@ -480,11 +480,11 @@
 
 **Tasks**:
 
-- [ ] T182 [US11] Create AuditLogService in src/services/audit-log-service.ts with log creation and retrieval operations
-- [ ] T183 [US11] Create audit logging middleware in src/lib/audit-middleware.ts to automatically log API calls
-- [ ] T184 [US11] [P] Create API route GET /api/audit-logs in src/app/api/audit-logs/route.ts for retrieving logs with filters (entity, action, user, date)
-- [ ] T185 [US11] [P] Create Audit Logs page in src/app/(dashboard)/audit-logs/page.tsx with filterable data table
-- [ ] T186 [US11] Create E2E test "Audit logs capture critical actions" in tests/e2e/audit/audit-logging.spec.ts
+- [X] T182 [US11] Create AuditLogService in src/services/audit-log-service.ts with log creation and retrieval operations
+- [X] T183 [US11] Create audit logging middleware in src/lib/audit-middleware.ts to automatically log API calls
+- [X] T184 [US11] [P] Create API route GET /api/audit-logs in src/app/api/audit-logs/route.ts for retrieving logs with filters (entity, action, user, date)
+- [X] T185 [US11] [P] Create Audit Logs page in src/app/(dashboard)/audit-logs/page.tsx with filterable data table
+- [X] T186 [US11] Create E2E test "Audit logs capture critical actions" in tests/e2e/audit/audit-logging.spec.ts
 
 ---
 
@@ -498,11 +498,11 @@
 
 **Tasks**:
 
-- [ ] T187 [US12] [P] Enable HTTPS-only in production via Vercel configuration
-- [ ] T188 [US12] [P] Implement Content Security Policy in src/middleware.ts with strict directives
-- [ ] T189 [US12] [P] Setup automated dependency scanning with GitHub Dependabot in .github/dependabot.yml
-- [ ] T190 [US12] [P] Create security headers test in tests/integration/security/headers.test.ts to verify CSP, HSTS, X-Frame-Options
-- [ ] T191 [US12] [P] Implement input sanitization utility in src/lib/sanitize.ts for XSS prevention
+- [X] T187 [US12] [P] Enable HTTPS-only in production via Vercel configuration
+- [X] T188 [US12] [P] Implement Content Security Policy in src/middleware.ts with strict directives
+- [X] T189 [US12] [P] Setup automated dependency scanning with GitHub Dependabot in .github/dependabot.yml
+- [X] T190 [US12] [P] Create security headers test in tests/integration/security/headers.test.ts to verify CSP, HSTS, X-Frame-Options
+- [X] T191 [US12] [P] Implement input sanitization utility in src/lib/sanitize.ts for XSS prevention
 - [ ] T192 [US12] Create E2E test "CSRF protection blocks unauthorized requests" in tests/e2e/security/csrf-protection.spec.ts
 - [ ] T193 [US12] Create E2E test "Rate limiting enforces request limits" in tests/e2e/security/rate-limiting.spec.ts
 
