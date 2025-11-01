@@ -5,6 +5,11 @@ import {
   createCsrfError,
   requiresCsrfProtection,
 } from './src/lib/csrf';
+import {
+  checkSimpleRateLimit,
+  createSimpleRateLimitError,
+  addSimpleRateLimitHeaders,
+} from './src/lib/simple-rate-limit';
 
 /**
  * Security Middleware
@@ -138,20 +143,26 @@ const SECURITY_HEADERS = {
 /**
  * Middleware function
  * 
- * Applies security headers and CSRF protection to all routes.
- * Runs on every request before reaching route handlers.
+ * Applies security protections to all routes:
+ * - Rate limiting (100 req/min general, 10 req/min auth)
+ * - CSRF protection for state-changing operations
+ * - Security headers (CSP, HSTS, X-Frame-Options, etc.)
  * 
- * **CSRF Protection**:
- * - Validates CSRF tokens for POST, PUT, PATCH, DELETE requests
- * - Exempts GET, HEAD, OPTIONS, NextAuth, and webhook routes
- * - Returns 403 Forbidden if token validation fails
+ * Runs on every request before reaching route handlers.
  */
 export async function middleware(request: NextRequest) {
-  // 1. CSRF Protection: Validate token for state-changing operations
   const { method, url } = request;
   const { pathname } = new URL(url);
 
-  // Check if CSRF protection is required for this request
+  // 1. Rate Limiting: Check request limits
+  const rateLimitResult = checkSimpleRateLimit(request);
+
+  if (!rateLimitResult.success) {
+    // Return 429 Too Many Requests
+    return createSimpleRateLimitError(rateLimitResult);
+  }
+
+  // 2. CSRF Protection: Validate token for state-changing operations
   if (requiresCsrfProtection(method, pathname)) {
     // Validate CSRF token (async operation)
     const isValid = await validateCsrfTokenFromRequest(request);
@@ -162,13 +173,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Security Headers: Apply to all responses
+  // 3. Security Headers: Apply to all responses
   const response = NextResponse.next();
 
   // Apply all security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
+
+  // Add rate limit headers to response
+  addSimpleRateLimitHeaders(response, rateLimitResult);
 
   // Remove X-Powered-By header if present (extra safety)
   response.headers.delete('X-Powered-By');
