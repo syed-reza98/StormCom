@@ -1,174 +1,130 @@
-/**
- * Analytics Dashboard Page
- * 
- * Comprehensive analytics overview with key metrics, charts, and insights.
- * Provides store owners with data-driven insights into their business performance.
- */
+// src/app/(dashboard)/analytics/page.tsx
+// Analytics Dashboard - Comprehensive analytics with live data, charts, and insights
 
 import { Metadata } from 'next';
-import { Section, Container, Flex, Heading, Text, Card, Badge } from '@radix-ui/themes';
-import { 
-  BarChartIcon, 
-  ActivityLogIcon, 
-  PersonIcon, 
-  FileTextIcon,
-  ArrowUpIcon,
-  ArrowDownIcon
-} from '@radix-ui/react-icons';
+import { Suspense } from 'react';
+import { getSessionFromCookies } from '@/lib/session-storage';
+import { redirect } from 'next/navigation';
+import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
+import { AnalyticsDatePicker } from '@/components/analytics/analytics-date-picker';
+import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// ============================================================================
+// METADATA
+// ============================================================================
 
 export const metadata: Metadata = {
   title: 'Analytics Dashboard | StormCom',
-  description: 'View store analytics and performance metrics',
+  description: 'View comprehensive store analytics and performance metrics',
 };
 
-export default function AnalyticsDashboardPage() {
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
+
+interface AnalyticsPageProps {
+  searchParams: {
+    startDate?: string;
+    endDate?: string;
+    period?: 'day' | 'week' | 'month';
+  };
+}
+
+// ============================================================================
+// LOADING COMPONENTS
+// ============================================================================
+
+function AnalyticsLoadingSkeleton() {
   return (
-    <Section size="2">
-      <Container size="4">
-        <Flex direction="column" gap="6">
-          {/* Page Header */}
-          <Flex align="center" gap="3">
-            <BarChartIcon width="32" height="32" color="teal" />
-            <div>
-              <Heading size="8">Analytics Dashboard</Heading>
-              <Text size="3" color="gray">
-                Track your store's performance and key metrics
-              </Text>
-            </div>
-          </Flex>
+    <div className="space-y-6">
+      {/* Header Skeleton */}
+      <div className="flex flex-col space-y-2">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-4 w-96" />
+      </div>
 
-          {/* Key Metrics Grid */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-            gap: '16px' 
-          }}>
-            {/* Total Sales */}
-            <Card size="3">
-              <Flex direction="column" gap="3">
-                <Flex align="center" justify="between">
-                  <Text size="2" color="gray">Total Sales</Text>
-                  <ActivityLogIcon width="20" height="20" color="teal" />
-                </Flex>
-                <Heading size="7">$24,567</Heading>
-                <Flex align="center" gap="2">
-                  <Badge color="green" size="1">
-                    <ArrowUpIcon width="12" height="12" />
-                    12.5%
-                  </Badge>
-                  <Text size="1" color="gray">vs last month</Text>
-                </Flex>
-              </Flex>
-            </Card>
+      {/* Date Picker Skeleton */}
+      <Skeleton className="h-10 w-80" />
 
-            {/* Total Orders */}
-            <Card size="3">
-              <Flex direction="column" gap="3">
-                <Flex align="center" justify="between">
-                  <Text size="2" color="gray">Total Orders</Text>
-                  <FileTextIcon width="20" height="20" color="blue" />
-                </Flex>
-                <Heading size="7">1,234</Heading>
-                <Flex align="center" gap="2">
-                  <Badge color="green" size="1">
-                    <ArrowUpIcon width="12" height="12" />
-                    8.2%
-                  </Badge>
-                  <Text size="1" color="gray">vs last month</Text>
-                </Flex>
-              </Flex>
-            </Card>
-
-            {/* Total Customers */}
-            <Card size="3">
-              <Flex direction="column" gap="3">
-                <Flex align="center" justify="between">
-                  <Text size="2" color="gray">Total Customers</Text>
-                  <PersonIcon width="20" height="20" color="amber" />
-                </Flex>
-                <Heading size="7">856</Heading>
-                <Flex align="center" gap="2">
-                  <Badge color="green" size="1">
-                    <ArrowUpIcon width="12" height="12" />
-                    15.3%
-                  </Badge>
-                  <Text size="1" color="gray">vs last month</Text>
-                </Flex>
-              </Flex>
-            </Card>
-
-            {/* Average Order Value */}
-            <Card size="3">
-              <Flex direction="column" gap="3">
-                <Flex align="center" justify="between">
-                  <Text size="2" color="gray">Avg. Order Value</Text>
-                  <BarChartIcon width="20" height="20" color="green" />
-                </Flex>
-                <Heading size="7">$65.42</Heading>
-                <Flex align="center" gap="2">
-                  <Badge color="red" size="1">
-                    <ArrowDownIcon width="12" height="12" />
-                    2.1%
-                  </Badge>
-                  <Text size="1" color="gray">vs last month</Text>
-                </Flex>
-              </Flex>
-            </Card>
-          </div>
-
-          {/* Charts Section */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
-            gap: '24px' 
-          }}>
-            {/* Sales Chart */}
-            <Card size="3">
-              <Flex direction="column" gap="4">
-                <Heading size="5">Sales Overview</Heading>
-                <Text size="2" color="gray">Last 30 days</Text>
-                <div style={{ 
-                  height: '300px', 
-                  backgroundColor: 'var(--gray-2)', 
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <Text size="2" color="gray">Chart placeholder</Text>
-                </div>
-              </Flex>
-            </Card>
-
-            {/* Top Products */}
-            <Card size="3">
-              <Flex direction="column" gap="4">
-                <Heading size="5">Top Products</Heading>
-                <Text size="2" color="gray">Best sellers this month</Text>
-                <Flex direction="column" gap="3">
-                  {['Product A', 'Product B', 'Product C', 'Product D', 'Product E'].map((product, index) => (
-                    <Flex key={index} align="center" justify="between">
-                      <Text size="2">{product}</Text>
-                      <Badge color="blue" size="1">{120 - index * 15} sales</Badge>
-                    </Flex>
-                  ))}
-                </Flex>
-              </Flex>
-            </Card>
-          </div>
-
-          {/* Recent Activity */}
-          <Card size="3">
-            <Flex direction="column" gap="4">
-              <Heading size="5">Recent Activity</Heading>
-              <Text size="2" color="gray">Latest store activity and updates</Text>
-              <Flex direction="column" gap="2">
-                <Text size="2">Recent orders, customer registrations, and product updates would appear here</Text>
-              </Flex>
-            </Flex>
+      {/* Metrics Cards Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4" />
+              </div>
+              <Skeleton className="h-8 w-20" />
+              <div className="flex items-center space-x-2 mt-2">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </CardContent>
           </Card>
-        </Flex>
-      </Container>
-    </Section>
+        ))}
+      </div>
+
+      {/* Charts Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <Skeleton className="h-6 w-32 mb-4" />
+              <Skeleton className="h-64 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+export default async function AnalyticsPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<AnalyticsPageProps['searchParams']> 
+}) {
+  // Get session and verify authentication
+  const session = await getSessionFromCookies();
+  if (!session?.storeId) {
+    redirect('/auth/signin');
+  }
+
+  const params = await searchParams;
+  const { startDate, endDate, period = 'month' } = params;
+
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
+        <p className="text-muted-foreground">
+          Track your store's performance and key metrics with real-time insights
+        </p>
+      </div>
+
+      {/* Date Range Picker */}
+      <AnalyticsDatePicker
+        startDate={startDate}
+        endDate={endDate}
+        period={period}
+      />
+
+      {/* Analytics Dashboard with Loading State */}
+      <Suspense fallback={<AnalyticsLoadingSkeleton />}>
+        <AnalyticsDashboard
+          storeId={session.storeId}
+          startDate={startDate}
+          endDate={endDate}
+          period={period}
+        />
+      </Suspense>
+    </div>
   );
 }

@@ -399,15 +399,15 @@
 
 **Tasks**:
 
-- [ ] T158 [US7] Create AnalyticsService in src/services/analytics-service.ts with sales aggregation, revenue calculation, and report generation
-- [ ] T159 [US7] [P] Create API route GET /api/analytics/sales in src/app/api/analytics/sales/route.ts for sales metrics with date range filters
-- [ ] T160 [US7] [P] Create API route GET /api/analytics/revenue in src/app/api/analytics/revenue/route.ts for revenue reports by period
-- [ ] T161 [US7] [P] Create API route GET /api/analytics/products in src/app/api/analytics/products/route.ts for top-selling products report
-- [ ] T162 [US7] [P] Create API route GET /api/analytics/customers in src/app/api/analytics/customers/route.ts for customer acquisition and retention metrics
-- [ ] T163 [US7] [P] Create Analytics Dashboard in src/app/(dashboard)/analytics/page.tsx with charts, metrics cards, and date range picker
-- [ ] T164 [US7] [P] Create Sales Report component in src/components/analytics/sales-report.tsx with line chart and export button
-- [ ] T165 [US7] [P] Create Top Products component in src/components/analytics/top-products.tsx with bar chart and table
-- [ ] T166 [US7] Create E2E test "Store Admin can view analytics dashboard" in tests/e2e/analytics/view-analytics.spec.ts
+- [x] T158 [US7] Create AnalyticsService in src/services/analytics-service.ts with sales aggregation, revenue calculation, and report generation
+- [x] T159 [US7] [P] Create API route GET /api/analytics/sales in src/app/api/analytics/sales/route.ts for sales metrics with date range filters
+- [x] T160 [US7] [P] Create API route GET /api/analytics/revenue in src/app/api/analytics/revenue/route.ts for revenue reports by period
+- [x] T161 [US7] [P] Create API route GET /api/analytics/products in src/app/api/analytics/products/route.ts for top-selling products report
+- [x] T162 [US7] [P] Create API route GET /api/analytics/customers in src/app/api/analytics/customers/route.ts for customer acquisition and retention metrics
+- [x] T163 [US7] [P] Create Analytics Dashboard in src/app/(dashboard)/analytics/page.tsx with charts, metrics cards, and date range picker
+- [x] T164 [US7] [P] Create Sales Report component in src/components/analytics/sales-report.tsx with line chart and export functionality  
+- [x] T165 [US7] [P] Create Top Products component in src/components/analytics/top-products.tsx with bar chart and data table
+- [x] T166 [US7] Create E2E test "Store Admin can view analytics dashboard" in tests/e2e/analytics.spec.ts
 
 ---
 

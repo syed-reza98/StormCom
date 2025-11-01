@@ -10,14 +10,22 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
-    // Run tests in a single thread to avoid Prisma generate race conditions on Windows
-    singleThread: true,
+    // Use process isolation to prevent memory leaks between test suites
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        maxThreads: 2, // Reduce from 4 to 2 to save memory
+        minThreads: 1,
+        isolate: true,
+      },
+    },
     // Give async hooks (DB setup/reset) more time
     hookTimeout: 30000,
     env: {
       // Test environment variables
       NODE_ENV: 'test',
-      DATABASE_URL: 'file:./test.db',
+      // DATABASE_URL: managed per test suite for isolation
       NEXTAUTH_SECRET: 'test-secret-key-for-unit-testing-only',
       NEXTAUTH_URL: 'http://localhost:3000',
     },

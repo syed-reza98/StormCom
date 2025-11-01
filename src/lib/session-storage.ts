@@ -294,6 +294,24 @@ function extractSessionId(request: Request): string | null {
 }
 
 /**
+ * Get session from Server Component using Next.js cookies
+ */
+export async function getSessionFromCookies(): Promise<SessionData | null> {
+  const { cookies } = await import('next/headers');
+  
+  try {
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get(SESSION_CONFIG.cookieName)?.value;
+    
+    if (!sessionId) return null;
+    return getSession(sessionId);
+  } catch (error) {
+    console.error('[Session] Failed to get session from cookies:', error);
+    return null;
+  }
+}
+
+/**
  * Export session configuration for use in middleware
  */
 export { SESSION_CONFIG };

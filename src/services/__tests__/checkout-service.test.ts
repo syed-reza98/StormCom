@@ -125,7 +125,7 @@ describe('CheckoutService - validateCart', () => {
       name: 'Product 1',
       slug: 'product-1',
       price: 29.99,
-      inventoryQty: 10,
+      inventoryQty: 20,
       trackInventory: true,
       storeId,
       variants: [
@@ -133,7 +133,7 @@ describe('CheckoutService - validateCart', () => {
           id: 'var-1',
           productId: 'prod-1',
           name: 'Size M',
-          stock: 5,
+          inventoryQty: 5, // Use inventoryQty instead of stock
           trackInventory: true,
         } as any,
       ],
@@ -164,7 +164,7 @@ describe('CheckoutService - validateCart', () => {
           id: 'var-1',
           productId: 'prod-1',
           name: 'Size M',
-          stock: 5,
+          inventoryQty: 5, // Use inventoryQty instead of stock
           trackInventory: true,
         } as any,
       ],

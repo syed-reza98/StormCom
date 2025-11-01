@@ -64,6 +64,8 @@ describe('OrderService', () => {
         perPage: 10, // Default is 10, not 20
         total: 1,
         totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       });
       expect(prisma.order.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -185,6 +187,8 @@ describe('OrderService', () => {
         perPage: 10,
         total: 25,
         totalPages: 3,
+        hasNextPage: true,
+        hasPreviousPage: true,
       });
       expect(prisma.order.findMany).toHaveBeenCalledWith(
         expect.objectContaining({

@@ -19,49 +19,46 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 /**
- * Create a Stripe checkout session for subscription
+ * Create a Stripe checkout session for subscription (test-compatible version)
  */
 export async function createSubscriptionCheckoutSession({
+  priceId,
   storeId,
-  plan,
   customerId,
   successUrl,
   cancelUrl,
-  trialDays = 14
 }: {
+  priceId: string;
   storeId: string;
-  plan: SubscriptionPlan;
   customerId?: string;
-  successUrl: string;
-  cancelUrl: string;
-  trialDays?: number;
+  successUrl?: string;
+  cancelUrl?: string;
 }): Promise<Stripe.Checkout.Session> {
-  const planDetails = SUBSCRIPTION_PLANS[plan];
-
-  if (!planDetails.stripePriceId) {
-    throw new Error(`Stripe price ID not configured for plan: ${plan}`);
+  if (!process.env.NEXT_PUBLIC_BASE_URL) {
+    throw new Error('NEXT_PUBLIC_BASE_URL is required');
   }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const defaultSuccessUrl = successUrl || `${baseUrl}/subscription/success?session_id={CHECKOUT_SESSION_ID}`;
+  const defaultCancelUrl = cancelUrl || `${baseUrl}/subscription/plans?storeId=${storeId}`;
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     payment_method_types: ['card'],
     mode: 'subscription',
     line_items: [
       {
-        price: planDetails.stripePriceId,
+        price: priceId,
         quantity: 1,
       },
     ],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
+    success_url: defaultSuccessUrl,
+    cancel_url: defaultCancelUrl,
     metadata: {
       storeId,
-      plan,
     },
     subscription_data: {
-      trial_period_days: plan === SubscriptionPlan.FREE ? undefined : trialDays,
       metadata: {
         storeId,
-        plan,
       },
     },
   };
@@ -75,6 +72,100 @@ export async function createSubscriptionCheckoutSession({
   }
 
   return await stripe.checkout.sessions.create(sessionParams);
+}
+
+/**
+ * Create a customer portal session for subscription management (test-compatible version)
+ */
+export async function createCustomerPortalSession({
+  customerId,
+  returnUrl,
+}: {
+  customerId: string;
+  returnUrl: string;
+}): Promise<Stripe.BillingPortal.Session> {
+  if (!customerId) {
+    throw new Error('Customer ID is required');
+  }
+  if (!returnUrl) {
+    throw new Error('Return URL is required');
+  }
+
+  return await stripe.billingPortal.sessions.create({
+    customer: customerId,
+    return_url: returnUrl,
+  });
+}
+
+/**
+ * Map Stripe subscription status to Prisma SubscriptionStatus (test-compatible version)
+ */
+export function mapStripeStatusToPrisma(
+  stripeStatus: string
+): SubscriptionStatus {
+  switch (stripeStatus) {
+    case 'active':
+      return SubscriptionStatus.ACTIVE;
+    case 'trialing':
+      return SubscriptionStatus.TRIAL;
+    case 'past_due':
+      return SubscriptionStatus.PAST_DUE;
+    case 'canceled':
+    case 'unpaid':
+    case 'incomplete_expired':
+      return SubscriptionStatus.CANCELED;
+    case 'paused':
+      return SubscriptionStatus.PAST_DUE;
+    case 'incomplete':
+    default:
+      return SubscriptionStatus.TRIAL;
+  }
+}
+
+/**
+ * Handle Stripe webhook events (test-compatible version)
+ */
+export async function handleStripeWebhook({
+  body,
+  signature,
+}: {
+  body: string;
+  signature: string;
+}): Promise<{ received: boolean }> {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  if (!webhookSecret) {
+    throw new Error('Stripe webhook secret is not configured');
+  }
+
+  try {
+    const event = verifyWebhookSignature(body, signature, webhookSecret);
+
+    switch (event.type) {
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
+        break;
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        break;
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        break;
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        break;
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    return { received: true };
+  } catch (error) {
+    console.error('Webhook error:', error);
+    throw error;
+  }
 }
 
 /**
@@ -167,22 +258,6 @@ export async function updateSubscriptionPlan(
       },
     ],
     proration_behavior: 'create_prorations', // Prorate the charges
-  });
-}
-
-/**
- * Create a customer portal session for subscription management
- */
-export async function createCustomerPortalSession({
-  customerId,
-  returnUrl,
-}: {
-  customerId: string;
-  returnUrl: string;
-}): Promise<Stripe.BillingPortal.Session> {
-  return await stripe.billingPortal.sessions.create({
-    customer: customerId,
-    return_url: returnUrl,
   });
 }
 

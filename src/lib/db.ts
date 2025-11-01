@@ -62,6 +62,9 @@ export const db = new Proxy({} as PrismaClient, {
 // Export db as prisma for backward compatibility
 export { db as prisma };
 
+// Export getClient for test utilities
+export { getClient };
+
 // Export Prisma enums for convenient access
 export {
   UserRole,

@@ -4,14 +4,13 @@
 import { getTestPrismaClient } from './database';
 import { randomBytes } from 'crypto';
 
-const prisma = getTestPrismaClient;
-
 /**
  * Create a test store with optional custom data
  * @param customData Optional store data overrides
  * @returns Created store object
  */
 export async function createTestStore(name?: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const storeData = {
     name: name || `Test Store ${randomBytes(4).toString('hex')}`,
     slug: `test-store-${randomBytes(4).toString('hex')}`,
@@ -25,7 +24,7 @@ export async function createTestStore(name?: string, customData?: any) {
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.store.create({
       data: storeData,
     });
@@ -39,6 +38,7 @@ export async function createTestStore(name?: string, customData?: any) {
  * @returns Created user object
  */
 export async function createTestUser(storeId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const userData = {
     email: `test-${randomBytes(4).toString('hex')}@example.com`,
     name: `Test User ${randomBytes(4).toString('hex')}`,
@@ -51,7 +51,7 @@ export async function createTestUser(storeId: string, customData?: any) {
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.user.create({
       data: userData,
     });
@@ -79,6 +79,7 @@ export async function createTestAdmin(storeId: string, customData?: any) {
  * @returns Created category object
  */
 export async function createTestCategory(storeId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const categoryData = {
     name: `Test Category ${randomBytes(4).toString('hex')}`,
     slug: `test-category-${randomBytes(4).toString('hex')}`,
@@ -91,7 +92,7 @@ export async function createTestCategory(storeId: string, customData?: any) {
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.category.create({
       data: categoryData,
     });
@@ -106,6 +107,7 @@ export async function createTestCategory(storeId: string, customData?: any) {
  * @returns Created product object
  */
 export async function createTestProduct(storeId: string, categoryId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const productData = {
     name: `Test Product ${randomBytes(4).toString('hex')}`,
     slug: `test-product-${randomBytes(4).toString('hex')}`,
@@ -132,7 +134,7 @@ export async function createTestProduct(storeId: string, categoryId: string, cus
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.product.create({
       data: productData,
     });
@@ -145,6 +147,7 @@ export async function createTestProduct(storeId: string, categoryId: string, cus
  * @returns Created product attribute object
  */
 export async function createTestAttribute(customData?: any) {
+  const prisma = getTestPrismaClient();
   const attributeData = {
     name: `Test Attribute ${randomBytes(4).toString('hex')}`,
     values: JSON.stringify(['Small', 'Medium', 'Large']),
@@ -153,7 +156,7 @@ export async function createTestAttribute(customData?: any) {
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.productAttribute.create({
       data: attributeData,
     });
@@ -168,6 +171,7 @@ export async function createTestAttribute(customData?: any) {
  * @returns Created product attribute value object
  */
 export async function createTestAttributeValue(productId: string, attributeId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const valueData = {
     productId,
     attributeId,
@@ -176,7 +180,7 @@ export async function createTestAttributeValue(productId: string, attributeId: s
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.productAttributeValue.create({
       data: valueData,
     });
@@ -190,6 +194,7 @@ export async function createTestAttributeValue(productId: string, attributeId: s
  * @returns Created customer object
  */
 export async function createTestCustomer(storeId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const customerData = {
     email: `customer-${randomBytes(4).toString('hex')}@example.com`,
     firstName: `Customer ${randomBytes(4).toString('hex')}`,
@@ -201,7 +206,7 @@ export async function createTestCustomer(storeId: string, customData?: any) {
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.customer.create({
       data: customerData,
     });
@@ -216,6 +221,7 @@ export async function createTestCustomer(storeId: string, customData?: any) {
  * @returns Created order object
  */
 export async function createTestOrder(customerId: string, storeId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const orderData = {
     orderNumber: `ORD-${randomBytes(6).toString('hex').toUpperCase()}`,
     status: 'PENDING',
@@ -232,7 +238,7 @@ export async function createTestOrder(customerId: string, storeId: string, custo
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.order.create({
       data: orderData,
     });
@@ -247,6 +253,7 @@ export async function createTestOrder(customerId: string, storeId: string, custo
  * @returns Created order item object
  */
 export async function createTestOrderItem(orderId: string, productId: string, customData?: any) {
+  const prisma = getTestPrismaClient();
   const itemData = {
     orderId,
     productId,
@@ -263,7 +270,7 @@ export async function createTestOrderItem(orderId: string, productId: string, cu
     ...customData,
   };
 
-  return await prisma().$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     return await tx.orderItem.create({
       data: itemData,
     });
@@ -340,7 +347,8 @@ export async function createTestSetup(options: {
  * @param storeId Store ID to clean up data for
  */
 export async function cleanupTestData(storeId: string): Promise<void> {
-  await prisma().$transaction(async (tx) => {
+  const prisma = getTestPrismaClient();
+  await prisma.$transaction(async (tx) => {
     // Delete in reverse dependency order
     await tx.orderItem.deleteMany({ where: { order: { storeId } } });
     await tx.order.deleteMany({ where: { storeId } });

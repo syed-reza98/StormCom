@@ -290,6 +290,11 @@ export class ProductService {
           select: { id: true, name: true, slug: true },
         },
         variants: true,
+        attributes: {
+          include: {
+            attribute: true,
+          },
+        },
         _count: {
           select: {
             orderItems: true,
@@ -368,6 +373,11 @@ export class ProductService {
         variants: {
           
           orderBy: { isDefault: 'desc' },
+        },
+        attributes: {
+          include: {
+            attribute: true,
+          },
         },
         _count: {
           select: {

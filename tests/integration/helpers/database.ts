@@ -4,25 +4,39 @@
 import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
 import { randomBytes } from 'crypto';
+import { unlinkSync, existsSync } from 'fs';
+import { getClient } from '../../../src/lib/db';
 
-let prisma: PrismaClient;
-let testDatabaseUrl: string;
+// Per-test-suite database tracking
+const testDatabases = new Map<string, {
+  url: string;
+  prisma: PrismaClient;
+  dbPath: string;
+}>();
+
+let currentTestSuiteId: string | null = null;
+
+// Global cleanup on process exit
+process.on('exit', cleanupAllDatabases);
+process.on('SIGINT', cleanupAllDatabases);
+process.on('SIGTERM', cleanupAllDatabases);
 
 /**
  * Setup test database for integration tests
- * Creates a new SQLite database file for each test run
+ * Creates a new SQLite database file for each test suite
  */
 export async function setupTestDatabase(): Promise<void> {
   // Generate unique database name for test isolation
   const testId = randomBytes(8).toString('hex');
   const dbPath = `./prisma/test-${testId}.db`;
-  testDatabaseUrl = `file:${dbPath}`;
+  const testDatabaseUrl = `file:${dbPath}`;
   
   // Set environment variable for test database
   process.env.DATABASE_URL = testDatabaseUrl;
+  currentTestSuiteId = testId;
   
   // Create new Prisma client instance
-  prisma = new PrismaClient({
+  const prisma = new PrismaClient({
     datasources: {
       db: {
         url: testDatabaseUrl,
@@ -30,15 +44,24 @@ export async function setupTestDatabase(): Promise<void> {
     },
   });
   
+  // Store database info for cleanup
+  testDatabases.set(testId, {
+    url: testDatabaseUrl,
+    prisma,
+    dbPath,
+  });
+  
   // Run database migrations
   try {
     // Important on Windows: skip client generation to avoid EPERM rename races
     execSync('npx prisma db push --force-reset --skip-generate', {
       env: { ...process.env, DATABASE_URL: testDatabaseUrl },
-      stdio: 'inherit',
+      stdio: 'pipe', // Reduce noise in test output
     });
   } catch (error) {
     console.error('Failed to setup test database:', error);
+    // Clean up failed database
+    await cleanupSpecificDatabase(testId);
     throw error;
   }
   
@@ -48,35 +71,53 @@ export async function setupTestDatabase(): Promise<void> {
 
 /**
  * Cleanup test database after tests complete
- * Disconnects and optionally removes the test database file
+ * Disconnects and removes the test database file
  */
 export async function cleanupTestDatabase(): Promise<void> {
-  if (prisma) {
-    await prisma.$disconnect();
+  if (currentTestSuiteId) {
+    await cleanupSpecificDatabase(currentTestSuiteId);
+    currentTestSuiteId = null;
   }
-  
-  // Clean up test database file (optional - can be left for debugging)
-  try {
-    const fs = await import('fs');
-    const path = testDatabaseUrl.replace('file:', '');
-    if (fs.existsSync(path)) {
-      fs.unlinkSync(path);
+}
+
+/**
+ * Cleanup a specific test database by ID
+ */
+async function cleanupSpecificDatabase(testId: string): Promise<void> {
+  const dbInfo = testDatabases.get(testId);
+  if (dbInfo) {
+    try {
+      // Disconnect Prisma client
+      await dbInfo.prisma.$disconnect();
+    } catch (error) {
+      console.warn('Failed to disconnect Prisma client:', error);
     }
-  } catch (error) {
-    // Ignore cleanup errors in tests
-    console.warn('Failed to cleanup test database file:', error);
+    
+    try {
+      // Remove database file
+      if (existsSync(dbInfo.dbPath)) {
+        unlinkSync(dbInfo.dbPath);
+      }
+    } catch (error) {
+      console.warn('Failed to remove test database file:', error);
+    }
+    
+    // Remove from tracking
+    testDatabases.delete(testId);
   }
 }
 
 /**
  * Get the current Prisma client instance for tests
- * @returns PrismaClient instance connected to test database
+ * Uses the dynamic client from lib/db to ensure proper isolation
  */
 export function getTestPrismaClient(): PrismaClient {
-  if (!prisma) {
+  if (!currentTestSuiteId) {
     throw new Error('Test database not initialized. Call setupTestDatabase() first.');
   }
-  return prisma;
+  
+  // Use the dynamic client which respects DATABASE_URL changes
+  return getClient();
 }
 
 /**
@@ -84,9 +125,7 @@ export function getTestPrismaClient(): PrismaClient {
  * Truncates all tables while preserving schema
  */
 export async function resetTestDatabase(): Promise<void> {
-  if (!prisma) {
-    throw new Error('Test database not initialized. Call setupTestDatabase() first.');
-  }
+  const prisma = getTestPrismaClient();
   
   // Get all table names from the database
   const tables = await prisma.$queryRaw<{ name: string }[]>`
@@ -110,27 +149,18 @@ export async function resetTestDatabase(): Promise<void> {
 
 /**
  * Execute raw SQL query in test database
- * @param query SQL query to execute
- * @returns Query result
  */
 export async function executeRawQuery(query: string): Promise<any> {
-  if (!prisma) {
-    throw new Error('Test database not initialized. Call setupTestDatabase() first.');
-  }
-  
+  const prisma = getTestPrismaClient();
   return await prisma.$queryRawUnsafe(query);
 }
 
 /**
  * Check if test database is properly connected
- * @returns boolean indicating connection status
  */
 export async function isTestDatabaseConnected(): Promise<boolean> {
-  if (!prisma) {
-    return false;
-  }
-  
   try {
+    const prisma = getTestPrismaClient();
     await prisma.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
@@ -142,10 +172,11 @@ export async function isTestDatabaseConnected(): Promise<boolean> {
  * Seed test database with minimal required data
  * Creates essential records for multi-tenant testing
  */
-export async function seedTestDatabase(): Promise<void> {
-  if (!prisma) {
-    throw new Error('Test database not initialized. Call setupTestDatabase() first.');
-  }
+export async function seedTestDatabase(): Promise<{
+  store: any;
+  user: any;
+}> {
+  const prisma = getTestPrismaClient();
   
   // Create default store for testing
   const defaultStore = await prisma.store.create({
@@ -175,18 +206,14 @@ export async function seedTestDatabase(): Promise<void> {
   return {
     store: defaultStore,
     user: defaultUser,
-  } as any;
+  };
 }
 
 /**
  * Get database statistics for debugging
- * @returns Object with table row counts
  */
 export async function getTestDatabaseStats(): Promise<Record<string, number>> {
-  if (!prisma) {
-    throw new Error('Test database not initialized. Call setupTestDatabase() first.');
-  }
-  
+  const prisma = getTestPrismaClient();
   const stats: Record<string, number> = {};
   
   // Count rows in major tables (using Prisma @map names from schema)
@@ -218,16 +245,11 @@ export async function getTestDatabaseStats(): Promise<Record<string, number>> {
 
 /**
  * Create transaction for test operations
- * @param operations Function containing database operations
- * @returns Promise resolving to operation result
  */
 export async function withTestTransaction<T>(
   operations: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$extends'>) => Promise<T>
 ): Promise<T> {
-  if (!prisma) {
-    throw new Error('Test database not initialized. Call setupTestDatabase() first.');
-  }
-  
+  const prisma = getTestPrismaClient();
   return await prisma.$transaction(operations);
 }
 
@@ -236,10 +258,39 @@ export async function withTestTransaction<T>(
  * Useful for async operations in tests
  */
 export async function waitForDatabaseOperations(): Promise<void> {
-  if (!prisma) {
-    return;
+  try {
+    const prisma = getTestPrismaClient();
+    // Simple query to ensure all pending operations are complete
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error) {
+    // Ignore errors if database not initialized
   }
-  
-  // Simple query to ensure all pending operations are complete
-  await prisma.$queryRaw`SELECT 1`;
+}
+
+/**
+ * Cleanup all test databases (for emergency cleanup)
+ * Should not be needed in normal test runs
+ */
+export async function cleanupAllTestDatabases(): Promise<void> {
+  const cleanupPromises = Array.from(testDatabases.keys()).map(cleanupSpecificDatabase);
+  await Promise.allSettled(cleanupPromises);
+  testDatabases.clear();
+  currentTestSuiteId = null;
+}
+
+/**
+ * Global cleanup function called on process exit
+ */
+function cleanupAllDatabases(): void {
+  // Synchronous cleanup for process exit
+  for (const [testId, dbInfo] of testDatabases) {
+    try {
+      if (existsSync(dbInfo.dbPath)) {
+        unlinkSync(dbInfo.dbPath);
+      }
+    } catch (error) {
+      // Ignore cleanup errors on exit
+    }
+  }
+  testDatabases.clear();
 }
