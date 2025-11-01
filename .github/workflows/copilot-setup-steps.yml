@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up Node 20 (upgrade npm to 11 as required by engines)
+      - name: Set up Node 20 (project supports 18.x+, using 20 in CI for consistency and latest features)
         uses: actions/setup-node@v4
         with:
           node-version: "20"
