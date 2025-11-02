@@ -12,7 +12,7 @@ on:
 jobs:
   copilot-setup-steps:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     permissions:
       contents: read
 
@@ -115,3 +115,19 @@ jobs:
           key: ${{ runner.os }}-next-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-next-
+
+      # Prepare and (optionally) upload Copilot runtime logs to avoid warnings
+      - name: Prepare Copilot runtime logs
+        run: |
+          mkdir -p /home/runner/work/_temp/runtime-logs
+          : > /home/runner/work/_temp/runtime-logs/blocked.jsonl
+          : > /home/runner/work/_temp/runtime-logs/blocked.md
+
+      - name: Upload Copilot runtime logs (if present)
+        uses: actions/upload-artifact@v4
+        with:
+          name: copilot-runtime-logs
+          path: |
+            /home/runner/work/_temp/runtime-logs/blocked.jsonl
+            /home/runner/work/_temp/runtime-logs/blocked.md
+          if-no-files-found: ignore
