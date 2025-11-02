@@ -1,6 +1,13 @@
 // src/lib/simple-rate-limit.ts
 // Simple IP-based rate limiting for API routes
-// Used for general API protection (100 req/min) and auth endpoints (10 req/min)
+// 
+// STATUS: ✅ ACTIVE - Currently used in production middleware (proxy.ts)
+// 
+// This is the current rate limiting implementation for StormCom.
+// Uses in-memory storage for request tracking (no external dependencies).
+// 
+// For future Redis-based rate limiting with plan-based tiered limits,
+// see rate-limit.ts and RATE_LIMITING.md documentation.
 
 /**
  * Rate limit configuration

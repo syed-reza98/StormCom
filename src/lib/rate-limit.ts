@@ -1,6 +1,18 @@
 // src/lib/rate-limit.ts
-// Rate Limiting for StormCom API Routes
-// Uses Upstash Redis with tiered limits based on subscription plan
+// Redis-Based Rate Limiting for StormCom API Routes
+// 
+// STATUS: ⏳ NOT CURRENTLY USED - Prepared for future Upstash Redis integration
+// 
+// This is a more advanced rate limiting implementation that uses Upstash Redis
+// for persistent, distributed rate limiting with subscription plan-based tiers.
+// 
+// CURRENT IMPLEMENTATION: simple-rate-limit.ts (in-memory)
+// 
+// TO ENABLE THIS MODULE:
+// 1. Set up Upstash Redis account
+// 2. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to .env
+// 3. Replace simple-rate-limit.ts imports in proxy.ts with this module
+// 4. See RATE_LIMITING.md for complete migration guide
 
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
