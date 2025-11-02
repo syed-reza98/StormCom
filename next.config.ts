@@ -104,7 +104,12 @@ const nextConfig: NextConfig = {
   },
   
   /* Output Optimization */
-  output: 'standalone',
+  // On Windows the standalone build copies traced files which can include
+  // filenames with characters (like `:`) that are invalid on NTFS. To avoid
+  // build-time copyfile errors during local development on Windows, disable
+  // the `standalone` output there. It will still be used on non-Windows
+  // environments (CI / Linux containers) where filenames are supported.
+  output: process.platform === 'win32' ? undefined : 'standalone',
   
   // Note: swcMinify removed - it's now default in Next.js 16
 };

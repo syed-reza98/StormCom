@@ -9,6 +9,8 @@
 
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
 import { IntegrationCard } from '@/components/integrations/integration-card';
 import { IntegrationService } from '@/services/integration-service';

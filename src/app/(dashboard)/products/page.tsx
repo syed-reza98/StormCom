@@ -7,6 +7,8 @@ import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
 import { PlusIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import { ProductsTable } from '@/components/products/products-table';
 import { getServerSession } from 'next-auth';
+
+export const dynamic = 'force-dynamic';
 import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 import { ProductsFilters } from '@/components/products/products-filters';

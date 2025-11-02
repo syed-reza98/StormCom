@@ -11,6 +11,8 @@
 
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
+
+export const dynamic = 'force-dynamic';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/theme-editor';

@@ -7,6 +7,8 @@ import { FileTextIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { AuditLogsTable } from '@/components/audit-logs/audit-logs-table';
 import { AuditLogsFilters } from '@/components/audit-logs/audit-logs-filters';
 import { getSessionFromCookies } from '@/lib/session-storage';
+
+export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 
 // ============================================================================
