@@ -78,7 +78,11 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
 
   // Fetch audit logs data
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     const fetchLogs = async () => {
+      if (!isMounted) return;
       setLoading(true);
       setError(null);
       
@@ -95,7 +99,9 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
           ...(searchParams.endDate && { endDate: searchParams.endDate }),
         });
 
-        const response = await fetch(`/api/audit-logs?${params}`);
+        const response = await fetch(`/api/audit-logs?${params}`, {
+          signal: controller.signal,
+        });
         
         if (!response.ok) {
           const errorData = await response.json();
@@ -103,6 +109,7 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
         }
 
         const data = await response.json();
+        if (!isMounted) return;
 
         if (data.data) {
           setLogs(data.data.logs || []);
@@ -113,15 +120,24 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
             totalPages: data.data.totalPages || 0,
           });
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Error fetching audit logs:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchLogs();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [searchParams, userRole, storeId]);
 
   // Toggle row expansion

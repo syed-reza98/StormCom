@@ -1195,6 +1195,7 @@ model ExternalPlatformConfig {
 
   syncLogs SyncLog[]
 
+  @@unique([storeId, platform])
   @@index([storeId, platform])
   @@map("external_platform_configs")
 }

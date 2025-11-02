@@ -42,8 +42,12 @@ export function CustomerMetricsChart({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     async function fetchCustomerData() {
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
 
@@ -51,13 +55,16 @@ export function CustomerMetricsChart({
         if (startDate) params.set('startDate', startDate);
         if (endDate) params.set('endDate', endDate);
 
-        const response = await fetch(`/api/analytics/customers?${params.toString()}`);
+        const response = await fetch(`/api/analytics/customers?${params.toString()}`, {
+          signal: controller.signal,
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch customer data');
         }
 
         const result = await response.json();
+        if (!isMounted) return;
         
         // Transform the data to include calculated metrics
         const customers = result.data || [];
@@ -68,16 +75,26 @@ export function CustomerMetricsChart({
           totalCustomers: (item.newCustomers || 0) + (item.returningCustomers || 0)
         }));
 
+        if (!isMounted) return;
         setData(transformedData);
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Failed to fetch customer data:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchCustomerData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [storeId, startDate, endDate, period]);
 
   // ============================================================================

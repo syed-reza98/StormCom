@@ -555,7 +555,7 @@
 
 ---
 
-## Phase 18: US13 - External Platform Integration (P2 - Should Have)
+## Phase 18: US13 - External Platform Integration (P2 - Should Have) ✅
 
 **User Story**: As a Store Admin, I need to integrate with external platforms (Shopify, WooCommerce, Mailchimp) to sync products, orders, and customer data.
 
@@ -565,15 +565,17 @@
 
 **Independent Test**: Connect Mailchimp account. Sync customer list. Verify contacts appear in Mailchimp. Create product in StormCom. Export to Shopify. Verify product appears in Shopify admin.
 
+**Status**: COMPLETE (7/7 tasks - 100%)
+
 **Tasks**:
 
-- [ ] T209 [US13] Create IntegrationService in src/services/integration-service.ts with OAuth flow, token management, and API client wrappers
-- [ ] T210 [US13] [P] Create API route POST /api/integrations/mailchimp/connect in src/app/api/integrations/mailchimp/connect/route.ts for Mailchimp OAuth
-- [ ] T211 [US13] [P] Create API route POST /api/integrations/mailchimp/sync in src/app/api/integrations/mailchimp/sync/route.ts for customer sync
-- [ ] T212 [US13] [P] Create API route POST /api/integrations/shopify/connect in src/app/api/integrations/shopify/connect/route.ts for Shopify OAuth
-- [ ] T213 [US13] [P] Create API route POST /api/integrations/shopify/export in src/app/api/integrations/shopify/export/route.ts for product export
-- [ ] T214 [US13] [P] Create Integrations page in src/app/(dashboard)/integrations/page.tsx with available integrations and connect buttons
-- [ ] T215 [US13] Create E2E test "Store Admin can connect Mailchimp and sync customers" in tests/e2e/integrations/mailchimp.spec.ts
+- [x] T209 [US13] Create IntegrationService in src/services/integration-service.ts with OAuth flow, token management, and API client wrappers (17 unit tests passing, 100% coverage)
+- [x] T210 [US13] [P] Create API route POST /api/integrations/mailchimp/connect in src/app/api/integrations/mailchimp/connect/route.ts for Mailchimp OAuth (CSRF validation, encrypted storage)
+- [x] T211 [US13] [P] Create API route POST /api/integrations/mailchimp/sync in src/app/api/integrations/mailchimp/sync/route.ts for customer sync (optional filtering, lastSyncAt updates)
+- [x] T212 [US13] [P] Create API route POST /api/integrations/shopify/connect in src/app/api/integrations/shopify/connect/route.ts for Shopify OAuth (shop domain validation, encrypted config)
+- [x] T213 [US13] [P] Create API route POST /api/integrations/shopify/export in src/app/api/integrations/shopify/export/route.ts for product export (per-product result tracking)
+- [x] T214 [US13] [P] Create Integrations page in src/app/(dashboard)/integrations/page.tsx with available integrations and connect buttons (IntegrationCard component, disconnect route, date-fns)
+- [x] T215 [US13] Create E2E test "Store Admin can connect Mailchimp and sync customers" in tests/e2e/integrations/mailchimp.spec.ts (8 test cases, mocked OAuth/API)
 
 ---
 

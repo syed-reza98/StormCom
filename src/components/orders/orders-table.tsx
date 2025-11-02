@@ -77,7 +77,11 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
 
   // Fetch orders data
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     const fetchOrders = async () => {
+      if (!isMounted) return;
       setLoading(true);
       setError(null);
       
@@ -93,7 +97,9 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
           sortOrder: searchParams.sortOrder || 'desc',
         });
 
-        const response = await fetch(`/api/orders?${params}`);
+        const response = await fetch(`/api/orders?${params}`, {
+          signal: controller.signal,
+        });
         
         if (!response.ok) {
           const errorData = await response.json();
@@ -101,21 +107,31 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
         }
 
         const data = await response.json();
+        if (!isMounted) return;
 
         if (data.data) {
           setOrders(data.data);
           // Use functional update to avoid referencing `pagination` in the effect
           setPagination((prev) => data.meta || prev);
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Error fetching orders:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchOrders();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [searchParams]);
 
   // Format currency

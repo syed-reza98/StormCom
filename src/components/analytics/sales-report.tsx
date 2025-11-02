@@ -62,8 +62,12 @@ export function SalesReport({
   // ============================================================================
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     async function fetchSalesData() {
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
 
@@ -73,8 +77,8 @@ export function SalesReport({
         if (endDate) params.set('endDate', endDate);
 
         const [revenueResponse, salesResponse] = await Promise.all([
-          fetch(`/api/analytics/revenue?${params.toString()}`),
-          fetch(`/api/analytics/sales?${params.toString()}`)
+          fetch(`/api/analytics/revenue?${params.toString()}`, { signal: controller.signal }),
+          fetch(`/api/analytics/sales?${params.toString()}`, { signal: controller.signal })
         ]);
 
         if (!revenueResponse.ok || !salesResponse.ok) {
@@ -86,6 +90,8 @@ export function SalesReport({
           salesResponse.json()
         ]);
 
+        if (!isMounted) return;
+
         // Transform revenue data to include AOV calculation
         const transformedData: SalesDataPoint[] = (revenueResult.data || []).map((item: any) => ({
           date: item.date,
@@ -94,6 +100,7 @@ export function SalesReport({
           averageOrderValue: item.orders > 0 ? (item.revenue || 0) / item.orders : 0
         }));
 
+        if (!isMounted) return;
         setData(transformedData);
         setSummary(salesResult.data || {
           totalSales: 0,
@@ -103,15 +110,24 @@ export function SalesReport({
           ordersGrowth: 0,
           aovGrowth: 0
         });
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Failed to fetch sales data:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchSalesData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [storeId, startDate, endDate, period]);
 
   // ============================================================================
