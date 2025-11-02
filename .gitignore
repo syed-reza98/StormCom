@@ -34,8 +34,8 @@ dist/
 *.test.ts.snap
 
 # Prisma
-/prisma/*.db
-/prisma/*.db-journal
+# /prisma/*.db
+# /prisma/*.db-journal
 /prisma/prisma/*.db
 # /prisma/prisma/dev.db
 
