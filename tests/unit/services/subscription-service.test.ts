@@ -23,7 +23,7 @@ vi.mock('@/lib/db', () => ({
   }
 }));
 
-const mockDb = db as {
+const mockDb = db as unknown as {
   store: {
     findUnique: MockedFunction<any>;
     update: MockedFunction<any>;

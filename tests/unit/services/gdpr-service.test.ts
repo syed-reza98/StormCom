@@ -348,7 +348,7 @@ describe('GDPRService', () => {
 
       vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser as any);
 
-      vi.mocked(prisma.$transaction).mockImplementation(async (callback) => {
+      vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
         return callback({
           address: { deleteMany: vi.fn() },
           review: { deleteMany: vi.fn() },

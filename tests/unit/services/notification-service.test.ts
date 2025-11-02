@@ -1,7 +1,7 @@
 // tests/unit/services/notification-service.test.ts
 // Unit tests for NotificationService
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { NotificationService } from '@/services/notification-service';
 import { prisma } from '@/lib/prisma';
 

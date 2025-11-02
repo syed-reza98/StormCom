@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { sendEmail, sendOrderConfirmation, sendShippingConfirmation, sendPasswordReset, sendAccountVerification } from '@/services/email-service';
+import { sendEmail, sendOrderConfirmation, sendShippingConfirmation, sendPasswordReset } from '@/services/email-service';
 import { Resend } from 'resend';
 
 // Mock Resend
@@ -483,7 +483,7 @@ describe('EmailService - Password Reset', () => {
   });
 
   it('should send password reset email with reset link', async () => {
-    const user = { id: 'user_123', email: 'user@example.com', name: 'Test User' };
+    const user = { id: 'user_123', email: 'user@example.com', name: 'Test User' } as any;
     const resetToken = 'reset_token_abc123';
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
@@ -502,7 +502,7 @@ describe('EmailService - Password Reset', () => {
   });
 
   it('should include IP address in security notice when provided', async () => {
-    const user = { id: 'user_456', email: 'user2@example.com', name: 'User Two' };
+    const user = { id: 'user_456', email: 'user2@example.com', name: 'User Two' } as any;
     const resetToken = 'reset_token_def456';
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
     const ipAddress = '192.168.1.100';
@@ -519,7 +519,7 @@ describe('EmailService - Password Reset', () => {
   });
 
   it('should handle missing IP address gracefully', async () => {
-    const user = { id: 'user_789', email: 'user3@example.com', name: 'User Three' };
+    const user = { id: 'user_789', email: 'user3@example.com', name: 'User Three' } as any;
     const resetToken = 'reset_token_ghi789';
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
