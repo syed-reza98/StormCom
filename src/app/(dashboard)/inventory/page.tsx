@@ -182,7 +182,8 @@ export default async function InventoryPage({
 
   const page = parseInt(params.page || '1', 10);
   const search = params.search || '';
-  const categoryId = params.categoryId || '';
+  // Treat 'all' as no category filter (empty string internally)
+  const categoryId = params.categoryId === 'all' ? '' : params.categoryId || '';
   const lowStockOnly = params.lowStockOnly === 'true';
 
   // Fetch inventory data from API
@@ -279,12 +280,12 @@ export default async function InventoryPage({
               <label htmlFor="categoryId" className="text-sm font-medium mb-2 block">
                 Category
               </label>
-              <Select name="categoryId" defaultValue={categoryId}>
+              <Select name="categoryId" defaultValue={categoryId || 'all'}>
                 <SelectTrigger id="categoryId">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="electronics">Electronics</SelectItem>
                   <SelectItem value="clothing">Clothing</SelectItem>
                   <SelectItem value="books">Books</SelectItem>
