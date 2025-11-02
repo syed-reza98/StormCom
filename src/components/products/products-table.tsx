@@ -1,8 +1,9 @@
 // src/components/products/products-table.tsx
 // Client Component: Products Data Table with interactive selection
+// OPTIMIZED: Added React.memo, useMemo, useCallback for better performance
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -42,67 +43,79 @@ interface ProductsTableProps {
 }
 
 // ============================================================================
+// OPTIMIZED: Memoized currency formatter (created once, reused)
+// Performance: Prevents creating new Intl.NumberFormat on every render
+// ============================================================================
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export function ProductsTable({ products, pagination, searchParams }: ProductsTableProps) {
+function ProductsTableComponent({ products, pagination, searchParams }: ProductsTableProps) {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-  const handleSelectProduct = (productId: string, checked: boolean) => {
+  // OPTIMIZED: useCallback prevents function recreation on every render
+  const handleSelectProduct = useCallback((productId: string, checked: boolean) => {
     if (checked) {
-      setSelectedProducts([...selectedProducts, productId]);
+      setSelectedProducts(prev => [...prev, productId]);
     } else {
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
     }
-  };
+  }, []);
 
-  const handleSelectAll = (checked: boolean) => {
+  // OPTIMIZED: useCallback prevents function recreation
+  const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedProducts(products.map(p => p.id));
     } else {
       setSelectedProducts([]);
     }
-  };
+  }, [products]);
 
-  // Format currency
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
-  };
+  // OPTIMIZED: Use memoized formatter instead of creating new one each time
+  const formatPrice = useCallback((price: number) => {
+    return currencyFormatter.format(price);
+  }, []);
 
-  // Get status badge variant
-  const getStatusBadge = (status: string, isVisible: boolean) => {
-    if (!isVisible) return <Badge variant="secondary">Hidden</Badge>;
-    
-    switch (status) {
-      case 'PUBLISHED':
-        return <Badge variant="success">Published</Badge>;
-      case 'DRAFT':
-        return <Badge variant="secondary">Draft</Badge>;
-      case 'ARCHIVED':
-        return <Badge variant="destructive">Archived</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
+  // OPTIMIZED: useMemo for status badge lookup (prevents recalculation on every render)
+  const getStatusBadge = useMemo(() => {
+    return (status: string, isVisible: boolean) => {
+      if (!isVisible) return <Badge variant="secondary">Hidden</Badge>;
+      
+      switch (status) {
+        case 'PUBLISHED':
+          return <Badge variant="success">Published</Badge>;
+        case 'DRAFT':
+          return <Badge variant="secondary">Draft</Badge>;
+        case 'ARCHIVED':
+          return <Badge variant="destructive">Archived</Badge>;
+        default:
+          return <Badge variant="secondary">{status}</Badge>;
+      }
+    };
+  }, []);
 
-  // Get inventory status
-  const getInventoryStatus = (product: Product) => {
-    if (!product.trackQuantity) {
-      return <Badge variant="outline">Not Tracked</Badge>;
-    }
-    
-    const quantity = product.quantity || 0;
-    if (quantity === 0) {
-      return <Badge variant="destructive">Out of Stock</Badge>;
-    } else if (quantity <= 5) {
-      return <Badge variant="warning">Low Stock</Badge>;
-    } else {
-      return <Badge variant="success">In Stock</Badge>;
-    }
-  };
+  // OPTIMIZED: useMemo for inventory status calculation
+  const getInventoryStatus = useMemo(() => {
+    return (product: Product) => {
+      if (!product.trackQuantity) {
+        return <Badge variant="outline">Not Tracked</Badge>;
+      }
+      
+      const quantity = product.quantity || 0;
+      if (quantity === 0) {
+        return <Badge variant="destructive">Out of Stock</Badge>;
+      } else if (quantity <= 5) {
+        return <Badge variant="warning">Low Stock</Badge>;
+      } else {
+        return <Badge variant="success">In Stock</Badge>;
+      }
+    };
+  }, []);
 
   if (!products || products.length === 0) {
     return (
@@ -263,3 +276,7 @@ export function ProductsTable({ products, pagination, searchParams }: ProductsTa
     </div>
   );
 }
+
+// OPTIMIZED: Export memoized version to prevent unnecessary re-renders
+// Performance: Component only re-renders when props actually change
+export const ProductsTable = memo(ProductsTableComponent);

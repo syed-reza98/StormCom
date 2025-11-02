@@ -1,9 +1,10 @@
 // src/components/orders/orders-table.tsx
 // Orders Data Table with pagination, sorting, and status display
+// OPTIMIZED: Added React.memo, useMemo, useCallback for better performance
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -61,10 +62,27 @@ interface PaginationMeta {
 }
 
 // ============================================================================
+// OPTIMIZED: Memoized formatters (created once, reused)
+// Performance: Prevents creating new formatters on every render
+// ============================================================================
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+});
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export function OrdersTable({ searchParams }: OrdersTableProps) {
+function OrdersTableComponent({ searchParams }: OrdersTableProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -134,27 +152,17 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
     };
   }, [searchParams]);
 
-  // Format currency
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
-  };
+  // OPTIMIZED: Use memoized formatters
+  const formatPrice = useCallback((price: number) => {
+    return currencyFormatter.format(price);
+  }, []);
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    }).format(new Date(dateString));
-  };
+  const formatDate = useCallback((dateString: string) => {
+    return dateFormatter.format(new Date(dateString));
+  }, []);
 
-  // Get order status badge
-  const getOrderStatusBadge = (status: OrderStatus) => {
+  // OPTIMIZED: useMemo for badge lookups (prevents recalculation on every render)
+  const getOrderStatusBadge = useMemo(() => {
     const badges: Record<OrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
       PENDING: { label: 'Pending', variant: 'secondary' },
       PAID: { label: 'Paid', variant: 'success' },
@@ -166,12 +174,14 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
       PAYMENT_FAILED: { label: 'Payment Failed', variant: 'destructive' },
     };
 
-    const { label, variant } = badges[status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
+    return (status: OrderStatus) => {
+      const { label, variant } = badges[status];
+      return <Badge variant={variant}>{label}</Badge>;
+    };
+  }, []);
 
-  // Get payment status badge
-  const getPaymentStatusBadge = (status: PaymentStatus) => {
+  // OPTIMIZED: useMemo for payment status badge lookup
+  const getPaymentStatusBadge = useMemo(() => {
     const badges: Record<PaymentStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
       PENDING: { label: 'Pending', variant: 'secondary' },
       PAID: { label: 'Paid', variant: 'success' },
@@ -179,9 +189,11 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
       REFUNDED: { label: 'Refunded', variant: 'warning' },
     };
 
-    const { label, variant } = badges[status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
+    return (status: PaymentStatus) => {
+      const { label, variant } = badges[status];
+      return <Badge variant={variant}>{label}</Badge>;
+    };
+  }, []);
 
   // Loading state
   if (loading) {
@@ -311,3 +323,7 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
     </div>
   );
 }
+
+// OPTIMIZED: Export memoized version to prevent unnecessary re-renders
+// Performance: Component only re-renders when searchParams actually change
+export const OrdersTable = memo(OrdersTableComponent);
