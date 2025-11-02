@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { middleware } from '../../../middleware';
+import proxy from '../../../proxy';
 
 /**
  * Unit tests for security middleware
@@ -21,6 +21,9 @@ describe('Security Middleware', () => {
     // Create a mock NextRequest for testing
     request = new NextRequest(new URL('https://example.com/dashboard'));
   });
+
+  // Alias for compatibility with old test expectations
+  const middleware = proxy;
 
   describe('Content-Security-Policy (CSP)', () => {
     it('should set Content-Security-Policy header', async () => {
@@ -248,7 +251,7 @@ describe('Security Middleware', () => {
   });
 
   describe('Middleware application', () => {
-    it('should apply to all routes', () => {
+    it('should apply to all routes', async () => {
       const routes = [
         'https://example.com/',
         'https://example.com/dashboard',
@@ -280,15 +283,15 @@ describe('Security Middleware', () => {
   });
 
   describe('Security best practices', () => {
-    it('should not leak server information via X-Powered-By', () => {
-      const response = middleware(request);
+    it('should not leak server information via X-Powered-By', async () => {
+      const response = await middleware(request);
 
       // X-Powered-By should not be present
       expect(response.headers.get('X-Powered-By')).toBeNull();
     });
 
-    it('should enforce HTTPS via HSTS', () => {
-      const response = middleware(request);
+    it('should enforce HTTPS via HSTS', async () => {
+      const response = await middleware(request);
       const hsts = response.headers.get('Strict-Transport-Security') || '';
 
       // Must have max-age directive
@@ -304,8 +307,8 @@ describe('Security Middleware', () => {
       }
     });
 
-    it('should prevent clickjacking via X-Frame-Options and CSP', () => {
-      const response = middleware(request);
+    it('should prevent clickjacking via X-Frame-Options and CSP', async () => {
+      const response = await middleware(request);
 
       // Two layers of clickjacking protection
       expect(response.headers.get('X-Frame-Options')).toBe('DENY');
@@ -314,8 +317,8 @@ describe('Security Middleware', () => {
       expect(csp).toContain("frame-ancestors 'none'");
     });
 
-    it('should prevent XSS via CSP directives', () => {
-      const response = middleware(request);
+    it('should prevent XSS via CSP directives', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       // CSP should restrict script sources
@@ -325,14 +328,14 @@ describe('Security Middleware', () => {
       expect(csp).toContain("object-src 'none'");
     });
 
-    it('should prevent MIME sniffing attacks', () => {
-      const response = middleware(request);
+    it('should prevent MIME sniffing attacks', async () => {
+      const response = await middleware(request);
 
       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
     });
 
-    it('should limit referrer information leakage', () => {
-      const response = middleware(request);
+    it('should limit referrer information leakage', async () => {
+      const response = await middleware(request);
       const rp = response.headers.get('Referrer-Policy');
 
       // Should not use 'unsafe-url' or 'no-referrer-when-downgrade'
@@ -345,31 +348,31 @@ describe('Security Middleware', () => {
   });
 
   describe('Next.js compatibility', () => {
-    it('should allow Next.js inline scripts', () => {
-      const response = middleware(request);
+    it('should allow Next.js inline scripts', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       // Next.js App Router requires unsafe-inline for inline scripts
       expect(csp).toContain("'unsafe-inline'");
     });
 
-    it('should allow Next.js eval for RSC hydration', () => {
-      const response = middleware(request);
+    it('should allow Next.js eval for RSC hydration', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       // Next.js App Router requires unsafe-eval for React Server Components
       expect(csp).toContain("'unsafe-eval'");
     });
 
-    it('should allow Vercel Analytics scripts', () => {
-      const response = middleware(request);
+    it('should allow Vercel Analytics scripts', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('https://va.vercel-scripts.com');
     });
 
-    it('should allow blob URLs for Web Workers', () => {
-      const response = middleware(request);
+    it('should allow blob URLs for Web Workers', async () => {
+      const response = await middleware(request);
       const csp = response.headers.get('Content-Security-Policy') || '';
 
       expect(csp).toContain('blob:');

@@ -39,7 +39,7 @@ vi.mock('chart.js', () => ({
 
 // Mock react-chartjs-2
 vi.mock('react-chartjs-2', () => ({
-  Line: ({ data, options }: any) => (
+  Line: ({ data }: any) => (
     <div data-testid="revenue-chart" data-chart-data={JSON.stringify(data)}>
       Mock Chart Component
     </div>

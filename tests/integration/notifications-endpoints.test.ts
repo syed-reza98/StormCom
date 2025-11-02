@@ -236,7 +236,7 @@ describe('Notifications API Endpoints', () => {
       });
 
       // Act
-      const response = await markAsRead(request as any, { params: { id: testNotificationId } });
+      const response = await markAsRead(request as any, { params: Promise.resolve({ id: testNotificationId }) });
       const data = await response.json();
 
       // Assert
@@ -262,7 +262,7 @@ describe('Notifications API Endpoints', () => {
       });
 
       // Act
-      const response = await markAsRead(request as any, { params: { id: 'non-existent-id' } });
+      const response = await markAsRead(request as any, { params: Promise.resolve({ id: 'non-existent-id' }) });
       const data = await response.json();
 
       // Assert
@@ -280,7 +280,7 @@ describe('Notifications API Endpoints', () => {
       });
 
       // Act
-      const response = await markAsRead(request as any, { params: { id: testNotificationId } });
+      const response = await markAsRead(request as any, { params: Promise.resolve({ id: testNotificationId }) });
       const data = await response.json();
 
       // Assert
@@ -312,7 +312,7 @@ describe('Notifications API Endpoints', () => {
       });
 
       // Act
-      const response = await markAsRead(request as any, { params: { id: testNotificationId } });
+      const response = await markAsRead(request as any, { params: Promise.resolve({ id: testNotificationId }) });
       const data = await response.json();
 
       // Assert

@@ -22,7 +22,7 @@ test.describe('Mailchimp Integration', () => {
       data: {
         name: 'Test Store - Mailchimp',
         slug: 'test-mailchimp',
-        domain: 'test-mailchimp.stormcom.test',
+        email: 'store@test-mailchimp.stormcom.test',
       },
     });
     testStoreId = store.id;
@@ -31,9 +31,8 @@ test.describe('Mailchimp Integration', () => {
       data: {
         email: 'mailchimp-test@example.com',
         password: 'hashed-password',
-        firstName: 'Mailchimp',
-        lastName: 'Tester',
-        role: 'StoreAdmin',
+        name: 'Mailchimp Tester',
+        role: 'STORE_ADMIN',
         storeId: testStoreId,
       },
     });
@@ -231,9 +230,10 @@ test.describe('Mailchimp Integration', () => {
       await db.syncLog.create({
         data: {
           configId: config.id,
-          syncType: 'customers',
+          entityType: 'customer',
+          action: 'export',
           status: 'success',
-          recordsSynced: 2,
+          recordsProcessed: 2,
           recordsFailed: 0,
         },
       });

@@ -1,75 +1,17 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  81,
+                    "totalErrors":  38,
                     "exitCode":  1,
-                    "timestamp":  "2025-11-02T14:41:15Z",
+                    "timestamp":  "2025-11-02T15:44:31Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  106
+                    "totalLines":  45
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
-                      "\u003e tsc --noEmit",
+                      "\u003e tsc --noEmit --incremental",
                       "",
-                      "tests/unit/app/api/analytics-routes.test.ts(43,30): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                      "tests/unit/app/api/analytics-routes.test.ts(230,13): error TS6133: \u0027data\u0027 is declared but its value is never read.",
-                      "tests/unit/app/api/analytics-routes.test.ts(377,13): error TS6133: \u0027data\u0027 is declared but its value is never read.",
-                      "tests/unit/app/api/theme-routes.test.ts(152,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(197,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(221,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(242,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(286,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(330,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(348,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(387,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/app/api/theme-routes.test.ts(411,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                      "tests/unit/components/analytics-components.test.tsx(42,18): error TS6133: \u0027options\u0027 is declared but its value is never read.",
-                      "tests/unit/hooks/use-plan-enforcement.test.ts(6,76): error TS2307: Cannot find module \u0027@/hooks/use-plan-enforcement\u0027 or its corresponding type declarations.",
-                      "tests/unit/hooks/use-plan-enforcement.test.ts(21,52): error TS2551: Property \u0027getUsageStatistics\u0027 does not exist on type \u0027typeof SubscriptionService\u0027. Did you mean \u0027getUsageStats\u0027?",
-                      "tests/unit/lib/plan-enforcement.test.ts(42,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(57,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(98,51): error TS2345: Argument of type \u0027{ userId: string; storeId: null; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: null; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(119,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(144,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(159,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(192,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(215,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(241,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(253,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/plan-enforcement.test.ts(264,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(287,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(320,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/plan-enforcement.test.ts(355,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/plan-enforcement.test.ts(374,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(398,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(412,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/plan-enforcement.test.ts(419,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(427,43): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                      "tests/unit/lib/plan-enforcement.test.ts(431,45): error TS2345: Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027.",
-                      "  Type \u0027NextResponse\u003c{ id: any; }\u003e\u0027 is missing the following properties from type \u0027Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027: then, catch, finally, [Symbol.toStringTag]",
-                      "tests/unit/lib/plan-enforcement.test.ts(460,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/plan-enforcement.test.ts(478,51): error TS2345: Argument of type \u0027{ userId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, storeId, role, createdAt, and 2 more.",
-                      "tests/unit/lib/plan-enforcement.test.ts(491,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                      "  Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                      "tests/unit/lib/security-headers.test.ts(3,28): error TS2307: Cannot find module \u0027../../../middleware\u0027 or its corresponding type declarations.",
-                      "tests/unit/lib/security-headers.test.ts(261,26): error TS1308: \u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
                       "tests/unit/services/analytics-service.test.ts(65,29): error TS2339: Property \u0027mockResolvedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
                       "tests/unit/services/analytics-service.test.ts(98,29): error TS2339: Property \u0027mockResolvedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
                       "tests/unit/services/analytics-service.test.ts(114,29): error TS2339: Property \u0027mockRejectedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
@@ -101,14 +43,11 @@
                       "tests/unit/services/analytics-service.test.ts(410,29): error TS2339: Property \u0027mockRejectedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
                       "tests/unit/services/analytics-service.test.ts(422,29): error TS2339: Property \u0027mockResolvedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
                       "tests/unit/services/analytics-service.test.ts(443,29): error TS2339: Property \u0027mockResolvedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
-                      "tests/unit/services/email-service.test.ts(491,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(511,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(527,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(564,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(584,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/email-service.test.ts(587,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ address: string | null; id: string; createdAt: Date; name: string; slug: string; description: string | null; updatedAt: Date; deletedAt: Date | null; email: string; phone: string | null; ... 14 more ...; locale: string; }\u0027: address, createdAt, slug, description, and 18 more.",
-                      "tests/unit/services/email-service.test.ts(600,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                      "tests/unit/services/gdpr-service.test.ts(352,64): error TS7006: Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
+                      "tests/unit/services/email-service.test.ts(16,89): error TS6133: \u0027sendAccountVerification\u0027 is declared but its value is never read.",
+                      "tests/unit/services/email-service.test.ts(491,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(511,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
+                      "tests/unit/services/email-service.test.ts(527,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
+                      "tests/unit/services/gdpr-service.test.ts(351,64): error TS7006: Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
                       "tests/unit/services/notification-service.test.ts(4,55): error TS6133: \u0027vi\u0027 is declared but its value is never read.",
                       "tests/unit/services/subscription-service.test.ts(26,16): error TS2352: Conversion of type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027 to type \u0027{ store: { findUnique: MockedFunction\u003cany\u003e; update: MockedFunction\u003cany\u003e; findMany: MockedFunction\u003cany\u003e; }; product: { count: MockedFunction\u003cany\u003e; }; order: { ...; }; }\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
                       "  The types of \u0027store.findUnique\u0027 are incompatible between these types.",
@@ -116,366 +55,6 @@
                       "      Type \u0027\u003cT extends StoreFindUniqueArgs\u003e(args: SelectSubset\u003cT, StoreFindUniqueArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__StoreClient\u003cGetFindResult\u003c$StorePayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e | null, null, DefaultArgs, PrismaClientOptions\u003e\u0027 is missing the following properties from type \u0027Mock\u003cany\u003e\u0027: getMockName, mockName, mock, mockClear, and 14 more."
                   ],
     "errors":  [
-                   {
-                       "message":  "\u0027request\u0027 is declared but its value is never read.",
-                       "column":  30,
-                       "line":  43,
-                       "fullText":  "tests/unit/app/api/analytics-routes.test.ts(43,30): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/analytics-routes.test.ts"
-                   },
-                   {
-                       "message":  "\u0027data\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  230,
-                       "fullText":  "tests/unit/app/api/analytics-routes.test.ts(230,13): error TS6133: \u0027data\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/analytics-routes.test.ts"
-                   },
-                   {
-                       "message":  "\u0027data\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  377,
-                       "fullText":  "tests/unit/app/api/analytics-routes.test.ts(377,13): error TS6133: \u0027data\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/analytics-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  152,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(152,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  197,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(197,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  221,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(221,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  242,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(242,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  286,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(286,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  55,
-                       "line":  330,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(330,55): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  58,
-                       "line":  348,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(348,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  58,
-                       "line":  387,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(387,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "column":  58,
-                       "line":  411,
-                       "fullText":  "tests/unit/app/api/theme-routes.test.ts(411,58): error TS2353: Object literal may only specify known properties, and \u0027id\u0027 does not exist in type \u0027Promise\u003c{ id: string; }\u003e\u0027.",
-                       "code":  "TS2353",
-                       "severity":  "error",
-                       "file":  "tests/unit/app/api/theme-routes.test.ts"
-                   },
-                   {
-                       "message":  "\u0027options\u0027 is declared but its value is never read.",
-                       "column":  18,
-                       "line":  42,
-                       "fullText":  "tests/unit/components/analytics-components.test.tsx(42,18): error TS6133: \u0027options\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/components/analytics-components.test.tsx"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027@/hooks/use-plan-enforcement\u0027 or its corresponding type declarations.",
-                       "column":  76,
-                       "line":  6,
-                       "fullText":  "tests/unit/hooks/use-plan-enforcement.test.ts(6,76): error TS2307: Cannot find module \u0027@/hooks/use-plan-enforcement\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  "tests/unit/hooks/use-plan-enforcement.test.ts"
-                   },
-                   {
-                       "message":  "Property \u0027getUsageStatistics\u0027 does not exist on type \u0027typeof SubscriptionService\u0027. Did you mean \u0027getUsageStats\u0027?",
-                       "column":  52,
-                       "line":  21,
-                       "fullText":  "tests/unit/hooks/use-plan-enforcement.test.ts(21,52): error TS2551: Property \u0027getUsageStatistics\u0027 does not exist on type \u0027typeof SubscriptionService\u0027. Did you mean \u0027getUsageStats\u0027?",
-                       "code":  "TS2551",
-                       "severity":  "error",
-                       "file":  "tests/unit/hooks/use-plan-enforcement.test.ts"
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(42,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  42,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(57,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  57,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(98,51): error TS2345: Argument of type \u0027{ userId: string; storeId: null; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  98,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: null; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: null; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(119,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  119,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(144,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  144,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(159,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  159,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(192,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  192,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(215,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  215,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(241,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  241,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "message":  "\u0027result\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  253,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(253,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(264,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  264,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(287,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  287,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "message":  "\u0027result\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  320,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(320,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "message":  "\u0027result\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  355,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(355,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(374,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  374,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(398,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  398,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "message":  "\u0027result\u0027 is declared but its value is never read.",
-                       "column":  13,
-                       "line":  412,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(412,13): error TS6133: \u0027result\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(419,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  419,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "message":  "\u0027request\u0027 is declared but its value is never read.",
-                       "column":  43,
-                       "line":  427,
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(427,43): error TS6133: \u0027request\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts"
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(431,45): error TS2345: Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  431,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027Mock\u003c(request: any, { params }: any) =\u003e NextResponse\u003c{ id: any; }\u003e\u003e\u0027 is not assignable to parameter of type \u0027(request: NextRequest, context?: any) =\u003e Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027. Type \u0027NextResponse\u003c{ id: any; }\u003e\u0027 is missing the following properties from type \u0027Promise\u003cNextResponse\u003cunknown\u003e\u003e\u0027: then, catch, finally, [Symbol.toStringTag]",
-                       "column":  45
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(460,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  460,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(478,51): error TS2345: Argument of type \u0027{ userId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  478,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, storeId, role, createdAt, and 2 more.",
-                       "column":  51
-                   },
-                   {
-                       "fullText":  "tests/unit/lib/plan-enforcement.test.ts(491,51): error TS2345: Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
-                       "file":  "tests/unit/lib/plan-enforcement.test.ts",
-                       "code":  "TS2345",
-                       "line":  491,
-                       "severity":  "error",
-                       "message":  "Argument of type \u0027{ userId: string; storeId: string; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Type \u0027{ userId: string; storeId: string; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, role, createdAt, expiresAt, lastAccessedAt",
-                       "column":  51
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../../middleware\u0027 or its corresponding type declarations.",
-                       "column":  28,
-                       "line":  3,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(3,28): error TS2307: Cannot find module \u0027../../../middleware\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
-                   {
-                       "message":  "\u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
-                       "column":  26,
-                       "line":  261,
-                       "fullText":  "tests/unit/lib/security-headers.test.ts(261,26): error TS1308: \u0027await\u0027 expressions are only allowed within async functions and at the top levels of modules.",
-                       "code":  "TS1308",
-                       "severity":  "error",
-                       "file":  "tests/unit/lib/security-headers.test.ts"
-                   },
                    {
                        "message":  "Property \u0027mockResolvedValue\u0027 does not exist on type \u0027\u003cT extends OrderFindManyArgs\u003e(args?: SelectSubset\u003cT, OrderFindManyArgs\u003cDefaultArgs\u003e\u003e | undefined) =\u003e PrismaPromise\u003cGetFindResult\u003c$OrderPayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e[]\u003e\u0027.",
                        "column":  29,
@@ -756,64 +335,37 @@
                        "file":  "tests/unit/services/analytics-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "message":  "\u0027sendAccountVerification\u0027 is declared but its value is never read.",
+                       "column":  89,
+                       "line":  16,
+                       "fullText":  "tests/unit/services/email-service.test.ts(16,89): error TS6133: \u0027sendAccountVerification\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/unit/services/email-service.test.ts"
+                   },
+                   {
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "column":  7,
                        "line":  491,
-                       "fullText":  "tests/unit/services/email-service.test.ts(491,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(491,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "column":  7,
                        "line":  511,
-                       "fullText":  "tests/unit/services/email-service.test.ts(511,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(511,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
                    },
                    {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "column":  7,
                        "line":  527,
-                       "fullText":  "tests/unit/services/email-service.test.ts(527,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "code":  "TS2740",
-                       "severity":  "error",
-                       "file":  "tests/unit/services/email-service.test.ts"
-                   },
-                   {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "column":  7,
-                       "line":  564,
-                       "fullText":  "tests/unit/services/email-service.test.ts(564,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "code":  "TS2740",
-                       "severity":  "error",
-                       "file":  "tests/unit/services/email-service.test.ts"
-                   },
-                   {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "column":  7,
-                       "line":  584,
-                       "fullText":  "tests/unit/services/email-service.test.ts(584,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "code":  "TS2740",
-                       "severity":  "error",
-                       "file":  "tests/unit/services/email-service.test.ts"
-                   },
-                   {
-                       "message":  "Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ address: string | null; id: string; createdAt: Date; name: string; slug: string; description: string | null; updatedAt: Date; deletedAt: Date | null; email: string; phone: string | null; ... 14 more ...; locale: string; }\u0027: address, createdAt, slug, description, and 18 more.",
-                       "column":  7,
-                       "line":  587,
-                       "fullText":  "tests/unit/services/email-service.test.ts(587,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ address: string | null; id: string; createdAt: Date; name: string; slug: string; description: string | null; updatedAt: Date; deletedAt: Date | null; email: string; phone: string | null; ... 14 more ...; locale: string; }\u0027: address, createdAt, slug, description, and 18 more.",
-                       "code":  "TS2740",
-                       "severity":  "error",
-                       "file":  "tests/unit/services/email-service.test.ts"
-                   },
-                   {
-                       "message":  "Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
-                       "column":  7,
-                       "line":  600,
-                       "fullText":  "tests/unit/services/email-service.test.ts(600,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
+                       "fullText":  "tests/unit/services/email-service.test.ts(527,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ password: string; name: string; storeId: string | null; id: string; email: string; phone: string | null; role: UserRole; mfaEnabled: boolean; mfaMethod: MFAMethod | null; ... 14 more ...; deletedAt: Date | null; }\u0027: password, storeId, phone, role, and 17 more.",
                        "code":  "TS2740",
                        "severity":  "error",
                        "file":  "tests/unit/services/email-service.test.ts"
@@ -821,8 +373,8 @@
                    {
                        "message":  "Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
                        "column":  64,
-                       "line":  352,
-                       "fullText":  "tests/unit/services/gdpr-service.test.ts(352,64): error TS7006: Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
+                       "line":  351,
+                       "fullText":  "tests/unit/services/gdpr-service.test.ts(351,64): error TS7006: Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
                        "code":  "TS7006",
                        "severity":  "error",
                        "file":  "tests/unit/services/gdpr-service.test.ts"

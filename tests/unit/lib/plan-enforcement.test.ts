@@ -41,7 +41,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should allow product creation when within limits', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(true);
@@ -56,7 +61,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should block product creation when limit exceeded', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(false);
@@ -97,7 +107,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should return error when storeId is missing', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: null,
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new NextRequest('http://localhost:3000/api/products');
@@ -118,7 +133,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle service errors gracefully', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockRejectedValue(new Error('Database error'));
@@ -143,7 +163,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should allow order creation when within limits', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateOrder.mockResolvedValue(true);
@@ -158,7 +183,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should block order creation when limit exceeded', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateOrder.mockResolvedValue(false);
@@ -191,7 +221,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle service errors gracefully', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateOrder.mockRejectedValue(new Error('Service unavailable'));
@@ -214,7 +249,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should call handler when product creation is allowed', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(true);
@@ -240,7 +280,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should call handler when order creation is allowed', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateOrder.mockResolvedValue(true);
@@ -250,7 +295,7 @@ describe('Plan Enforcement Middleware', () => {
         method: 'POST',
       });
 
-      const result = await enforcePlanLimits(
+      await enforcePlanLimits(
         request,
         mockHandler,
         'order'
@@ -263,7 +308,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should block handler when product limit exceeded', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(false);
@@ -286,7 +336,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle invalid resource type', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const request = new NextRequest('http://localhost:3000/api/invalid');
@@ -317,7 +372,7 @@ describe('Plan Enforcement Middleware', () => {
         method: 'GET',
       });
 
-      const result = await enforcePlanLimits(
+      await enforcePlanLimits(
         request,
         mockHandler,
         'product'
@@ -352,7 +407,7 @@ describe('Plan Enforcement Middleware', () => {
         method: 'DELETE',
       });
 
-      const result = await enforcePlanLimits(
+      await enforcePlanLimits(
         request,
         mockHandler,
         'product'
@@ -373,7 +428,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should create a wrapped handler for product enforcement', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(true);
@@ -397,7 +457,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should create a wrapped handler for order enforcement', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateOrder.mockResolvedValue(true);
@@ -409,7 +474,7 @@ describe('Plan Enforcement Middleware', () => {
         method: 'POST',
       });
 
-      const result = await wrappedHandler(request);
+      await wrappedHandler(request);
 
       expect(mockHandler).toHaveBeenCalledWith(request);
       expect(mockCanCreateOrder).toHaveBeenCalledWith('store-123');
@@ -418,14 +483,19 @@ describe('Plan Enforcement Middleware', () => {
     it('should preserve handler context and parameters', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(true);
       
       // Handler that uses parameters
-      const parameterizedHandler = vi.fn((request, { params }) => {
-        return NextResponse.json({ id: params.id });
+      const parameterizedHandler = vi.fn((_request, { params }) => {
+        return Promise.resolve(NextResponse.json({ id: params.id }));
       });
 
       const wrappedHandler = withPlanLimits(parameterizedHandler, 'product');
@@ -459,7 +529,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle database connection errors', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       const dbError = new Error('Connection refused');
@@ -477,7 +552,13 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle malformed session data', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
-        // Missing storeId
+        email: 'test@example.com',
+        storeId: null,
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
+        // Missing storeId intentionally set to null to test error
       });
 
       const request = new NextRequest('http://localhost:3000/api/products');
@@ -490,7 +571,12 @@ describe('Plan Enforcement Middleware', () => {
     it('should handle concurrent limit checks', async () => {
       mockGetSessionFromRequest.mockResolvedValue({
         userId: 'user-123',
+        email: 'test@example.com',
         storeId: 'store-123',
+        role: 'STORE_ADMIN',
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+        lastAccessedAt: Date.now(),
       });
 
       mockCanCreateProduct.mockResolvedValue(true);

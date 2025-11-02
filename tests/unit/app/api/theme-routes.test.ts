@@ -110,7 +110,6 @@ describe('Theme API Routes', () => {
 
       // Assert
       expect(response.status).toBe(200);
-      // Dates are serialized as strings in JSON response, so compare individual fields
       expect(data.data.currentTheme.id).toBe(mockTheme.id);
       expect(data.data.currentTheme.primaryColor).toBe(mockTheme.primaryColor);
       expect(data.data.currentTheme.secondaryColor).toBe(mockTheme.secondaryColor);
@@ -149,7 +148,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -194,12 +193,11 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
       expect(response.status).toBe(200);
-      // Dates are serialized as strings in JSON response
       expect(data.data.id).toBe(mockTheme.id);
       expect(data.data.primaryColor).toBe(mockTheme.primaryColor);
       expect(data.data.secondaryColor).toBe(mockTheme.secondaryColor);
@@ -218,7 +216,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -239,7 +237,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -283,7 +281,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -327,7 +325,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await PUT(request, { params: { id: 'store-1' } });
+      const response = await PUT(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -345,7 +343,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await DELETE(request, { params: { id: 'store-1' } });
+      const response = await DELETE(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
@@ -384,12 +382,11 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await DELETE(request, { params: { id: 'store-1' } });
+      const response = await DELETE(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert
       expect(response.status).toBe(200);
-      // Dates are serialized as strings in JSON response
       expect(data.data.id).toBe(mockTheme.id);
       expect(data.data.primaryColor).toBe(mockTheme.primaryColor);
       expect(data.data.secondaryColor).toBe(mockTheme.secondaryColor);
@@ -408,7 +405,7 @@ describe('Theme API Routes', () => {
       });
 
       // Act
-      const response = await DELETE(request, { params: { id: 'store-1' } });
+      const response = await DELETE(request, { params: Promise.resolve({ id: 'store-1' }) });
       const data = await response.json();
 
       // Assert

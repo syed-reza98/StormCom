@@ -226,7 +226,7 @@ describe('Analytics API Routes', () => {
 
       // Act
       const response = await ordersHandler(request);
-      const data = await response.json();
+      await response.json();
 
       // Assert
       expect(response.status).toBe(200);
@@ -372,7 +372,7 @@ describe('Analytics API Routes', () => {
 
       // Act
       const response = await productsHandler(request);
-      const data = await response.json();
+      await response.json();
 
       // Assert
       expect(response.status).toBe(200);
