@@ -3,14 +3,22 @@
 
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getSessionFromCookies } from '@/lib/session-storage';
+// import { getSessionFromCookies } from '@/lib/session-storage';
 
 // export const dynamic = 'force-dynamic';
-import { redirect } from 'next/navigation';
+// import { redirect } from 'next/navigation';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { AnalyticsDatePicker } from '@/components/analytics/analytics-date-picker';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getCurrentUser } from '@/lib/get-current-user';
+
+// ============================================================================
+// ROUTE CONFIG
+// ============================================================================
+
+// Mark as dynamic since this route uses cookies() for authentication
+// export const dynamic = 'force-dynamic';
 
 // ============================================================================
 // ROUTE CONFIG
