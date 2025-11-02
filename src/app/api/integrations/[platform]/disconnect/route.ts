@@ -11,9 +11,9 @@ import { getServerSession } from 'next-auth';
 import { IntegrationService } from '@/services/integration-service';
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     platform: string;
-  };
+  }>;
 };
 
 export async function DELETE(
@@ -21,6 +21,8 @@ export async function DELETE(
   { params }: RouteContext
 ) {
   try {
+    const { platform } = await params;
+    
     // Authentication check
     const session = await getServerSession();
     if (!session?.user?.storeId) {
@@ -29,8 +31,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const { platform } = params;
 
     // Validate platform
     if (!['shopify', 'mailchimp'].includes(platform)) {

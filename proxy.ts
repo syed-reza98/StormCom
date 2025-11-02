@@ -141,7 +141,7 @@ const SECURITY_HEADERS = {
 };
 
 /**
- * Middleware function
+ * Proxy function (Next.js 16 middleware)
  * 
  * Applies security protections to all routes:
  * - Multi-tenant context (storeId from session)
@@ -151,7 +151,7 @@ const SECURITY_HEADERS = {
  * 
  * Runs on every request before reaching route handlers.
  */
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { method, url } = request;
   const { pathname } = new URL(url);
 

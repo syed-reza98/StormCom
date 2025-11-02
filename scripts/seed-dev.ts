@@ -149,7 +149,6 @@ async function main() {
         trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         productLimit: 1000,
         orderLimit: 10000,
-        storageLimit: 10737418240, // 10GB
       },
     });
     console.log(`✓ Store: ${store.name}`);
@@ -174,7 +173,7 @@ async function main() {
         email: `staff@${storeData.slug}.example.com`,
         password: await bcrypt.hash('Staff@123', 12),
         name: `${storeData.name} Staff`,
-        role: 'STORE_STAFF',
+        role: 'STAFF',
         storeId: store.id,
         emailVerified: true,
         emailVerifiedAt: new Date(),
@@ -247,9 +246,9 @@ async function main() {
           sku: `${sample.sku}-${String(i + 1).padStart(3, '0')}`,
           price: sample.price + randomInt(-500, 500),
           compareAtPrice: sample.price + randomInt(1000, 3000),
-          costPerItem: Math.floor(sample.price * 0.6),
+          costPrice: Math.floor(sample.price * 0.6),
           trackInventory: true,
-          stock: randomInt(10, 100),
+          inventoryQty: randomInt(10, 100),
           lowStockThreshold: 10,
           inventoryStatus: 'IN_STOCK',
           weight: randomInt(100, 5000),
@@ -259,9 +258,9 @@ async function main() {
           storeId: store.id,
           status: 'PUBLISHED',
           tags: ['popular', 'featured', 'sale'].slice(0, randomInt(1, 3)),
-          images: [
+          images: JSON.stringify([
             `https://placehold.co/600x600/png?text=${encodeURIComponent(sample.name)}`,
-          ],
+          ]),
         },
       });
       products.push(product);

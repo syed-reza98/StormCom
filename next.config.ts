@@ -106,8 +106,7 @@ const nextConfig: NextConfig = {
   /* Output Optimization */
   output: 'standalone',
   
-  /* Build Performance */
-  swcMinify: true,
+  // Note: swcMinify removed - it's now default in Next.js 16
 };
 
 export default nextConfig;
