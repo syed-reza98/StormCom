@@ -16,8 +16,8 @@ import { getSession } from '@/lib/session-storage';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get session ID from cookie (must match login API: 'session-id')
-    const sessionId = request.cookies.get('session-id')?.value;
+    // Get session ID from cookie
+    const sessionId = request.cookies.get('sessionId')?.value;
 
     if (!sessionId) {
       return NextResponse.json(

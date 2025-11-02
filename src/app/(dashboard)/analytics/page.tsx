@@ -3,7 +3,9 @@
 
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getCurrentUser } from '@/lib/get-current-user';
+import { getSessionFromCookies } from '@/lib/session-storage';
+
+export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { AnalyticsDatePicker } from '@/components/analytics/analytics-date-picker';

@@ -36,17 +36,19 @@ import { getUserFromSession } from '@/services/session-service';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication - get session ID from cookie (must match login API: 'session-id')
-    const sessionId = request.cookies.get('session-id')?.value;
+    // Verify authentication - get session token from cookie
+    const sessionToken =
+      request.cookies.get('session_token')?.value ||
+      request.cookies.get('sessionId')?.value;
 
-    if (!sessionId) {
+    if (!sessionToken) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
       );
     }
 
-    const user = await getUserFromSession(sessionId);
+    const user = await getUserFromSession(sessionToken);
 
     if (!user) {
       return NextResponse.json(

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Flex, Text } from '@radix-ui/themes';
-import { CubeIcon, StackIcon, MixIcon, FileTextIcon, HomeIcon, ArchiveIcon, UploadIcon, HamburgerMenuIcon, GearIcon, BarChartIcon } from '@radix-ui/react-icons';
+import { CubeIcon, StackIcon, MixIcon, FileTextIcon, HomeIcon, ArchiveIcon, UploadIcon, HamburgerMenuIcon, GearIcon } from '@radix-ui/react-icons';
 import { NavLink } from '@/components/ui/nav-link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -24,10 +24,6 @@ export default function DashboardShell({ children }: DashboardShellProps): React
           </Flex>
         </div>
         <nav className="px-2 pb-6 pt-3 space-y-1">
-          <NavLink href="/analytics">
-            <BarChartIcon className="h-4 w-4" />
-            Analytics
-          </NavLink>
           <NavLink href="/products">
             <CubeIcon className="h-4 w-4" />
             Products
@@ -91,7 +87,6 @@ export default function DashboardShell({ children }: DashboardShellProps): React
           {/* Mobile quick nav */}
           <div className="lg:hidden border-t">
             <div className="container flex gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <NavLink className="whitespace-nowrap" href="/analytics">Analytics</NavLink>
               <NavLink className="whitespace-nowrap" href="/products">Products</NavLink>
               <NavLink className="whitespace-nowrap" href="/categories">Categories</NavLink>
               <NavLink className="whitespace-nowrap" href="/attributes">Attributes</NavLink>

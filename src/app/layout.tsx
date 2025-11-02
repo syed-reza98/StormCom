@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Theme } from '@radix-ui/themes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -42,9 +42,7 @@ export default function RootLayout({
           radius="medium"
           scaling="100%"
         >
-          <Suspense fallback={null}>
-            {children}
-          </Suspense>
+          {children}
         </Theme>
         <Analytics />
         <SpeedInsights />

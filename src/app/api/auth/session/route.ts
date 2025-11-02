@@ -15,10 +15,10 @@ import { db } from '@/lib/db';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get session ID from cookie (must match SESSION_CONFIG.cookieName in session-storage.ts)
-    const sessionId = request.cookies.get('session-id')?.value;
+    // Get session token from cookie
+    const sessionToken = request.cookies.get('session_token')?.value;
 
-    if (!sessionId) {
+    if (!sessionToken) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'No session token provided' } },
         { status: 401 }
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate session
-    const session = await SessionService.getSession(sessionId);
+    const session = await SessionService.getSession(sessionToken);
 
     if (!session) {
       return NextResponse.json(
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Update session last accessed time
-    await SessionService.updateSessionActivity(sessionId);
+    await SessionService.updateSessionActivity(sessionToken);
 
     return NextResponse.json(
       successResponse({ user }),
