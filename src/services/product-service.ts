@@ -506,8 +506,9 @@ export class ProductService {
     // Normalize images: JSON string -> string[]; if it's a single URL string, wrap it
     try {
       if (typeof p.images === 'string') {
-        // eslint-disable-next-line no-console
-        console.log('normalizeProductFields: parsing images string for product id=', p.id);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { logger } = require('@/lib/logger');
+        logger?.debug && logger.debug('normalizeProductFields: parsing images string for product id=', p.id);
         const parsed = JSON.parse(p.images);
         p.images = Array.isArray(parsed) ? parsed : (p.images ? [p.images] : []);
       } else if (!Array.isArray(p.images)) {

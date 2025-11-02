@@ -2,8 +2,8 @@
 // Privacy Settings Page - GDPR compliance with data export and deletion
 
 import { Metadata } from 'next';
-import { Flex, Heading, Text, Container, Section, Card, Button, Separator, Badge } from '@radix-ui/themes';
-import { LockClosedIcon, DownloadIcon, TrashIcon, CheckCircledIcon } from '@radix-ui/react-icons';
+import { Flex, Heading, Text, Container, Section, Card } from '@radix-ui/themes';
+import { LockClosedIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { PrivacySettingsClient } from './privacy-settings-client';
 
 // ============================================================================

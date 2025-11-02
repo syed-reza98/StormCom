@@ -12,6 +12,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
     "type-check:save": "powershell -ExecutionPolicy Bypass -File ./scripts/collect-type-errors.ps1",
+    "lint:save": "powershell -ExecutionPolicy Bypass -File ./scripts/collect-lint-errors.ps1",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -115,7 +116,8 @@
     "tsx": "^4.19.0",
     "typescript": "5.9.3",
     "vite": "^7.1.12",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vitest-mock-extended": "^3.1.0"
   },
   "overrides": {
     "next-auth": {

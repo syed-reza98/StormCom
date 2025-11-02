@@ -3,6 +3,7 @@
 // Handles plan creation, checkout sessions, and subscription webhooks
 
 import Stripe from 'stripe';
+import { logger } from '@/lib/logger';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 import { SUBSCRIPTION_PLANS } from '@/services/subscription-service';
 
@@ -158,12 +159,12 @@ export async function handleStripeWebhook({
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
         break;
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info(`Unhandled event type: ${event.type}`);
     }
 
     return { received: true };
   } catch (error) {
-    console.error('Webhook error:', error);
+    logger.error('Webhook error:', error);
     throw error;
   }
 }
@@ -355,7 +356,7 @@ export async function handleSubscriptionCreated(
 
   // The SubscriptionService will handle updating the store
   // This is called from the webhook handler
-  console.log(`Subscription created for store ${storeId}:`, {
+  logger.info(`Subscription created for store ${storeId}:`, {
     subscriptionId: subscription.id,
     plan: planFromMetadata,
     status: subscription.status,
@@ -375,7 +376,7 @@ export async function handleSubscriptionUpdated(
     throw new Error('Store ID not found in subscription metadata');
   }
 
-  console.log(`Subscription updated for store ${storeId}:`, {
+  logger.info(`Subscription updated for store ${storeId}:`, {
     subscriptionId: subscription.id,
     status: subscription.status,
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
@@ -395,7 +396,7 @@ export async function handleSubscriptionDeleted(
     throw new Error('Store ID not found in subscription metadata');
   }
 
-  console.log(`Subscription deleted for store ${storeId}:`, {
+  logger.info(`Subscription deleted for store ${storeId}:`, {
     subscriptionId: subscription.id,
     canceledAt: subscription.canceled_at,
   });
@@ -421,7 +422,7 @@ export async function handleInvoicePaymentSucceeded(
     throw new Error('Store ID not found in subscription metadata');
   }
 
-  console.log(`Invoice payment succeeded for store ${storeId}:`, {
+  logger.info(`Invoice payment succeeded for store ${storeId}:`, {
     subscriptionId: subscription.id,
     invoiceId: invoice.id,
     amountPaid: invoice.amount_paid,
@@ -449,7 +450,7 @@ export async function handleInvoicePaymentFailed(
     throw new Error('Store ID not found in subscription metadata');
   }
 
-  console.log(`Invoice payment failed for store ${storeId}:`, {
+  logger.warn(`Invoice payment failed for store ${storeId}:`, {
     subscriptionId: subscription.id,
     invoiceId: invoice.id,
     amountDue: invoice.amount_due,

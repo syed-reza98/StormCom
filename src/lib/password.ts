@@ -108,7 +108,8 @@ export async function isPasswordInHistory(
 
 /**
  * Add password to history
- * Maintains last 5 passwords in history
+ * Maintains last 5 passwords in history (GDPR compliance - data minimization)
+ * Automatically deletes entries older than the configured limit
  */
 export async function addPasswordToHistory(
   userId: string,
@@ -123,14 +124,14 @@ export async function addPasswordToHistory(
       },
     });
 
-    // Get all history entries for user
+    // Cleanup: Get all history entries for user
     const allHistory = await db.passwordHistory.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
       select: { id: true },
     });
 
-    // Delete old entries beyond limit
+    // Delete old entries beyond limit (GDPR data minimization)
     if (allHistory.length > PASSWORD_CONFIG.historyLimit) {
       const entriesToDelete = allHistory.slice(PASSWORD_CONFIG.historyLimit);
       await db.passwordHistory.deleteMany({

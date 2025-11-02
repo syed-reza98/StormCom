@@ -4,7 +4,7 @@
 // Client component for privacy settings with data export and deletion
 
 import { useState } from 'react';
-import { Flex, Card, Heading, Text, Button, Separator, Badge, Dialog } from '@radix-ui/themes';
+import { Flex, Card, Heading, Text, Button, Badge, Dialog } from '@radix-ui/themes';
 import { DownloadIcon, TrashIcon, ReloadIcon } from '@radix-ui/react-icons';
 
 type GdprRequest = {

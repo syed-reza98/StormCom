@@ -3,20 +3,28 @@
 // Auto-injects storeId filter on all queries for tenant-scoped tables
 
 import { PrismaClient } from '@prisma/client';
+import { AsyncLocalStorage } from 'async_hooks';
+
+// Request-scoped async context for storing storeId
+export const requestContext = new AsyncLocalStorage<{ storeId: string }>();
 
 /**
  * Get storeId from async context (NextAuth session)
  * This is set in middleware.ts and api routes
  */
 export function getStoreIdFromContext(): string | null {
-  // In real implementation, this would come from:
-  // 1. NextAuth session (session.user.storeId)
-  // 2. AsyncLocalStorage context
-  // 3. Request headers (X-Store-ID)
-  
-  // For now, return null to allow manual storeId specification
-  // TODO: Implement actual context retrieval in Phase 3 (US0 Authentication)
-  return null;
+  const store = requestContext.getStore?.();
+  return store?.storeId ?? null;
+}
+
+export function setStoreIdContext(storeId: string | undefined) {
+  if (!storeId) return;
+  try {
+    requestContext.enterWith({ storeId });
+  } catch (e) {
+    // best-effort; if enterWith fails, continue without context
+    // callers will fail safe by providing explicit storeId
+  }
 }
 
 /**
@@ -27,14 +35,80 @@ export function getStoreIdFromContext(): string | null {
  * This uses the newer Client Extensions API
  */
 export function registerMultiTenantMiddleware(prisma: PrismaClient): PrismaClient {
-  // For now, return the client as-is
-  // Multi-tenant filtering will be enforced in application code and API routes
-  // until we implement proper session context in Phase 3
-  
+  // Tenant-scoped models that should be auto-filtered by storeId
+  const TENANT_MODELS = new Set([
+    'Product',
+    'Order',
+    'Customer',
+    'Category',
+    'Brand',
+    'Review',
+    'OrderItem',
+    'Payment',
+    'Address',
+    'ProductVariant',
+    'ProductAttribute',
+  ]);
+
+  // Use Prisma middleware to inject storeId into queries for tenant models
+  // NOTE: Prisma $use may not be present on all type definitions; cast to any
+  // to avoid type issues with different Prisma versions.
+  (prisma as any).$use(async (params: any, next: any) => {
+    try {
+      const model = params.model;
+
+      if (!model || !TENANT_MODELS.has(model)) {
+        return next(params);
+      }
+
+      const storeId = getStoreIdFromContext();
+
+      // If no storeId in context, throw to prevent accidental cross-tenant access
+      if (!storeId) {
+        throw new Error('No storeId in request context - tenant isolation failed');
+      }
+
+      // Ensure where clauses include storeId for queries
+      if (params.action === 'findMany' || params.action === 'findFirst' || params.action === 'findUnique') {
+        params.args = params.args || {};
+        params.args.where = { ...(params.args.where || {}), storeId };
+      }
+
+      // create -> inject storeId into data
+      if (params.action === 'create' || params.action === 'createMany') {
+        params.args = params.args || {};
+        if (params.args.data) {
+          if (Array.isArray(params.args.data)) {
+            params.args.data = params.args.data.map((d: any) => ({ ...d, storeId }));
+          } else {
+            params.args.data = { ...(params.args.data || {}), storeId };
+          }
+        }
+      }
+
+      // update/updateMany/delete/updateMany/deleteMany - ensure where includes storeId
+      if (
+        params.action === 'update' ||
+        params.action === 'updateMany' ||
+        params.action === 'delete' ||
+        params.action === 'deleteMany'
+      ) {
+        params.args = params.args || {};
+        params.args.where = { ...(params.args.where || {}), storeId };
+      }
+
+      return next(params);
+    } catch (err) {
+      // Re-throw to surface the issue to the caller
+      throw err;
+    }
+  });
+
   if (process.env.NODE_ENV === 'development') {
-    console.warn('[Prisma] Multi-tenant filtering will be enforced at application layer ✓');
+    // eslint-disable-next-line no-console
+    console.warn('[Prisma] Multi-tenant middleware registered - storeId will be auto-injected');
   }
-  
+
   return prisma;
 }
 

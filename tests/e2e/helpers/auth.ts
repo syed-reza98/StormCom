@@ -5,7 +5,7 @@ import { Page } from '@playwright/test';
 
 export async function loginAsStoreOwner(page: Page) {
   // Navigate to login page
-  await page.goto('/auth/signin');
+  await page.goto('/login');
   
   // Fill in credentials
   await page.fill('[data-testid="email-input"]', 'owner@teststore.com');
@@ -22,7 +22,7 @@ export async function loginAsStoreOwner(page: Page) {
 }
 
 export async function loginAsCustomer(page: Page) {
-  await page.goto('/auth/signin');
+  await page.goto('/login');
   
   await page.fill('[data-testid="email-input"]', 'customer@test.com');
   await page.fill('[data-testid="password-input"]', 'password123');

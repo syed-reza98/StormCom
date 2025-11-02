@@ -1,9 +1,6 @@
 // src/components/products/products-table.tsx
-// Products Data Table with pagination, sorting, and row selection
+// Server Component: Products Data Table (renders provided products)
 
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -32,86 +29,33 @@ interface Product {
 }
 
 interface ProductsTableProps {
-  searchParams: {
-    page?: string;
-    search?: string;
-    categoryId?: string;
-    brandId?: string;
-    status?: string;
-    minPrice?: string;
-    maxPrice?: string;
-    inventoryStatus?: string;
-    sortBy?: string;
-    sortOrder?: string;
+  products: Product[];
+  pagination: {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPages: number;
   };
+  searchParams?: Record<string, string | undefined>;
 }
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export function ProductsTable({ searchParams }: ProductsTableProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    perPage: 10,
-    total: 0,
-    totalPages: 0,
-  });
+export function ProductsTable({ products, pagination, searchParams }: ProductsTableProps) {
+  const selectedProducts: string[] = [];
 
-  // Fetch products data
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: searchParams.page || '1',
-          perPage: '10',
-          ...(searchParams.search && { search: searchParams.search }),
-          ...(searchParams.categoryId && { categoryId: searchParams.categoryId }),
-          ...(searchParams.brandId && { brandId: searchParams.brandId }),
-          ...(searchParams.status && { status: searchParams.status }),
-          ...(searchParams.minPrice && { minPrice: searchParams.minPrice }),
-          ...(searchParams.maxPrice && { maxPrice: searchParams.maxPrice }),
-          ...(searchParams.inventoryStatus && { inventoryStatus: searchParams.inventoryStatus }),
-          sortBy: searchParams.sortBy || 'createdAt',
-          sortOrder: searchParams.sortOrder || 'desc',
-        });
+  // NOTE: Selection and interactive behaviors are intentionally left to a client wrapper
+  // If interactivity is required, create a small client component that receives initial
+  // products and manages selection state on the client.
 
-        const response = await fetch(`/api/products?${params}`);
-        const data = await response.json();
-
-        if (data.data) {
-          setProducts(data.data);
-          setPagination(data.meta || pagination);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [searchParams, pagination]);
-
-  // Handle row selection
-  const handleSelectProduct = (productId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedProducts([...selectedProducts, productId]);
-    } else {
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
-    }
+  const handleSelectProduct = (_productId: string, _checked: boolean) => {
+    // no-op in server component
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedProducts(products.map(p => p.id));
-    } else {
-      setSelectedProducts([]);
-    }
+  const handleSelectAll = (_checked: boolean) => {
+    // no-op in server component
   };
 
   // Format currency
@@ -154,8 +98,15 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
     }
   };
 
-  if (loading) {
-    return <div className="p-6">Loading products...</div>;
+  if (!products || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No products found</p>
+        <Link href="/dashboard/products/new">
+          <Button className="mt-4">Add your first product</Button>
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -178,18 +129,9 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
         <div className="text-sm text-muted-foreground">
           Page {pagination.page} of {pagination.totalPages}
         </div>
-      </div>
 
       {/* Table Content */}
       <div className="px-6">
-        {products.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No products found</p>
-            <Link href="/dashboard/products/new">
-              <Button className="mt-4">Add your first product</Button>
-            </Link>
-          </div>
-        ) : (
           <div className="space-y-2">
             {products.map((product) => (
               <div
@@ -283,7 +225,7 @@ export function ProductsTable({ searchParams }: ProductsTableProps) {
               </div>
             ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Pagination */}

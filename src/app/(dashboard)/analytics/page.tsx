@@ -93,7 +93,7 @@ export default async function AnalyticsPage({
   // Get session and verify authentication
   const session = await getSessionFromCookies();
   if (!session?.storeId) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   const params = await searchParams;
@@ -105,7 +105,7 @@ export default async function AnalyticsPage({
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
         <p className="text-muted-foreground">
-          Track your store's performance and key metrics with real-time insights
+          Track your store performance and key metrics with real-time insights
         </p>
       </div>
 

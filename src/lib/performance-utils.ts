@@ -45,6 +45,31 @@ export async function measureTime<T>(
   const start = performance.now();
   const result = await fn();
   const end = performance.now();
-  console.log(`${label} took ${end - start}ms`);
+  // Use centralized logger for consistency
+  try {
+    const { logger } = await import('@/lib/logger');
+    logger.debug(`${label} took ${end - start}ms`);
+  } catch {
+    // Fallback if logger import fails
+    // eslint-disable-next-line no-console
+    console.log(`${label} took ${end - start}ms`);
+  }
   return result;
+}
+
+/**
+ * Memoize an API call result for a short duration (in-memory)
+ * Useful for caching repeated fetches in a short timeframe during tests.
+ */
+export function memoizeApiCall<T extends (...args: any[]) => Promise<any>>(fn: T, ttl = 5000) {
+  const cache = new Map<string, { value: any; expiresAt: number }>();
+  return async (...args: Parameters<T>) => {
+    const key = JSON.stringify(args);
+    const entry = cache.get(key);
+    const now = Date.now();
+    if (entry && entry.expiresAt > now) return entry.value;
+    const value = await fn(...args);
+    cache.set(key, { value, expiresAt: now + ttl });
+    return value;
+  };
 }

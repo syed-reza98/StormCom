@@ -28,3 +28,7 @@ export function formatChartData(data: Array<{ label: string; value: number }>) {
     values: data.map(d => d.value),
   };
 }
+
+// Backwards-compatible aliases
+export const transformRevenueData = formatChartData;
+export const transformProductData = formatChartData;

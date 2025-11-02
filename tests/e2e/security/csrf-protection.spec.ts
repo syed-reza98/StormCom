@@ -262,7 +262,7 @@ test.describe('CSRF Protection', () => {
   test.describe('Exempted Routes', () => {
     test('should exempt NextAuth routes from CSRF middleware', async ({ page }) => {
       // NextAuth handles its own CSRF tokens
-      const response = await page.request.post('/api/auth/signin', {
+      const response = await page.request.post('/api/auth/login', {
         data: {
           email: 'test@example.com',
           password: 'test123',

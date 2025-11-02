@@ -35,3 +35,18 @@ export function getDateRange(period: string): { startDate: Date; endDate: Date }
 export function isDateInRange(date: Date, start: Date, end: Date): boolean {
   return date >= start && date <= end;
 }
+
+export function getDateRangePresets(): Record<string, { startDate: Date; endDate: Date }> {
+  const now = new Date();
+  return {
+    today: { startDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()), endDate: now },
+    week: { startDate: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7), endDate: now },
+    month: { startDate: new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()), endDate: now },
+    year: { startDate: new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()), endDate: now },
+  };
+}
+
+export function validateDateRange(start: Date, end: Date): boolean {
+  if (!(start instanceof Date) || !(end instanceof Date)) return false;
+  return start.getTime() <= end.getTime();
+}

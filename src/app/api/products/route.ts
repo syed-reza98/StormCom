@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 import { productService } from '@/services/product-service';
 import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
@@ -54,10 +55,8 @@ export async function GET(request: NextRequest) {
     // Log for debugging: ensure images were normalized to arrays
     try {
       if (result.products && result.products.length > 0) {
-        // eslint-disable-next-line no-console
-        console.log('Products API - sample images type:', typeof (result.products[0] as any).images);
-        // eslint-disable-next-line no-console
-        console.log('Products API - sample images value:', (result.products[0] as any).images);
+        logger.debug('Products API - sample images type:', typeof (result.products[0] as any).images);
+        logger.debug('Products API - sample images value:', (result.products[0] as any).images);
       }
     } catch (e) {
       // ignore
@@ -105,11 +104,8 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch products' } },
-      { status: 500 }
-    );
+    logger.error('Error fetching products:', error);
+    return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch products' } }, { status: 500 });
   }
 }
 

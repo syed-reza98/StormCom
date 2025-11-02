@@ -253,7 +253,7 @@ describe('Security Middleware', () => {
         'https://example.com/',
         'https://example.com/dashboard',
         'https://example.com/api/products',
-        'https://example.com/auth/signin',
+        'https://example.com/login',
       ];
 
       for (const url of routes) {

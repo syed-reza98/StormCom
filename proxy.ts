@@ -144,6 +144,7 @@ const SECURITY_HEADERS = {
  * Middleware function
  * 
  * Applies security protections to all routes:
+ * - Multi-tenant context (storeId from session)
  * - Rate limiting (100 req/min general, 10 req/min auth)
  * - CSRF protection for state-changing operations
  * - Security headers (CSP, HSTS, X-Frame-Options, etc.)
@@ -153,6 +154,23 @@ const SECURITY_HEADERS = {
 export async function middleware(request: NextRequest) {
   const { method, url } = request;
   const { pathname } = new URL(url);
+
+  // 0. Multi-tenant Context: Set storeId in AsyncLocalStorage for Prisma middleware
+  // This must happen BEFORE any database queries
+  try {
+    const { setStoreIdContext } = await import('./src/lib/prisma-middleware');
+    const { getServerSession } = await import('next-auth');
+    const { authOptions } = await import('./src/lib/auth');
+    
+    const session = await getServerSession(authOptions);
+    if (session?.user && (session.user as any).storeId) {
+      setStoreIdContext((session.user as any).storeId);
+    }
+  } catch (error) {
+    // Best effort - if session retrieval fails, continue without context
+    // Individual routes will enforce authentication as needed
+    console.error('Failed to set storeId context:', error);
+  }
 
   // 1. Rate Limiting: Check request limits
   const rateLimitResult = checkSimpleRateLimit(request);

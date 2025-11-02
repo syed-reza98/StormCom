@@ -16,6 +16,7 @@ import {
 } from '@/lib/stripe-subscription';
 import { SubscriptionService } from '@/services/subscription-service';
 import type Stripe from 'stripe';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/webhooks/stripe/subscription
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
-      console.error('STRIPE_WEBHOOK_SECRET is not configured');
+      logger.error('STRIPE_WEBHOOK_SECRET is not configured');
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     const event = verifyWebhookSignature(body, signature, webhookSecret);
 
-    console.log(`Received Stripe webhook: ${event.type}`);
+    logger.info(`Received Stripe webhook: ${event.type}`);
 
     // Handle different event types
     switch (event.type) {
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
 
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        console.log('Checkout session completed:', {
+        logger.info('Checkout session completed:', {
           sessionId: session.id,
           storeId: session.metadata?.storeId,
           plan: session.metadata?.plan,
@@ -165,12 +166,12 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info(`Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Error processing Stripe webhook:', error);
+    logger.error('Error processing Stripe webhook:', error);
 
     if (error instanceof Error && error.message.includes('signature verification failed')) {
       return NextResponse.json(

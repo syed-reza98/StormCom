@@ -27,18 +27,14 @@ vi.mock('resend', () => {
   };
 });
 
-// Mock environment variables
-const originalEnv = process.env;
-
 describe('EmailService - Template Rendering', () => {
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'test';
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'test');
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -104,9 +100,8 @@ describe('EmailService - Email Sending', () => {
   let mockResendSend: any;
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'production'; // Test production mode
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'production'); // Test production mode
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_123' });
@@ -118,7 +113,7 @@ describe('EmailService - Email Sending', () => {
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -197,7 +192,7 @@ describe('EmailService - Email Sending', () => {
   });
 
   it('should log in development mode instead of sending', async () => {
-    process.env.NODE_ENV = 'development';
+    vi.stubEnv('NODE_ENV', 'development');
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     await sendEmail({
@@ -264,9 +259,8 @@ describe('EmailService - Order Confirmation', () => {
   let mockResendSend: any;
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'production';
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_order_123' });
@@ -278,7 +272,7 @@ describe('EmailService - Order Confirmation', () => {
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -377,9 +371,8 @@ describe('EmailService - Shipping Confirmation', () => {
   let mockResendSend: any;
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'production';
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_ship_123' });
@@ -391,7 +384,7 @@ describe('EmailService - Shipping Confirmation', () => {
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -472,9 +465,8 @@ describe('EmailService - Password Reset', () => {
   let mockResendSend: any;
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'production';
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_reset_123' });
@@ -486,7 +478,7 @@ describe('EmailService - Password Reset', () => {
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
@@ -546,9 +538,8 @@ describe('EmailService - Account Verification', () => {
   let mockResendSend: any;
 
   beforeEach(() => {
-    process.env = { ...originalEnv };
-    process.env.NODE_ENV = 'production';
-    process.env.RESEND_API_KEY = 'test_api_key';
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('RESEND_API_KEY', 'test_api_key');
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_verify_123' });
@@ -560,7 +551,7 @@ describe('EmailService - Account Verification', () => {
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 

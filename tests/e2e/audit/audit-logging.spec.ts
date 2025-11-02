@@ -19,7 +19,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Audit Logging', () => {
   test.beforeEach(async ({ page }) => {
     // Login as Store Admin
-    await page.goto('/auth/signin');
+    await page.goto('/login');
     await page.fill('input[name="email"]', 'admin@example.com');
     await page.fill('input[name="password"]', 'Password123!');
     await page.click('button[type="submit"]');
@@ -331,7 +331,7 @@ test.describe('Audit Logging', () => {
     await page.click('text=Sign Out');
     
     // Login as regular staff member
-    await page.goto('/auth/signin');
+    await page.goto('/login');
     await page.fill('input[name="email"]', 'staff@example.com');
     await page.fill('input[name="password"]', 'Password123!');
     await page.click('button[type="submit"]');

@@ -548,3 +548,6 @@ export class SubscriptionService {
 }
 
 export default SubscriptionService;
+
+// Backwards-compatible alias expected by tests and older code
+export const getUsageStatistics = SubscriptionService.getUsageStats;

@@ -46,7 +46,7 @@ export default async function AuditLogsPage({
   // Get session and verify authentication
   const session = await getSessionFromCookies();
   if (!session?.userId) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   // Only SUPER_ADMIN and STORE_ADMIN roles can access audit logs

@@ -3,6 +3,7 @@
 // Implements FR-077 (queue with retry), FR-078 (template variables), FR-079 (deduplication)
 
 import { Resend } from 'resend';
+import { logger } from '@/lib/logger';
 import type { User, Store } from '@prisma/client';
 
 /**
@@ -295,7 +296,7 @@ export async function sendEmail(
 
   // Development mode: log email instead of sending
   if (isDev || !resend) {
-    console.log('📧 [EMAIL - DEV MODE]', {
+    logger.debug('📧 [EMAIL - DEV MODE]', {
       from: options.from || EMAIL_CONFIG.from,
       to: options.to,
       subject: options.subject,
@@ -346,7 +347,7 @@ export async function sendEmail(
       };
     } catch (error) {
       lastError = error as Error;
-      console.error(`Email send attempt ${attempt + 1} failed:`, error);
+      logger.error(`Email send attempt ${attempt + 1} failed:`, error);
 
       // Wait before retrying (exponential backoff)
       if (attempt < EMAIL_CONFIG.maxRetries - 1) {
