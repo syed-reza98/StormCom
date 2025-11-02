@@ -79,16 +79,35 @@ const nextConfig: NextConfig = {
   },
   
   /* Performance Optimization */
-  // experimental: {
-  //   optimizeCss: true,
-  //   optimizePackageImports: [
-  //     '@radix-ui/react-dialog',
-  //     '@radix-ui/react-dropdown-menu',
-  //     '@radix-ui/react-select',
-  //     '@radix-ui/react-toast',
-  //     'lucide-react',
-  //   ],
-  // },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: [
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tooltip',
+      'lucide-react',
+      'recharts',
+      'date-fns',
+    ],
+  },
+  
+  /* Compiler Optimization */
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  
+  /* Output Optimization */
+  output: 'standalone',
+  
+  /* Build Performance */
+  swcMinify: true,
 };
 
 export default nextConfig;
