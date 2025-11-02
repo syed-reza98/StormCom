@@ -1814,9 +1814,29 @@ After implementing fixes, verify:
 
 ---
 
+## Codex Findings: Design Improvements, Issues and Solutions
+
+### Issues
+
+**#1**: `tailwind.config.ts:21` + `src/app/globals.css:28` — the theme tokens are set to hex values but Tailwind consumes them through hsl(var(--token)), yielding invalid colors (hsl(#d9d9e0)) for bg-primary, text-foreground, etc.; buttons, cards, and focus rings silently fall back to defaults instead of brand colors. Store the variables as HSL components (e.g. --primary: 173 80% 40%) or drop the hsl() wrapper so the design system actually renders.
+
+**#2**: `src/components/layout/dashboard-shell.tsx:72` — the mobile hamburger button is inert and the navigation is duplicated between sidebar and horizontal scroller; users on small screens get no way to open the primary menu, and keeping two nav lists in sync is error-prone.
+
+### Solutions Recomended Next Steps
+
+**#1**: **Normalize the design tokens in `src/app/globals.css`**: use HSL tuples for theme-controlled colors, add semantic aliases for spacing/typography, and expose light/dark variables behind [data-theme] so Radix Theme + Tailwind stay in lockstep.
+
+**#2**: **Extract a single nav config** (icon, label, href, permission meta) and render it in dedicated SidebarNav, TopbarQuickNav, and future drawer components; connect the hamburger button to a Sheet/Dialog so the mobile IA matches desktop parity.
+
+**#3**: **Introduce layout primitives** (<AppShell>, <PageHeader>, <ContentSection>, <Toolbar>), then refactor pages such as `src/app/(dashboard)/products/page.tsx:42` and `src/app/page.tsx:42` to remove ad‑hoc flexbox/inline styles and gain consistent spacing and responsive rules.
+
+**#4**: **Decide on one surface component library per context**: either wrap Radix Theme’s Card, Flex, etc. inside your own Surface abstractions, or migrate dashboard views to the existing shadcn-style Card/Flex helpers; mixing both (e.g. `src/app/page.tsx` with Radix Card + Tailwind buttons) makes tokens, shadow depth, and typography diverge.
+
+**#5**: **Replace raw form controls** in `src/components/stores/store-settings-form.tsx:773` and similar blocks with the shared Input, Select, Label, and FormField patterns; this removes repeated utility classes, fixes inconsistent focus states, and lets theme updates cascade automatically.
+
 ## Conclusion
 
-This comprehensive code review identified **15 issues** across 4 severity levels and **12 excellent patterns** to maintain. The critical issues (#1-4) should be addressed immediately before production deployment, while high priority issues (#5-8) should be resolved in the next sprint.
+This comprehensive code review identified **15 issues** across 4 severity levels and **12 excellent patterns** to maintain. The critical issues (#1-4) should be addressed immediately before production deployment, while high priority issues (#5-8) should be resolved in the next sprint. **Critical UI Issues** from (Codex Findings: Design Improvements, Issues and Solutions)
 
 The codebase demonstrates strong architectural decisions (database layer, authentication, security middleware) and follows many Next.js 16 best practices. The main areas for improvement are:
 
@@ -1827,7 +1847,7 @@ The codebase demonstrates strong architectural decisions (database layer, authen
 
 **Estimated Total Effort**: 2-3 weeks for complete implementation
 
-**Recommended Approach**: Follow the phased refactoring guide, completing critical fixes first (Phase 1), then high priority improvements (Phase 2), followed by medium priority enhancements (Phase 3) and low priority polish (Phase 4).
+**Recommended Approach**: Follow the phased refactoring guide, completing critical fixes first (Phase 1), then high priority improvements (Phase 2), followed by medium priority enhancements (Phase 3) and low priority polish (Phase 4) and parallelly implement critical UI issues from (Codex Findings: Design Improvements, Issues and Solutions)
 
 ---
 
@@ -1967,6 +1987,7 @@ The codebase demonstrates strong architectural decisions (database layer, authen
 ### Summary of New Findings
 
 **Critical Security**: 3 issues (#16-18) - **DO NOT DEPLOY** until fixed  
+**Critical UI**: Codex Findings: Design Improvements, Issues and Solutions
 **High Priority**: 8 issues (#19-26) - Address in next sprint  
 **Medium Priority**: 10 issues (#27-36) - Schedule for upcoming releases  
 **Low Priority**: 5 issues (#37-41) - Technical debt cleanup
