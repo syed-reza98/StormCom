@@ -4,8 +4,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/get-current-user';
 import { Flex, Text, Card, Badge } from '@radix-ui/themes';
 import { UpdateOrderStatusForm } from '@/components/orders/update-status-form';
 import { cn } from '@/lib/utils';
@@ -128,9 +127,9 @@ export async function generateMetadata({
 // ============================================================================
 
 async function getOrder(orderId: string): Promise<Order | null> {
-  const session = await getServerSession(authOptions);
+  const user = await getCurrentUser();
   
-  if (!session?.user) {
+  if (!user) {
     return null;
   }
 
@@ -138,7 +137,7 @@ async function getOrder(orderId: string): Promise<Order | null> {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/orders/${orderId}`, {
       headers: {
-        Cookie: `next-auth.session-token=${session.user.id}`, // TODO: Use proper session token
+        Cookie: `sessionId=${user.id}`,
       },
       cache: 'no-store',
     });

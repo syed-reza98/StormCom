@@ -1,6 +1,8 @@
 // src/components/products/products-table.tsx
-// Server Component: Products Data Table (renders provided products)
+// Client Component: Products Data Table with interactive selection
+'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -44,18 +46,22 @@ interface ProductsTableProps {
 // ============================================================================
 
 export function ProductsTable({ products, pagination, searchParams }: ProductsTableProps) {
-  const selectedProducts: string[] = [];
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-  // NOTE: Selection and interactive behaviors are intentionally left to a client wrapper
-  // If interactivity is required, create a small client component that receives initial
-  // products and manages selection state on the client.
-
-  const handleSelectProduct = (_productId: string, _checked: boolean) => {
-    // no-op in server component
+  const handleSelectProduct = (productId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProducts([...selectedProducts, productId]);
+    } else {
+      setSelectedProducts(selectedProducts.filter(id => id !== productId));
+    }
   };
 
-  const handleSelectAll = (_checked: boolean) => {
-    // no-op in server component
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(products.map(p => p.id));
+    } else {
+      setSelectedProducts([]);
+    }
   };
 
   // Format currency

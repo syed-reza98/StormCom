@@ -3,8 +3,7 @@
 // Supports hierarchical categories with parent-child relationships
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/get-current-user';
 import { z } from 'zod';
 import { categoryService } from '@/services/category-service';
 
@@ -31,8 +30,8 @@ const createCategorySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.storeId) {
+    const user = await getCurrentUser();
+    if (!user?.storeId) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
     // Check if requesting tree structure
     const treeMode = searchParams.get('tree') === 'true';
     if (treeMode) {
-      const tree = await categoryService.getCategoryTree(session.user.storeId);
+      const tree = await categoryService.getCategoryTree(user.storeId);
       return NextResponse.json({ 
         data: { categories: tree, meta: { structure: 'tree' } },
         message: 'Category tree retrieved successfully'
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
     // Check if requesting root categories only
     const rootOnly = searchParams.get('rootOnly') === 'true';
     if (rootOnly) {
-      const rootCategories = await categoryService.getRootCategories(session.user.storeId);
+      const rootCategories = await categoryService.getRootCategories(user.storeId);
       return NextResponse.json({ 
         data: { categories: rootCategories, meta: { structure: 'root' } },
         message: 'Root categories retrieved successfully'
@@ -75,7 +74,7 @@ export async function GET(request: NextRequest) {
     };
 
     const result = await categoryService.getCategories(
-      session.user.storeId,
+      user.storeId,
       filters,
       page,
       perPage
@@ -112,8 +111,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.storeId) {
+    const user = await getCurrentUser();
+    if (!user?.storeId) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
@@ -124,7 +123,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createCategorySchema.parse(body);
 
-    const category = await categoryService.createCategory(session.user.storeId, validatedData);
+    const category = await categoryService.createCategory(user.storeId, validatedData);
 
     return NextResponse.json(
       {

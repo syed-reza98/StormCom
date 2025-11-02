@@ -5,6 +5,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { brandService } from '@/services/brand-service';
+import { getCurrentUser } from '@/lib/get-current-user';
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -28,16 +29,17 @@ const createBrandSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    
-    // Extract storeId from query params (required)
-    const storeId = url.searchParams.get('storeId');
-    if (!storeId) {
+    // Get authenticated user and storeId
+    const user = await getCurrentUser();
+    if (!user?.storeId) {
       return Response.json(
-        { error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } },
-        { status: 400 }
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
       );
     }
+    const storeId = user.storeId;
+    
+    const url = new URL(request.url);
 
     // Parse query parameters
     const search = url.searchParams.get('search') || undefined;
@@ -76,16 +78,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
-    // Extract storeId from body (required)
-    const storeId = body.storeId;
-    if (!storeId) {
+    // Get authenticated user and storeId
+    const user = await getCurrentUser();
+    if (!user?.storeId) {
       return Response.json(
-        { error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } },
-        { status: 400 }
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
       );
     }
+    const storeId = user.storeId;
+    
+    const body = await request.json();
 
     // Validate input
     const validatedData = createBrandSchema.parse(body);

@@ -10,10 +10,9 @@
  */
 
 import { Metadata } from 'next';
-import { getServerSession } from 'next-auth';
+import { getCurrentUser } from '@/lib/get-current-user';
 
 export const dynamic = 'force-dynamic';
-import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/theme-editor';
 import { getStoreTheme } from '@/services/theme-service';
@@ -28,15 +27,15 @@ export const metadata: Metadata = {
  * Theme Settings Page
  */
 export default async function ThemeSettingsPage() {
-  const session = await getServerSession(authOptions);
+  const currentUser = await getCurrentUser();
 
-  if (!session?.user?.id) {
-    redirect('/auth/login');
+  if (!currentUser?.id) {
+    redirect('/login');
   }
 
   // Get user's store
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: currentUser.id },
     include: {
       store: {
         select: {

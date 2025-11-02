@@ -8,7 +8,7 @@
  */
 
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
+import { getCurrentUser } from '@/lib/get-current-user';
 
 export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
@@ -22,12 +22,12 @@ export const metadata = {
 
 export default async function IntegrationsPage() {
   // Authentication check
-  const session = await getServerSession();
-  if (!session?.user?.storeId) {
+  const user = await getCurrentUser();
+  if (!user?.storeId) {
     redirect('/login');
   }
 
-  const storeId = session.user.storeId;
+  const storeId = user.storeId;
 
   // Fetch integration configurations
   const [shopifyConfig, mailchimpConfig] = await Promise.all([

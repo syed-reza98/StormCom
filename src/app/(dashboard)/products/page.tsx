@@ -6,10 +6,9 @@ import Link from 'next/link';
 import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
 import { PlusIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import { ProductsTable } from '@/components/products/products-table';
-import { getServerSession } from 'next-auth';
+import { getCurrentUser } from '@/lib/get-current-user';
 
 export const dynamic = 'force-dynamic';
-import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 import { ProductsFilters } from '@/components/products/products-filters';
 import { ProductsBulkActions } from '@/components/products/products-bulk-actions';
@@ -55,8 +54,8 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<ProductsPageProps['searchParams']> }) {
   const params = await searchParams;
   // Determine storeId from session
-  const session = await getServerSession(authOptions);
-  const storeId = (session?.user as any)?.storeId || process.env.DEFAULT_STORE_ID;
+  const user = await getCurrentUser();
+  const storeId = user?.storeId || process.env.DEFAULT_STORE_ID;
 
   // Parse pagination
   const page = parseInt(String(params.page || '1')) || 1;
