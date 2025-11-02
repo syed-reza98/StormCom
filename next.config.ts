@@ -55,7 +55,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
@@ -98,10 +98,15 @@ const nextConfig: NextConfig = {
   
   /* Compiler Optimization */
   compiler: {
+    // Remove console.log statements in production (keep error and warn)
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
     } : false,
   },
+  
+  /* Performance Optimization */
+  // Enable compression for better performance
+  compress: true,
   
   /* Output Optimization */
   // On Windows the standalone build copies traced files which can include

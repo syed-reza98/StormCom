@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const storeId = request.headers.get('x-store-id') || undefined;
     if (!storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'MISSING_STORE_ID', message: 'Store ID header is required' } },
+        { error: { code: 'MISSING_STORE_ID', message: 'Store ID header is required' } },
         { status: 400 }
       );
     }
@@ -95,17 +95,17 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      success: true,
-      data: {
-        products: normalizedProducts,
+      data: normalizedProducts,
+      meta: {
         total: result.pagination.total,
         page: result.pagination.page,
         perPage: result.pagination.perPage,
+        totalPages: Math.ceil(result.pagination.total / result.pagination.perPage),
       },
     });
   } catch (error) {
     logger.error('Error fetching products:', error);
-    return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch products' } }, { status: 500 });
+    return NextResponse.json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch products' } }, { status: 500 });
   }
 }
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -128,13 +128,13 @@ export async function POST(request: NextRequest) {
     const product = await productService.createProduct(session.user.storeId, validatedData);
 
     return NextResponse.json(
-      { success: true, data: product, message: 'Product created successfully' },
+      { data: product, message: 'Product created successfully' },
       { status: 201 }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid input', details: error.errors } },
+        { error: { code: 'VALIDATION_ERROR', message: 'Invalid input', details: error.errors } },
         { status: 400 }
       );
     }
@@ -143,28 +143,28 @@ export async function POST(request: NextRequest) {
       // Prisma unique constraint
       if ((error as any).code === 'P2002') {
         return NextResponse.json(
-          { success: false, error: { code: 'DUPLICATE_SKU', message: 'SKU already exists' } },
+          { error: { code: 'DUPLICATE_SKU', message: 'SKU already exists' } },
           { status: 409 }
         );
       }
       // Duplicate SKU -> 409
       if (error.message.includes('SKU') && error.message.includes('already exists')) {
         return NextResponse.json(
-          { success: false, error: { code: 'DUPLICATE_SKU', message: error.message } },
+          { error: { code: 'DUPLICATE_SKU', message: error.message } },
           { status: 409 }
         );
       }
       if (error.message.includes('already exists') || error.message.includes('not found')) {
         return NextResponse.json(
-          { success: false, error: { code: 'BUSINESS_ERROR', message: error.message } },
+          { error: { code: 'BUSINESS_ERROR', message: error.message } },
           { status: 400 }
         );
       }
     }
 
-    console.error('Error creating product:', error);
+    logger.error('Error creating product:', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to create product' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to create product' } },
       { status: 500 }
     );
   }

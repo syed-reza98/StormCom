@@ -25,6 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.JSX.Element {
   return (
+    /* 
+      suppressHydrationWarning is required here because Radix UI Theme
+      adds dynamic class names and data attributes on the client-side that
+      differ from the server render (e.g., theme switching, dark mode).
+      This is expected behavior and safe - it only suppresses warnings for
+      these specific hydration mismatches caused by the theming system.
+    */
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <Theme
