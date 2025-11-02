@@ -105,17 +105,11 @@ export function registerMultiTenantMiddleware(prisma: PrismaClient): PrismaClien
         throw err;
       }
     });
-  } else {
-    // If $use is not available (different Prisma version / build-time), skip middleware
-    // and warn so developers can handle tenant isolation explicitly.
-    // eslint-disable-next-line no-console
-    console.warn('[Prisma] $use middleware API not available; multi-tenant middleware skipped');
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.warn('[Prisma] Multi-tenant middleware registered - storeId will be auto-injected');
-  }
+  // Note: Multi-tenant isolation is enforced at the application layer
+  // via explicit storeId filtering in queries. The $use middleware above
+  // is a defense-in-depth measure when available.
 
   return prisma;
 }
