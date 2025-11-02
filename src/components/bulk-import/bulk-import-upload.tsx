@@ -236,17 +236,18 @@ export function BulkImportUpload() {
             <div>
               <Label htmlFor="category">Default Category (Optional)</Label>
               <Select 
-                value={settings.category || ''} 
+                // Use 'none' sentinel for no category instead of empty string
+                value={settings.category || 'none'} 
                 onValueChange={(value) => setSettings(prev => ({ 
                   ...prev, 
-                  category: value || undefined 
+                  category: value === 'none' ? undefined : value 
                 }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No default category</SelectItem>
+                  <SelectItem value="none">No default category</SelectItem>
                   {categories.map(cat => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}

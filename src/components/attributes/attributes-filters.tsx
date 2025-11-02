@@ -25,17 +25,19 @@ interface AttributesFiltersProps {
 
 export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
   const [search, setSearch] = useState(searchParams.search || '');
-  const [type, setType] = useState(searchParams.type || '');
-  const [status, setStatus] = useState(searchParams.status || '');
-  const [required, setRequired] = useState(searchParams.required || '');
+  // Use 'all' sentinel for Select items instead of an empty string (Radix requires non-empty Item values)
+  const [type, setType] = useState(searchParams.type || 'all');
+  const [status, setStatus] = useState(searchParams.status || 'all');
+  const [required, setRequired] = useState(searchParams.required || 'all');
 
   const handleApplyFilters = () => {
     const params = new URLSearchParams();
     
     if (search.trim()) params.set('search', search.trim());
-    if (type) params.set('type', type);
-    if (status) params.set('status', status);
-    if (required) params.set('required', required);
+    // Only set filters when they are not the 'all' sentinel
+    if (type && type !== 'all') params.set('type', type);
+    if (status && status !== 'all') params.set('status', status);
+    if (required && required !== 'all') params.set('required', required);
     if (searchParams.sort) params.set('sort', searchParams.sort);
     if (searchParams.order) params.set('order', searchParams.order);
     if (searchParams.per_page) params.set('per_page', searchParams.per_page);
@@ -48,22 +50,27 @@ export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
 
   const handleClearFilters = () => {
     setSearch('');
-    setType('');
-    setStatus('');
-    setRequired('');
+    setType('all');
+    setStatus('all');
+    setRequired('all');
     window.location.href = window.location.pathname;
   };
 
   const hasActiveFilters = () => {
-    return !!(search || type || status || required);
+    return !!(
+      search.trim() ||
+      (type && type !== 'all') ||
+      (status && status !== 'all') ||
+      (required && required !== 'all')
+    );
   };
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (search) count++;
-    if (type) count++;
-    if (status) count++;
-    if (required) count++;
+    if (search.trim()) count++;
+    if (type && type !== 'all') count++;
+    if (status && status !== 'all') count++;
+    if (required && required !== 'all') count++;
     return count;
   };
 
@@ -121,7 +128,7 @@ export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All types</SelectItem>
+              <SelectItem value="all">All types</SelectItem>
               {attributeTypes.map(option => (
                 <SelectItem key={option.value} value={option.value}>
                   <div className="flex items-center gap-2">
@@ -142,7 +149,7 @@ export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All status</SelectItem>
+              <SelectItem value="all">All status</SelectItem>
               {statusOptions.map(option => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -160,7 +167,7 @@ export function AttributesFilters({ searchParams }: AttributesFiltersProps) {
               <SelectValue placeholder="Required" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               {requiredOptions.map(option => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
