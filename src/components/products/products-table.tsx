@@ -83,7 +83,7 @@ function ProductsTableComponent({ products, pagination, searchParams }: Products
 
   // OPTIMIZED: useMemo for status badge lookup (prevents recalculation on every render)
   const getStatusBadge = useMemo(() => {
-    return (status: string, isVisible: boolean) => {
+    const StatusBadge = (status: string, isVisible: boolean) => {
       if (!isVisible) return <Badge variant="secondary">Hidden</Badge>;
       
       switch (status) {
@@ -97,11 +97,13 @@ function ProductsTableComponent({ products, pagination, searchParams }: Products
           return <Badge variant="secondary">{status}</Badge>;
       }
     };
+    StatusBadge.displayName = 'StatusBadge';
+    return StatusBadge;
   }, []);
 
   // OPTIMIZED: useMemo for inventory status calculation
   const getInventoryStatus = useMemo(() => {
-    return (product: Product) => {
+    const InventoryStatus = (product: Product) => {
       if (!product.trackQuantity) {
         return <Badge variant="outline">Not Tracked</Badge>;
       }
@@ -115,6 +117,8 @@ function ProductsTableComponent({ products, pagination, searchParams }: Products
         return <Badge variant="success">In Stock</Badge>;
       }
     };
+    InventoryStatus.displayName = 'InventoryStatus';
+    return InventoryStatus;
   }, []);
 
   if (!products || products.length === 0) {

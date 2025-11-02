@@ -185,10 +185,12 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
       IMPORT: { label: 'Import', variant: 'secondary' },
     };
 
-    return (action: AuditAction) => {
+    const ActionBadge = (action: AuditAction) => {
       const { label, variant } = badges[action];
       return <Badge variant={variant}>{label}</Badge>;
     };
+    ActionBadge.displayName = 'ActionBadge';
+    return ActionBadge;
   }, []);
 
   // Render changes diff

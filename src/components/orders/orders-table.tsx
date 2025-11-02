@@ -174,10 +174,12 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
       PAYMENT_FAILED: { label: 'Payment Failed', variant: 'destructive' },
     };
 
-    return (status: OrderStatus) => {
+    const OrderStatusBadge = (status: OrderStatus) => {
       const { label, variant } = badges[status];
       return <Badge variant={variant}>{label}</Badge>;
     };
+    OrderStatusBadge.displayName = 'OrderStatusBadge';
+    return OrderStatusBadge;
   }, []);
 
   // OPTIMIZED: useMemo for payment status badge lookup
@@ -189,10 +191,12 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
       REFUNDED: { label: 'Refunded', variant: 'warning' },
     };
 
-    return (status: PaymentStatus) => {
+    const PaymentStatusBadge = (status: PaymentStatus) => {
       const { label, variant } = badges[status];
       return <Badge variant={variant}>{label}</Badge>;
     };
+    PaymentStatusBadge.displayName = 'PaymentStatusBadge';
+    return PaymentStatusBadge;
   }, []);
 
   // Loading state
