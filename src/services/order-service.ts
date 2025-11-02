@@ -14,6 +14,7 @@
 import { prisma } from '@/lib/db';
 import { Prisma, OrderStatus, ShippingStatus } from '@prisma/client';
 import { sendOrderConfirmation, sendShippingConfirmation } from '@/services/email-service';
+import { notificationService } from '@/services/notification-service';
 
 export type OrderListParams = {
   storeId?: string; // Optional for Super Admin (can query all stores)
@@ -358,6 +359,22 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
         },
         trackingUrl: updatedOrder.trackingUrl || undefined,
       });
+
+      // Create in-app notification for customer (US10 - Notifications)
+      if (updatedOrder.customerId) {
+        try {
+          await notificationService.create({
+            userId: updatedOrder.customerId,
+            title: 'Order Shipped',
+            message: `Your order #${updatedOrder.orderNumber} has been shipped. Tracking: ${updatedOrder.trackingNumber || 'N/A'}`,
+            type: 'order_update',
+            linkUrl: `/orders/${updatedOrder.id}`,
+            linkText: 'Track Order',
+          });
+        } catch (notifError) {
+          console.error('Failed to create shipment notification:', notifError);
+        }
+      }
     }
   } catch (emailError) {
     // Log email error but don't block order status update (US9 FR-077 requirement)

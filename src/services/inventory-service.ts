@@ -4,6 +4,7 @@
 
 import { db } from '@/lib/db';
 import { InventoryStatus, Prisma } from '@prisma/client';
+import { notificationService } from '@/services/notification-service';
 
 /**
  * Options for retrieving inventory levels
@@ -225,6 +226,7 @@ export async function adjustStock(
 
     // Determine new inventory status
     const newStatus = determineInventoryStatus(newQty, product.lowStockThreshold);
+    const previousStatus = product.inventoryStatus;
 
     // Update product inventory
     const updatedProduct = await tx.product.update({
@@ -260,19 +262,50 @@ export async function adjustStock(
       },
     });
 
-    return updatedProduct;
+    return { updatedProduct, previousStatus };
   });
 
+  // Send low stock notification to store admins (US10 - Notifications)
+  const wasNotLowStock = result.previousStatus !== InventoryStatus.LOW_STOCK;
+  const isNowLowStock = result.updatedProduct.inventoryStatus === InventoryStatus.LOW_STOCK;
+
+  if (isNowLowStock && wasNotLowStock) {
+    try {
+      const storeAdmins = await db.user.findMany({
+        where: {
+          storeId,
+          role: 'STORE_ADMIN',
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+
+      // Create notification for each store admin
+      for (const admin of storeAdmins) {
+        await notificationService.create({
+          userId: admin.id,
+          title: 'Low Stock Alert',
+          message: `${result.updatedProduct.name} is running low (${result.updatedProduct.inventoryQty} remaining, threshold: ${result.updatedProduct.lowStockThreshold})`,
+          type: 'low_stock',
+          linkUrl: `/dashboard/products/${result.updatedProduct.id}`,
+          linkText: 'Restock Product',
+        });
+      }
+    } catch (notifError) {
+      console.error('Failed to create low stock notification:', notifError);
+    }
+  }
+
   return {
-    id: result.id,
-    name: result.name,
-    sku: result.sku,
-    inventoryQty: result.inventoryQty,
-    lowStockThreshold: result.lowStockThreshold,
-    inventoryStatus: result.inventoryStatus,
-    categoryName: result.category?.name,
-    brandName: result.brand?.name,
-    updatedAt: result.updatedAt,
+    id: result.updatedProduct.id,
+    name: result.updatedProduct.name,
+    sku: result.updatedProduct.sku,
+    inventoryQty: result.updatedProduct.inventoryQty,
+    lowStockThreshold: result.updatedProduct.lowStockThreshold,
+    inventoryStatus: result.updatedProduct.inventoryStatus,
+    categoryName: result.updatedProduct.category?.name,
+    brandName: result.updatedProduct.brand?.name,
+    updatedAt: result.updatedProduct.updatedAt,
   };
 }
 

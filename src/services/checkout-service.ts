@@ -9,6 +9,7 @@
  */
 
 import { db } from '@/lib/db';
+import { notificationService } from '@/services/notification-service';
 
 /**
  * Cart item structure for checkout validation
@@ -430,6 +431,33 @@ export async function createOrder(
 
     return { ...newOrder, items: orderItems };
   });
+
+  // Notify store admins of new order (US10 - Notifications)
+  try {
+    const storeAdmins = await db.user.findMany({
+      where: {
+        storeId: input.storeId,
+        role: 'STORE_ADMIN',
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+
+    // Create notification for each store admin
+    for (const admin of storeAdmins) {
+      await notificationService.create({
+        userId: admin.id,
+        title: 'New Order Received',
+        message: `Order #${order.orderNumber} has been placed for $${Number(order.totalAmount).toFixed(2)}`,
+        type: 'order_update',
+        linkUrl: `/dashboard/orders/${order.id}`,
+        linkText: 'View Order',
+      });
+    }
+  } catch (error) {
+    // Log but don't fail order creation if notification fails
+    console.error('Failed to create order notification:', error);
+  }
 
   return {
     id: order.id,

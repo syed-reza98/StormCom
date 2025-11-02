@@ -547,9 +547,9 @@
 - [ ] T202 [US10] Create NotificationService in src/services/notification-service.ts with create, list, mark as read, and delete operations
 - [ ] T203 [US10] [P] Create API route GET /api/notifications in src/app/api/notifications/route.ts for retrieving user notifications
 - [ ] T204 [US10] [P] Create API route PUT /api/notifications/[id]/read in src/app/api/notifications/[id]/read/route.ts for marking as read
-- [ ] T205 [US10] [P] Create Notifications dropdown in src/components/layout/notifications-dropdown.tsx with unread count badge
-- [ ] T206 [US10] [P] Create useNotifications hook in src/hooks/use-notifications.ts with real-time updates via polling or WebSockets
-- [ ] T207 [US10] Create notification triggers in order and inventory workflows
+- [x] T205 [US10] [P] Create Notifications dropdown in src/components/layout/notifications-dropdown.tsx with unread count badge
+- [x] T206 [US10] [P] Create useNotifications hook in src/hooks/use-notifications.ts with real-time updates via polling or WebSockets
+- [x] T207 [US10] Create notification triggers in order and inventory workflows
 - [ ] T208 [US10] Create E2E test "User receives in-app notification" in tests/e2e/notifications/in-app-notifications.spec.ts
 
 ---
