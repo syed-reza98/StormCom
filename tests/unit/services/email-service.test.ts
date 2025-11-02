@@ -540,6 +540,10 @@ describe('EmailService - Account Verification', () => {
   beforeEach(() => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('RESEND_API_KEY', 'test_api_key');
+    vi.stubEnv('NEXTAUTH_URL', 'http://localhost:3000');
+    
+    // Clear module cache to force re-initialization with new mock
+    vi.resetModules();
     
     const MockedResend = Resend as any;
     mockResendSend = vi.fn().mockResolvedValue({ id: 'email_verify_123' });
@@ -556,7 +560,9 @@ describe('EmailService - Account Verification', () => {
   });
 
   it('should send account verification email with token', async () => {
-    const user = { id: 'user_new', email: 'newuser@example.com', name: 'New User' };
+    const { sendAccountVerification } = await import('@/services/email-service');
+    
+    const user = { id: 'user_new', email: 'newuser@example.com', name: 'New User' } as any;
     const verificationToken = 'verify_token_123';
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -575,10 +581,12 @@ describe('EmailService - Account Verification', () => {
   });
 
   it('should include store-specific branding when store provided', async () => {
-    const user = { id: 'user_store', email: 'storeuser@example.com', name: 'Store User' };
+    const { sendAccountVerification } = await import('@/services/email-service');
+    
+    const user = { id: 'user_store', email: 'storeuser@example.com', name: 'Store User' } as any;
     const verificationToken = 'verify_token_456';
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const store = { id: 'store_123', name: 'My Custom Store', email: 'store@example.com' };
+    const store = { id: 'store_123', name: 'My Custom Store', email: 'store@example.com' } as any;
 
     await sendAccountVerification({
       user,
@@ -592,7 +600,9 @@ describe('EmailService - Account Verification', () => {
   });
 
   it('should show 24-hour expiration notice', async () => {
-    const user = { id: 'user_exp', email: 'expuser@example.com', name: 'Exp User' };
+    const { sendAccountVerification } = await import('@/services/email-service');
+    
+    const user = { id: 'user_exp', email: 'expuser@example.com', name: 'Exp User' } as any;
     const verificationToken = 'verify_token_789';
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 

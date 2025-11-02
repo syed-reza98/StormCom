@@ -3,7 +3,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -257,8 +257,8 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
               const isExpanded = expandedRows.has(log.id);
               
               return (
-                <>
-                  <TableRow key={log.id}>
+                <React.Fragment key={log.id}>
+                  <TableRow>
                     <TableCell>
                       <Button
                         variant="ghost"
@@ -328,7 +328,7 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </TableBody>
