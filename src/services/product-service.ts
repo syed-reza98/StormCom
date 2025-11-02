@@ -128,12 +128,11 @@ export class ProductService {
           brand: {
             select: { id: true, name: true, slug: true },
           },
-          variants: {
-            
-            orderBy: { isDefault: 'desc' },
-          },
+          // PERFORMANCE: Only load variant count, not full variant objects in list view
+          // Full variants loaded only in detail view (getProductById)
           _count: {
             select: {
+              variants: true,
               orderItems: true,
               reviews: true,
               wishlistItems: true,

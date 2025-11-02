@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart, Eye, Check } from 'lucide-react';
@@ -21,21 +21,29 @@ interface ProductCardProps {
   product: StorefrontProduct;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+function ProductCardComponent({ product }: ProductCardProps) {
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   
-  // Parse images JSON string
-  const images = product.images ? JSON.parse(product.images) : [];
+  // Parse images JSON string (memoized to avoid re-parsing on every render)
+  const images = useMemo(() => {
+    return product.images ? JSON.parse(product.images) : [];
+  }, [product.images]);
+  
   const primaryImage = images[0];
   
-  const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
-    : 0;
+  // Calculate discount (memoized to avoid recalculation on every render)
+  const discountInfo = useMemo(() => {
+    const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
+    const discountPercent = hasDiscount
+      ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
+      : 0;
+    return { hasDiscount, discountPercent };
+  }, [product.compareAtPrice, product.price]);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  // Memoize event handler to prevent child re-renders
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation to product page
     
     setIsAdding(true);
@@ -54,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
       setShowSuccess(false);
       setIsAdding(false);
     }, 2000);
-  };
+  }, [product.id, product.name, product.slug, product.price, product.inventoryQty, primaryImage, addItem]);
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow" data-testid="product-card">
@@ -76,9 +84,9 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           {/* Discount Badge */}
-          {hasDiscount && (
+          {discountInfo.hasDiscount && (
             <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
-              -{discountPercent}%
+              -{discountInfo.discountPercent}%
             </Badge>
           )}
 
@@ -110,9 +118,9 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Price */}
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
-            {hasDiscount && (
+            {discountInfo.hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">
-                ${product.compareAtPrice!.toFixed(2)}
+                ${product.compareAtPrice?.toFixed(2)}
               </span>
             )}
           </div>
@@ -156,3 +164,6 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export const ProductCard = memo(ProductCardComponent);
