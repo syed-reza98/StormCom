@@ -3,9 +3,7 @@
 
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getSessionFromCookies } from '@/lib/session-storage';
-
-export const dynamic = 'force-dynamic';
+import { getCurrentUser } from '@/lib/get-current-user';
 import { redirect } from 'next/navigation';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { AnalyticsDatePicker } from '@/components/analytics/analytics-date-picker';
@@ -92,9 +90,9 @@ export default async function AnalyticsPage({
 }: { 
   searchParams: Promise<AnalyticsPageProps['searchParams']> 
 }) {
-  // Get session and verify authentication
-  const session = await getSessionFromCookies();
-  if (!session?.storeId) {
+  // Get current user and verify authentication
+  const user = await getCurrentUser();
+  if (!user?.storeId) {
     redirect('/login');
   }
 
@@ -121,7 +119,7 @@ export default async function AnalyticsPage({
       {/* Analytics Dashboard with Loading State */}
       <Suspense fallback={<AnalyticsLoadingSkeleton />}>
         <AnalyticsDashboard
-          storeId={session.storeId}
+          storeId={user.storeId}
         />
       </Suspense>
     </div>

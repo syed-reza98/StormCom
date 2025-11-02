@@ -14,7 +14,7 @@ const salesQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Get session ID from cookie
+    // Get session ID from cookie (must match SESSION_CONFIG.cookieName in session-storage.ts)
     const sessionId = request.cookies.get('session-id')?.value;
     if (!sessionId) {
       return NextResponse.json(

@@ -14,9 +14,9 @@ import { db } from '@/lib/db';
  */
 export async function getCurrentUser() {
   try {
-    // Get session token from cookie (use sessionId, not session_token)
+    // Get session token from cookie (must match login API cookie name: 'session-id')
     const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('sessionId')?.value;
+    const sessionToken = cookieStore.get('session-id')?.value;
 
     if (!sessionToken) {
       return null;
