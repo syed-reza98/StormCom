@@ -62,10 +62,14 @@ export function NotificationsDropdown() {
         className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
         aria-label={`Notifications (${unreadCount} unread)`}
         aria-expanded={isOpen}
+        data-testid="notification-bell"
       >
         <Bell className="w-6 h-6" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+          <span 
+            className="absolute top-1 right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full"
+            data-testid="notification-badge"
+          >
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -104,6 +108,7 @@ export function NotificationsDropdown() {
                   className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
                     !notification.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                   }`}
+                  data-testid="notification-item"
                 >
                   <div className="flex items-start gap-3">
                     {/* Unread Indicator */}

@@ -1,11 +1,11 @@
 # Implementation Tasks: StormCom Multi-tenant E-commerce Platform
 
 **Feature**: 001-multi-tenant-ecommerce  
-**Status**: Phase 16 (US14 GDPR Compliance) - 165/260 tasks complete (63.5%) - Complete GDPR compliance system with data export, account deletion, consent management, Privacy Settings page, Cookie Consent banner, and E2E tests  
+**Status**: Phase 17 (US10 Notifications) - 168/260 tasks complete (64.6%) - Notification system with service layer, API endpoints, UI components, and triggers  
 **Created**: 2025-10-24  
-**Updated**: 2025-11-01  
+**Updated**: 2025-11-02  
 **Priorities**: P0 (Blocking), P1 (Must Have), P2 (Should Have)  
-**Overall Progress**: 165/260 tasks complete (63.5%)
+**Overall Progress**: 168/260 tasks complete (64.6%)
 
 **✅ MILESTONE ACHIEVED**: Phase 16 US14 GDPR Compliance complete (T194-T201). Full GDPR compliance system with GDPRService (data export, account deletion, consent management - 21 unit tests, 99.63% coverage), 3 RESTful API endpoints (export, delete, consent - 12 integration tests), Privacy Settings dashboard page, Cookie Consent banner component (localStorage + API integration), 2 E2E tests (data export workflow, account deletion workflow). Implements Articles 7, 15, and 17 of GDPR with audit trails, multi-tenant support, and 30-day data retention.
 
@@ -33,6 +33,7 @@
 - ✅ **Phase 12: US8 Theme Customization (T167-T173)** - 7/7 complete (100%) - Theme editor with color palettes, typography, layout settings, live preview, dynamic storefront theme loading, E2E tests
 - ✅ **Phase 13: US9 Email Notifications (T174-T181)** - 8/8 complete (100%) - Email system with Resend integration, retry logic, template rendering, deduplication, order/auth workflow integration, E2E tests, unit tests
 - ✅ **Phase 16: US14 GDPR Compliance (T194-T201)** - 8/8 complete (100%) - GDPRService (21 unit tests, 99.63% coverage), 3 API endpoints (12 integration tests), Privacy Settings page, Cookie Consent banner (with unit tests), 2 E2E tests
+- 🔄 **Phase 17: US10 Notifications (T202-T208)** - 6/7 complete (85.7%) - NotificationService (22 unit tests), 2 API endpoints (10 integration tests), NotificationsDropdown UI, useNotifications hook with 30s polling, notification triggers (order creation, shipment, low stock)
 - ⏳ **Phase 14+**: US11, US12, US13 - 0/95 complete
 
 ## Implementation Strategy
@@ -544,9 +545,9 @@
 
 **Tasks**:
 
-- [ ] T202 [US10] Create NotificationService in src/services/notification-service.ts with create, list, mark as read, and delete operations
-- [ ] T203 [US10] [P] Create API route GET /api/notifications in src/app/api/notifications/route.ts for retrieving user notifications
-- [ ] T204 [US10] [P] Create API route PUT /api/notifications/[id]/read in src/app/api/notifications/[id]/read/route.ts for marking as read
+- [x] T202 [US10] Create NotificationService in src/services/notification-service.ts with create, list, mark as read, and delete operations
+- [x] T203 [US10] [P] Create API route GET /api/notifications in src/app/api/notifications/route.ts for retrieving user notifications
+- [x] T204 [US10] [P] Create API route PUT /api/notifications/[id]/read in src/app/api/notifications/[id]/read/route.ts for marking as read
 - [x] T205 [US10] [P] Create Notifications dropdown in src/components/layout/notifications-dropdown.tsx with unread count badge
 - [x] T206 [US10] [P] Create useNotifications hook in src/hooks/use-notifications.ts with real-time updates via polling or WebSockets
 - [x] T207 [US10] Create notification triggers in order and inventory workflows

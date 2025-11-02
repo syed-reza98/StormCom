@@ -1,7 +1,7 @@
 // src/services/notification-service.ts
 // NotificationService for managing in-app notifications
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '../lib/prisma';
 import { Notification } from '@prisma/client';
 
 /**
