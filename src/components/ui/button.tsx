@@ -57,6 +57,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
     
+    // When asChild is true and loading, we can't use Slot with multiple children
+    // So we wrap everything in a single element
+    const content = loading ? (
+      <span className="contents">
+        <Loader2 className="animate-spin" aria-hidden="true" />
+        {children}
+      </span>
+    ) : (
+      children
+    );
+    
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -64,8 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
-        {children}
+        {content}
       </Comp>
     );
   }

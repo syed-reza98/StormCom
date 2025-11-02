@@ -309,7 +309,7 @@ export function AuditLogsTable({ searchParams, userRole, storeId }: AuditLogsTab
                     </TableCell>
                   </TableRow>
                   {isExpanded && (
-                    <TableRow key={`${log.id}-details`}>
+                    <TableRow>
                       <TableCell colSpan={6} className="p-4 bg-muted/50">
                         <div className="space-y-4">
                           <div>
