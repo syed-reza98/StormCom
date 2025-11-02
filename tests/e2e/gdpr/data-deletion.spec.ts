@@ -161,9 +161,9 @@ test.describe('GDPR Account Deletion', () => {
 
   test('Deletion dialog shows warning about data loss', async ({ page }) => {
     // Create new user for fresh dialog test
-    const newEmail = faker.internet.email();
+    const newEmail = `test-${Date.now()}@example.com`;
     await page.goto('/register');
-    await page.fill('input[name="name"]', faker.person.fullName());
+    await page.fill('input[name="name"]', 'Test User');
     await page.fill('input[name="email"]', newEmail);
     await page.fill('input[name="password"]', testUserPassword);
     await page.click('button[type="submit"]');

@@ -15,7 +15,7 @@ let client: PrismaClient;
 
 if (process.env.NODE_ENV === 'test') {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // Import mock in test environment
     const { prismaMock } = require('../../tests/mocks/prisma');
     client = prismaMock as unknown as PrismaClient;
   } catch (e) {

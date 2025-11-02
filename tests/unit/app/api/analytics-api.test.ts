@@ -40,12 +40,16 @@ const mockGetSession = getSession as MockedFunction<typeof getSession>;
 const mockAnalyticsService = analyticsService as any;
 
 describe('Analytics API Routes', () => {
+  const now = Date.now();
   const mockSession = {
     id: 'session-123',
     userId: 'user-123',
+    email: 'test@example.com',
     storeId: 'store-123',
     role: 'STORE_ADMIN',
-    expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+    createdAt: now,
+    expiresAt: now + 3600000,
+    lastAccessedAt: now,
   };
 
   const validDateRange = {

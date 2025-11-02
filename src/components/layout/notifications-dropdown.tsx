@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { useNotifications, Notification } from '@/hooks/use-notifications';
+import { useNotifications } from '@/hooks/use-notifications';
 import { formatDistanceToNow } from 'date-fns';
 
 /**

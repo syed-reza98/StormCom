@@ -156,14 +156,28 @@ export class GDPRService {
         createdAt: user.createdAt,
         lastLoginAt: user.lastLoginAt,
       },
-      orders: user.orders.map((order) => ({
+      orders: user.orders.map((order: {
+        id: string;
+        orderNumber: string;
+        totalAmount: number;
+        status: string;
+        createdAt: Date;
+      }) => ({
         id: order.id,
         orderNumber: order.orderNumber,
         total: order.totalAmount,
         status: order.status,
         createdAt: order.createdAt,
       })),
-      addresses: user.addresses.map((address) => ({
+      addresses: user.addresses.map((address: {
+        id: string;
+        address1: string;
+        address2: string | null;
+        city: string;
+        state: string;
+        postalCode: string;
+        country: string;
+      }) => ({
         id: address.id,
         type: 'shipping', // Default type since Prisma schema doesn't have this field
         addressLine1: address.address1,
@@ -323,7 +337,7 @@ export class GDPRService {
     }
 
     // Perform deletion in transaction
-    const deletedUser = await prisma.$transaction(async (tx) => {
+    const deletedUser = await prisma.$transaction(async (tx: any) => {
       // 1. Delete related data (hard delete)
       await tx.address.deleteMany({ where: { userId } });
       await tx.review.deleteMany({ where: { userId } });

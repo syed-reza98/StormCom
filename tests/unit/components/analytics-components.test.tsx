@@ -534,6 +534,7 @@ describe('Analytics Dashboard Components', () => {
 
         React.useEffect(() => {
           fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []);
 
         return (
@@ -583,7 +584,7 @@ describe('Analytics Dashboard Components', () => {
             />
             <button 
               data-testid="apply-dates"
-              onClick={() => console.log('Applying dates:', { startDate, endDate })}
+              onClick={() => { /* Apply dates: {startDate, endDate} */ }}
             >
               Apply
             </button>

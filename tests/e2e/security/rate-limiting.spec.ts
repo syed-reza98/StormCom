@@ -192,6 +192,7 @@ test.describe('Rate Limiting', () => {
       expect(rateLimitedBefore).toBeTruthy();
 
       // Wait for rate limit window to expire
+      // eslint-disable-next-line no-console
       console.log('Waiting for rate limit window to expire (60 seconds)...');
       await new Promise(resolve => setTimeout(resolve, RATE_LIMIT_WINDOW + 1000));
 

@@ -14,14 +14,14 @@
 import { test, expect } from '@playwright/test';
 import { db } from '../../../src/lib/db';
 import { notificationService } from '../../../src/services/notification-service';
-import { SessionData, setSession } from '../../../src/lib/session-storage';
+import { setSession } from '../../../src/lib/session-storage';
 
 test.describe('In-App Notifications', () => {
   let testStoreId: string;
   let testUserId: string;
   let sessionId: string;
 
-  test.beforeEach(async ({ page, context }) => {
+  test.beforeEach(async ({ page: _page, context }) => {
     // Create test store
     const store = await db.store.create({
       data: {
@@ -125,7 +125,7 @@ test.describe('In-App Notifications', () => {
     await expect(notificationItems.nth(1)).toContainText('Test Product');
 
     // Click first notification to mark as read (without following link)
-    await page.evaluate((notifId) => {
+    await page.evaluate((_notifId) => {
       // Intercept navigation
       window.addEventListener('beforeunload', (e) => {
         e.preventDefault();
@@ -183,7 +183,7 @@ test.describe('In-App Notifications', () => {
 
   test('Multiple notifications display in correct order (newest first)', async ({ page }) => {
     // Create multiple notifications with slight delay
-    const notification1 = await notificationService.create({
+    await notificationService.create({
       userId: testUserId,
       title: 'First Notification',
       message: 'This was created first',
@@ -193,7 +193,7 @@ test.describe('In-App Notifications', () => {
     // Wait 100ms
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const notification2 = await notificationService.create({
+    await notificationService.create({
       userId: testUserId,
       title: 'Second Notification',
       message: 'This was created second',

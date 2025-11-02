@@ -89,8 +89,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications', {
         method: 'GET',
@@ -116,8 +115,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications?isRead=false', {
         method: 'GET',
@@ -141,8 +139,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications?isRead=true', {
         method: 'GET',
@@ -166,8 +163,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications?limit=2', {
         method: 'GET',
@@ -190,8 +186,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications?limit=999', {
         method: 'GET',
@@ -234,8 +229,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request(`http://localhost:3000/api/notifications/${testNotificationId}/read`, {
         method: 'PUT',
@@ -261,8 +255,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request('http://localhost:3000/api/notifications/non-existent-id/read', {
         method: 'PUT',
@@ -312,8 +305,7 @@ describe('Notifications API Endpoints', () => {
         role: 'CUSTOMER',
         storeId: null,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
+        expiresAt: Date.now() + 3600000,        lastAccessedAt: Date.now(),      });
 
       const request = new Request(`http://localhost:3000/api/notifications/${testNotificationId}/read`, {
         method: 'PUT',

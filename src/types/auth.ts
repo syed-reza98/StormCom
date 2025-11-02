@@ -4,13 +4,13 @@
 
 export interface SessionData {
   id?: string;
-  userId?: string;
-  email?: string;
-  storeId?: string | null;
-  role?: string;
-  createdAt?: number;
-  expiresAt?: number;
-  lastAccessedAt?: number;
+  userId: string;
+  email: string;
+  storeId: string | null;
+  role: string;
+  createdAt: number;
+  expiresAt: number;
+  lastAccessedAt: number;
 }
 
 export interface User {
