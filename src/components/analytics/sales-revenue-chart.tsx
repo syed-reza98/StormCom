@@ -41,8 +41,12 @@ export function SalesRevenueChart({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     async function fetchRevenueData() {
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
 
@@ -50,23 +54,35 @@ export function SalesRevenueChart({
         if (startDate) params.set('startDate', startDate);
         if (endDate) params.set('endDate', endDate);
 
-        const response = await fetch(`/api/analytics/revenue?${params.toString()}`);
+        const response = await fetch(`/api/analytics/revenue?${params.toString()}`, {
+          signal: controller.signal,
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch revenue data');
         }
 
         const result = await response.json();
+        if (!isMounted) return;
         setData(result.data || []);
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Failed to fetch revenue data:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchRevenueData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [storeId, startDate, endDate, period]);
 
   // ============================================================================

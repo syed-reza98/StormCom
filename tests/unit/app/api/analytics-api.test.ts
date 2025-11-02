@@ -342,7 +342,7 @@ describe('Analytics API Routes', () => {
 
       // Assert
       expect(response.status).toBe(200);
-      expect(data.data).toEqual(mockCustomerData);
+      expect(data.data).toMatchObject(mockCustomerData); // Use toMatchObject to allow additional fields like insights
     });
   });
 

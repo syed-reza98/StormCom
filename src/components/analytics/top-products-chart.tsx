@@ -42,8 +42,12 @@ export function TopProductsChart({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     async function fetchProductsData() {
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
 
@@ -51,23 +55,35 @@ export function TopProductsChart({
         if (startDate) params.set('startDate', startDate);
         if (endDate) params.set('endDate', endDate);
 
-        const response = await fetch(`/api/analytics/products?${params.toString()}`);
+        const response = await fetch(`/api/analytics/products?${params.toString()}`, {
+          signal: controller.signal,
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch products data');
         }
 
         const result = await response.json();
+        if (!isMounted) return;
         setData(result.data || []);
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         console.error('Failed to fetch products data:', err);
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchProductsData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, [storeId, startDate, endDate]);
 
   // ============================================================================

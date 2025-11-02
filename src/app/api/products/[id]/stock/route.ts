@@ -6,20 +6,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
-interface RouteParams { params: { id: string } }
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
 
 // GET /api/products/[id]/stock - Get current stock level
-export async function GET(_request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
-    const rawParams: any = (context as any)?.params;
-    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
-    const id: string | undefined = resolved?.id;
-    if (!id) {
-      return NextResponse.json(
-        { error: { code: 'NOT_FOUND', message: 'Product not found' } },
-        { status: 404 }
-      );
-    }
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(

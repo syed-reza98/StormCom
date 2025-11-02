@@ -127,7 +127,7 @@ describe('GDPRService', () => {
             select: {
               id: true,
               orderNumber: true,
-              total: true,
+              totalAmount: true,
               status: true,
               createdAt: true,
             },
@@ -135,9 +135,8 @@ describe('GDPRService', () => {
           addresses: {
             select: {
               id: true,
-              type: true,
-              addressLine1: true,
-              addressLine2: true,
+              address1: true,
+              address2: true,
               city: true,
               state: true,
               postalCode: true,

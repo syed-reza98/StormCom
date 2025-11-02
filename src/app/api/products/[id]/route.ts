@@ -9,21 +9,13 @@ import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET /api/products/[id] - Get single product
-export async function GET(_request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
-    const rawParams: any = (context as any)?.params;
-    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
-    const id: string | undefined = resolved?.id;
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
-        { status: 404 }
-      );
-    }
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -52,17 +44,9 @@ export async function GET(_request: NextRequest, context: RouteParams | { params
 }
 
 // PUT /api/products/[id] - Full product replacement
-export async function PUT(request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const rawParams: any = (context as any)?.params;
-    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
-    const id: string | undefined = resolved?.id;
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
-        { status: 404 }
-      );
-    }
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -118,17 +102,9 @@ export async function PUT(request: NextRequest, context: RouteParams | { params:
 }
 
 // PATCH /api/products/[id] - Update product
-export async function PATCH(request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const rawParams: any = (context as any)?.params;
-    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
-    const id: string | undefined = resolved?.id;
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
-        { status: 404 }
-      );
-    }
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -184,17 +160,9 @@ export async function PATCH(request: NextRequest, context: RouteParams | { param
 }
 
 // DELETE /api/products/[id] - Soft delete product
-export async function DELETE(_request: NextRequest, context: RouteParams | { params: Promise<{ id: string }> }) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
-    const rawParams: any = (context as any)?.params;
-    const resolved = rawParams && typeof rawParams.then === 'function' ? await rawParams : rawParams;
-    const id: string | undefined = resolved?.id;
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
-        { status: 404 }
-      );
-    }
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(

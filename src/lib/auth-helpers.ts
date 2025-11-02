@@ -10,7 +10,7 @@ import { SessionData } from '@/types';
 export function checkPermissions(session: SessionData, requiredRole: string): boolean {
   // Basic role hierarchy
   const roles = ['USER', 'MANAGER', 'ADMIN', 'SUPER_ADMIN'];
-  const userRoleIndex = roles.indexOf(session.role);
+  const userRoleIndex = roles.indexOf(session.role || 'USER');
   const requiredRoleIndex = roles.indexOf(requiredRole);
   return userRoleIndex >= requiredRoleIndex;
 }
@@ -19,21 +19,21 @@ export function checkPermissions(session: SessionData, requiredRole: string): bo
  * Validate session is not expired
  */
 export function isSessionValid(session: SessionData): boolean {
-  return Date.now() < session.expiresAt;
+  return session.expiresAt ? Date.now() < session.expiresAt : false;
 }
 
 /**
  * Get user ID from session
  */
 export function getUserIdFromSession(session: SessionData): string {
-  return session.userId;
+  return session.userId || '';
 }
 
 /**
  * Get store ID from session
  */
 export function getStoreIdFromSession(session: SessionData): string | null {
-  return session.storeId;
+  return session.storeId || null;
 }
 
 /**

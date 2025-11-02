@@ -186,12 +186,12 @@ export function AuditLogsFilters({ searchParams, userRole, storeId }: AuditLogsF
         {/* Entity Type Filter */}
         <div className="space-y-2">
           <Label htmlFor="entityType">Entity Type</Label>
-          <Select value={entityType} onValueChange={setEntityType}>
+          <Select value={entityType || 'all'} onValueChange={(value) => setEntityType(value === 'all' ? '' : value)}>
             <SelectTrigger id="entityType">
               <SelectValue placeholder="All entity types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All entity types</SelectItem>
+              <SelectItem value="all">All entity types</SelectItem>
               {ENTITY_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -215,12 +215,12 @@ export function AuditLogsFilters({ searchParams, userRole, storeId }: AuditLogsF
         {/* Action Filter */}
         <div className="space-y-2">
           <Label htmlFor="action">Action</Label>
-          <Select value={action} onValueChange={setAction}>
+          <Select value={action || 'all'} onValueChange={(value) => setAction(value === 'all' ? '' : value)}>
             <SelectTrigger id="action">
               <SelectValue placeholder="All actions" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All actions</SelectItem>
+              <SelectItem value="all">All actions</SelectItem>
               {AUDIT_ACTIONS.map((act) => (
                 <SelectItem key={act} value={act}>
                   {act}

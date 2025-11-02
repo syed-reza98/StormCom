@@ -60,9 +60,10 @@ describe('AuditLogsFilters', () => {
     );
 
     expect(screen.getByLabelText(/user id/i)).toHaveValue('user-123');
-    expect(screen.getByText('Product')).toBeInTheDocument();
+    // Radix Select renders both visible text and hidden option - get first occurrence
+    expect(screen.getAllByText('Product')[0]).toBeInTheDocument();
     expect(screen.getByLabelText(/entity id/i)).toHaveValue('product-456');
-    expect(screen.getByText('UPDATE')).toBeInTheDocument();
+    expect(screen.getAllByText('UPDATE')[0]).toBeInTheDocument();
     expect(screen.getByLabelText(/start date/i)).toHaveValue('2024-01-01');
     expect(screen.getByLabelText(/end date/i)).toHaveValue('2024-01-31');
   });
@@ -124,9 +125,9 @@ describe('AuditLogsFilters', () => {
     const entityTypeSelect = screen.getByLabelText(/entity type/i);
     fireEvent.click(entityTypeSelect);
 
-    // Select Product
-    const productOption = screen.getByText('Product');
-    fireEvent.click(productOption);
+    // Select Product - getAllByText because Radix renders both visible option and hidden select option
+    const productOptions = screen.getAllByText('Product');
+    fireEvent.click(productOptions[1]); // Click the visible dropdown option (not the hidden select)
 
     const applyButton = screen.getByText(/apply filters/i);
     fireEvent.click(applyButton);
@@ -150,9 +151,9 @@ describe('AuditLogsFilters', () => {
     const actionSelect = screen.getByLabelText(/action/i);
     fireEvent.click(actionSelect);
 
-    // Select UPDATE
-    const updateOption = screen.getByText('UPDATE');
-    fireEvent.click(updateOption);
+    // Select UPDATE - getAllByText because Radix renders both visible option and hidden select option
+    const updateOptions = screen.getAllByText('UPDATE');
+    fireEvent.click(updateOptions[1]); // Click the visible dropdown option (not the hidden select)
 
     const applyButton = screen.getByText(/apply filters/i);
     fireEvent.click(applyButton);

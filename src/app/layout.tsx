@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
 import { Theme } from '@radix-ui/themes';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import '@radix-ui/themes/styles.css';
 import './globals.css';
 
@@ -35,6 +37,8 @@ export default function RootLayout({
         >
           {children}
         </Theme>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

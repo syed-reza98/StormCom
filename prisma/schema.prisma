@@ -644,6 +644,10 @@ model Order {
   @@index([storeId, userId])
   @@index([storeId, status])
   @@index([storeId, createdAt])
+  @@index([storeId, status, createdAt]) // Composite index for filtered + sorted queries
+  @@index([orderNumber]) // Fast order lookup by number
+  @@index([paymentStatus]) // Payment dashboard queries
+  @@index([shippingStatus]) // Shipping dashboard queries
   @@map("orders")
 }
 
@@ -1195,6 +1199,7 @@ model ExternalPlatformConfig {
 
   syncLogs SyncLog[]
 
+  @@unique([storeId, platform])
   @@index([storeId, platform])
   @@map("external_platform_configs")
 }

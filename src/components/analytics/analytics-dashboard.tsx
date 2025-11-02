@@ -59,30 +59,39 @@ export function AnalyticsDashboard({
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
+        if (!isMounted) return;
         setError(null);
 
         // Try to use fetch for API call (for testing compatibility)
         let response;
         try {
-          response = await fetch('/api/analytics/sales');
+          response = await fetch('/api/analytics/sales', { signal: controller.signal });
+          if (!isMounted) return;
+          
           if (!response.ok && retryCount < 2) {
             // If fetch fails and we haven't exceeded retry limit, retry
             setRetryCount(prev => prev + 1);
             return;
           } else if (response.ok) {
             const result = await response.json();
+            if (!isMounted) return;
             setData(result.data);
             setRetryCount(0); // Reset retry count on success
             return;
           }
-        } catch (fetchError) {
+        } catch (fetchError: any) {
+          if (fetchError.name === 'AbortError' || !isMounted) return;
           // If fetch not available, fall back to mock data
         }
 
         // Fallback to simulated API call with mock data
         await new Promise(resolve => setTimeout(resolve, 100));
+        if (!isMounted) return;
 
         const mockData: DashboardData = {
           metrics: {
@@ -120,20 +129,23 @@ export function AnalyticsDashboard({
           },
         };
 
+        if (!isMounted) return;
         setData(mockData);
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError' || !isMounted) return;
         setError(err instanceof Error ? err.message : 'An error occurred');
       }
     };
 
     fetchData();
 
-    if (autoRefresh) {
-      const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-      return () => clearInterval(interval);
-    }
-    
-    return undefined;
+    const interval = autoRefresh ? setInterval(fetchData, 30000) : null;
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+      if (interval) clearInterval(interval);
+    };
   }, [storeId, dateRange, autoRefresh, retryCount]);
 
   if (error) {

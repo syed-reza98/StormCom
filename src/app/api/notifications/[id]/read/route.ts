@@ -40,7 +40,7 @@ import { notificationService } from '@/services/notification-service';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -49,7 +49,7 @@ export async function PUT(
       return unauthorizedResponse();
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Mark notification as read
     const notification = await notificationService.markAsRead(id, session.userId);

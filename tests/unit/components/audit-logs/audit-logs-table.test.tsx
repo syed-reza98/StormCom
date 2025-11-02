@@ -51,14 +51,16 @@ describe('AuditLogsTable', () => {
       () => new Promise(() => {}) // Never resolves
     );
 
-    render(
+    const { container } = render(
       <AuditLogsTable
         searchParams={{}}
         userRole="SUPER_ADMIN"
       />
     );
 
-    expect(screen.getAllByTestId(/skeleton/i).length).toBeGreaterThan(0);
+    // Skeleton divs have "animate-pulse" class
+    const skeletons = container.querySelectorAll('.animate-pulse');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   // ============================================================================
@@ -304,10 +306,9 @@ describe('AuditLogsTable', () => {
 
     // Changes should now be visible
     await waitFor(() => {
-      expect(screen.getByText('Old Name')).toBeInTheDocument();
-      expect(screen.getByText('New Name')).toBeInTheDocument();
       expect(screen.getByText('"Old Name"')).toBeInTheDocument();
       expect(screen.getByText('"New Name"')).toBeInTheDocument();
+      expect(screen.getByText('name')).toBeInTheDocument();
     });
   });
 
@@ -338,7 +339,7 @@ describe('AuditLogsTable', () => {
     fireEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Old Name')).toBeInTheDocument();
+      expect(screen.getByText('"Old Name"')).toBeInTheDocument();
     });
 
     // Collapse row
@@ -346,7 +347,7 @@ describe('AuditLogsTable', () => {
     fireEvent.click(collapseButton);
 
     await waitFor(() => {
-      expect(screen.queryByText('Old Name')).not.toBeInTheDocument();
+      expect(screen.queryByText('"Old Name"')).not.toBeInTheDocument();
     });
   });
 
