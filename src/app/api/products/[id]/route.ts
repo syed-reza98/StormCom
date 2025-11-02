@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 import { productService } from '@/services/product-service';
 import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
@@ -19,7 +20,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -28,16 +29,16 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
     if (!product) {
       return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
+        { error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, data: product });
+    return NextResponse.json({ data: product });
   } catch (error) {
-    console.error('Error fetching product:', error);
+    logger.error('Error fetching product:', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch product' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to fetch product' } },
       { status: 500 }
     );
   }
@@ -50,7 +51,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -67,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       validatedData
     );
 
-    return NextResponse.json({ success: true, data: product, message: 'Product updated successfully' });
+    return NextResponse.json({ data: product, message: 'Product updated successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -108,7 +109,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -125,7 +126,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       validatedData
     );
 
-    return NextResponse.json({ success: true, data: product, message: 'Product updated successfully' });
+    return NextResponse.json({ data: product, message: 'Product updated successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -166,29 +167,26 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
 
     await productService.deleteProduct(id, session.user.storeId);
 
-    // Tests expect a 200 with a success message
-    return NextResponse.json(
-      { success: true, message: 'Product deleted successfully' },
-      { status: 200 }
-    );
+    // Return 204 No Content for successful deletion (REST best practice)
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     if (error instanceof Error && error.message === 'Product not found') {
       return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
+        { error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
         { status: 404 }
       );
     }
 
-    console.error('Error deleting product:', error);
+    logger.error('Error deleting product:', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to delete product' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to delete product' } },
       { status: 500 }
     );
   }

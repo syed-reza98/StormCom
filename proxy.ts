@@ -120,9 +120,8 @@ const SECURITY_HEADERS = {
   // Configured in vercel.json but also set here for non-Vercel deployments
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 
-  // X-Frame-Options: Prevent clickjacking by denying all framing
-  // Redundant with CSP frame-ancestors but included for older browsers
-  'X-Frame-Options': 'DENY',
+  // X-Frame-Options: Already set in next.config.ts (DENY)
+  // Removed here to avoid header conflict
 
   // X-Content-Type-Options: Prevent MIME-type sniffing
   'X-Content-Type-Options': 'nosniff',
