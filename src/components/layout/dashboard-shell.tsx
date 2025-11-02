@@ -24,39 +24,39 @@ export default function DashboardShell({ children }: DashboardShellProps): React
           </Flex>
         </div>
         <nav className="px-2 pb-6 pt-3 space-y-1">
-          <NavLink href="/(dashboard)/products">
+          <NavLink href="/products">
             <CubeIcon className="h-4 w-4" />
             Products
           </NavLink>
-          <NavLink href="/(dashboard)/categories">
+          <NavLink href="/categories">
             <StackIcon className="h-4 w-4" />
             Categories
           </NavLink>
-          <NavLink href="/(dashboard)/attributes">
+          <NavLink href="/attributes">
             <MixIcon className="h-4 w-4" />
             Attributes
           </NavLink>
-          <NavLink href="/(dashboard)/brands">
+          <NavLink href="/brands">
             <FileTextIcon className="h-4 w-4" />
             Brands
           </NavLink>
-          <NavLink href="/(dashboard)/stores">
+          <NavLink href="/stores">
             <HomeIcon className="h-4 w-4" />
             Stores
           </NavLink>
-          <NavLink href="/(dashboard)/inventory">
+          <NavLink href="/inventory">
             <ArchiveIcon className="h-4 w-4" />
             Inventory
           </NavLink>
-          <NavLink href="/(dashboard)/orders">
+          <NavLink href="/orders">
             <ArchiveIcon className="h-4 w-4" />
             Orders
           </NavLink>
-          <NavLink href="/(dashboard)/bulk-import">
+          <NavLink href="/bulk-import">
             <UploadIcon className="h-4 w-4" />
             Bulk Import
           </NavLink>
-          <NavLink href="/(dashboard)/settings">
+          <NavLink href="/settings">
             <GearIcon className="h-4 w-4" />
             Settings
           </NavLink>
@@ -87,15 +87,15 @@ export default function DashboardShell({ children }: DashboardShellProps): React
           {/* Mobile quick nav */}
           <div className="lg:hidden border-t">
             <div className="container flex gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/products">Products</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/categories">Categories</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/attributes">Attributes</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/brands">Brands</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/stores">Stores</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/inventory">Inventory</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/orders">Orders</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/bulk-import">Bulk Import</NavLink>
-              <NavLink className="whitespace-nowrap" href="/(dashboard)/settings">Settings</NavLink>
+              <NavLink className="whitespace-nowrap" href="/products">Products</NavLink>
+              <NavLink className="whitespace-nowrap" href="/categories">Categories</NavLink>
+              <NavLink className="whitespace-nowrap" href="/attributes">Attributes</NavLink>
+              <NavLink className="whitespace-nowrap" href="/brands">Brands</NavLink>
+              <NavLink className="whitespace-nowrap" href="/stores">Stores</NavLink>
+              <NavLink className="whitespace-nowrap" href="/inventory">Inventory</NavLink>
+              <NavLink className="whitespace-nowrap" href="/orders">Orders</NavLink>
+              <NavLink className="whitespace-nowrap" href="/bulk-import">Bulk Import</NavLink>
+              <NavLink className="whitespace-nowrap" href="/settings">Settings</NavLink>
             </div>
           </div>
         </header>
