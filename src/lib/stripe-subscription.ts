@@ -7,17 +7,26 @@ import { logger } from '@/lib/logger';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 import { SUBSCRIPTION_PLANS } from '@/services/subscription-service';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is required');
-}
-
 /**
  * Initialize Stripe with secret key
+ * During build time, this may not be available, so we create a placeholder
  */
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-02-24.acacia',
-  typescript: true,
-});
+export const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-02-24.acacia',
+      typescript: true,
+    })
+  : null as unknown as Stripe;
+
+/**
+ * Ensure Stripe is initialized before use
+ */
+function ensureStripeInitialized(): Stripe {
+  if (!stripe || !process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is required for Stripe operations');
+  }
+  return stripe;
+}
 
 /**
  * Create a Stripe checkout session for subscription (test-compatible version)
@@ -72,7 +81,8 @@ export async function createSubscriptionCheckoutSession({
     sessionParams.customer_creation = 'always';
   }
 
-  return await stripe.checkout.sessions.create(sessionParams);
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.checkout.sessions.create(sessionParams);
 }
 
 /**
@@ -92,7 +102,8 @@ export async function createCustomerPortalSession({
     throw new Error('Return URL is required');
   }
 
-  return await stripe.billingPortal.sessions.create({
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.billingPortal.sessions.create({
     customer: customerId,
     return_url: returnUrl,
   });
@@ -181,7 +192,8 @@ export async function createStripeCustomer({
   name: string;
   storeId: string;
 }): Promise<Stripe.Customer> {
-  return await stripe.customers.create({
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.customers.create({
     email,
     name,
     metadata: {
@@ -196,7 +208,8 @@ export async function createStripeCustomer({
 export async function getStripeSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
-  return await stripe.subscriptions.retrieve(subscriptionId, {
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.subscriptions.retrieve(subscriptionId, {
     expand: ['customer', 'items.data.price.product'],
   });
 }
@@ -208,14 +221,15 @@ export async function cancelStripeSubscription(
   subscriptionId: string,
   cancelAtPeriodEnd: boolean = true
 ): Promise<Stripe.Subscription> {
+  const stripeClient = ensureStripeInitialized();
   if (cancelAtPeriodEnd) {
     // Cancel at the end of the current billing period
-    return await stripe.subscriptions.update(subscriptionId, {
+    return await stripeClient.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
     });
   } else {
     // Cancel immediately
-    return await stripe.subscriptions.cancel(subscriptionId);
+    return await stripeClient.subscriptions.cancel(subscriptionId);
   }
 }
 
@@ -225,7 +239,8 @@ export async function cancelStripeSubscription(
 export async function reactivateStripeSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
-  return await stripe.subscriptions.update(subscriptionId, {
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.subscriptions.update(subscriptionId, {
     cancel_at_period_end: false,
   });
 }
@@ -243,15 +258,16 @@ export async function updateSubscriptionPlan(
     throw new Error(`Stripe price ID not configured for plan: ${newPlan}`);
   }
 
+  const stripeClient = ensureStripeInitialized();
   // Get current subscription
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await stripeClient.subscriptions.retrieve(subscriptionId);
   
   if (!subscription.items.data[0]) {
     throw new Error('Subscription has no items');
   }
 
   // Update the subscription item to the new price
-  return await stripe.subscriptions.update(subscriptionId, {
+  return await stripeClient.subscriptions.update(subscriptionId, {
     items: [
       {
         id: subscription.items.data[0].id,
@@ -268,7 +284,8 @@ export async function updateSubscriptionPlan(
 export async function getUpcomingInvoice(
   subscriptionId: string
 ): Promise<Stripe.UpcomingInvoice> {
-  return await stripe.invoices.retrieveUpcoming({
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.invoices.retrieveUpcoming({
     subscription: subscriptionId,
   });
 }
@@ -280,7 +297,8 @@ export async function getInvoiceHistory(
   customerId: string,
   limit: number = 10
 ): Promise<Stripe.Invoice[]> {
-  const invoices = await stripe.invoices.list({
+  const stripeClient = ensureStripeInitialized();
+  const invoices = await stripeClient.invoices.list({
     customer: customerId,
     limit,
     status: 'paid',
@@ -335,7 +353,8 @@ export function verifyWebhookSignature(
   secret: string
 ): Stripe.Event {
   try {
-    return stripe.webhooks.constructEvent(payload, signature, secret);
+    const stripeClient = ensureStripeInitialized();
+    return stripeClient.webhooks.constructEvent(payload, signature, secret);
   } catch (error) {
     throw new Error(`Webhook signature verification failed: ${error}`);
   }
@@ -412,7 +431,8 @@ export async function handleInvoicePaymentSucceeded(
     return; // Not a subscription invoice
   }
 
-  const subscription = await stripe.subscriptions.retrieve(
+  const stripeClient = ensureStripeInitialized();
+  const subscription = await stripeClient.subscriptions.retrieve(
     invoice.subscription as string
   );
 
@@ -440,7 +460,8 @@ export async function handleInvoicePaymentFailed(
     return; // Not a subscription invoice
   }
 
-  const subscription = await stripe.subscriptions.retrieve(
+  const stripeClient = ensureStripeInitialized();
+  const subscription = await stripeClient.subscriptions.retrieve(
     invoice.subscription as string
   );
 
@@ -465,7 +486,8 @@ export async function handleInvoicePaymentFailed(
 export async function getSubscriptionUsage(
   subscriptionItemId: string
 ): Promise<Stripe.UsageRecordSummary[]> {
-  const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
+  const stripeClient = ensureStripeInitialized();
+  const usageRecords = await stripeClient.subscriptionItems.listUsageRecordSummaries(
     subscriptionItemId
   );
 
@@ -480,7 +502,8 @@ export async function createUsageRecord(
   quantity: number,
   timestamp?: number
 ): Promise<Stripe.UsageRecord> {
-  return await stripe.subscriptionItems.createUsageRecord(subscriptionItemId, {
+  const stripeClient = ensureStripeInitialized();
+  return await stripeClient.subscriptionItems.createUsageRecord(subscriptionItemId, {
     quantity,
     timestamp: timestamp || Math.floor(Date.now() / 1000),
     action: 'increment',
