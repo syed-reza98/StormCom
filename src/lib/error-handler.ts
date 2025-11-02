@@ -211,29 +211,74 @@ export function handleError(error: unknown, path?: string): NextResponse<ErrorRe
 }
 
 /**
- * Create common application errors
+ * Convenience error classes for common HTTP errors
+ */
+export class ValidationError extends AppError {
+  constructor(message: string, details?: unknown) {
+    super(ErrorCode.VALIDATION_ERROR, message, 400, details);
+  }
+}
+
+export class NotFoundError extends AppError {
+  constructor(message: string = 'Resource not found') {
+    super(ErrorCode.NOT_FOUND, message, 404);
+  }
+}
+
+export class UnauthorizedError extends AppError {
+  constructor(message: string = 'Unauthorized access') {
+    super(ErrorCode.UNAUTHORIZED, message, 401);
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message: string = 'Forbidden') {
+    super(ErrorCode.FORBIDDEN, message, 403);
+  }
+}
+
+export class ConflictError extends AppError {
+  constructor(message: string) {
+    super(ErrorCode.CONFLICT, message, 409);
+  }
+}
+
+export class RateLimitError extends AppError {
+  constructor(message: string = 'Too many requests') {
+    super(ErrorCode.RATE_LIMIT_EXCEEDED, message, 429);
+  }
+}
+
+export class InternalError extends AppError {
+  constructor(message: string = 'Internal server error', details?: unknown) {
+    super(ErrorCode.INTERNAL_ERROR, message, 500, details);
+  }
+}
+
+/**
+ * Create common application errors (factory functions)
  */
 export const createError = {
   unauthorized: (message = 'Not authenticated'): AppError =>
-    new AppError(ErrorCode.UNAUTHORIZED, message, 401),
+    new UnauthorizedError(message),
 
   forbidden: (message = 'Access denied'): AppError =>
-    new AppError(ErrorCode.FORBIDDEN, message, 403),
+    new ForbiddenError(message),
 
   notFound: (resource = 'Resource'): AppError =>
-    new AppError(ErrorCode.NOT_FOUND, `${resource} not found`, 404),
+    new NotFoundError(`${resource} not found`),
 
   alreadyExists: (resource = 'Resource'): AppError =>
     new AppError(ErrorCode.ALREADY_EXISTS, `${resource} already exists`, 409),
 
   validation: (message = 'Validation failed', details?: unknown): AppError =>
-    new AppError(ErrorCode.VALIDATION_ERROR, message, 400, details),
+    new ValidationError(message, details),
 
   rateLimitExceeded: (message = 'Too many requests'): AppError =>
-    new AppError(ErrorCode.RATE_LIMIT_EXCEEDED, message, 429),
+    new RateLimitError(message),
 
   internal: (message = 'Internal server error', details?: unknown): AppError =>
-    new AppError(ErrorCode.INTERNAL_ERROR, message, 500, details),
+    new InternalError(message, details),
 
   tenantIsolation: (): AppError =>
     new AppError(

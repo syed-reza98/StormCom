@@ -20,7 +20,7 @@
 
 import { describe, test, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { db } from '../../src/lib/db';
-import { ValidationError, NotFoundError, UnauthorizedError, ConflictError } from '../../src/lib/errors';
+import { ValidationError, NotFoundError, UnauthorizedError, ConflictError } from '../../src/lib/error-handler';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
 interface CreateStoreData {
