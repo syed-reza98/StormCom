@@ -140,7 +140,7 @@ export default function PurchaseHistoryPage() {
               <FileTextIcon width="64" height="64" color="gray" />
               <Heading size="6" align="center">No Orders Yet</Heading>
               <Text size="3" color="gray" align="center" style={{ maxWidth: '400px' }}>
-                When you place orders, they'll appear here
+                When you place orders, they&apos;ll appear here
               </Text>
               <Button size="3">
                 Start Shopping

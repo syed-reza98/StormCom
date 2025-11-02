@@ -228,7 +228,7 @@ async function BillingContent({ storeId }: { storeId: string }) {
         <CardHeader>
           <CardTitle>Current Plan Features</CardTitle>
           <CardDescription>
-            What's included in your {planDetails.name} plan
+            What&apos;s included in your {planDetails.name} plan
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -273,7 +273,7 @@ async function BillingContent({ storeId }: { storeId: string }) {
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
               If you cancel, your subscription will remain active until the end of your current billing period,
-              then you'll be automatically downgraded to the free plan.
+              then you&apos;ll be automatically downgraded to the free plan.
             </p>
             <CancelSubscriptionButton storeId={storeId} />
           </CardContent>

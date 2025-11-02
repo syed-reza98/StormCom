@@ -142,18 +142,20 @@ describe('Analytics Dashboard Components', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/components/analytics/metrics-cards');
-        MetricsCards = module.MetricsCards || module.default;
+        const imported = await import('../../../src/components/analytics/metrics-cards');
+        MetricsCards = imported.MetricsCards || imported.default;
       } catch (error) {
         // Component might not exist yet - create a mock
-        MetricsCards = ({ metrics }: any) => (
-          <div data-testid="metrics-cards">
-            <div data-testid="total-sales">Total Sales: ${metrics.totalSales}</div>
-            <div data-testid="total-revenue">Total Revenue: ${metrics.totalRevenue}</div>
-            <div data-testid="order-count">Orders: {metrics.orderCount}</div>
-            <div data-testid="avg-order-value">AOV: ${metrics.averageOrderValue}</div>
-          </div>
-        );
+        MetricsCards = function MetricsCards({ metrics }: any) {
+          return (
+            <div data-testid="metrics-cards">
+              <div data-testid="total-sales">Total Sales: ${metrics.totalSales}</div>
+              <div data-testid="total-revenue">Total Revenue: ${metrics.totalRevenue}</div>
+              <div data-testid="order-count">Orders: {metrics.orderCount}</div>
+              <div data-testid="avg-order-value">AOV: ${metrics.averageOrderValue}</div>
+            </div>
+          );
+        };
       }
     });
 
@@ -209,15 +211,17 @@ describe('Analytics Dashboard Components', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/components/analytics/revenue-chart');
-        RevenueChart = module.RevenueChart || module.default;
+        const imported = await import('../../../src/components/analytics/revenue-chart');
+        RevenueChart = imported.RevenueChart || imported.default;
       } catch (error) {
         // Component might not exist yet - create a mock
-        RevenueChart = ({ data }: any) => (
-          <div data-testid="revenue-chart" data-chart-data={JSON.stringify(data)}>
-            Revenue Chart: {data.length} data points
-          </div>
-        );
+        RevenueChart = function RevenueChart({ data }: any) {
+          return (
+            <div data-testid="revenue-chart" data-chart-data={JSON.stringify(data)}>
+              Revenue Chart: {data.length} data points
+            </div>
+          );
+        };
       }
     });
 
@@ -262,34 +266,36 @@ describe('Analytics Dashboard Components', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/components/analytics/top-products-table');
-        TopProductsTable = module.TopProductsTable || module.default;
+        const imported = await import('../../../src/components/analytics/top-products-table');
+        TopProductsTable = imported.TopProductsTable || imported.default;
       } catch (error) {
         // Component might not exist yet - create a mock
-        TopProductsTable = ({ products }: any) => (
-          <div data-testid="top-products-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Quantity</th>
-                  <th>Revenue</th>
-                  <th>Orders</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product: any) => (
-                  <tr key={product.id} data-testid={`product-row-${product.id}`}>
-                    <td>{product.name}</td>
-                    <td>{product.totalQuantity}</td>
-                    <td>${product.totalRevenue}</td>
-                    <td>{product.orderCount}</td>
+        TopProductsTable = function TopProductsTable({ products }: any) {
+          return (
+            <div data-testid="top-products-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Revenue</th>
+                    <th>Orders</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
+                </thead>
+                <tbody>
+                  {products.map((product: any) => (
+                    <tr key={product.id} data-testid={`product-row-${product.id}`}>
+                      <td>{product.name}</td>
+                      <td>{product.totalQuantity}</td>
+                      <td>${product.totalRevenue}</td>
+                      <td>{product.orderCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        };
       }
     });
 
@@ -353,18 +359,20 @@ describe('Analytics Dashboard Components', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/components/analytics/customer-metrics');
-        CustomerMetrics = module.CustomerMetrics || module.default;
+        const imported = await import('../../../src/components/analytics/customer-metrics');
+        CustomerMetrics = imported.CustomerMetrics || imported.default;
       } catch (error) {
         // Component might not exist yet - create a mock
-        CustomerMetrics = ({ metrics }: any) => (
-          <div data-testid="customer-metrics">
-            <div data-testid="total-customers">Total: {metrics.totalCustomers}</div>
-            <div data-testid="new-customers">New: {metrics.newCustomers}</div>
-            <div data-testid="returning-customers">Returning: {metrics.returningCustomers}</div>
-            <div data-testid="retention-rate">Retention: {metrics.customerRetentionRate}%</div>
-          </div>
-        );
+        CustomerMetrics = function CustomerMetrics({ metrics }: any) {
+          return (
+            <div data-testid="customer-metrics">
+              <div data-testid="total-customers">Total: {metrics.totalCustomers}</div>
+              <div data-testid="new-customers">New: {metrics.newCustomers}</div>
+              <div data-testid="returning-customers">Returning: {metrics.returningCustomers}</div>
+              <div data-testid="retention-rate">Retention: {metrics.customerRetentionRate}%</div>
+            </div>
+          );
+        };
       }
     });
 
@@ -419,15 +427,17 @@ describe('Analytics Dashboard Components', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/components/analytics/analytics-dashboard');
-        AnalyticsDashboard = module.AnalyticsDashboard || module.default;
+        const imported = await import('../../../src/components/analytics/analytics-dashboard');
+        AnalyticsDashboard = imported.AnalyticsDashboard || imported.default;
       } catch (error) {
         // Component might not exist yet - create a mock
-        AnalyticsDashboard = () => (
-          <div data-testid="analytics-dashboard">
-            <div data-testid="loading-state">Loading analytics...</div>
-          </div>
-        );
+        AnalyticsDashboard = function AnalyticsDashboard() {
+          return (
+            <div data-testid="analytics-dashboard">
+              <div data-testid="loading-state">Loading analytics...</div>
+            </div>
+          );
+        };
       }
     });
 

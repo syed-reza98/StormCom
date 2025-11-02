@@ -75,7 +75,7 @@ export default function OrderConfirmationEmail({
           <Section style={content}>
             <Text style={paragraph}>Hi {customerName},</Text>
             <Text style={paragraph}>
-              Thank you for your order! We've received your order and are
+              Thank you for your order! We&apos;ve received your order and are
               processing it.
             </Text>
 
@@ -169,7 +169,7 @@ export default function OrderConfirmationEmail({
             </Section>
 
             <Text style={secondaryText}>
-              We'll send you another email when your order ships.
+              We&apos;ll send you another email when your order ships.
             </Text>
             <Text style={paragraph}>
               Best regards,

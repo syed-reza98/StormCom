@@ -1,11 +1,11 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  101,
-                    "exitCode":  1,
-                    "timestamp":  "2025-11-02T08:12:29Z",
+                    "totalErrors":  116,
+                    "exitCode":  2,
+                    "timestamp":  "2025-11-02T08:33:33Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  119
+                    "totalLines":  142
                 },
     "rawOutput":  [
                       "",
@@ -13,6 +13,7 @@
                       "\u003e tsc --noEmit",
                       "",
                       "src/components/gdpr/cookie-consent.tsx(30,13): error TS7030: Not all code paths return a value.",
+                      "src/components/layout/notifications-dropdown.tsx(6,28): error TS6133: \u0027Notification\u0027 is declared but its value is never read.",
                       "src/lib/auth-helpers.ts(13,39): error TS2345: Argument of type \u0027string | undefined\u0027 is not assignable to parameter of type \u0027string\u0027.",
                       "  Type \u0027undefined\u0027 is not assignable to type \u0027string\u0027.",
                       "src/lib/auth-helpers.ts(22,23): error TS18048: \u0027session.expiresAt\u0027 is possibly \u0027undefined\u0027.",
@@ -25,6 +26,27 @@
                       "src/services/gdpr-service.ts(326,58): error TS7006: Parameter \u0027tx\u0027 implicitly has an \u0027any\u0027 type.",
                       "tests/e2e/gdpr/data-deletion.spec.ts(164,22): error TS2304: Cannot find name \u0027faker\u0027.",
                       "tests/e2e/gdpr/data-deletion.spec.ts(166,43): error TS2304: Cannot find name \u0027faker\u0027.",
+                      "tests/e2e/notifications/in-app-notifications.spec.ts(17,10): error TS6133: \u0027SessionData\u0027 is declared but its value is never read.",
+                      "tests/e2e/notifications/in-app-notifications.spec.ts(24,28): error TS6133: \u0027page\u0027 is declared but its value is never read.",
+                      "tests/e2e/notifications/in-app-notifications.spec.ts(128,26): error TS6133: \u0027notifId\u0027 is declared but its value is never read.",
+                      "tests/e2e/notifications/in-app-notifications.spec.ts(186,11): error TS6133: \u0027notification1\u0027 is declared but its value is never read.",
+                      "tests/e2e/notifications/in-app-notifications.spec.ts(196,11): error TS6133: \u0027notification2\u0027 is declared but its value is never read.",
+                      "tests/integration/notifications-endpoints.test.ts(86,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(113,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(138,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(163,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(187,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(231,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(258,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                      "tests/integration/notifications-endpoints.test.ts(309,58): error TS2345: Argument of type \u0027{ userId: any; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                      "  Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: any; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
                       "tests/unit/app/api/analytics-api.test.ts(58,38): error TS2345: Argument of type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
                       "  Type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is missing the following properties from type \u0027SessionData\u0027: email, createdAt, lastAccessedAt",
                       "tests/unit/app/api/analytics-api.test.ts(157,40): error TS2345: Argument of type \u0027{ storeId: null; id: string; userId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
@@ -123,6 +145,7 @@
                       "tests/unit/services/email-service.test.ts(587,7): error TS2740: Type \u0027{ id: string; name: string; email: string; }\u0027 is missing the following properties from type \u0027{ address: string | null; id: string; createdAt: Date; name: string; slug: string; description: string | null; updatedAt: Date; deletedAt: Date | null; email: string; phone: string | null; ... 14 more ...; locale: string; }\u0027: address, createdAt, slug, description, and 18 more.",
                       "tests/unit/services/email-service.test.ts(600,7): error TS2740: Type \u0027{ id: string; email: string; name: string; }\u0027 is missing the following properties from type \u0027{ id: string; createdAt: Date; storeId: string | null; name: string; updatedAt: Date; deletedAt: Date | null; email: string; password: string; phone: string | null; role: UserRole; ... 13 more ...; passwordChangedAt: Date; }\u0027: createdAt, storeId, updatedAt, deletedAt, and 17 more.",
                       "tests/unit/services/gdpr-service.test.ts(352,64): error TS7006: Parameter \u0027callback\u0027 implicitly has an \u0027any\u0027 type.",
+                      "tests/unit/services/notification-service.test.ts(4,55): error TS6133: \u0027vi\u0027 is declared but its value is never read.",
                       "tests/unit/services/subscription-service.test.ts(26,16): error TS2352: Conversion of type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027 to type \u0027{ store: { findUnique: MockedFunction\u003cany\u003e; update: MockedFunction\u003cany\u003e; findMany: MockedFunction\u003cany\u003e; }; product: { count: MockedFunction\u003cany\u003e; }; order: { ...; }; }\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",
                       "  The types of \u0027store.findUnique\u0027 are incompatible between these types.",
                       "    Type \u0027\u003cT extends StoreFindUniqueArgs\u003e(args: SelectSubset\u003cT, StoreFindUniqueArgs\u003cDefaultArgs\u003e\u003e) =\u003e Prisma__StoreClient\u003cGetFindResult\u003c$StorePayload\u003cDefaultArgs\u003e, T, PrismaClientOptions\u003e | null, null, DefaultArgs, PrismaClientOptions\u003e\u0027 is not comparable to type \u0027MockedFunction\u003cany\u003e\u0027.",
@@ -137,6 +160,15 @@
                        "code":  "TS7030",
                        "severity":  "error",
                        "file":  "src/components/gdpr/cookie-consent.tsx"
+                   },
+                   {
+                       "message":  "\u0027Notification\u0027 is declared but its value is never read.",
+                       "column":  28,
+                       "line":  6,
+                       "fullText":  "src/components/layout/notifications-dropdown.tsx(6,28): error TS6133: \u0027Notification\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "src/components/layout/notifications-dropdown.tsx"
                    },
                    {
                        "fullText":  "src/lib/auth-helpers.ts(13,39): error TS2345: Argument of type \u0027string | undefined\u0027 is not assignable to parameter of type \u0027string\u0027.",
@@ -218,6 +250,123 @@
                        "code":  "TS2304",
                        "severity":  "error",
                        "file":  "tests/e2e/gdpr/data-deletion.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027SessionData\u0027 is declared but its value is never read.",
+                       "column":  10,
+                       "line":  17,
+                       "fullText":  "tests/e2e/notifications/in-app-notifications.spec.ts(17,10): error TS6133: \u0027SessionData\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/notifications/in-app-notifications.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027page\u0027 is declared but its value is never read.",
+                       "column":  28,
+                       "line":  24,
+                       "fullText":  "tests/e2e/notifications/in-app-notifications.spec.ts(24,28): error TS6133: \u0027page\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/notifications/in-app-notifications.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027notifId\u0027 is declared but its value is never read.",
+                       "column":  26,
+                       "line":  128,
+                       "fullText":  "tests/e2e/notifications/in-app-notifications.spec.ts(128,26): error TS6133: \u0027notifId\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/notifications/in-app-notifications.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027notification1\u0027 is declared but its value is never read.",
+                       "column":  11,
+                       "line":  186,
+                       "fullText":  "tests/e2e/notifications/in-app-notifications.spec.ts(186,11): error TS6133: \u0027notification1\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/notifications/in-app-notifications.spec.ts"
+                   },
+                   {
+                       "message":  "\u0027notification2\u0027 is declared but its value is never read.",
+                       "column":  11,
+                       "line":  196,
+                       "fullText":  "tests/e2e/notifications/in-app-notifications.spec.ts(196,11): error TS6133: \u0027notification2\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/e2e/notifications/in-app-notifications.spec.ts"
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(86,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  86,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(113,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  113,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(138,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  138,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(163,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  163,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(187,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  187,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(231,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  231,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(258,58): error TS2345: Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  258,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: string; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
+                   },
+                   {
+                       "fullText":  "tests/integration/notifications-endpoints.test.ts(309,58): error TS2345: Argument of type \u0027{ userId: any; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
+                       "file":  "tests/integration/notifications-endpoints.test.ts",
+                       "code":  "TS2345",
+                       "line":  309,
+                       "severity":  "error",
+                       "message":  "Argument of type \u0027{ userId: any; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027. Property \u0027lastAccessedAt\u0027 is missing in type \u0027{ userId: any; email: string; role: string; storeId: null; createdAt: number; expiresAt: number; }\u0027 but required in type \u0027SessionData\u0027.",
+                       "column":  58
                    },
                    {
                        "fullText":  "tests/unit/app/api/analytics-api.test.ts(58,38): error TS2345: Argument of type \u0027{ id: string; userId: string; storeId: string; role: string; expiresAt: Date; }\u0027 is not assignable to parameter of type \u0027SessionData\u0027.",
@@ -1028,6 +1177,15 @@
                        "code":  "TS7006",
                        "severity":  "error",
                        "file":  "tests/unit/services/gdpr-service.test.ts"
+                   },
+                   {
+                       "message":  "\u0027vi\u0027 is declared but its value is never read.",
+                       "column":  55,
+                       "line":  4,
+                       "fullText":  "tests/unit/services/notification-service.test.ts(4,55): error TS6133: \u0027vi\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/unit/services/notification-service.test.ts"
                    },
                    {
                        "fullText":  "tests/unit/services/subscription-service.test.ts(26,16): error TS2352: Conversion of type \u0027PrismaClient\u003cPrismaClientOptions, never, DefaultArgs\u003e\u0027 to type \u0027{ store: { findUnique: MockedFunction\u003cany\u003e; update: MockedFunction\u003cany\u003e; findMany: MockedFunction\u003cany\u003e; }; product: { count: MockedFunction\u003cany\u003e; }; order: { ...; }; }\u0027 may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to \u0027unknown\u0027 first.",

@@ -60,7 +60,7 @@ export default function AccountVerificationEmail({
             </Section>
 
             <Text style={secondaryText}>
-              If the button doesn't work, copy and paste this link into your
+              If the button doesn&apos;t work, copy and paste this link into your
               browser:
             </Text>
             <Text style={linkText}>{verificationUrl}</Text>

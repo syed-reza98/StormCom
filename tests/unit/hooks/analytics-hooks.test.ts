@@ -34,8 +34,8 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/hooks/use-analytics');
-        useAnalytics = module.useAnalytics || module.default;
+        const imported = await import('../../../src/hooks/use-analytics');
+        useAnalytics = imported.useAnalytics || imported.default;
       } catch (error) {
         // Hook might not exist yet - create a mock
         useAnalytics = (dateRange: any) => {
@@ -203,8 +203,8 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/format-utils');
-        formatCurrency = module.formatCurrency;
+        const imported = await import('../../../src/lib/format-utils');
+        formatCurrency = imported.formatCurrency;
       } catch (error) {
         // Utility might not exist yet - create a mock
         formatCurrency = (amount: number, currency = 'USD') => {
@@ -247,8 +247,8 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/format-utils');
-        formatPercentage = module.formatPercentage;
+        const imported = await import('../../../src/lib/format-utils');
+        formatPercentage = imported.formatPercentage;
       } catch (error) {
         // Utility might not exist yet - create a mock
         formatPercentage = (value: number, decimals = 2) => {
@@ -283,8 +283,8 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/analytics-utils');
-        calculateGrowthRate = module.calculateGrowthRate;
+        const imported = await import('../../../src/lib/analytics-utils');
+        calculateGrowthRate = imported.calculateGrowthRate;
       } catch (error) {
         // Utility might not exist yet - create a mock
         calculateGrowthRate = (current: number, previous: number) => {
@@ -327,9 +327,9 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/chart-utils');
-        transformRevenueData = module.transformRevenueData;
-        transformProductData = module.transformProductData;
+        const imported = await import('../../../src/lib/chart-utils');
+        transformRevenueData = imported.transformRevenueData;
+        transformProductData = imported.transformProductData;
       } catch (error) {
         // Utilities might not exist yet - create mocks
         transformRevenueData = (data: any[]) => ({
@@ -410,9 +410,9 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/date-utils');
-        getDateRangePresets = module.getDateRangePresets;
-        validateDateRange = module.validateDateRange;
+        const imported = await import('../../../src/lib/date-utils');
+        getDateRangePresets = imported.getDateRangePresets;
+        validateDateRange = imported.validateDateRange;
       } catch (error) {
         // Utilities might not exist yet - create mocks
         getDateRangePresets = () => {
@@ -478,9 +478,9 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/performance-utils');
-        debounce = module.debounce;
-        memoizeApiCall = module.memoizeApiCall;
+        const imported = await import('../../../src/lib/performance-utils');
+        debounce = imported.debounce;
+        memoizeApiCall = imported.memoizeApiCall;
       } catch (error) {
         // Utilities might not exist yet - create mocks
         debounce = (func: Function, wait: number) => {
@@ -557,9 +557,9 @@ describe('Analytics Hooks and Utilities', () => {
 
     beforeEach(async () => {
       try {
-        const module = await import('../../../src/lib/error-utils');
-        handleApiError = module.handleApiError;
-        retryWithBackoff = module.retryWithBackoff;
+        const imported = await import('../../../src/lib/error-utils');
+        handleApiError = imported.handleApiError;
+        retryWithBackoff = imported.retryWithBackoff;
       } catch (error) {
         // Utilities might not exist yet - create mocks
         handleApiError = (error: any) => {

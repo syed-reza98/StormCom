@@ -60,7 +60,7 @@ export default async function ThemeSettingsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Theme Customization</h1>
         <p className="mt-2 text-muted-foreground">
-          Customize your store's appearance with colors, fonts, and layout settings.
+          Customize your store&apos;s appearance with colors, fonts, and layout settings.
           Changes will be reflected on your storefront at{' '}
           <span className="font-mono text-sm">{store.slug}.stormcom.io</span>
         </p>

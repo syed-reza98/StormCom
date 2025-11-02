@@ -59,12 +59,12 @@ export default function PasswordResetEmail({
                 <Text style={securityText}>• Request from IP: {ipAddress}</Text>
               )}
               <Text style={securityText}>
-                • If you didn't request this, you can safely ignore this email
+                • If you didn&apos;t request this, you can safely ignore this email
               </Text>
             </Section>
 
             <Text style={secondaryText}>
-              If the button doesn't work, copy and paste this link into your
+              If the button doesn&apos;t work, copy and paste this link into your
               browser:
             </Text>
             <Text style={linkText}>{resetUrl}</Text>

@@ -487,7 +487,7 @@ export async function createUsageRecord(
   });
 }
 
-export default {
+const stripeSubscription = {
   createSubscriptionCheckoutSession,
   createStripeCustomer,
   getStripeSubscription,
@@ -508,3 +508,5 @@ export default {
   getSubscriptionUsage,
   createUsageRecord,
 };
+
+export default stripeSubscription;

@@ -332,7 +332,7 @@ export function isPlanEnforcementError(error: any): error is { code: PlanEnforce
          Object.values(PLAN_ENFORCEMENT_ERRORS).includes(error.code as PlanEnforcementError);
 }
 
-export default {
+const planEnforcement = {
   enforceProductLimit,
   enforceOrderLimit,
   enforceActiveSubscription,
@@ -345,6 +345,8 @@ export default {
   PLAN_ENFORCEMENT_ERRORS,
   isPlanEnforcementError,
 };
+
+export default planEnforcement;
 
 // Compatibility implementations for legacy test/api usage
 // Legacy helpers used by older tests and route handlers

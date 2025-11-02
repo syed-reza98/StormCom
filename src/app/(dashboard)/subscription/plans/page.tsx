@@ -186,7 +186,7 @@ async function SubscriptionPlansContent({ storeId }: { storeId: string }) {
           <div>
             <h3 className="font-semibold mb-2">What happens if I exceed my limits?</h3>
             <p className="text-sm text-muted-foreground">
-              You'll receive notifications when approaching limits. If you exceed product limits, you'll need to
+              You&apos;ll receive notifications when approaching limits. If you exceed product limits, you&apos;ll need to
               upgrade or remove products. Order limits reset monthly.
             </p>
           </div>
@@ -200,7 +200,7 @@ async function SubscriptionPlansContent({ storeId }: { storeId: string }) {
           <div>
             <h3 className="font-semibold mb-2">How does billing work?</h3>
             <p className="text-sm text-muted-foreground">
-              Billing is monthly and automatic. You'll receive an invoice via email, and payment is processed
+              Billing is monthly and automatic. You&apos;ll receive an invoice via email, and payment is processed
               through our secure payment system.
             </p>
           </div>
