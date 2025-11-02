@@ -35,6 +35,8 @@ export function CookieConsentBanner() {
       const timer = setTimeout(() => setShowBanner(true), 500);
       return () => clearTimeout(timer);
     }
+    // Return undefined for the else path (TypeScript strict mode requirement)
+    return undefined;
   }, []);
 
   /**

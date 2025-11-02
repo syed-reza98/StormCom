@@ -66,12 +66,13 @@ function randomInt(min: number, max: number): number {
 
 /**
  * Generate random date within last N days
+ * (Currently unused - was used in order seeding which is commented out)
  */
-function randomDate(daysAgo: number): Date {
+/* function randomDate(daysAgo: number): Date {
   const now = Date.now();
   const randomTime = Math.floor(Math.random() * daysAgo * 24 * 60 * 60 * 1000);
   return new Date(now - randomTime);
-}
+} */
 
 /**
  * Generate random email
@@ -251,13 +252,13 @@ async function main() {
           inventoryQty: randomInt(10, 100),
           lowStockThreshold: 10,
           inventoryStatus: 'IN_STOCK',
-          weight: randomInt(100, 5000),
-          weightUnit: 'GRAMS',
+          weight: randomInt(0.1, 5.0), // kg
           categoryId: categories[randomInt(0, categories.length - 1)].id,
           brandId: brands[randomInt(0, brands.length - 1)].id,
           storeId: store.id,
-          status: 'PUBLISHED',
-          tags: ['popular', 'featured', 'sale'].slice(0, randomInt(1, 3)),
+          isPublished: true,
+          publishedAt: new Date(),
+          metaKeywords: JSON.stringify(['popular', 'featured', 'sale'].slice(0, randomInt(1, 3))),
           images: JSON.stringify([
             `https://placehold.co/600x600/png?text=${encodeURIComponent(sample.name)}`,
           ]),
@@ -289,8 +290,9 @@ async function main() {
     // ============================================================================
     // 6. ORDERS
     // ============================================================================
-    console.log(`  Creating orders...`);
-    for (let i = 0; i < 15; i++) {
+    // TODO: Fix order seeding - schema has changed (addresses are now separate models)
+    console.log(`  Skipping orders (needs schema update)...`);
+    /* for (let i = 0; i < 15; i++) {
       const customer = customers[randomInt(0, customers.length - 1)];
       const orderProducts = products
         .sort(() => 0.5 - Math.random())
@@ -361,6 +363,7 @@ async function main() {
       });
     }
     console.log(`  ✓ Created 15 orders\n`);
+    */ // End of commented order seeding
   }
 
   console.log('✅ Development database seed complete!\n');
