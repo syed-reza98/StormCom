@@ -49,7 +49,7 @@ interface AttributeValue {
 }
 
 interface AttributesPageProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     type?: 'text' | 'number' | 'select' | 'boolean' | 'color' | 'size' | 'all';
     status?: 'active' | 'inactive' | 'all';
@@ -59,7 +59,7 @@ interface AttributesPageProps {
     per_page?: string;
     action?: 'create' | 'edit';
     id?: string;
-  };
+  }>;
 }
 
 // Mock data - replace with actual API call
@@ -150,13 +150,93 @@ const mockAttributes: Attribute[] = [
   },
 ];
 
-async function getAttributes(searchParams: AttributesPageProps['searchParams']): Promise<{
+// PERFORMANCE OPTIMIZATION: Memoize expensive calculations
+let attributesCache: { data: Attribute[]; timestamp: number } | null = null;
+const CACHE_TTL = 60000; // 1 minute cache
+
+async function getAttributes(searchParamsPromise: AttributesPageProps['searchParams']): Promise<{
   attributes: Attribute[];
   totalCount: number;
   totalPages: number;
 }> {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 100));
+  // Await searchParams (Next.js 15+)
+  const searchParams = await searchParamsPromise;
+  
+  // PERFORMANCE: Use cached data if available and fresh
+  const now = Date.now();
+  if (attributesCache && (now - attributesCache.timestamp) < CACHE_TTL) {
+    // Use cached data for filtering
+    let filteredAttributes = [...attributesCache.data];
+    
+    // Apply filters to cached data
+    if (searchParams.search) {
+      const search = searchParams.search.toLowerCase();
+      filteredAttributes = filteredAttributes.filter(attr =>
+        attr.name.toLowerCase().includes(search) ||
+        attr.description?.toLowerCase().includes(search) ||
+        attr.values.some(value => value.value.toLowerCase().includes(search))
+      );
+    }
+
+    if (searchParams.type && searchParams.type !== 'all') {
+      filteredAttributes = filteredAttributes.filter(attr => attr.type === searchParams.type);
+    }
+
+    if (searchParams.status && searchParams.status !== 'all') {
+      const isActive = searchParams.status === 'active';
+      filteredAttributes = filteredAttributes.filter(attr => attr.isActive === isActive);
+    }
+
+    // Apply sorting and pagination
+    const sortField = searchParams.sort || 'name';
+    const sortOrder = searchParams.order || 'asc';
+    
+    filteredAttributes.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortField) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'type':
+          comparison = a.type.localeCompare(b.type);
+          break;
+        case 'products':
+          comparison = a.productsCount - b.productsCount;
+          break;
+        case 'created':
+          comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
+        case 'updated':
+          comparison = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+          break;
+        default:
+          comparison = a.name.localeCompare(b.name);
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+
+    const page = parseInt(searchParams.page || '1');
+    const perPage = parseInt(searchParams.per_page || '10');
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    
+    const paginatedAttributes = filteredAttributes.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(filteredAttributes.length / perPage);
+
+    return {
+      attributes: paginatedAttributes,
+      totalCount: filteredAttributes.length,
+      totalPages,
+    };
+  }
+  
+  // Update cache
+  attributesCache = {
+    data: mockAttributes,
+    timestamp: now,
+  };
   
   let filteredAttributes = [...mockAttributes];
 
@@ -227,8 +307,21 @@ async function getAttributes(searchParams: AttributesPageProps['searchParams']):
   };
 }
 
-export default async function AttributesPage({ searchParams }: AttributesPageProps) {
-  const { attributes, totalCount, totalPages } = await getAttributes(searchParams);
+// PERFORMANCE: Pre-calculate stats once (immutable mock data)
+const statsCache = {
+  total: mockAttributes.length,
+  activeAttributes: mockAttributes.filter(attr => attr.isActive).length,
+  totalValues: mockAttributes.reduce((sum, attr) => sum + attr.values.length, 0),
+  totalProducts: mockAttributes.reduce((sum, attr) => sum + attr.productsCount, 0),
+};
+
+export default async function AttributesPage({ searchParams: searchParamsPromise }: AttributesPageProps) {
+  // Await searchParams (Next.js 15+)
+  const searchParams = await searchParamsPromise;
+  
+  // PERFORMANCE: Only fetch filtered attributes, use pre-calculated stats
+  const { attributes, totalCount, totalPages } = await getAttributes(searchParamsPromise);
+  
   const currentPage = parseInt(searchParams.page || '1');
   const perPage = parseInt(searchParams.per_page || '10');
 
@@ -236,10 +329,6 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
   const editingAttribute = searchParams.action === 'edit' && searchParams.id 
     ? mockAttributes.find(attr => attr.id === searchParams.id)
     : undefined;
-
-  const activeAttributes = mockAttributes.filter(attr => attr.isActive).length;
-  const totalValues = mockAttributes.reduce((sum, attr) => sum + attr.values.length, 0);
-  const totalProducts = mockAttributes.reduce((sum, attr) => sum + attr.productsCount, 0);
 
   return (
     <Section size="2">
@@ -270,7 +359,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Attributes</p>
-              <p className="text-2xl font-bold">{mockAttributes.length}</p>
+              <p className="text-2xl font-bold">{statsCache.total}</p>
             </div>
           </div>
         </div>
@@ -282,7 +371,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Attributes</p>
-              <p className="text-2xl font-bold">{activeAttributes}</p>
+              <p className="text-2xl font-bold">{statsCache.activeAttributes}</p>
             </div>
           </div>
         </div>
@@ -294,7 +383,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Values</p>
-              <p className="text-2xl font-bold">{totalValues}</p>
+              <p className="text-2xl font-bold">{statsCache.totalValues}</p>
             </div>
           </div>
         </div>
@@ -306,7 +395,7 @@ export default async function AttributesPage({ searchParams }: AttributesPagePro
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Products Using</p>
-              <p className="text-2xl font-bold">{totalProducts}</p>
+              <p className="text-2xl font-bold">{statsCache.totalProducts}</p>
             </div>
           </div>
         </div>

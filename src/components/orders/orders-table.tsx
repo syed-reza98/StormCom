@@ -3,7 +3,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,7 +64,7 @@ interface PaginationMeta {
 // MAIN COMPONENT
 // ============================================================================
 
-export function OrdersTable({ searchParams }: OrdersTableProps) {
+function OrdersTableComponent({ searchParams }: OrdersTableProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -134,23 +134,35 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
     };
   }, [searchParams]);
 
-  // Format currency
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+  // Memoize currency formatter (expensive to create)
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(price);
-  };
+    }),
+    []
+  );
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat('en-US', {
+  // Memoize date formatter (expensive to create)
+  const dateFormatter = useMemo(
+    () => new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-    }).format(new Date(dateString));
+    }),
+    []
+  );
+
+  // Format currency using memoized formatter
+  const formatPrice = (price: number) => {
+    return currencyFormatter.format(price);
+  };
+
+  // Format date using memoized formatter
+  const formatDate = (dateString: string) => {
+    return dateFormatter.format(new Date(dateString));
   };
 
   // Get order status badge
@@ -311,3 +323,12 @@ export function OrdersTable({ searchParams }: OrdersTableProps) {
     </div>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+const OrdersTable = memo(OrdersTableComponent, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.searchParams) === JSON.stringify(nextProps.searchParams);
+});
+
+// Export both named and default
+export { OrdersTable };
+export default OrdersTable;
