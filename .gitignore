@@ -34,10 +34,16 @@ dist/
 *.test.ts.snap
 
 # Prisma
-# /prisma/*.db
-# /prisma/*.db-journal
+# Development and test databases should not be committed
+# Each developer should create their own local database with: npx prisma db push
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
 /prisma/prisma/*.db
-# /prisma/prisma/dev.db
+/prisma/prisma/*.db-journal
+/prisma/*.db
+/prisma/*.db-journal
 
 
 # Logs
