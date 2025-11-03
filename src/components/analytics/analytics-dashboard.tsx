@@ -1,7 +1,51 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+
+// ============================================================================
+// MOCK DATA CACHE (Pre-calculated at module load)
+// ============================================================================
+
+const mockDataCache: DashboardData = {
+  metrics: {
+    totalSales: 340,
+    totalRevenue: 125000,
+    orderCount: 180,
+    averageOrderValue: 45,
+  },
+  revenue: [
+    { date: '2025-01-01', revenue: 1500, orderCount: 25 },
+    { date: '2025-01-02', revenue: 2200, orderCount: 35 },
+    { date: '2025-01-03', revenue: 1800, orderCount: 28 },
+  ],
+  topProducts: [
+    {
+      id: '1',
+      name: 'Product A',
+      totalQuantity: 150,
+      totalRevenue: 15000,
+      orderCount: 100,
+    },
+    {
+      id: '2',
+      name: 'Product B',
+      totalQuantity: 120,
+      totalRevenue: 12000,
+      orderCount: 80,
+    },
+  ],
+  customerMetrics: {
+    totalCustomers: 180,
+    newCustomers: 25,
+    returningCustomers: 155,
+    customerRetentionRate: 86.1,
+  },
+};
+
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
 
 export interface MetricsData {
   totalSales: number;
@@ -48,7 +92,7 @@ export interface DashboardData {
   customerMetrics?: CustomerMetricsData;
 }
 
-export function AnalyticsDashboard({
+function AnalyticsDashboardComponent({
   storeId,
   dateRange,
   className = '',
@@ -99,48 +143,12 @@ export function AnalyticsDashboard({
           // If fetch not available, fall back to mock data
         }
 
-        // Fallback to simulated API call with mock data
+        // Fallback to simulated API call with pre-calculated mock data cache
         await new Promise(resolve => setTimeout(resolve, 100));
         if (!isMounted) return;
 
-        const mockData: DashboardData = {
-          metrics: {
-            totalSales: 340,
-            totalRevenue: 125000,
-            orderCount: 180,
-            averageOrderValue: 45,
-          },
-          revenue: [
-            { date: '2025-01-01', revenue: 1500, orderCount: 25 },
-            { date: '2025-01-02', revenue: 2200, orderCount: 35 },
-            { date: '2025-01-03', revenue: 1800, orderCount: 28 },
-          ],
-          topProducts: [
-            {
-              id: '1',
-              name: 'Product A',
-              totalQuantity: 150,
-              totalRevenue: 15000,
-              orderCount: 100,
-            },
-            {
-              id: '2',
-              name: 'Product B',
-              totalQuantity: 120,
-              totalRevenue: 12000,
-              orderCount: 80,
-            },
-          ],
-          customerMetrics: {
-            totalCustomers: 180,
-            newCustomers: 25,
-            returningCustomers: 155,
-            customerRetentionRate: 86.1,
-          },
-        };
-
-        if (!isMounted) return;
-        setData(mockData);
+        // Use pre-calculated mock data from module-level cache
+        setData(mockDataCache);
       } catch (err: any) {
         if (err.name === 'AbortError' || !isMounted) return;
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -184,5 +192,18 @@ export function AnalyticsDashboard({
     </div>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const AnalyticsDashboard = memo(AnalyticsDashboardComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.storeId === nextProps.storeId &&
+    prevProps.className === nextProps.className &&
+    prevProps.autoRefresh === nextProps.autoRefresh &&
+    prevProps.dateRange?.from?.getTime() === nextProps.dateRange?.from?.getTime() &&
+    prevProps.dateRange?.to?.getTime() === nextProps.dateRange?.to?.getTime()
+  );
+});
+
+AnalyticsDashboard.displayName = 'AnalyticsDashboard';
 
 export default AnalyticsDashboard;
