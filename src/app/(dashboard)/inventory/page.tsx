@@ -18,6 +18,54 @@ import {
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
+// ============================================================================
+// MOCK DATA & CACHING
+// ============================================================================
+
+// Mock inventory data (in production, this would come from database)
+const mockInventoryData = [
+  {
+    id: '1',
+    sku: 'PROD-001',
+    name: 'Test Product 1',
+    categoryName: 'Electronics',
+    inventoryQty: 50,
+    lowStockThreshold: 10,
+    inventoryStatus: 'IN_STOCK',
+  },
+  {
+    id: '2',
+    sku: 'PROD-002',
+    name: 'Test Product 2',
+    categoryName: 'Clothing',
+    inventoryQty: 3,
+    lowStockThreshold: 5,
+    inventoryStatus: 'LOW_STOCK',
+  },
+  {
+    id: '3',
+    sku: 'PROD-003',
+    name: 'Test Product 3',
+    categoryName: 'Books',
+    inventoryQty: 0,
+    lowStockThreshold: 5,
+    inventoryStatus: 'OUT_OF_STOCK',
+  },
+];
+
+// Pre-calculate low stock count (calculate once at module load)
+const lowStockCountCache = mockInventoryData.filter(
+  (item) => item.inventoryStatus === 'LOW_STOCK' || item.inventoryStatus === 'OUT_OF_STOCK'
+).length;
+
+// Pre-calculate total inventory stats
+const inventoryStatsCache = {
+  total: mockInventoryData.length,
+  lowStockCount: lowStockCountCache,
+  totalInStock: mockInventoryData.reduce((sum, item) => sum + item.inventoryQty, 0),
+  totalValue: mockInventoryData.reduce((sum, item) => sum + (item.inventoryQty * 100), 0), // Mock value
+};
+
 /**
  * Inventory Status Badge Component
  */
@@ -186,50 +234,50 @@ export default async function InventoryPage({
   const categoryId = params.categoryId === 'all' ? '' : params.categoryId || '';
   const lowStockOnly = params.lowStockOnly === 'true';
 
-  // Fetch inventory data from API
-  // Note: In production, this should use server-side data fetching with proper auth
-  // For now, we'll use placeholder data
+  // Apply filters to cached mock data
+  let filteredData = [...mockInventoryData];
+
+  // Filter by search
+  if (search) {
+    const searchLower = search.toLowerCase();
+    filteredData = filteredData.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchLower) ||
+        item.sku.toLowerCase().includes(searchLower)
+    );
+  }
+
+  // Filter by category
+  if (categoryId) {
+    filteredData = filteredData.filter(
+      (item) => item.categoryName?.toLowerCase() === categoryId.toLowerCase()
+    );
+  }
+
+  // Filter by low stock
+  if (lowStockOnly) {
+    filteredData = filteredData.filter(
+      (item) => item.inventoryStatus === 'LOW_STOCK' || item.inventoryStatus === 'OUT_OF_STOCK'
+    );
+  }
+
+  // Pagination
+  const total = filteredData.length;
+  const totalPages = Math.ceil(total / 20);
+  const paginatedData = filteredData.slice((page - 1) * 20, page * 20);
+
   const mockData = {
-    data: [
-      {
-        id: '1',
-        sku: 'PROD-001',
-        name: 'Test Product 1',
-        categoryName: 'Electronics',
-        inventoryQty: 50,
-        lowStockThreshold: 10,
-        inventoryStatus: 'IN_STOCK',
-      },
-      {
-        id: '2',
-        sku: 'PROD-002',
-        name: 'Test Product 2',
-        categoryName: 'Clothing',
-        inventoryQty: 3,
-        lowStockThreshold: 5,
-        inventoryStatus: 'LOW_STOCK',
-      },
-      {
-        id: '3',
-        sku: 'PROD-003',
-        name: 'Test Product 3',
-        categoryName: 'Books',
-        inventoryQty: 0,
-        lowStockThreshold: 5,
-        inventoryStatus: 'OUT_OF_STOCK',
-      },
-    ],
+    data: paginatedData,
     meta: {
-      page: 1,
+      page,
       perPage: 20,
-      total: 3,
-      totalPages: 1,
+      total,
+      totalPages,
     },
   };
 
-  const lowStockCount = mockData.data.filter(
-    (item) => item.inventoryStatus === 'LOW_STOCK' || item.inventoryStatus === 'OUT_OF_STOCK'
-  ).length;
+  // Use pre-calculated low stock count from cache
+  const lowStockCount = inventoryStatsCache.lowStockCount;
 
   return (
     <Section size="2">
