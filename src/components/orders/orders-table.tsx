@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -152,14 +152,36 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
     };
   }, [searchParams]);
 
-  // OPTIMIZED: Use memoized formatters
-  const formatPrice = useCallback((price: number) => {
-    return currencyFormatter.format(price);
-  }, []);
+  // Memoize currency formatter (expensive to create)
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }),
+    []
+  );
 
-  const formatDate = useCallback((dateString: string) => {
+  // Memoize date formatter (expensive to create)
+  const dateFormatter = useMemo(
+    () => new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    }),
+    []
+  );
+
+  // Format currency using memoized formatter
+  const formatPrice = (price: number) => {
+    return currencyFormatter.format(price);
+  };
+
+  // Format date using memoized formatter
+  const formatDate = (dateString: string) => {
     return dateFormatter.format(new Date(dateString));
-  }, []);
+  };
 
   // OPTIMIZED: useMemo for badge lookups (prevents recalculation on every render)
   const getOrderStatusBadge = useMemo(() => {
@@ -328,6 +350,11 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
   );
 }
 
-// OPTIMIZED: Export memoized version to prevent unnecessary re-renders
-// Performance: Component only re-renders when searchParams actually change
-export const OrdersTable = memo(OrdersTableComponent);
+// Memoize the component to prevent unnecessary re-renders
+const OrdersTable = memo(OrdersTableComponent, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.searchParams) === JSON.stringify(nextProps.searchParams);
+});
+
+// Export both named and default
+export { OrdersTable };
+export default OrdersTable;

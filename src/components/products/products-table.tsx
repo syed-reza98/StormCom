@@ -1,9 +1,9 @@
 // src/components/products/products-table.tsx
 // Client Component: Products Data Table with interactive selection
-// OPTIMIZED: Added React.memo, useMemo, useCallback for better performance
+// PERFORMANCE OPTIMIZED: React.memo and useMemo for expensive renders
 'use client';
 
-import { useState, useMemo, useCallback, memo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -76,10 +76,19 @@ function ProductsTableComponent({ products, pagination, searchParams }: Products
     }
   }, [products]);
 
-  // OPTIMIZED: Use memoized formatter instead of creating new one each time
-  const formatPrice = useCallback((price: number) => {
+  // PERFORMANCE: Memoize currency formatter to avoid recreation on each render
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }),
+    []
+  );
+
+  // Format currency using memoized formatter
+  const formatPrice = (price: number) => {
     return currencyFormatter.format(price);
-  }, []);
+  };
 
   // OPTIMIZED: useMemo for status badge lookup (prevents recalculation on every render)
   const getStatusBadge = useMemo(() => {
@@ -281,6 +290,13 @@ function ProductsTableComponent({ products, pagination, searchParams }: Products
   );
 }
 
-// OPTIMIZED: Export memoized version to prevent unnecessary re-renders
-// Performance: Component only re-renders when props actually change
-export const ProductsTable = memo(ProductsTableComponent);
+// PERFORMANCE: Memoize component to prevent unnecessary re-renders
+// Only re-render when products, pagination, or searchParams change
+export default memo(ProductsTable, (prevProps, nextProps) => {
+  return (
+    prevProps.products === nextProps.products &&
+    prevProps.pagination.page === nextProps.pagination.page &&
+    prevProps.pagination.total === nextProps.pagination.total &&
+    JSON.stringify(prevProps.searchParams) === JSON.stringify(nextProps.searchParams)
+  );
+});
