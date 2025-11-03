@@ -1,8 +1,9 @@
 // src/components/products/products-table.tsx
 // Client Component: Products Data Table with interactive selection
+// PERFORMANCE OPTIMIZED: React.memo and useMemo for expensive renders
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -64,12 +65,18 @@ export function ProductsTable({ products, pagination, searchParams }: ProductsTa
     }
   };
 
-  // Format currency
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+  // PERFORMANCE: Memoize currency formatter to avoid recreation on each render
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(price);
+    }),
+    []
+  );
+
+  // Format currency using memoized formatter
+  const formatPrice = (price: number) => {
+    return currencyFormatter.format(price);
   };
 
   // Get status badge variant
@@ -263,3 +270,14 @@ export function ProductsTable({ products, pagination, searchParams }: ProductsTa
     </div>
   );
 }
+
+// PERFORMANCE: Memoize component to prevent unnecessary re-renders
+// Only re-render when products, pagination, or searchParams change
+export default memo(ProductsTable, (prevProps, nextProps) => {
+  return (
+    prevProps.products === nextProps.products &&
+    prevProps.pagination.page === nextProps.pagination.page &&
+    prevProps.pagination.total === nextProps.pagination.total &&
+    JSON.stringify(prevProps.searchParams) === JSON.stringify(nextProps.searchParams)
+  );
+});
