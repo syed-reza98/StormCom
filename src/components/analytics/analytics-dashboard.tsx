@@ -67,10 +67,20 @@ export function AnalyticsDashboard({
         if (!isMounted) return;
         setError(null);
 
-        // Try to use fetch for API call (for testing compatibility)
+        // OPTIMIZED: Use new comprehensive dashboard endpoint (single API call instead of 4)
+        // This fetches all analytics data in parallel on the server
         let response;
         try {
-          response = await fetch('/api/analytics/sales', { signal: controller.signal });
+          const startDate = dateRange?.from?.toISOString().split('T')[0] || 
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+          const endDate = dateRange?.to?.toISOString().split('T')[0] || 
+            new Date().toISOString().split('T')[0];
+          
+          response = await fetch(
+            `/api/analytics/dashboard?startDate=${startDate}&endDate=${endDate}&groupBy=day`,
+            { signal: controller.signal }
+          );
+          
           if (!isMounted) return;
           
           if (!response.ok && retryCount < 2) {

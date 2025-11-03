@@ -363,6 +363,10 @@ model Product {
   @@index([storeId, brandId])
   @@index([storeId, isPublished])
   @@index([storeId, isFeatured])
+  @@index([storeId, isPublished, createdAt]) // Analytics queries for published products
+  @@index([storeId, inventoryStatus]) // Low stock alerts
+  @@index([categoryId, isPublished]) // Category page filtering
+  @@index([brandId, isPublished]) // Brand page filtering
   @@map("products")
 }
 
@@ -537,6 +541,9 @@ model Customer {
   @@unique([storeId, email])
   @@index([storeId, userId])
   @@index([storeId, email])
+  @@index([storeId, createdAt]) // Analytics: new customers over time
+  @@index([storeId, totalSpent]) // Analytics: top customers by spend
+  @@index([storeId, lastOrderAt]) // Customer activity tracking
   @@map("customers")
 }
 
@@ -648,6 +655,8 @@ model Order {
   @@index([orderNumber]) // Fast order lookup by number
   @@index([paymentStatus]) // Payment dashboard queries
   @@index([shippingStatus]) // Shipping dashboard queries
+  @@index([customerId, createdAt]) // Customer order history
+  @@index([status, paymentStatus]) // Order processing dashboard
   @@map("orders")
 }
 

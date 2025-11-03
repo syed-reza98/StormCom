@@ -90,9 +90,12 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-tabs',
       '@radix-ui/react-toast',
       '@radix-ui/react-tooltip',
+      '@radix-ui/react-icons',
       'lucide-react',
       'recharts',
       'date-fns',
+      'react-hook-form',
+      '@hookform/resolvers',
     ],
   },
   
