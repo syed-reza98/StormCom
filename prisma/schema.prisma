@@ -163,6 +163,10 @@ model User {
   @@index([email])
   @@index([storeId])
   @@index([role])
+  @@index([verificationToken, verificationExpires])
+  @@index([resetToken, resetExpires])
+  @@index([storeId, deletedAt, createdAt])
+  @@index([lockedUntil])
   @@map("users")
 }
 
@@ -183,8 +187,8 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
-  @@index([token])
-  @@index([expiresAt])
+  @@index([token, expiresAt])
+  @@index([storeId, expiresAt])
   @@map("sessions")
 }
 
@@ -199,7 +203,7 @@ model MFABackupCode {
 
   createdAt DateTime @default(now())
 
-  @@index([userId])
+  @@index([userId, isUsed, expiresAt])
   @@map("mfa_backup_codes")
 }
 
@@ -285,6 +289,9 @@ model Store {
   @@index([slug])
   @@index([subscriptionPlan])
   @@index([subscriptionStatus])
+  @@index([subscriptionStatus, trialEndsAt])
+  @@index([subscriptionStatus, subscriptionEndsAt])
+  @@index([deletedAt, createdAt])
   @@map("stores")
 }
 
@@ -407,6 +414,8 @@ model ProductVariant {
 
   @@index([productId])
   @@index([sku])
+  @@index([productId, isDefault])
+  @@index([productId, inventoryQty])
   @@map("product_variants")
 }
 
@@ -441,6 +450,8 @@ model Category {
   @@unique([storeId, slug])
   @@index([storeId, parentId])
   @@index([storeId, isPublished])
+  @@index([storeId, isPublished, sortOrder])
+  @@index([parentId, sortOrder])
   @@map("categories")
 }
 
@@ -469,6 +480,7 @@ model Brand {
 
   @@unique([storeId, slug])
   @@index([storeId, isPublished])
+  @@index([storeId, deletedAt, name])
   @@map("brands")
 }
 
@@ -482,6 +494,7 @@ model ProductAttribute {
 
   productAttributeValues ProductAttributeValue[]
 
+  @@index([name])
   @@map("product_attributes")
 }
 
@@ -495,8 +508,7 @@ model ProductAttributeValue {
 
   createdAt DateTime @default(now())
 
-  @@index([productId])
-  @@index([attributeId])
+  @@index([productId, attributeId])
   @@map("product_attribute_values")
 }
 
@@ -574,8 +586,8 @@ model Address {
   shippingOrders Order[] @relation("ShippingAddress")
   billingOrders  Order[] @relation("BillingAddress")
 
-  @@index([userId])
-  @@index([customerId])
+  @@index([userId, isDefault, createdAt])
+  @@index([customerId, isDefault, createdAt])
   @@map("addresses")
 }
 
@@ -729,6 +741,9 @@ model Payment {
   @@index([storeId, orderId])
   @@index([storeId, status])
   @@index([gatewayPaymentId])
+  @@index([status, createdAt])
+  @@index([gateway, status, createdAt])
+  @@index([storeId, createdAt])
   @@map("payments")
 }
 
@@ -749,6 +764,9 @@ model Cart {
   items CartItem[]
 
   @@index([sessionId])
+  @@index([expiresAt])
+  @@index([userId, expiresAt])
+  @@index([sessionId, expiresAt])
   @@map("carts")
 }
 
@@ -766,8 +784,7 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([cartId])
-  @@index([productId])
+  @@index([cartId, productId, variantId])
   @@map("cart_items")
 }
 
@@ -782,6 +799,7 @@ model WishlistItem {
 
   @@unique([userId, productId])
   @@index([userId])
+  @@index([productId, createdAt])
   @@map("wishlist_items")
 }
 
@@ -821,6 +839,10 @@ model Review {
 
   @@index([storeId, productId])
   @@index([storeId, isApproved])
+  @@index([productId, isApproved, createdAt])
+  @@index([customerId, createdAt])
+  @@index([userId, createdAt])
+  @@index([productId, isVerifiedPurchase, isApproved])
   @@map("reviews")
 }
 
@@ -849,6 +871,7 @@ model InventoryLog {
 
   @@index([storeId, productId])
   @@index([storeId, createdAt])
+  @@index([productId, createdAt])
   @@map("inventory_logs")
 }
 
@@ -883,6 +906,8 @@ model Discount {
   @@unique([storeId, code])
   @@index([storeId, isActive])
   @@index([storeId, endsAt])
+  @@index([storeId, isActive, startsAt, endsAt])
+  @@index([endsAt, isActive])
   @@map("discounts")
 }
 
@@ -906,6 +931,8 @@ model FlashSale {
 
   @@index([storeId, isActive])
   @@index([storeId, startsAt, endsAt])
+  @@index([isActive, endsAt])
+  @@index([storeId, isActive, startsAt])
   @@map("flash_sales")
 }
 
@@ -924,6 +951,7 @@ model FlashSaleItem {
 
   @@index([flashSaleId])
   @@index([productId])
+  @@index([flashSaleId, soldCount])
   @@map("flash_sale_items")
 }
 
@@ -971,7 +999,7 @@ model ShippingRate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([shippingZoneId])
+  @@index([shippingZoneId, isActive])
   @@map("shipping_rates")
 }
 
@@ -995,6 +1023,8 @@ model TaxRate {
   updatedAt DateTime @updatedAt
 
   @@index([storeId, country, state])
+  @@index([storeId, isActive])
+  @@index([country, state, isActive])
   @@map("tax_rates")
 }
 
@@ -1025,6 +1055,7 @@ model Page {
 
   @@unique([storeId, slug])
   @@index([storeId, isPublished])
+  @@index([storeId, deletedAt, title])
   @@map("pages")
 }
 
@@ -1065,7 +1096,7 @@ model MenuItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([menuId, parentId])
+  @@index([menuId, parentId, sortOrder])
   @@map("menu_items")
 }
 
@@ -1117,6 +1148,7 @@ model Newsletter {
 
   @@unique([storeId, email])
   @@index([storeId, isSubscribed])
+  @@index([storeId, isSubscribed, subscribedAt])
   @@map("newsletters")
 }
 
@@ -1138,8 +1170,7 @@ model Notification {
 
   createdAt DateTime @default(now())
 
-  @@index([userId, isRead])
-  @@index([userId, createdAt])
+  @@index([userId, isRead, createdAt])
   @@map("notifications")
 }
 
@@ -1210,6 +1241,7 @@ model ExternalPlatformConfig {
 
   @@unique([storeId, platform])
   @@index([storeId, platform])
+  @@index([isActive, lastSyncAt])
   @@map("external_platform_configs")
 }
 
@@ -1231,6 +1263,7 @@ model SyncLog {
   createdAt DateTime @default(now())
 
   @@index([configId, createdAt])
+  @@index([status, createdAt])
   @@map("sync_logs")
 }
 
@@ -1253,6 +1286,7 @@ model Webhook {
   updatedAt DateTime @updatedAt
 
   @@index([storeId, isActive])
+  @@index([isActive, lastDeliveryStatus])
   @@map("webhooks")
 }
 
@@ -1283,7 +1317,7 @@ model AuditLog {
 
   @@index([storeId, createdAt])
   @@index([userId, createdAt])
-  @@index([entityType, entityId])
+  @@index([entityType, entityId, createdAt])
   @@map("audit_logs")
 }
 
@@ -1337,6 +1371,8 @@ model GdprRequest {
 
   @@index([userId, type, status])
   @@index([status, createdAt])
+  @@index([type, status, expiresAt])
+  @@index([userId, createdAt])
   @@map("gdpr_requests")
 }
 
@@ -1363,5 +1399,6 @@ model ConsentRecord {
 
   @@unique([userId, consentType])
   @@index([userId, storeId])
+  @@index([storeId, consentType, granted])
   @@map("consent_records")
 }
