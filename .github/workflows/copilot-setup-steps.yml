@@ -124,7 +124,7 @@ jobs:
           : > /home/runner/work/_temp/runtime-logs/blocked.md
 
       - name: Upload Copilot runtime logs (if present)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: copilot-runtime-logs
           path: |
