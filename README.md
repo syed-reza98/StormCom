@@ -725,6 +725,12 @@ MIT License - see [LICENSE](LICENSE) file
 - 📋 Shipping & logistics
 - 📋 Point of Sale system
 
+### Login credentials:
+   Super Admin: admin@stormcom.io / Admin@123
+   TechHub Admin: admin@techhub.example.com / Admin@123
+   StyleStreet Admin: admin@stylestreet.example.com / Admin@123
+   CozyHome Admin: admin@cozyhome.example.com / Admin@123
+
 ---
 
 **Built with ❤️ using Next.js 16 (Including), TypeScript 5.9, Prisma, and Spec-Driven Development**

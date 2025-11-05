@@ -116,29 +116,39 @@ export default function LoginPage() {
   };
 
   return (
-    <Section size="2" className="min-h-screen flex items-center justify-center">
+    <Section size="3" className="min-h-screen flex items-center justify-center py-12">
       <Container size="1">
-        <Flex direction="column" gap="6" align="center">
+        <Flex direction="column" gap="8" align="center">
           {/* Logo/Brand */}
-          <Flex direction="column" gap="2" align="center">
-            <LockClosedIcon width="48" height="48" color="teal" />
+          <Flex direction="column" gap="3" align="center">
+            <div 
+              className="p-4 rounded-2xl" 
+              style={{ backgroundColor: 'var(--teal-3)' }}
+            >
+              <LockClosedIcon 
+                width="32" 
+                height="32" 
+                style={{ color: 'var(--teal-9)' }} 
+                aria-hidden="true"
+              />
+            </div>
             <Heading size="8" weight="bold" align="center">
               Welcome Back
             </Heading>
-            <Text size="3" color="gray" align="center">
+            <Text size="4" color="gray" align="center" className="max-w-md">
               Sign in to your StormCom account
             </Text>
           </Flex>
 
           {/* Login Card */}
-          <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
+          <Card className="w-full max-w-md shadow-lg">
+            <CardHeader className="text-center space-y-2">
               <CardTitle>Sign in to continue</CardTitle>
               <CardDescription>
                 Or{' '}
                 <Link
                   href="/register"
-                  className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                  className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
                 >
                   create a new account
                 </Link>
@@ -147,7 +157,7 @@ export default function LoginPage() {
 
             <CardContent>
               {/* Login Form */}
-              <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 {/* Server Error Message */}
                 <FormError
                   message={
@@ -159,13 +169,13 @@ export default function LoginPage() {
                   }
                 />
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {/* Email Field */}
                   <div className="space-y-2">
                     <Label htmlFor="email">
                       <Flex align="center" gap="2">
-                        <EnvelopeClosedIcon />
-                        Email address
+                        <EnvelopeClosedIcon aria-hidden="true" />
+                        <span>Email address</span>
                       </Flex>
                     </Label>
                     <Input
@@ -193,8 +203,8 @@ export default function LoginPage() {
                   <div className="space-y-2">
                     <Label htmlFor="password">
                       <Flex align="center" gap="2">
-                        <LockClosedIcon />
-                        Password
+                        <LockClosedIcon aria-hidden="true" />
+                        <span>Password</span>
                       </Flex>
                     </Label>
                     <Input
@@ -223,7 +233,7 @@ export default function LoginPage() {
                 <div className="flex items-center justify-end">
                   <Link
                     href="/forgot-password"
-                    className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                    className="text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
                   >
                     Forgot your password?
                   </Link>
@@ -235,18 +245,19 @@ export default function LoginPage() {
                   disabled={loading}
                   loading={loading}
                   className="w-full"
+                  size="lg"
                   aria-label={loading ? 'Signing in...' : 'Sign in'}
                 >
                   {loading ? 'Signing in...' : 'Sign in'}
                 </Button>
 
                 {/* Footer Links */}
-                <div className="text-center text-sm text-muted-foreground">
+                <div className="text-center text-sm text-muted-foreground pt-2">
                   <p>
-                    Don{'\''}t have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link
                       href="/register"
-                      className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                      className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
                     >
                       Create account
                     </Link>

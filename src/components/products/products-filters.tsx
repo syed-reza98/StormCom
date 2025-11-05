@@ -69,14 +69,23 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
         ]);
 
         if (categoriesData.data) {
-          setCategories(categoriesData.data.map((cat: any) => ({
+          // categories API may return either an array or an object with a `categories` key
+          const categoriesArray: any[] = Array.isArray(categoriesData.data)
+            ? categoriesData.data
+            : categoriesData.data?.categories || [];
+
+          setCategories(categoriesArray.map((cat: any) => ({
             value: cat.id,
             label: cat.name,
           })));
         }
 
         if (brandsData.data) {
-          setBrands(brandsData.data.map((brand: any) => ({
+          const brandsArray: any[] = Array.isArray(brandsData.data)
+            ? brandsData.data
+            : brandsData.data?.brands || [];
+
+          setBrands(brandsArray.map((brand: any) => ({
             value: brand.id,
             label: brand.name,
           })));

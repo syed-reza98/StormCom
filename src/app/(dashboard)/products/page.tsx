@@ -25,9 +25,6 @@ export const metadata: Metadata = {
   description: 'Manage your store products, inventory, and pricing',
 };
 
-// MIGRATED: Removed export const dynamic = 'force-dynamic' (incompatible with Cache Components)
-// Dynamic by default with Cache Components - will add "use cache" or Suspense boundary after analyzing build errors
-
 // ============================================================================
 // TYPES & INTERFACES
 // ============================================================================
@@ -79,35 +76,35 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   return (
     <Section size="2">
       <Container size="4">
-        <Flex direction="column" gap="6">
+        <Flex direction="column" gap="8">
           {/* Page Header */}
-          <Flex direction="column" gap="2">
-            <Flex justify="between" align="start">
-              <Flex direction="column" gap="1">
+          <Flex direction="column" gap="3">
+            <Flex justify="between" align="start" wrap="wrap" gap="4">
+              <Flex direction="column" gap="2">
                 <Heading size="8" weight="bold">Products</Heading>
-                <Text size="3" color="gray">
+                <Text size="3" color="gray" className="max-w-2xl">
                   Manage your store products, inventory, and pricing
                 </Text>
               </Flex>
               
-              <Flex gap="3" align="center">
+              <Flex gap="3" align="center" wrap="wrap">
                 {/* Import/Export Actions */}
                 <Link
                   href="/dashboard/products/import"
-                  className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                  className={cn(buttonVariants({ variant: 'outline', size: 'default' }))}
                 >
-                  <UploadIcon className="mr-2 h-4 w-4" />
+                  <UploadIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                   Import
                 </Link>
 
-                <Button variant="outline" size="sm">
-                  <DownloadIcon className="mr-2 h-4 w-4" />
+                <Button variant="outline" size="default">
+                  <DownloadIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                   Export
                 </Button>
 
                 {/* Add Product Button */}
-                <Link href="/dashboard/products/new" className={cn(buttonVariants({}))}>
-                  <PlusIcon className="mr-2 h-4 w-4" />
+                <Link href="/dashboard/products/new" className={cn(buttonVariants({ size: 'default' }))}>
+                  <PlusIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                   Add Product
                 </Link>
               </Flex>
