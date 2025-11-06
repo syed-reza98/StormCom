@@ -242,11 +242,11 @@ StormCom/
    - `api-contracts.md` - API endpoint definitions
 
 3. **Reference the constitution:**
-   Follow standards defined in `docs/specifications/.speckit/constitution.md`
+   Follow standards defined in `.specify/memory/constitution.md`
 
 ### Specification Template
 
-See existing specifications in `docs/specifications/001-stormcom-platform/` for templates.
+See existing specifications in `docs/specifications/stormcom-platform/` for templates.
 
 ---
 
@@ -337,7 +337,8 @@ pip3 install uv
 - **Documentation**: https://github.com/github/spec-kit/tree/main/docs
 - **Issues & Discussions**: https://github.com/github/spec-kit/issues
 - **StormCom Constitution**: `.specify/memory/constitution.md`
-- **StormCom Specifications**: `docs/specifications/001-stormcom-platform/`
+- **StormCom Specifications**: `docs/specifications/stormcom-platform/`
+- **Documentation Index**: `docs/README.md`
 
 ---
 

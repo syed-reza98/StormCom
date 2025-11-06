@@ -1,9 +1,11 @@
 # Feature Specification: StormCom E-commerce SaaS Platform
 
-**Feature Branch**: `001-stormcom-platform`  
+> **📋 Note**: This is a **comprehensive specification template** for the StormCom platform. It serves as an example of how to write detailed feature specifications following Spec-Driven Development principles. When creating new feature specifications, use this as a reference template.
+
+**Feature Branch**: `stormcom-platform`  
 **Created**: 2025-10-16  
 **Updated**: 2025-10-17  
-**Status**: Active Development  
+**Status**: Template / Reference  
 **Project**: StormCom - Multi-Tenant E-commerce Management System
 
 ---
@@ -1413,7 +1415,7 @@ SENTRY_DSN="https://xxxx@sentry.io/xxxxx"
 - Success criteria and non-functional requirements
 
 ### Implementation Plan
-- See: `docs/specifications/001-stormcom-platform/plan.md`
+- See: `docs/specifications/stormcom-platform/example_plan.md`
 - Technical architecture details
 - Next.js App Router structure
 - Prisma schema definitions
@@ -1421,7 +1423,7 @@ SENTRY_DSN="https://xxxx@sentry.io/xxxxx"
 - Deployment strategies
 
 ### Project Constitution
-- See: `docs/specifications/.speckit/constitution.md`
+- See: `.specify/memory/constitution.md`
 - Code quality standards
 - Testing requirements
 - Development workflow

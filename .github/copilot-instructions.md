@@ -1,39 +1,81 @@
 # StormCom - Copilot Instructions
 
-StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Next.js 15.5.5, TypeScript 5.9.3, and Prisma ORM. This file provides guidance for GitHub Copilot Coding Agent to work effectively with this codebase.
+StormCom is a comprehensive multi-tenant e-commerce SaaS platform specification repository. This is currently a **documentation-only repository** containing detailed specifications, requirements, and standards for future implementation using Next.js 15.5.5, TypeScript 5.9.3, and Prisma ORM.
 
 ## Project Overview
 
+- **Current Phase**: Documentation & Specification
 - **Purpose**: Multi-tenant e-commerce management system for managing stores, products, orders, customers, and marketing campaigns
-- **Architecture**: Next.js App Router with React Server Components, Prisma ORM, PostgreSQL/SQLite
+- **Planned Architecture**: Next.js App Router with React Server Components, Prisma ORM, PostgreSQL/SQLite
 - **Development Methodology**: Spec-Driven Development using GitHub Specs Kit
 - **Target**: SaaS platform enabling businesses to run complete online stores
 
-## Repository Structure
+## Current Repository Structure
 
 ```
 StormCom/
 ├── docs/                          # Documentation
+│   ├── README.md                  # Documentation index
 │   ├── specifications/            # Spec-Driven Development specs
-│   │   ├── .speckit/             # Project constitution and standards
-│   │   └── 001-stormcom-platform/ # Platform specifications
+│   │   ├── speckit/              # Spec Kit examples & templates
+│   │   │   ├── example_constitution.md
+│   │   │   └── example_constitution_v2.md
+│   │   └── stormcom-platform/    # StormCom platform specs
+│   │       ├── example_spec.md   # Feature specification template
+│   │       └── example_plan.md   # Implementation plan template
 │   ├── analysis/                  # SRS analysis documents
-│   └── references/                # Legacy documentation
-├── src/
+│   │   ├── ecommerce_complete_srs.md   # Complete SRS (148 pages analyzed)
+│   │   ├── NAVIGATION_INDEX.md         # Page navigation index (73 pages)
+│   │   └── TASK_COMPLETION_SUMMARY.md  # Analysis task tracking
+│   ├── references/                # Reference documentation
+│   │   ├── ecommerce_dashboard_srs.md         # Dashboard requirements
+│   │   └── ecommerce_dashboard_srs_copilot.md # AI-generated SRS
+│   ├── audit/                     # Demo site audit files (HTML exports)
+│   ├── EcommerceGo_SRS.md        # Original demo analysis
+│   └── SPEC_KIT_*.md             # Spec Kit setup and usage guides
+│
+├── .specify/                      # Spec Kit configuration
+│   ├── memory/
+│   │   └── constitution.md       # Project standards & conventions
+│   ├── templates/                # Spec Kit templates
+│   └── scripts/                  # Automation scripts
+│
+├── .github/                       # GitHub configuration
+│   ├── instructions/             # Context-specific coding instructions
+│   │   ├── documentation.instructions.md
+│   │   ├── components.instructions.md
+│   │   ├── testing.instructions.md
+│   │   ├── api-routes.instructions.md
+│   │   └── database.instructions.md
+│   ├── prompts/                  # Spec Kit prompt files
+│   ├── copilot-instructions.md   # This file
+│   ├── CONTRIBUTING.md           # Contribution guidelines
+│   └── CODE_OF_CONDUCT.md       # Code of conduct
+│
+└── README.md                      # Project overview
+```
+
+## Future Implementation Structure
+
+When implementation begins, the repository will add:
+
+```
+StormCom/
+├── src/                           # (Future) Source code
 │   ├── app/                       # Next.js App Router (pages & API routes)
 │   ├── components/                # React components (Server & Client)
 │   ├── lib/                       # Utilities, config, helpers
 │   ├── services/                  # Business logic layer
 │   ├── hooks/                     # Custom React hooks
 │   └── types/                     # TypeScript type definitions
-├── prisma/
+├── prisma/                        # (Future) Database
 │   ├── schema.prisma              # Database schema
 │   ├── migrations/                # Database migrations
-│   └── seed.ts                    # Database seed data
-└── tests/                         # Test files
+│   └── seed.ts                    # Seed data
+└── tests/                         # (Future) Test files
 ```
 
-## Tech Stack & Versions
+## Planned Tech Stack & Versions
 
 ### Core Framework
 - **Next.js**: 15.5.5 (App Router only, NO Pages Router)
@@ -62,9 +104,30 @@ StormCom/
 ### Deployment
 - **Vercel**: Serverless deployment platform
 
-## Development Workflow
+## Current Workflow (Documentation Phase)
 
-### Building & Running
+### Exploring Documentation
+
+```bash
+# Clone repository
+git clone https://github.com/syed-reza98/StormCom.git
+cd StormCom
+
+# View documentation
+ls docs/                          # List all documentation
+cat docs/README.md                # Documentation index
+cat docs/analysis/ecommerce_complete_srs.md  # Complete SRS
+
+# Review project standards
+cat .specify/memory/constitution.md
+
+# Install Spec Kit (optional)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install --from git+https://github.com/github/spec-kit.git specify-cli
+specify check
+```
+
+### Future Development Workflow (When Implementation Starts)
 
 ```bash
 # Install dependencies
@@ -89,7 +152,7 @@ npm run build
 npm run start
 ```
 
-### Database Commands
+### Future Database Commands
 
 ```bash
 # Sync schema to database (development only)
@@ -105,7 +168,7 @@ npm run db:studio
 npm run db:seed
 ```
 
-### Testing
+### Future Testing
 
 ```bash
 # Run all unit tests
@@ -121,7 +184,7 @@ npm run test:coverage
 npm run test:e2e
 ```
 
-### Code Quality
+### Future Code Quality
 
 ```bash
 # Run ESLint (check for issues)
@@ -349,15 +412,30 @@ export default function ProductForm({ onSubmit }: Props) {
 
 ## Key Documentation References
 
-- **Project Standards**: `docs/specifications/.speckit/constitution.md`
-- **Platform Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
-- **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
-- **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
-- **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
+- **Project Standards**: `.specify/memory/constitution.md`
+- **Documentation Index**: `docs/README.md`
+- **Complete SRS**: `docs/analysis/ecommerce_complete_srs.md`
+- **Original SRS**: `docs/EcommerceGo_SRS.md`
+- **Navigation Index**: `docs/analysis/NAVIGATION_INDEX.md`
+- **Spec Templates**: `docs/specifications/stormcom-platform/`
+- **Spec Kit Setup**: `docs/SPEC_KIT_SETUP.md`
+- **Spec Kit Usage**: `docs/SPEC_KIT_USAGE.md`
 
 ## Working with Copilot
 
 When Copilot Coding Agent works on tasks in this repository:
+
+### During Documentation Phase (Current)
+
+1. **Review existing documentation** before making changes
+2. **Maintain consistency** with existing documentation style
+3. **Update cross-references** when moving or renaming files
+4. **Follow markdown standards** from `.github/instructions/documentation.instructions.md`
+5. **Keep documentation accurate** and aligned with repository structure
+6. **Verify all links** work correctly
+7. **Use descriptive commit messages** following Conventional Commits format
+
+### During Future Implementation Phase
 
 1. **Always read** the project constitution and specifications first
 2. **Follow the tech stack** strictly (no substitutions without discussion)
@@ -372,8 +450,9 @@ When Copilot Coding Agent works on tasks in this repository:
 
 ## Getting Help
 
-- **Documentation**: Start with `docs/` directory
-- **Constitution**: See `docs/specifications/.speckit/constitution.md` for all standards
-- **Specifications**: See `docs/specifications/001-stormcom-platform/` for detailed specs
+- **Documentation**: Start with `docs/README.md` for complete documentation index
+- **Constitution**: See `.specify/memory/constitution.md` for all standards
+- **Complete SRS**: See `docs/analysis/ecommerce_complete_srs.md` for detailed requirements
+- **Spec Templates**: See `docs/specifications/stormcom-platform/` for specification examples
 - **Issues**: Check existing GitHub issues for context and discussions
-- **Demo**: Reference demo at https://ecom-demo.workdo.io/ for UI/UX guidance
+- **Demo Reference**: https://ecom-demo.workdo.io/ for UI/UX guidance
