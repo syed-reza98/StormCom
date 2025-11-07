@@ -1,5 +1,6 @@
 // src/components/orders/orders-table.tsx
 // Orders Data Table with pagination, sorting, and status display
+// OPTIMIZED: Added React.memo, useMemo, useCallback for better performance
 
 'use client';
 
@@ -313,8 +314,8 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
     return dateFormatter.format(new Date(dateString));
   };
 
-  // Get order status badge
-  const getOrderStatusBadge = (status: OrderStatus) => {
+  // OPTIMIZED: useMemo for badge lookups (prevents recalculation on every render)
+  const getOrderStatusBadge = useMemo(() => {
     const badges: Record<OrderStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
       PENDING: { label: 'Pending', variant: 'secondary' },
       PAID: { label: 'Paid', variant: 'success' },
@@ -326,12 +327,16 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
       PAYMENT_FAILED: { label: 'Payment Failed', variant: 'destructive' },
     };
 
-    const { label, variant } = badges[status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
+    const OrderStatusBadge = (status: OrderStatus) => {
+      const { label, variant } = badges[status];
+      return <Badge variant={variant}>{label}</Badge>;
+    };
+    OrderStatusBadge.displayName = 'OrderStatusBadge';
+    return OrderStatusBadge;
+  }, []);
 
-  // Get payment status badge
-  const getPaymentStatusBadge = (status: PaymentStatus) => {
+  // OPTIMIZED: useMemo for payment status badge lookup
+  const getPaymentStatusBadge = useMemo(() => {
     const badges: Record<PaymentStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline' }> = {
       PENDING: { label: 'Pending', variant: 'secondary' },
       PAID: { label: 'Paid', variant: 'success' },
@@ -339,9 +344,13 @@ function OrdersTableComponent({ searchParams }: OrdersTableProps) {
       REFUNDED: { label: 'Refunded', variant: 'warning' },
     };
 
-    const { label, variant } = badges[status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
+    const PaymentStatusBadge = (status: PaymentStatus) => {
+      const { label, variant } = badges[status];
+      return <Badge variant={variant}>{label}</Badge>;
+    };
+    PaymentStatusBadge.displayName = 'PaymentStatusBadge';
+    return PaymentStatusBadge;
+  }, []);
 
   // Loading state
   if (loading) {
