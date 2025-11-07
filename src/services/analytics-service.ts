@@ -295,6 +295,11 @@ export class AnalyticsService {
    */
   async getCustomerMetrics(storeId: string, dateRange: DateRange): Promise<CustomerMetrics> {
     const { startDate, endDate } = dateRange;
+    
+    // Calculate previous period dates
+    const periodLength = endDate.getTime() - startDate.getTime();
+    const previousPeriodStart = new Date(startDate.getTime() - periodLength);
+    const previousPeriodEnd = startDate;
 
     // Execute all queries in parallel (3x faster than sequential)
     const [totalCustomers, newCustomers, returningCustomerIds] = await Promise.all([
@@ -338,6 +343,7 @@ export class AnalyticsService {
               gt: 0,
             },
           },
+          deletedAt: null,
         },
       }),
     ]);
@@ -375,11 +381,37 @@ export class AnalyticsService {
           gte: previousPeriodStart,
           lt: previousPeriodEnd,
         },
-        deletedAt: null,
-      },
-    });
+      }),
+    ]);
 
-    const customerRetentionRate = previousPeriodCustomers > 0 ? (returningCustomerCount / previousPeriodCustomers) * 100 : 0;
+    // Use optimized raw SQL to find returning customers
+    // A returning customer is one who ordered in current period AND had orders before current period
+    const returningCustomersResult = await this.db.$queryRawUnsafe<Array<{ count: bigint | number | string }>>(`
+      SELECT COUNT(DISTINCT o1."customerId") as count
+      FROM "Order" o1
+      WHERE o1."storeId" = $1
+        AND o1."createdAt" >= $2
+        AND o1."createdAt" <= $3
+        AND o1."customerId" IS NOT NULL
+        AND o1."deletedAt" IS NULL
+        AND EXISTS (
+          SELECT 1 FROM "Order" o2
+          WHERE o2."customerId" = o1."customerId"
+            AND o2."storeId" = $1
+            AND o2."createdAt" < $2
+            AND o2."deletedAt" IS NULL
+        )
+    `, storeId, startDate, endDate);
+
+    const returningCustomerCount = typeof returningCustomersResult[0].count === 'bigint'
+      ? Number(returningCustomersResult[0].count)
+      : typeof returningCustomersResult[0].count === 'string'
+      ? parseInt(returningCustomersResult[0].count, 10)
+      : returningCustomersResult[0].count;
+
+    const customerRetentionRate = previousPeriodCustomers > 0 
+      ? (returningCustomerCount / previousPeriodCustomers) * 100 
+      : 0;
 
     return {
       totalCustomers,

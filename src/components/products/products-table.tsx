@@ -43,27 +43,38 @@ interface ProductsTableProps {
 }
 
 // ============================================================================
+// OPTIMIZED: Memoized currency formatter (created once, reused)
+// Performance: Prevents creating new Intl.NumberFormat on every render
+// ============================================================================
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export function ProductsTable({ products, pagination, searchParams }: ProductsTableProps) {
+function ProductsTableComponent({ products, pagination, searchParams }: ProductsTableProps) {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-  const handleSelectProduct = (productId: string, checked: boolean) => {
+  // OPTIMIZED: useCallback prevents function recreation on every render
+  const handleSelectProduct = useCallback((productId: string, checked: boolean) => {
     if (checked) {
-      setSelectedProducts([...selectedProducts, productId]);
+      setSelectedProducts(prev => [...prev, productId]);
     } else {
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
+      setSelectedProducts(prev => prev.filter(id => id !== productId));
     }
-  };
+  }, []);
 
-  const handleSelectAll = (checked: boolean) => {
+  // OPTIMIZED: useCallback prevents function recreation
+  const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedProducts(products.map(p => p.id));
     } else {
       setSelectedProducts([]);
     }
-  };
+  }, [products]);
 
   // PERFORMANCE: Memoize currency formatter to avoid recreation on each render
   const currencyFormatter = useMemo(
@@ -79,37 +90,45 @@ export function ProductsTable({ products, pagination, searchParams }: ProductsTa
     return currencyFormatter.format(price);
   };
 
-  // Get status badge variant
-  const getStatusBadge = (status: string, isVisible: boolean) => {
-    if (!isVisible) return <Badge variant="secondary">Hidden</Badge>;
-    
-    switch (status) {
-      case 'PUBLISHED':
-        return <Badge variant="success">Published</Badge>;
-      case 'DRAFT':
-        return <Badge variant="secondary">Draft</Badge>;
-      case 'ARCHIVED':
-        return <Badge variant="destructive">Archived</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
+  // OPTIMIZED: useMemo for status badge lookup (prevents recalculation on every render)
+  const getStatusBadge = useMemo(() => {
+    const StatusBadge = (status: string, isVisible: boolean) => {
+      if (!isVisible) return <Badge variant="secondary">Hidden</Badge>;
+      
+      switch (status) {
+        case 'PUBLISHED':
+          return <Badge variant="success">Published</Badge>;
+        case 'DRAFT':
+          return <Badge variant="secondary">Draft</Badge>;
+        case 'ARCHIVED':
+          return <Badge variant="destructive">Archived</Badge>;
+        default:
+          return <Badge variant="secondary">{status}</Badge>;
+      }
+    };
+    StatusBadge.displayName = 'StatusBadge';
+    return StatusBadge;
+  }, []);
 
-  // Get inventory status
-  const getInventoryStatus = (product: Product) => {
-    if (!product.trackQuantity) {
-      return <Badge variant="outline">Not Tracked</Badge>;
-    }
-    
-    const quantity = product.quantity || 0;
-    if (quantity === 0) {
-      return <Badge variant="destructive">Out of Stock</Badge>;
-    } else if (quantity <= 5) {
-      return <Badge variant="warning">Low Stock</Badge>;
-    } else {
-      return <Badge variant="success">In Stock</Badge>;
-    }
-  };
+  // OPTIMIZED: useMemo for inventory status calculation
+  const getInventoryStatus = useMemo(() => {
+    const InventoryStatus = (product: Product) => {
+      if (!product.trackQuantity) {
+        return <Badge variant="outline">Not Tracked</Badge>;
+      }
+      
+      const quantity = product.quantity || 0;
+      if (quantity === 0) {
+        return <Badge variant="destructive">Out of Stock</Badge>;
+      } else if (quantity <= 5) {
+        return <Badge variant="warning">Low Stock</Badge>;
+      } else {
+        return <Badge variant="success">In Stock</Badge>;
+      }
+    };
+    InventoryStatus.displayName = 'InventoryStatus';
+    return InventoryStatus;
+  }, []);
 
   if (!products || products.length === 0) {
     return (
