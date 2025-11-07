@@ -3,7 +3,7 @@
 // PERFORMANCE OPTIMIZED: React.memo and useMemo for expensive renders
 'use client';
 
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -46,16 +46,13 @@ interface ProductsTableProps {
 // OPTIMIZED: Memoized currency formatter (created once, reused)
 // Performance: Prevents creating new Intl.NumberFormat on every render
 // ============================================================================
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-});
+// Removed unused currencyFormatter (now memoized below)
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-function ProductsTableComponent({ products, pagination, searchParams }: ProductsTableProps) {
+function ProductsTable({ products, pagination, searchParams }: ProductsTableProps) {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // OPTIMIZED: useCallback prevents function recreation on every render
