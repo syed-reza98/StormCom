@@ -302,7 +302,7 @@ export class AnalyticsService {
     const previousPeriodEnd = startDate;
 
     // Execute all queries in parallel (3x faster than sequential)
-    const [totalCustomers, newCustomers, returningCustomerIds] = await Promise.all([
+    const [totalCustomers, newCustomers] = await Promise.all([
       // Total customers (ever)
       this.db.customer.count({
         where: {
@@ -322,57 +322,10 @@ export class AnalyticsService {
           deletedAt: null,
         },
       }),
-      
-      // Returning customers (customers who made orders in this period)
-      this.db.order.groupBy({
-        by: ['customerId'],
-        where: {
-          storeId,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          customerId: {
-            not: null,
-          },
-          deletedAt: null,
-        },
-        having: {
-          customerId: {
-            _count: {
-              gt: 0,
-            },
-          },
-          deletedAt: null,
-        },
-      }),
     ]);
 
-    // Check which of these customers had orders before the period
-    const customerIdsWithPreviousOrders = returningCustomerIds.length > 0 ? await this.db.order.findMany({
-      where: {
-        storeId,
-        customerId: {
-          in: returningCustomerIds.map((item) => item.customerId!),
-        },
-        createdAt: {
-          lt: startDate,
-        },
-        deletedAt: null,
-      },
-      select: {
-        customerId: true,
-      },
-      distinct: ['customerId'],
-    }) : [];
-
-    const returningCustomerCount = customerIdsWithPreviousOrders.length;
-
     // Calculate retention rate (simplified - returning customers / total customers from previous period)
-    const previousPeriodEnd = startDate;
-    const previousPeriodStart = new Date(startDate);
-    const periodLength = endDate.getTime() - startDate.getTime();
-    previousPeriodStart.setTime(previousPeriodStart.getTime() - periodLength);
+    // previousPeriodStart and previousPeriodEnd already computed above
 
     const previousPeriodCustomers = await this.db.customer.count({
       where: {
@@ -381,8 +334,8 @@ export class AnalyticsService {
           gte: previousPeriodStart,
           lt: previousPeriodEnd,
         },
-      }),
-    ]);
+      },
+    });
 
     // Use optimized raw SQL to find returning customers
     // A returning customer is one who ordered in current period AND had orders before current period

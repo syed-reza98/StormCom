@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
 import { PlusIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
-import { ProductsTable } from '@/components/products/products-table';
+import ProductsTable from '@/components/products/products-table';
 import { getCurrentUser } from '@/lib/get-current-user';
 
 export const dynamic = 'force-dynamic';
