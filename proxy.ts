@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { withAuth } from 'next-auth/middleware';
+import type { JWT } from 'next-auth/jwt';
 import {
   validateCsrfTokenFromRequest,
   createCsrfError,
@@ -12,18 +14,18 @@ import {
 } from './src/lib/simple-rate-limit';
 
 /**
- * Security Middleware
+ * Next.js 16 Proxy (formerly Middleware)
  * 
- * Applies enterprise-grade security headers to all routes:
- * - Content-Security-Policy (CSP) with strict directives
- * - CSRF (Cross-Site Request Forgery) protection
- * - X-Frame-Options to prevent clickjacking
- * - X-Content-Type-Options to prevent MIME sniffing
- * - Referrer-Policy to limit referrer information leakage
- * - Permissions-Policy to restrict browser features
+ * Unified proxy for StormCom that handles:
+ * 1. Authentication via NextAuth.js (JWT sessions)
+ * 2. Authorization (role-based access control)
+ * 3. Multi-tenant context (storeId isolation)
+ * 4. Rate limiting (100 req/min general, 10 req/min auth)
+ * 5. CSRF protection for state-changing operations
+ * 6. Security headers (CSP, HSTS, X-Frame-Options, etc.)
  * 
- * @see https://nextjs.org/docs/app/building-your-application/routing/middleware
- * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/proxy
+ * @see https://nextjs.org/docs/app/guides/backend-for-frontend#proxy
  */
 
 // CSP directives for production security
@@ -140,17 +142,18 @@ const SECURITY_HEADERS = {
 };
 
 /**
- * Proxy function (Next.js 16 middleware)
- * 
- * Applies security protections to all routes:
- * - Multi-tenant context (storeId from session)
- * - Rate limiting (100 req/min general, 10 req/min auth)
- * - CSRF protection for state-changing operations
- * - Security headers (CSP, HSTS, X-Frame-Options, etc.)
- * 
- * Runs on every request before reaching route handlers.
+ * Apply security headers and protections to the response
  */
-export default async function proxy(request: NextRequest) {
+/**
+ * Apply security protections to the request
+ * 
+ * Handles multi-tenant context, rate limiting, CSRF protection, and security headers.
+ * Exported for testing purposes.
+ * 
+ * @param request - NextRequest to protect
+ * @returns NextResponse with security headers applied
+ */
+export async function applySecurityProtections(request: NextRequest): Promise<NextResponse> {
   const { method, url } = request;
   const { pathname } = new URL(url);
 
@@ -176,7 +179,11 @@ export default async function proxy(request: NextRequest) {
 
   if (!rateLimitResult.success) {
     // Return 429 Too Many Requests
-    return createSimpleRateLimitError(rateLimitResult);
+    const errorResponse = createSimpleRateLimitError(rateLimitResult);
+    return NextResponse.json(
+      JSON.parse(await errorResponse.text()),
+      { status: errorResponse.status, headers: errorResponse.headers }
+    );
   }
 
   // 2. CSRF Protection: Validate token for state-changing operations
@@ -186,7 +193,11 @@ export default async function proxy(request: NextRequest) {
 
     if (!isValid) {
       // Return 403 Forbidden with structured error
-      return createCsrfError();
+      const csrfError = createCsrfError();
+      return NextResponse.json(
+        JSON.parse(await csrfError.text()),
+        { status: csrfError.status, headers: csrfError.headers }
+      );
     }
   }
 
@@ -208,22 +219,71 @@ export default async function proxy(request: NextRequest) {
 }
 
 /**
- * Middleware configuration
+ * Main proxy function with NextAuth integration
  * 
- * Apply middleware to all routes except:
- * - Next.js internal routes (_next/*)
- * - Static files in public directory
- * - Favicon and other root-level assets
+ * Uses NextAuth's withAuth HOC to handle authentication and authorization.
+ * Delegates to applySecurityProtections for additional security layers.
+ */
+export default withAuth(
+  async function proxy(req) {
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth.token as JWT & { role?: string; requiresMFA?: boolean };
+
+    // Allow authenticated users to continue
+    if (token) {
+      // Check role-based access for admin routes
+      if (pathname.startsWith('/admin') && token.role !== 'SuperAdmin') {
+        return NextResponse.redirect(new URL('/unauthorized', req.url));
+      }
+
+      // Check if user needs to complete MFA
+      if (token.requiresMFA && !pathname.startsWith('/auth/mfa')) {
+        return NextResponse.redirect(new URL('/auth/mfa/challenge', req.url));
+      }
+
+      // Apply security protections and continue
+      return applySecurityProtections(req as NextRequest);
+    }
+
+    // Not authenticated - redirect to login
+    return NextResponse.redirect(new URL('/login', req.url));
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => {
+        // This callback determines if the request is authorized
+        // Return true to allow the proxy function above to run
+        // Return false to redirect to the sign-in page
+        return !!token;
+      },
+    },
+    pages: {
+      signIn: '/login',
+      error: '/login',
+    },
+  }
+);
+
+/**
+ * Matcher configuration
+ * 
+ * Apply proxy to protected routes only (authenticated routes).
+ * Public routes (login, register, static assets) are excluded.
+ * 
+ * Protected routes:
+ * - /dashboard/* - Store admin/staff routes (requires storeId in session)
+ * - /admin/* - Super admin routes (requires SuperAdmin role)
+ * - /api/* - API routes (except public webhooks and auth endpoints)
+ * 
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/proxy#matcher
  */
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico (favicon file)
-     * - public folder files (robots.txt, sitemap.xml, etc.)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
+    // Protected application routes
+    '/dashboard/:path*',
+    '/admin/:path*',
+    
+    // Protected API routes
+    '/api/:path*',
   ],
 };

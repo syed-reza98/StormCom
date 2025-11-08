@@ -2,22 +2,16 @@
 
 import {
   createContext,
-  useState,
-  useEffect,
   useCallback,
   type ReactNode,
-  type Dispatch,
-  type SetStateAction,
 } from 'react';
-import type { User } from '@prisma/client';
+import { useAuth as useNextAuthSession } from '@/hooks/use-session';
+import type { User } from 'next-auth';
 
 export interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  setUser: Dispatch<SetStateAction<User | null>>;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  setError: Dispatch<SetStateAction<string | null>>;
   checkPermission: (permission: string) => boolean;
   hasRole: (role: string | string[]) => boolean;
 }
@@ -26,9 +20,6 @@ export const AuthContext = createContext<AuthContextValue>({
   user: null,
   isLoading: false,
   error: null,
-  setUser: () => {},
-  setIsLoading: () => {},
-  setError: () => {},
   checkPermission: () => false,
   hasRole: () => false,
 });
@@ -38,40 +29,44 @@ interface AuthProviderProps {
 }
 
 /**
- * AuthProvider component - Manages authentication state and session
+ * AuthProvider component - Wrapper around NextAuth for authentication state
+ * 
+ * This component provides backward compatibility with the old AuthContext
+ * while using NextAuth.js v4.24.13 under the hood.
  * 
  * Features:
- * - Session management with automatic refresh
+ * - Session management via NextAuth JWT strategy
  * - Role-based permission checking
- * - User state persistence across page loads
- * - Automatic session validation on mount
+ * - Multi-tenant store access control
+ * - Type-safe session access
  * 
  * @example
  * ```tsx
- * // In app/layout.tsx or root component
- * <AuthProvider>
- *   <App />
- * </AuthProvider>
+ * // In client components
+ * const { user, isLoading, checkPermission, hasRole } = useContext(AuthContext);
+ * 
+ * // Or use the NextAuth hooks directly
+ * import { useAuth, useRole, useStoreAccess } from '@/hooks/use-session';
  * ```
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, isLoading } = useNextAuthSession();
 
   /**
    * Check if user has a specific permission
-   * For now, permissions are role-based
-   * TODO: Implement granular permission system when needed
+   * Implements role-based access control (RBAC)
+   * 
+   * @param permission - Permission string (e.g., 'products:write', 'orders:read')
+   * @returns true if user has permission, false otherwise
    */
   const checkPermission = useCallback((permission: string): boolean => {
     if (!user) return false;
     
-    // SUPER_ADMIN has all permissions
-    if (user.role === 'SUPER_ADMIN') return true;
+    // SuperAdmin has all permissions
+    if (user.role === 'SuperAdmin') return true;
 
-    // STORE_ADMIN has store-level permissions
-    if (user.role === 'STORE_ADMIN') {
+    // StoreAdmin has store-level permissions
+    if (user.role === 'StoreAdmin') {
       const storePermissions = [
         'products:read', 'products:write', 'products:delete',
         'orders:read', 'orders:write', 'orders:delete',
@@ -86,8 +81,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return storePermissions.includes(permission);
     }
 
-    // STAFF has limited permissions
-    if (user.role === 'STAFF') {
+    // Staff has limited permissions
+    if (user.role === 'Staff') {
       const staffPermissions = [
         'products:read',
         'orders:read', 'orders:write',
@@ -98,14 +93,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return staffPermissions.includes(permission);
     }
 
-    // CUSTOMER has minimal permissions
+    // Customer has minimal permissions
     const customerPermissions = ['account:read', 'account:write', 'orders:read'];
     return customerPermissions.includes(permission);
   }, [user]);
 
   /**
    * Check if user has one or more roles
+   * 
    * @param role - Single role string or array of roles
+   * @returns true if user has any of the specified roles, false otherwise
    */
   const hasRole = useCallback((role: string | string[]): boolean => {
     if (!user) return false;
@@ -114,88 +111,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return roles.includes(user.role);
   }, [user]);
 
-  /**
-   * Validate session on component mount
-   * Checks if user has valid session cookie and fetches user data
-   */
-  const validateSession = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/auth/session', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        // No valid session
-        setUser(null);
-        return;
-      }
-
-      const data = await response.json();
-      
-      if (data.data?.user) {
-        setUser(data.data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      console.error('Session validation error:', err);
-      setUser(null);
-      setError('Failed to validate session');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  /**
-   * Initialize session on mount
-   */
-  useEffect(() => {
-    validateSession();
-  }, [validateSession]);
-
-  /**
-   * Auto-refresh session every 5 minutes
-   * Keeps session alive for active users
-   */
-  useEffect(() => {
-    if (!user) return;
-
-    const interval = setInterval(() => {
-      validateSession();
-    }, 5 * 60 * 1000); // 5 minutes
-
-    return () => clearInterval(interval);
-  }, [user, validateSession]);
-
-  /**
-   * Listen for session changes across tabs
-   * Synchronize auth state using localStorage events
-   */
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'auth:logout') {
-        setUser(null);
-      } else if (event.key === 'auth:login') {
-        validateSession();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [validateSession]);
-
   const value: AuthContextValue = {
     user,
     isLoading,
-    error,
-    setUser,
-    setIsLoading,
-    setError,
+    error: null, // NextAuth doesn't expose errors directly in session
     checkPermission,
     hasRole,
   };

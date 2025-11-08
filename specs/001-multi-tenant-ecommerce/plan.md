@@ -13,9 +13,9 @@ StormCom is a comprehensive multi-tenant SaaS e-commerce platform enabling busin
 
 **Language/Version**: TypeScript 5.9.3 (strict mode enabled)
 **Framework**: Next.js 16.0.0+ (App Router only, NO Pages Router, **includes built-in Next.js MCP Server**), React 19.x (Server Components by default)
-**Primary Dependencies**: 
+- **Primary Dependencies**: 
 - Prisma ORM (latest stable) for type-safe database access
-- **Custom Auth System** (JWT + Vercel KV session storage) - **NOTE**: NextAuth.js v5 incompatible with Next.js 16, replaced with custom implementation in Phase 3 (see tasks.md T022, T036-T039)
+- **NextAuth.js** `v4.24.13` (JWT + Vercel KV session storage) - Verified compatible with Next.js `v16.0.1`. Use NextAuth.js v4.24.13 for authentication and session management; in production prefer Vercel KV for session state.
 - Tailwind CSS 4.1.14+ for styling
 - Radix UI + shadcn/ui for accessible components
 - Zod for runtime validation

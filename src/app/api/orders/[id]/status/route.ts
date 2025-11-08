@@ -58,7 +58,7 @@ export async function PUT(
     // Update order status
     const updatedOrder = await updateOrderStatus({
       orderId,
-      storeId,
+      storeId: storeId ?? undefined,
       newStatus: validatedData.status,
       trackingNumber: validatedData.trackingNumber,
       trackingUrl: validatedData.trackingUrl,

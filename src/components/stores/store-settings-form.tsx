@@ -370,7 +370,7 @@ export function StoreSettingsForm({
         }
         
         // Success - redirect or show success message
-        router.push(`/dashboard/stores/${store.id}`);
+        router.push(`/stores/${store.id}`);
       }
       
     } catch (error) {

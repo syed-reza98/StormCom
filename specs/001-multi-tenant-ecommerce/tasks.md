@@ -93,7 +93,7 @@
 - [x] T019 Create database seed script in prisma/seed.ts with test stores, users, and products
 - [x] T020 Implement Prisma middleware in src/lib/prisma-middleware.ts for multi-tenant isolation (auto-inject storeId on queries)
 - [x] T021 Create Prisma client singleton in src/lib/db.ts with connection pooling and middleware registration
-- [x] ~~T022 Configure NextAuth.js v4+ in src/app/api/auth/[...nextauth]/route.ts with JWT strategy and credentials provider~~ **REPLACED** - NextAuth v5 incompatible with Next.js 16. Custom auth system implemented in Phase 3 using utilities T029-T035.
+- [x] T022 Configure NextAuth.js v4.24.13 in src/app/api/auth/[...nextauth]/route.ts with JWT strategy and credentials provider — VERIFIED compatible with Next.js v16.0.1. (If present, migrate any custom auth utilities to NextAuth hooks/providers; legacy custom implementation maintained for backwards compatibility until migration tasks are complete.)
 - [x] T023 Implement session storage layer in src/lib/session-storage.ts (Vercel KV for production, in-memory Map for dev)
 - [x] T024 [P] Create error handling utilities in src/lib/error-handler.ts with customer-facing error messages and error codes
 - [x] T025 [P] Create API response formatter in src/lib/api-response.ts with {data, error, meta} structure

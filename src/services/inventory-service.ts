@@ -287,7 +287,7 @@ export async function adjustStock(
           title: 'Low Stock Alert',
           message: `${result.updatedProduct.name} is running low (${result.updatedProduct.inventoryQty} remaining, threshold: ${result.updatedProduct.lowStockThreshold})`,
           type: 'low_stock',
-          linkUrl: `/dashboard/products/${result.updatedProduct.id}`,
+          linkUrl: `/products/${result.updatedProduct.id}`,
           linkText: 'Restock Product',
         });
       }

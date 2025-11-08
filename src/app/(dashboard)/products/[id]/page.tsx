@@ -128,7 +128,7 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/products">
+          <Link href="/products">
             <Button variant="outline">← Back to Products</Button>
           </Link>
           <div>
@@ -147,7 +147,7 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
         </div>
         
         <div className="flex items-center gap-3">
-          <Link href={`/dashboard/products/${product.id}/edit`}>
+          <Link href={`/products/${product.id}/edit`}>
             <Button variant="outline">Edit Product</Button>
           </Link>
           <Link href={`/store/products/${product.id}`} target="_blank">

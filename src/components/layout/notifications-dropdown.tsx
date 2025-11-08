@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
 import { useNotifications } from '@/hooks/use-notifications';
 import { formatDistanceToNow } from 'date-fns';
@@ -57,7 +58,7 @@ export function NotificationsDropdown() {
   return (
     <div className="relative" data-notifications-dropdown>
       {/* Bell Icon with Badge */}
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
         aria-label={`Notifications (${unreadCount} unread)`}
@@ -73,7 +74,7 @@ export function NotificationsDropdown() {
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </button>
+      </Button>
 
       {/* Dropdown Menu */}
       {isOpen && (

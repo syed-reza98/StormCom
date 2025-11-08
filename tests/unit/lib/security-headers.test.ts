@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import proxy from '../../../proxy';
+import { applySecurityProtections } from '../../../proxy';
 
 /**
- * Unit tests for security middleware
+ * Unit tests for security proxy
  * 
  * Tests verify that all security headers are correctly applied
  * to protect against common web vulnerabilities:
@@ -12,9 +12,12 @@ import proxy from '../../../proxy';
  * - MIME-type sniffing
  * - Man-in-the-middle attacks
  * - Information leakage
+ * 
+ * Note: These tests directly test the applySecurityProtections helper
+ * since the main proxy export is wrapped with NextAuth withAuth()
  */
 
-describe('Security Middleware', () => {
+describe('Security Proxy', () => {
   let request: NextRequest;
 
   beforeEach(() => {
@@ -23,7 +26,7 @@ describe('Security Middleware', () => {
   });
 
   // Alias for compatibility with old test expectations
-  const middleware = proxy;
+  const middleware = applySecurityProtections;
 
   describe('Content-Security-Policy (CSP)', () => {
     it('should set Content-Security-Policy header', async () => {

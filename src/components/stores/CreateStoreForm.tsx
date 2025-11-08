@@ -199,7 +199,7 @@ export function CreateStoreForm() {
       }
       
       // Success - redirect to store details
-      router.push(`/dashboard/stores/${result.data.id}`);
+      router.push(`/stores/${result.data.id}`);
       
     } catch (error) {
       if (error instanceof z.ZodError) {

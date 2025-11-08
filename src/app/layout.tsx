@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import React from 'react';
-import { Theme } from '@radix-ui/themes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ThemeProvider } from '@/components/theme-provider';
+import { SessionProvider } from '@/providers/session-provider';
 import '@radix-ui/themes/styles.css';
 import './globals.css';
 
@@ -25,25 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.JSX.Element {
   return (
-    /* 
-      suppressHydrationWarning is required here because Radix UI Theme
-      adds dynamic class names and data attributes on the client-side that
-      differ from the server render (e.g., theme switching, dark mode).
-      This is expected behavior and safe - it only suppresses warnings for
-      these specific hydration mismatches caused by the theming system.
-    */
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
-        <Theme
-          appearance="inherit"
-          accentColor="teal"
-          grayColor="slate"
-          panelBackground="solid"
-          radius="medium"
-          scaling="100%"
-        >
-          {children}
-        </Theme>
+    <html lang="en">
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <SessionProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </SessionProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -46,7 +46,7 @@ export async function GET(
     // 3. Multi-tenant isolation
     const storeId = session.user.role === 'SUPER_ADMIN' 
       ? undefined 
-      : session.user.storeId;
+      : session.user.storeId ?? undefined;
 
     // 4. Get invoice data
     const invoiceData = await getInvoiceData(orderId, storeId);

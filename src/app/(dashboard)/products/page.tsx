@@ -93,7 +93,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
               <Flex gap="3" align="center">
                 {/* Import/Export Actions */}
                 <Link
-                  href="/dashboard/products/import"
+                  href="/products/import"
                   className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
                 >
                   <UploadIcon className="mr-2 h-4 w-4" />
@@ -106,7 +106,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                 </Button>
 
                 {/* Add Product Button */}
-                <Link href="/dashboard/products/new" className={cn(buttonVariants({}))}>
+                <Link href="/products/new" className={cn(buttonVariants({}))}>
                   <PlusIcon className="mr-2 h-4 w-4" />
                   Add Product
                 </Link>

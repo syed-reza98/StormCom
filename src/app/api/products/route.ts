@@ -12,12 +12,12 @@ import { z } from 'zod';
 // GET /api/products - List products with pagination and filtering
 export async function GET(request: NextRequest) {
   try {
-    // Require explicit store header for multi-tenant isolation in list endpoint
-    const storeId = request.headers.get('x-store-id') || undefined;
-    if (!storeId) {
+    // Get storeId from NextAuth session for multi-tenant isolation
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.storeId) {
       return NextResponse.json(
-        { error: { code: 'MISSING_STORE_ID', message: 'Store ID header is required' } },
-        { status: 400 }
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { status: 401 }
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Note: sortBy and sortOrder are removed - not supported in current ProductSearchFilters type
 
     const result = await productService.getProducts(
-      storeId as string,
+      session.user.storeId,
       filters,
       page,
       perPage

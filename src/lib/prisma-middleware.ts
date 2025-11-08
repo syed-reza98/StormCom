@@ -10,7 +10,7 @@ export const requestContext = new AsyncLocalStorage<{ storeId: string }>();
 
 /**
  * Get storeId from async context (NextAuth session)
- * This is set in middleware.ts and api routes
+ * This is set in proxy.ts and api routes
  */
 export function getStoreIdFromContext(): string | null {
   const store = requestContext.getStore?.();

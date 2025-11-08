@@ -394,7 +394,7 @@ Always move client-only UI into a Client Component and import it directly in you
 - **Dynamic Segments:** Use `[param]` for dynamic API routes (e.g., `app/api/users/[id]/route.ts`).
 - **Validation:** Always validate and sanitize input. Use libraries like `zod` or `yup`.
 - **Error Handling:** Return appropriate HTTP status codes and error messages.
-- **Authentication:** Protect sensitive routes using middleware or server-side session checks.
+- **Authentication:** Protect sensitive routes using proxy or server-side session checks.
 
 ### StormCom API Standards (CRITICAL)
 
@@ -1060,16 +1060,16 @@ export async function checkRateLimit(request: NextRequest) {
 }
 ```
 
-### Middleware Best Practices
+### Proxy Best Practices (Next.js 16)
 
 **Authentication & Tenant Isolation** (REQUIRED):
 ```typescript
-// middleware.ts
+// proxy.ts (formerly middleware.ts in Next.js 15)
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // 1. Rate limiting for API routes
@@ -1136,7 +1136,7 @@ When building features for StormCom, ensure:
 - [ ] All database queries filter by `storeId`
 - [ ] Prisma middleware auto-injects `storeId`
 - [ ] Session includes `storeId` for tenant context
-- [ ] Middleware validates tenant access
+- [ ] Proxy validates tenant access
 
 ### ✅ Database (Prisma)
 - [ ] Use Prisma Client (NO raw SQL)
@@ -1186,6 +1186,206 @@ When building features for StormCom, ensure:
 - [ ] Components < 5 props
 - [ ] JSX nesting < 3 levels
 - [ ] ESLint + Prettier passing
+
+---
+
+## Next.js 16 Migration Guide (Critical Changes)
+
+**REQUIRED**: StormCom uses Next.js 16.0.0+ with breaking changes from v15. Follow this migration checklist:
+
+### 1. Proxy (Formerly Middleware)
+
+**Breaking Change**: `middleware.ts` renamed to `proxy.ts` with new terminology.
+
+```typescript
+// ❌ DEPRECATED (Next.js 15):
+// middleware.ts
+export default function middleware(request: NextRequest) {
+  return NextResponse.next();
+}
+
+// ✅ REQUIRED (Next.js 16):
+// proxy.ts (at project root or in src/)
+export default function proxy(request: NextRequest) {
+  return NextResponse.next();
+}
+```
+
+**Migration**:
+```bash
+# Use automated codemod
+npx @next/codemod@canary middleware-to-proxy .
+
+# Or manually:
+# 1. Rename middleware.ts → proxy.ts
+# 2. Rename function: middleware → proxy
+# 3. Update all references in codebase
+```
+
+**Why**: Clarifies network boundary and aligns with proxy pattern. Only ONE proxy file per project allowed.
+
+**Documentation**: https://nextjs.org/docs/app/api-reference/file-conventions/proxy
+
+### 2. Async Route Parameters
+
+**Breaking Change**: `params` and `searchParams` are now Promises.
+
+```typescript
+// ❌ DEPRECATED (Next.js 15):
+export default function Page({ params, searchParams }: Props) {
+  const { id } = params;  // Synchronous access
+  const query = searchParams.q;
+}
+
+// ✅ REQUIRED (Next.js 16):
+export default async function Page({ params, searchParams }: Props) {
+  const { id } = await params;  // Must await
+  const { q: query } = await searchParams;  // Must await
+}
+```
+
+**Applies to**:
+- Page components (`page.tsx`)
+- Layout components (`layout.tsx`)
+- Route handlers (`route.ts`)
+- `generateMetadata()` functions
+
+### 3. Server-Only Functions Now Async
+
+**Breaking Change**: `cookies()`, `headers()`, `draftMode()` now return Promises.
+
+```typescript
+// ❌ DEPRECATED (Next.js 15):
+import { cookies } from 'next/headers';
+const cookieStore = cookies();
+
+// ✅ REQUIRED (Next.js 16):
+import { cookies } from 'next/headers';
+const cookieStore = await cookies();
+```
+
+### 4. Image Component Defaults
+
+**Breaking Change**: Default quality changed, minimum cache TTL increased.
+
+```typescript
+// Next.js 15 defaults:
+// - quality: 75
+// - minimumCacheTTL: 60 seconds
+// - imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
+
+// Next.js 16 defaults:
+// - quality: 75 (unchanged)
+// - minimumCacheTTL: 14400 seconds (4 hours)
+// - imageSizes: [32, 48, 64, 96, 128, 256, 384] (removed 16)
+```
+
+**If you relied on 16px size**:
+```typescript
+// next.config.ts
+export default {
+  images: {
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+};
+```
+
+### 5. Turbopack Now Default
+
+**Breaking Change**: Turbopack is now the default bundler (2-5x faster builds).
+
+```bash
+# Use webpack if needed (custom webpack config)
+next dev --webpack
+next build --webpack
+
+# Or in package.json
+{
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack"
+  }
+}
+```
+
+### 6. Caching Model Changes
+
+**Breaking Change**: Explicit opt-in caching with `"use cache"` directive.
+
+```typescript
+// Next.js 15: Implicit caching (fetch auto-cached)
+async function getData() {
+  const res = await fetch('https://api.example.com/data');
+  return res.json();
+}
+
+// Next.js 16: Explicit caching required
+"use cache";
+async function getData() {
+  const res = await fetch('https://api.example.com/data');
+  return res.json();
+}
+```
+
+**Enable Cache Components** (Optional):
+```typescript
+// next.config.ts
+export default {
+  cacheComponents: true,  // Opt-in to new caching model
+};
+```
+
+### 7. revalidateTag() Signature Change
+
+**Breaking Change**: Requires `cacheLife` profile as second argument.
+
+```typescript
+// ❌ DEPRECATED (Next.js 15):
+revalidateTag('blog-posts');
+
+// ✅ REQUIRED (Next.js 16):
+revalidateTag('blog-posts', 'max');  // Use cacheLife profile
+
+// Or with custom revalidate time:
+revalidateTag('products', { revalidate: 3600 });
+```
+
+### 8. Parallel Routes Require default.js
+
+**Breaking Change**: All parallel route slots MUST have `default.js`.
+
+```typescript
+// app/
+// ├── @modal/
+// │   ├── default.tsx  // ✅ REQUIRED (was optional in v15)
+// │   └── photo/
+// │       └── page.tsx
+// └── page.tsx
+
+// default.tsx
+export default function Default() {
+  return null;  // or call notFound()
+}
+```
+
+### Migration Checklist
+
+- [ ] Rename `middleware.ts` → `proxy.ts`
+- [ ] Update function name: `middleware` → `proxy`
+- [ ] Add `await` to all `params` and `searchParams` usage
+- [ ] Add `await` to `cookies()`, `headers()`, `draftMode()`
+- [ ] Update `revalidateTag()` calls to include second argument
+- [ ] Add `default.js` to all parallel route slots
+- [ ] Test with Turbopack (or opt into webpack if needed)
+- [ ] Consider enabling `cacheComponents` for explicit caching
+- [ ] Update image component usage if relying on 16px size
+- [ ] Run type-check: `npm run type-check`
+- [ ] Run build: `npm run build`
+
+**Resources**:
+- [Next.js 16 Upgrade Guide](https://nextjs.org/docs/app/guides/upgrading/version-16)
+- [Next.js 16 Blog Post](https://nextjs.org/blog/next-16)
+- [Proxy Documentation](https://nextjs.org/docs/app/api-reference/file-conventions/proxy)
 
 ---
 
@@ -1297,7 +1497,7 @@ npm run dev
 
 **Benefits for StormCom Development**:
 - **Context-Aware Suggestions**: Agent recommends features based on existing structure
-- **Live Application State**: Query current routes, middleware, errors during development
+- **Live Application State**: Query current routes, proxy configuration, errors during development
 - **Multi-Tenant Awareness**: Agent understands route groups and tenant isolation patterns
 - **Performance Insights**: Get recommendations based on actual performance metrics
 - **Accurate Implementations**: Generate code following StormCom patterns and conventions

@@ -137,13 +137,13 @@ function StoreActionsDropdown({ store }: { store: Store }) {
     <div className="relative inline-block text-left">
       <div className="flex space-x-2">
         <Link
-          href={`/dashboard/stores/${store.id}`}
+          href={`/stores/${store.id}`}
           className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
         >
           View
         </Link>
         <Link
-          href={`/dashboard/stores/${store.id}/edit`}
+          href={`/stores/${store.id}/edit`}
           className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
         >
           Edit
@@ -272,7 +272,7 @@ export default function StoresPage() {
               </Text>
             </Flex>
             <Link
-              href="/dashboard/stores/create"
+              href="/stores/create"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               <PlusIcon className="mr-2 h-4 w-4" />

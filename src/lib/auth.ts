@@ -1,37 +1,49 @@
 // src/lib/auth.ts
-// Authentication configuration placeholder
-// TODO: Implement proper NextAuth.js configuration
+// NextAuth.js v4.24.13 Authentication Configuration
+// Re-exports authOptions from the NextAuth route handler
 
-import { NextAuthOptions } from 'next-auth';
+export { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export const authOptions: NextAuthOptions = {
-  // Placeholder configuration
-  // This will be implemented in Phase 3 Authentication
-  providers: [],
-  callbacks: {
-    async session({ session }) {
-      // Add storeId to session when implemented
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          storeId: 'placeholder-store-id',
-        },
-      };
-    },
-  },
-};
-
-// Type extension for session
+// Type extensions for NextAuth
 declare module 'next-auth' {
+  /**
+   * Extended Session interface with custom user fields
+   */
   interface Session {
     user: {
-      id?: string;
+      id: string;
       name?: string | null;
-      email?: string | null;
+      email: string;
       image?: string | null;
-      storeId?: string;
-      role?: string;
+      role: string;
+      storeId: string | null;
     };
+    requiresMFA?: boolean;
+  }
+
+  /**
+   * Extended User interface from authorize callback
+   */
+  interface User {
+    id: string;
+    email: string;
+    name?: string | null;
+    role: string;
+    storeId: string | null;
+    requiresMFA?: boolean;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  /**
+   * Extended JWT interface with custom claims
+   */
+  interface JWT {
+    id: string;
+    email: string;
+    name?: string | null;
+    role: string;
+    storeId: string | null;
+    requiresMFA?: boolean;
   }
 }

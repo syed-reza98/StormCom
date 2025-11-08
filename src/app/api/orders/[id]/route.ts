@@ -34,7 +34,7 @@ export async function GET(
     }
 
     // Multi-tenant isolation
-    const storeId = session.user.storeId;
+    const storeId = session.user.storeId ?? undefined;
     if (!storeId && session.user.role !== 'SUPER_ADMIN') {
       return apiResponse.forbidden('No store assigned');
     }

@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
  * - Webhook routes MUST use signature verification (exempt from CSRF)
  * 
  * @see src/lib/csrf.ts
- * @see middleware.ts
+ * @see proxy.ts
  * @see specs/001-multi-tenant-ecommerce/spec.md (Security Requirements)
  */
 

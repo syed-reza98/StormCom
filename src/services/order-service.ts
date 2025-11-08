@@ -383,7 +383,7 @@ export async function updateOrderStatus(params: OrderUpdateStatusParams) {
           postalCode: updatedOrder.shippingAddress?.postalCode || '',
           country: updatedOrder.shippingAddress?.country || 'US',
         },
-        orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/orders/${updatedOrder.id}`,
+        orderUrl: `${process.env.NEXT_PUBLIC_APP_URL}/orders/${updatedOrder.id}`,
       });
     }
 

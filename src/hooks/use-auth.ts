@@ -1,9 +1,21 @@
 'use client';
 
-import { useContext, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+/**
+ * @deprecated This hook is deprecated in favor of NextAuth.js hooks.
+ * 
+ * Use these instead:
+ * - `import { useAuth } from '@/hooks/use-session'` for authentication state
+ * - `import { signIn, signOut } from 'next-auth/react'` for login/logout
+ * - `import { useRequireAuth } from '@/hooks/use-session'` for protected routes
+ * 
+ * This file will be removed in a future version.
+ */
+
+import { useContext } from 'react';
 import { AuthContext } from '@/contexts/auth-provider';
-import type { User } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import { signIn, signOut } from 'next-auth/react';
+import type { User } from 'next-auth';
 
 export interface LoginCredentials {
   email: string;
@@ -36,21 +48,9 @@ export interface UseAuthReturn extends AuthState {
 }
 
 /**
- * Custom hook for authentication operations
- * Provides login, logout, register, and current user state
+ * @deprecated Use NextAuth hooks instead: `useAuth()` from '@/hooks/use-session'
  * 
- * @example
- * ```tsx
- * const { user, isAuthenticated, login, logout } = useAuth();
- * 
- * const handleLogin = async () => {
- *   try {
- *     await login({ email: 'user@example.com', password: 'password123' });
- *   } catch (error) {
- *     console.error('Login failed:', error);
- *   }
- * };
- * ```
+ * Custom hook for authentication operations (now wraps NextAuth)
  */
 export function useAuth(): UseAuthReturn {
   const context = useContext(AuthContext);
@@ -60,172 +60,84 @@ export function useAuth(): UseAuthReturn {
     throw new Error('useAuth must be used within an AuthProvider');
   }
 
-  const { user, isLoading, error, setUser, setIsLoading, setError } = context;
+  const { user, isLoading, error } = context;
 
   /**
-   * Login with email and password
-   * Optionally provide MFA code if user has MFA enabled
+   * Login using NextAuth signIn
    */
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    setIsLoading(true);
-    setError(null);
+  const login = async (credentials: LoginCredentials) => {
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: credentials.email,
+      password: credentials.password,
+      mfaCode: credentials.mfaCode,
+    });
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Login failed');
-      }
-
-      // Check if MFA is required
-      if (data.data?.requiresMfa && !credentials.mfaCode) {
-        // Redirect to MFA challenge page
-        router.push('/mfa/challenge');
-        return;
-      }
-
-      // Set user from response
-      if (data.data?.user) {
-        setUser(data.data.user);
-        
-        // Redirect based on role
-        switch (data.data.user.role) {
-          case 'SuperAdmin':
-            router.push('/admin/dashboard');
-            break;
-          case 'StoreAdmin':
-          case 'Staff':
-            router.push('/dashboard');
-            break;
-          case 'Customer':
-            router.push('/account');
-            break;
-          default:
-            router.push('/');
-        }
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
+    if (result?.error) {
+      throw new Error(result.error);
     }
-  }, [router, setUser, setIsLoading, setError]);
 
-  /**
-   * Logout current user
-   * Clears session and redirects to login page
-   */
-  const logout = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error?.message || 'Logout failed');
+    // Redirect based on role (after successful login)
+    if (user) {
+      switch (user.role) {
+        case 'SuperAdmin':
+          router.push('/admin/dashboard');
+          break;
+        case 'StoreAdmin':
+        case 'Staff':
+          router.push('/dashboard');
+          break;
+        case 'Customer':
+          router.push('/account');
+          break;
+        default:
+          router.push('/dashboard');
       }
-
-      // Clear user state
-      setUser(null);
-      
-      // Redirect to login page
-      router.push('/login');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
     }
-  }, [router, setUser, setIsLoading, setError]);
+  };
 
   /**
-   * Register new user account
-   * Creates user and sends verification email
+   * Logout using NextAuth signOut
    */
-  const register = useCallback(async (data: RegisterData) => {
-    setIsLoading(true);
-    setError(null);
+  const logout = async () => {
+    await signOut({ redirect: false });
+    router.push('/login');
+  };
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+  /**
+   * Register new user account (still uses custom API)
+   */
+  const register = async (data: RegisterData) => {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error?.message || 'Registration failed');
-      }
-
-      // Registration successful - redirect to login with success message
-      router.push('/login?registered=true');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'Registration failed');
     }
-  }, [router, setIsLoading, setError]);
+
+    // Registration successful - redirect to login
+    router.push('/login?registered=true');
+  };
 
   /**
-   * Refresh current user data from server
-   * Useful after profile updates or permission changes
+   * Refresh user data (no-op with NextAuth - session is automatically managed)
    */
-  const refreshUser = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/auth/session', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) {
-        // Session expired or invalid
-        setUser(null);
-        return;
-      }
-
-      const data = await response.json();
-      
-      if (data.data?.user) {
-        setUser(data.data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh user';
-      setError(errorMessage);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [setUser, setIsLoading, setError]);
+  const refreshUser = async () => {
+    // NextAuth automatically manages session refreshing
+    // This is a no-op for backward compatibility
+  };
 
   /**
-   * Clear error state
+   * Clear error state (no-op - NextAuth doesn't expose errors in context)
    */
-  const clearError = useCallback(() => {
-    setError(null);
-  }, [setError]);
+  const clearError = () => {
+    // No-op for backward compatibility
+  };
 
   return {
     user,

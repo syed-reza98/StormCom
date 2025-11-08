@@ -1,78 +1,19 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  6,
-                    "exitCode":  1,
-                    "timestamp":  "2025-11-08T03:26:21Z",
+                    "totalErrors":  0,
+                    "exitCode":  0,
+                    "timestamp":  "2025-11-08T05:42:20Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  10
+                    "totalLines":  4
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit --incremental",
-                      "",
-                      "src/app/(dashboard)/products/page.tsx(8,10): error TS2614: Module \u0027\"@/components/products/products-table\"\u0027 has no exported member \u0027ProductsTable\u0027. Did you mean to use \u0027import ProductsTable from \"@/components/products/products-table\"\u0027 instead?",
-                      "src/components/products/products-table.tsx(49,7): error TS6133: \u0027currencyFormatter\u0027 is declared but its value is never read.",
-                      "src/components/products/products-table.tsx(58,10): error TS6133: \u0027ProductsTableComponent\u0027 is declared but its value is never read.",
-                      "src/components/products/products-table.tsx(62,31): error TS2304: Cannot find name \u0027useCallback\u0027.",
-                      "src/components/products/products-table.tsx(71,27): error TS2304: Cannot find name \u0027useCallback\u0027.",
-                      "src/components/products/products-table.tsx(295,21): error TS2304: Cannot find name \u0027ProductsTable\u0027."
+                      ""
                   ],
     "errors":  [
-                   {
-                       "message":  "Module \u0027\"@/components/products/products-table\"\u0027 has no exported member \u0027ProductsTable\u0027. Did you mean to use \u0027import ProductsTable from \"@/components/products/products-table\"\u0027 instead?",
-                       "column":  10,
-                       "line":  8,
-                       "fullText":  "src/app/(dashboard)/products/page.tsx(8,10): error TS2614: Module \u0027\"@/components/products/products-table\"\u0027 has no exported member \u0027ProductsTable\u0027. Did you mean to use \u0027import ProductsTable from \"@/components/products/products-table\"\u0027 instead?",
-                       "code":  "TS2614",
-                       "severity":  "error",
-                       "file":  "src/app/(dashboard)/products/page.tsx"
-                   },
-                   {
-                       "message":  "\u0027currencyFormatter\u0027 is declared but its value is never read.",
-                       "column":  7,
-                       "line":  49,
-                       "fullText":  "src/components/products/products-table.tsx(49,7): error TS6133: \u0027currencyFormatter\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "src/components/products/products-table.tsx"
-                   },
-                   {
-                       "message":  "\u0027ProductsTableComponent\u0027 is declared but its value is never read.",
-                       "column":  10,
-                       "line":  58,
-                       "fullText":  "src/components/products/products-table.tsx(58,10): error TS6133: \u0027ProductsTableComponent\u0027 is declared but its value is never read.",
-                       "code":  "TS6133",
-                       "severity":  "error",
-                       "file":  "src/components/products/products-table.tsx"
-                   },
-                   {
-                       "message":  "Cannot find name \u0027useCallback\u0027.",
-                       "column":  31,
-                       "line":  62,
-                       "fullText":  "src/components/products/products-table.tsx(62,31): error TS2304: Cannot find name \u0027useCallback\u0027.",
-                       "code":  "TS2304",
-                       "severity":  "error",
-                       "file":  "src/components/products/products-table.tsx"
-                   },
-                   {
-                       "message":  "Cannot find name \u0027useCallback\u0027.",
-                       "column":  27,
-                       "line":  71,
-                       "fullText":  "src/components/products/products-table.tsx(71,27): error TS2304: Cannot find name \u0027useCallback\u0027.",
-                       "code":  "TS2304",
-                       "severity":  "error",
-                       "file":  "src/components/products/products-table.tsx"
-                   },
-                   {
-                       "message":  "Cannot find name \u0027ProductsTable\u0027.",
-                       "column":  21,
-                       "line":  295,
-                       "fullText":  "src/components/products/products-table.tsx(295,21): error TS2304: Cannot find name \u0027ProductsTable\u0027.",
-                       "code":  "TS2304",
-                       "severity":  "error",
-                       "file":  "src/components/products/products-table.tsx"
-                   }
+
                ]
 }

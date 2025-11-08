@@ -131,7 +131,7 @@ function ProductsTable({ products, pagination, searchParams }: ProductsTableProp
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">No products found</p>
-        <Link href="/dashboard/products/new">
+        <Link href="/products/new">
           <Button className="mt-4">Add your first product</Button>
         </Link>
       </div>
@@ -241,10 +241,10 @@ function ProductsTable({ products, pagination, searchParams }: ProductsTableProp
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
-                  <Link href={`/dashboard/products/${product.id}`}>
+                  <Link href={`/products/${product.id}`}>
                     <Button variant="ghost" size="sm">👁️</Button>
                   </Link>
-                  <Link href={`/dashboard/products/${product.id}/edit`}>
+                  <Link href={`/products/${product.id}/edit`}>
                     <Button variant="ghost" size="sm">✏️</Button>
                   </Link>
                   <Button variant="ghost" size="sm">

@@ -202,10 +202,10 @@ function StoreStatsCards({ store }: { store: Store }) {
  */
 function SettingsTabs({ store, activeTab }: { store: Store; activeTab: string }) {
   const tabs = [
-    { id: 'general', name: 'General', href: `/dashboard/stores/${store.id}?tab=general` },
-    { id: 'theme', name: 'Theme', href: `/dashboard/stores/${store.id}?tab=theme` },
-    { id: 'billing', name: 'Billing', href: `/dashboard/stores/${store.id}?tab=billing` },
-    { id: 'users', name: 'Users', href: `/dashboard/stores/${store.id}?tab=users` },
+    { id: 'general', name: 'General', href: `/stores/${store.id}?tab=general` },
+    { id: 'theme', name: 'Theme', href: `/stores/${store.id}?tab=theme` },
+    { id: 'billing', name: 'Billing', href: `/stores/${store.id}?tab=billing` },
+    { id: 'users', name: 'Users', href: `/stores/${store.id}?tab=users` },
   ];
 
   return (
@@ -498,7 +498,7 @@ export default async function StoreDetailsPage({ params }: StoreDetailsPageProps
             </div>
             <div className="flex space-x-3">
               <Link
-                href={`/dashboard/stores/${store.id}/edit`}
+                href={`/stores/${store.id}/edit`}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Edit Store

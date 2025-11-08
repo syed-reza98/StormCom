@@ -55,7 +55,7 @@ export class NotificationService {
    *   title: 'New Order Received',
    *   message: 'You have a new order #12345',
    *   type: 'order_update',
-   *   linkUrl: '/dashboard/orders/12345',
+   *   linkUrl: '/orders/12345',
    *   linkText: 'View Order'
    * });
    * ```

@@ -188,7 +188,7 @@ export default function MFAEnrollPage() {
             <CardDescription className="text-destructive">{serverError}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/dashboard/settings" className="w-full">
+            <Link href="/settings" className="w-full">
               <Button className="w-full">Back to Settings</Button>
             </Link>
           </CardContent>
@@ -375,7 +375,7 @@ export default function MFAEnrollPage() {
         {/* Cancel Link */}
         <div className="text-center">
           <Link
-            href="/dashboard/settings"
+            href="/settings"
             className="text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
           >
             Cancel and go back

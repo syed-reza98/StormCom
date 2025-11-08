@@ -11,6 +11,13 @@ import {
   handlePaymentFailed,
   verifyWebhookSignature,
 } from '@/services/payment-service';
+import {
+  generateIdempotencyKey,
+  tryAcquireIdempotency,
+  markIdempotencySuccess,
+  deleteIdempotencyKey,
+  getIdempotency,
+} from '@/lib/webhook-idempotency';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,37 +44,76 @@ export async function POST(request: NextRequest) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
     const event = verifyWebhookSignature(body, signature, webhookSecret);
 
-    // Handle event based on type
-    switch (event.type) {
-      case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object;
-        await handlePaymentSucceeded(paymentIntent.id);
-        break;
-      }
+    // Build idempotency key per FR-10Y: webhook:stripe:{entity}:{identifier}
+    const source = 'stripe';
+    const evt: any = event as any;
+    const identifier = evt.id ?? evt.data?.object?.id ?? 'unknown';
+    // Normalize entity from event type (e.g., payment_intent.succeeded -> payment)
+    const typeRoot = (event.type || '').split('.')[0];
+    const entity = typeRoot || 'event';
 
-      case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object;
-        await handlePaymentFailed(
-          paymentIntent.id,
-          paymentIntent.last_payment_error?.code,
-          paymentIntent.last_payment_error?.message
-        );
-        break;
-      }
+    const idempotencyKey = generateIdempotencyKey(source, entity, identifier);
 
-      case 'charge.refunded': {
-        // Payment refunded - handled in refundPayment function
-        // Refund processing is handled through admin refund API
-        break;
-      }
-
-      default:
-        // Log unhandled events for monitoring
-        // In production, send to logging service (e.g., DataDog, Sentry)
-        break;
+    // First, attempt to acquire idempotency placeholder. If unable, return duplicate response
+    const acquired = await tryAcquireIdempotency(idempotencyKey, 86400);
+    if (!acquired) {
+      const existing = await getIdempotency(idempotencyKey);
+      return NextResponse.json(
+        {
+          status: 'duplicate',
+          message: 'Webhook already processed',
+          originalProcessedAt: existing?.processedAt ?? null,
+        },
+        { status: 200 }
+      );
     }
 
-    return NextResponse.json({ received: true });
+    try {
+      // Handle event based on type
+      switch (event.type) {
+        case 'payment_intent.succeeded': {
+          const paymentIntent = event.data.object;
+          await handlePaymentSucceeded(paymentIntent.id);
+          // mark success with orderId metadata if available
+          await markIdempotencySuccess(idempotencyKey, { orderId: paymentIntent.metadata?.orderId ?? null });
+          break;
+        }
+
+        case 'payment_intent.payment_failed': {
+          const paymentIntent = event.data.object;
+          await handlePaymentFailed(
+            paymentIntent.id,
+            paymentIntent.last_payment_error?.code,
+            paymentIntent.last_payment_error?.message
+          );
+          await markIdempotencySuccess(idempotencyKey, { orderId: paymentIntent.metadata?.orderId ?? null, status: 'success' });
+          break;
+        }
+
+        case 'charge.refunded': {
+          // Payment refunded - handled in refundPayment function
+          // Refund processing is handled through admin refund API
+          await markIdempotencySuccess(idempotencyKey, { status: 'success' });
+          break;
+        }
+
+        default:
+          // Log unhandled events for monitoring
+          // In production, send to logging service (e.g., DataDog, Sentry)
+          await markIdempotencySuccess(idempotencyKey, { status: 'success' });
+          break;
+      }
+
+      return NextResponse.json({ received: true });
+    } catch (err) {
+      // If processing failed, delete the idempotency placeholder to allow retry (or optionally mark failed)
+      try {
+        await deleteIdempotencyKey(idempotencyKey);
+      } catch (delErr) {
+        console.error('Failed to cleanup idempotency key after error:', delErr);
+      }
+      throw err;
+    }
   } catch (error) {
     console.error('Webhook processing error:', error);
     

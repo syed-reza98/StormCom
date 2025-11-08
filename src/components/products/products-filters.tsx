@@ -63,23 +63,46 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
           fetch('/api/brands'),
         ]);
 
-        const [categoriesData, brandsData] = await Promise.all([
-          categoriesRes.json(),
-          brandsRes.json(),
+        const [rawCategoriesData, rawBrandsData] = await Promise.all([
+          categoriesRes.json().catch(() => ({ error: true })),
+          brandsRes.json().catch(() => ({ error: true })),
         ]);
 
-        if (categoriesData.data) {
-          setCategories(categoriesData.data.map((cat: any) => ({
-            value: cat.id,
-            label: cat.name,
+        // Defensive parsing helpers -------------------------------------------------
+        const extractArray = (input: any): any[] => {
+          if (!input) return [];
+          // Direct array
+          if (Array.isArray(input)) return input;
+          // Nested under data.categories (categories API design)
+          if (Array.isArray(input.categories)) return input.categories;
+          if (input.data) {
+            if (Array.isArray(input.data)) return input.data;
+            if (Array.isArray(input.data.categories)) return input.data.categories;
+          }
+          // Brands API returns data: Brand[] directly
+          if (Array.isArray(input.data)) return input.data;
+          return [];
+        };
+
+        const categoriesArray = extractArray(rawCategoriesData);
+        const brandsArray = extractArray(rawBrandsData);
+
+        if (categoriesArray.length) {
+          setCategories(categoriesArray.map((cat: any) => ({
+            value: String(cat.id),
+            label: cat.name ?? 'Unnamed',
           })));
+        } else {
+          setCategories([]);
         }
 
-        if (brandsData.data) {
-          setBrands(brandsData.data.map((brand: any) => ({
-            value: brand.id,
-            label: brand.name,
+        if (brandsArray.length) {
+          setBrands(brandsArray.map((brand: any) => ({
+            value: String(brand.id),
+            label: brand.name ?? 'Unnamed',
           })));
+        } else {
+          setBrands([]);
         }
       } catch (error) {
         console.error('Error fetching filter options:', error);
@@ -123,7 +146,7 @@ export function ProductsFilters({ searchParams }: ProductsFiltersProps) {
   // Clear all filters
   const clearAllFilters = () => {
     setSearchValue('');
-    router.push('/dashboard/products');
+    router.push('/products');
   };
 
   // Get active filters count

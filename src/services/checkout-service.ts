@@ -478,7 +478,7 @@ export async function createOrder(
           title: 'New Order Received',
           message: `Order #${order.orderNumber} has been placed for $${Number(order.totalAmount).toFixed(2)}`,
           type: 'order_update',
-          linkUrl: `/dashboard/orders/${order.id}`,
+          linkUrl: `/orders/${order.id}`,
           linkText: 'View Order',
         })
       )

@@ -1,3 +1,28 @@
+# Sync Impact Report
+<!--
+Version change: 1.1.0 → 1.2.0
+
+Modified principles:
+- Required Technologies: replaced "Custom Auth System" note with a pinned NextAuth.js requirement (NextAuth.js v4.24.13).
+- Authentication & Authorization: pinned to NextAuth.js v4.24.13 and added compatibility guidance for Next.js v16.0.1.
+
+Added / Removed sections:
+- Removed: explicit note recommending a custom auth system due to NextAuth v5 incompatibility.
+
+Templates & files checked and sync status:
+- .specify/memory/constitution.md — ✅ updated
+- specs/001-multi-tenant-ecommerce/plan.md — ✅ updated to reference NextAuth.js v4.24.13
+- specs/001-multi-tenant-ecommerce/tasks.md — ✅ updated to reinstate T022 for NextAuth.js v4.24.13
+- .specify/templates/plan-template.md — ✅ reviewed (no changes required)
+- .specify/templates/spec-template.md — ✅ reviewed (no changes required)
+- .specify/templates/tasks-template.md — ✅ reviewed (no changes required)
+
+Follow-up TODOs:
+- Verify `package.json` pins or allows `next-auth@4.24.13` and `next@16.0.1`. If not, propose dependency update and run `npm install`.
+- Run full test suite (Vitest + Playwright) to validate NextAuth integration and resolve any auth-related test mocks.
+- Remove or migrate any legacy custom-auth code paths once NextAuth integration is fully validated.
+-->
+
 # StormCom Constitution
 
 ## Core Principles
@@ -159,7 +184,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **PostgreSQL** (production on Vercel Postgres).
 - ✅ **Tailwind CSS** `4.1.14+` (utility-first styling).
 - ✅ **Radix UI** + **shadcn/ui** (accessible component library).
-- ✅ **Custom Auth System** (JWT + Vercel KV session storage) - **NOTE**: NextAuth.js v5 incompatible with Next.js 16; custom implementation used instead (see plan.md, tasks.md).
+- ✅ **NextAuth.js** `v4.24.13` - Official authentication framework configured for Next.js `v16.0.1`. Use NextAuth.js v4.24.13 for session management (JWT sessions), provider integrations, and optional 2FA/TOTP flows. In production, session state SHOULD be stored in Vercel KV or another secure session store. This replaces the prior custom-auth note: NextAuth v4.x is the supported authentication system for the project and is verified compatible with Next.js 16.0.1.
 - ✅ **Zod** (runtime validation).
 - ✅ **React Hook Form** (form state management).
 - ✅ **Vitest** `3.2.4+` (unit/integration testing).
@@ -275,7 +300,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 Ensure all user data is encrypted at rest and in transit. Follow industry best practices for authentication and authorization, including HTTPS, secure cookies, and role-based access control.
 
 **Authentication & Authorization**
-- Use NextAuth.js v4+ for authentication.
+- Use NextAuth.js `v4.24.13` (compatible with Next.js `v16.0.1`) for authentication. Configure providers, JWT session handling, and optional 2FA/TOTP via NextAuth integrations where applicable. Session cookies MUST be HTTP-only and SameSite=Lax; store session state in Vercel KV in production.
 - Implement JWT sessions with HTTP-only cookies (SameSite=Lax).
 - Hash passwords with bcrypt (cost factor: 12).
 - Enforce Role-Based Access Control (RBAC) with granular permissions.
@@ -309,4 +334,4 @@ Ensure compliance with GDPR, CCPA, and other relevant data protection regulation
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All pull requests and reviews must verify compliance with the principles outlined in this document. Complexity must be justified, and runtime development guidance must be followed as outlined in the project documentation.
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-10-17
+**Version**: 1.2.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-11-08

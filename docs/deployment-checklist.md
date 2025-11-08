@@ -42,7 +42,7 @@ This checklist ensures a smooth deployment to production. Complete all items bef
 ### 4. Security
 
 - [ ] HTTPS enforced (automatic with Vercel)
-- [ ] Security headers configured in `middleware.ts`:
+- [ ] Security headers configured in `proxy.ts`:
   - [ ] Content Security Policy (CSP)
   - [ ] HTTP Strict Transport Security (HSTS)
   - [ ] X-Frame-Options
