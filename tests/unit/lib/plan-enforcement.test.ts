@@ -10,7 +10,7 @@ import {
   checkOrderCreationLimit 
 } from '@/lib/plan-enforcement';
 import { SubscriptionService } from '@/services/subscription-service';
-import { getSessionFromRequest } from '@/lib/auth-helpers';
+import { getSessionFromRequest } from '@/lib/session-storage';
 
 // Mock dependencies
 vi.mock('@/services/subscription-service', () => ({
@@ -20,7 +20,7 @@ vi.mock('@/services/subscription-service', () => ({
   },
 }));
 
-vi.mock('@/lib/auth-helpers', () => ({
+vi.mock('@/lib/session-storage', () => ({
   getSessionFromRequest: vi.fn(),
 }));
 
@@ -49,7 +49,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(true);
+      mockCanCreateProduct.mockResolvedValue({ allowed: true });
 
       const request = new NextRequest('http://localhost:3000/api/products');
       const result = await checkProductCreationLimit(request);
@@ -69,7 +69,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(false);
+      mockCanCreateProduct.mockResolvedValue({ allowed: false });
 
       const request = new NextRequest('http://localhost:3000/api/products');
       const result = await checkProductCreationLimit(request);
@@ -171,7 +171,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateOrder.mockResolvedValue(true);
+      mockCanCreateOrder.mockResolvedValue({ allowed: true });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
       const result = await checkOrderCreationLimit(request);
@@ -191,7 +191,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateOrder.mockResolvedValue(false);
+      mockCanCreateOrder.mockResolvedValue({ allowed: false });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
       const result = await checkOrderCreationLimit(request);
@@ -257,7 +257,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(true);
+      mockCanCreateProduct.mockResolvedValue({ allowed: true });
       mockHandler.mockResolvedValue(NextResponse.json({ success: true }));
 
       const request = new NextRequest('http://localhost:3000/api/products', {
@@ -288,7 +288,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateOrder.mockResolvedValue(true);
+      mockCanCreateOrder.mockResolvedValue({ allowed: true });
       mockHandler.mockResolvedValue(NextResponse.json({ success: true }));
 
       const request = new NextRequest('http://localhost:3000/api/orders', {
@@ -316,7 +316,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(false);
+      mockCanCreateProduct.mockResolvedValue({ allowed: false });
 
       const request = new NextRequest('http://localhost:3000/api/products', {
         method: 'POST',
@@ -436,7 +436,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(true);
+      mockCanCreateProduct.mockResolvedValue({ allowed: true });
       mockHandler.mockResolvedValue(NextResponse.json({ created: true }));
 
       const wrappedHandler = withPlanLimits(mockHandler, 'product');
@@ -465,7 +465,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateOrder.mockResolvedValue(true);
+      mockCanCreateOrder.mockResolvedValue({ allowed: true });
       mockHandler.mockResolvedValue(NextResponse.json({ created: true }));
 
       const wrappedHandler = withPlanLimits(mockHandler, 'order');
@@ -491,7 +491,7 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(true);
+      mockCanCreateProduct.mockResolvedValue({ allowed: true });
       
       // Handler that uses parameters
       const parameterizedHandler = vi.fn((_request, { params }) => {
@@ -579,8 +579,8 @@ describe('Plan Enforcement Middleware', () => {
         lastAccessedAt: Date.now(),
       });
 
-      mockCanCreateProduct.mockResolvedValue(true);
-      mockCanCreateOrder.mockResolvedValue(false);
+      mockCanCreateProduct.mockResolvedValue({ allowed: true });
+      mockCanCreateOrder.mockResolvedValue({ allowed: false });
 
       const productRequest = new NextRequest('http://localhost:3000/api/products');
       const orderRequest = new NextRequest('http://localhost:3000/api/orders');
