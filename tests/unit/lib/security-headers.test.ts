@@ -1,6 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { applySecurityProtections } from '../../../proxy';
+
+// Mock next-auth to avoid Next.js context errors
+vi.mock('next-auth', () => ({
+  default: vi.fn(),
+  getServerSession: vi.fn(() => Promise.resolve(null)),
+}));
 
 /**
  * Unit tests for security proxy
