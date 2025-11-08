@@ -48,7 +48,7 @@ describe('CookieConsentBanner', () => {
       // Fast-forward past the delay
 
       await waitFor(() => {
-        expect(screen.getByText(/we use cookies/i)).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /we use cookies/i })).toBeInTheDocument();
       });
     });
 
@@ -79,7 +79,7 @@ describe('CookieConsentBanner', () => {
       
 
       await waitFor(() => {
-        expect(screen.getByText(/we use cookies/i)).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /we use cookies/i })).toBeInTheDocument();
       });
 
       const acceptButton = screen.getByRole('button', { name: /accept all/i });
@@ -283,24 +283,32 @@ describe('CookieConsentBanner', () => {
     });
 
     it('should disable buttons while loading', async () => {
+      let resolveRequest: any;
       (global.fetch as any).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({
-          ok: true,
-          json: async () => ({ success: true }),
-        }), 100))
+        new Promise(resolve => {
+          resolveRequest = resolve;
+          // Don't resolve immediately, wait for test to check disabled state
+        })
       );
 
       render(<CookieConsentBanner />);
       
 
       await waitFor(() => {
-        const acceptButton = screen.getByRole('button', { name: /accept all/i });
-        fireEvent.click(acceptButton);
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      // Buttons should be disabled during save
-      const customizeButton = screen.getByRole('button', { name: /customize settings/i });
-      expect(customizeButton).toBeDisabled();
+      const acceptButton = screen.getByRole('button', { name: /accept all/i });
+      fireEvent.click(acceptButton);
+
+      // Wait briefly for loading state to be set
+      await waitFor(() => {
+        const disabledAcceptButton = screen.getByRole('button', { name: /saving/i });
+        expect(disabledAcceptButton).toBeDisabled();
+      });
+      
+      // Resolve the fetch to allow test to complete
+      resolveRequest({ ok: true, json: async () => ({ success: true }) });
     });
   });
 

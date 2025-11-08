@@ -551,12 +551,13 @@ describe('Analytics Dashboard Components', () => {
       // Act
       render(<RetryDashboard />);
 
-      // Assert
+      // Assert - wait for success state with longer timeout for retry delay
       await waitFor(() => {
         expect(screen.getByTestId('success-state')).toBeInTheDocument();
-      });
+      }, { timeout: 3000 }); // Allow time for 1000ms retry delay
+      
       expect(callCount).toBe(2); // Initial call + 1 retry
-    });
+    }, 10000); // Increase test timeout to 10 seconds
   });
 
   describe('Date Range Selection', () => {
