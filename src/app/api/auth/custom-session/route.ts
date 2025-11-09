@@ -8,8 +8,9 @@ import { successResponse } from '@/lib/api-response';
 import { db } from '@/lib/db';
 
 /**
- * GET /api/auth/session
- * Validates current session and returns user data
+ * GET /api/auth/custom-session
+ * Validates current custom session and returns user data
+ * (Renamed from /api/auth/session to avoid conflict with NextAuth)
  * 
  * @returns {User} Current authenticated user or null if session invalid
  */
