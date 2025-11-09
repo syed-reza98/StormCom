@@ -115,7 +115,7 @@
     "jsdom": "^25.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.3.0",
-    "prettier-plugin-tailwindcss": "^0.6.0",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "prisma": "^6.19.0",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
