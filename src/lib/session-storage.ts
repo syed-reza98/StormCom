@@ -23,6 +23,15 @@ export interface SessionData {
  */
 const devSessionStore = new Map<string, SessionData>();
 
+// Log session storage mode on startup
+if (typeof window === 'undefined') {
+  const isKV = process.env.KV_REST_API_URL?.startsWith('https://') && 
+               !process.env.KV_REST_API_URL?.includes('your-');
+  if (!isKV && process.env.NODE_ENV === 'development') {
+    console.warn('[Session Storage] Using in-memory storage (development mode)');
+  }
+}
+
 /**
  * Session configuration
  */
@@ -37,10 +46,23 @@ const SESSION_CONFIG = {
  * Check if Vercel KV is available (production)
  */
 function isKVAvailable(): boolean {
-  return !!(
-    process.env.KV_REST_API_URL &&
-    process.env.KV_REST_API_TOKEN
-  );
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  
+  // Check if environment variables exist and are not placeholders
+  if (!url || !token) return false;
+  
+  // Check if URL is a valid HTTPS URL (not a placeholder)
+  if (url.includes('your-') || url.includes('here') || !url.startsWith('https://')) {
+    return false;
+  }
+  
+  // Check if token is not a placeholder
+  if (token.includes('your-') || token.includes('here')) {
+    return false;
+  }
+  
+  return true;
 }
 
 /**
