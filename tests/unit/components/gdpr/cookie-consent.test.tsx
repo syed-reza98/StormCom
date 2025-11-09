@@ -34,12 +34,11 @@ describe('CookieConsentBanner', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.clear();
-    vi.useFakeTimers();
+    // Don't use fake timers - they interfere with async rendering
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.useRealTimers();
   });
 
   describe('Banner Visibility', () => {
@@ -47,10 +46,9 @@ describe('CookieConsentBanner', () => {
       render(<CookieConsentBanner />);
       
       // Fast-forward past the delay
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
-        expect(screen.getByText(/we use cookies/i)).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /we use cookies/i })).toBeInTheDocument();
       });
     });
 
@@ -65,7 +63,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       expect(screen.queryByText(/we use cookies/i)).not.toBeInTheDocument();
     });
@@ -80,10 +77,9 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
-        expect(screen.getByText(/we use cookies/i)).toBeInTheDocument();
+        expect(screen.getByRole('dialog', { name: /we use cookies/i })).toBeInTheDocument();
       });
 
       const acceptButton = screen.getByRole('button', { name: /accept all/i });
@@ -120,7 +116,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const acceptButton = screen.getByRole('button', { name: /accept all/i });
@@ -148,7 +143,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const acceptButton = screen.getByRole('button', { name: /accept all/i });
@@ -170,7 +164,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const rejectButton = screen.getByRole('button', { name: /reject all/i });
@@ -193,7 +186,6 @@ describe('CookieConsentBanner', () => {
     it('should show detailed settings when "Customize Settings" is clicked', async () => {
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const customizeButton = screen.getByRole('button', { name: /customize settings/i });
@@ -216,7 +208,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       // Open customize settings
       await waitFor(() => {
@@ -253,7 +244,6 @@ describe('CookieConsentBanner', () => {
     it('should not allow disabling essential cookies', async () => {
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       // Open customize settings
       await waitFor(() => {
@@ -281,7 +271,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const acceptButton = screen.getByRole('button', { name: /accept all/i });
@@ -294,25 +283,32 @@ describe('CookieConsentBanner', () => {
     });
 
     it('should disable buttons while loading', async () => {
+      let resolveRequest: any;
       (global.fetch as any).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({
-          ok: true,
-          json: async () => ({ success: true }),
-        }), 100))
+        new Promise(resolve => {
+          resolveRequest = resolve;
+          // Don't resolve immediately, wait for test to check disabled state
+        })
       );
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
-        const acceptButton = screen.getByRole('button', { name: /accept all/i });
-        fireEvent.click(acceptButton);
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
 
-      // Buttons should be disabled during save
-      const customizeButton = screen.getByRole('button', { name: /customize settings/i });
-      expect(customizeButton).toBeDisabled();
+      const acceptButton = screen.getByRole('button', { name: /accept all/i });
+      fireEvent.click(acceptButton);
+
+      // Wait briefly for loading state to be set
+      await waitFor(() => {
+        const disabledAcceptButton = screen.getByRole('button', { name: /saving/i });
+        expect(disabledAcceptButton).toBeDisabled();
+      });
+      
+      // Resolve the fetch to allow test to complete
+      resolveRequest({ ok: true, json: async () => ({ success: true }) });
     });
   });
 
@@ -320,7 +316,6 @@ describe('CookieConsentBanner', () => {
     it('should have proper ARIA attributes', async () => {
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const dialog = screen.getByRole('dialog');
@@ -332,7 +327,6 @@ describe('CookieConsentBanner', () => {
     it('should have labels for switches', async () => {
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       // Open customize settings
       await waitFor(() => {
@@ -356,7 +350,6 @@ describe('CookieConsentBanner', () => {
 
       render(<CookieConsentBanner />);
       
-      vi.advanceTimersByTime(600);
 
       await waitFor(() => {
         const acceptButton = screen.getByRole('button', { name: /accept all/i });

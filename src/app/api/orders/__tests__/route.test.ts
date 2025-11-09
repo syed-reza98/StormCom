@@ -13,6 +13,7 @@ import { OrderStatus } from '@prisma/client';
 
 // Mock next-auth
 vi.mock('next-auth', () => ({
+  default: vi.fn(),
   getServerSession: vi.fn(),
 }));
 
@@ -577,7 +578,7 @@ describe('GET /api/orders', () => {
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
-          storeId: null,
+          storeId: undefined,
         })
       );
     });

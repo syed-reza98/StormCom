@@ -424,12 +424,11 @@ describe('OrdersTable', () => {
       render(<OrdersTable searchParams={{}} />);
 
       await waitFor(() => {
-        expect(fetchSpy).toHaveBeenCalledWith(
-          expect.stringContaining('/api/orders?')
-        );
+        expect(fetchSpy).toHaveBeenCalled();
       });
 
       const callUrl = (fetchSpy.mock.calls[0][0] as string);
+      expect(callUrl).toContain('/api/orders?');
       expect(callUrl).toContain('page=1');
       expect(callUrl).toContain('perPage=10');
       expect(callUrl).toContain('sortBy=createdAt');

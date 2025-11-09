@@ -13,6 +13,7 @@ import { PaymentStatus } from '@prisma/client';
 
 // Mock next-auth
 vi.mock('next-auth', () => ({
+  default: vi.fn(),
   getServerSession: vi.fn(),
 }));
 

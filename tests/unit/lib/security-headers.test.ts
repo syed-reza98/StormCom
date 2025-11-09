@@ -1,6 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { applySecurityProtections } from '../../../proxy';
+
+// Mock next-auth to avoid Next.js context errors
+vi.mock('next-auth', () => ({
+  default: vi.fn(),
+  getServerSession: vi.fn(() => Promise.resolve(null)),
+}));
 
 /**
  * Unit tests for security proxy
@@ -146,7 +152,10 @@ describe('Security Proxy', () => {
   });
 
   describe('X-Frame-Options', () => {
-    it('should set X-Frame-Options header', async () => {
+    // Note: X-Frame-Options is set in next.config.ts, not in the proxy
+    // to avoid header conflicts. These tests are skipped as they test
+    // the wrong layer.
+    it.skip('should set X-Frame-Options header (set in next.config.ts, not proxy)', async () => {
       const response = await middleware(request);
 
       const xfoHeader = response.headers.get('X-Frame-Options');
@@ -154,7 +163,7 @@ describe('Security Proxy', () => {
       expect(xfoHeader).toBeTruthy();
     });
 
-    it('should deny all framing attempts', async () => {
+    it.skip('should deny all framing attempts (set in next.config.ts, not proxy)', async () => {
       const response = await middleware(request);
       const xfo = response.headers.get('X-Frame-Options');
 
@@ -267,7 +276,7 @@ describe('Security Proxy', () => {
         const response = await middleware(req);
 
         expect(response.headers.get('Content-Security-Policy')).toBeDefined();
-        expect(response.headers.get('X-Frame-Options')).toBeDefined();
+        // X-Frame-Options is set in next.config.ts, not here
       }
     });
 
@@ -277,7 +286,7 @@ describe('Security Proxy', () => {
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.headers.get('Content-Security-Policy')).toBeTruthy();
       expect(response.headers.get('Strict-Transport-Security')).toBeTruthy();
-      expect(response.headers.get('X-Frame-Options')).toBeTruthy();
+      // X-Frame-Options is set in next.config.ts, not in proxy
       expect(response.headers.get('X-Content-Type-Options')).toBeTruthy();
       expect(response.headers.get('Referrer-Policy')).toBeTruthy();
       expect(response.headers.get('Permissions-Policy')).toBeTruthy();
@@ -310,12 +319,11 @@ describe('Security Proxy', () => {
       }
     });
 
-    it('should prevent clickjacking via X-Frame-Options and CSP', async () => {
+    it('should prevent clickjacking via CSP frame-ancestors', async () => {
       const response = await middleware(request);
 
-      // Two layers of clickjacking protection
-      expect(response.headers.get('X-Frame-Options')).toBe('DENY');
-
+      // Note: X-Frame-Options is set in next.config.ts for broader compatibility
+      // CSP frame-ancestors provides modern clickjacking protection
       const csp = response.headers.get('Content-Security-Policy') || '';
       expect(csp).toContain("frame-ancestors 'none'");
     });

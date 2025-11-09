@@ -30,7 +30,7 @@ vi.mock('@/services/payment-service', () => ({
       return { id: 'evt_test', type: 'payment_intent.succeeded', data: { object: { id: 'pi_test', metadata: { orderId: 'order-123' } } } };
     }
   }),
-  handlePaymentSucceeded: vi.fn(async (paymentIntentId: string) => {
+  handlePaymentSucceeded: vi.fn(async (_paymentIntentId: string) => {
     // noop (resolve)
     return;
   }),
