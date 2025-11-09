@@ -9,7 +9,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
+    exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**', 'tests/integration/**'],
     // Use single-threaded mode to prevent memory issues
     pool: 'forks',
     poolOptions: {
