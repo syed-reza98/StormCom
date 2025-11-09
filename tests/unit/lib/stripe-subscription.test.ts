@@ -521,7 +521,7 @@ describe('Stripe Subscription Integration', () => {
           priceId: 'price_basic_monthly',
           storeId: 'store-123',
         })
-      ).rejects.toThrow('STRIPE_SECRET_KEY is not configured');
+      ).rejects.toThrow('STRIPE_SECRET_KEY is required for Stripe operations');
     });
 
     it('should throw error when NEXT_PUBLIC_BASE_URL is missing', async () => {
@@ -532,7 +532,7 @@ describe('Stripe Subscription Integration', () => {
           priceId: 'price_basic_monthly',
           storeId: 'store-123',
         })
-      ).rejects.toThrow('NEXT_PUBLIC_BASE_URL is not configured');
+      ).rejects.toThrow('NEXT_PUBLIC_BASE_URL is required');
     });
   });
 });
