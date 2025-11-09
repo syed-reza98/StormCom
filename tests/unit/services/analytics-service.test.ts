@@ -35,6 +35,7 @@ vi.mock('../../../src/lib/db', () => ({
     product: {
       findMany: vi.fn(),
     },
+    $queryRawUnsafe: vi.fn(),
   },
 }));
 
@@ -60,6 +61,7 @@ const mockPrisma = {
   product: {
     findMany: vi.mocked(prisma.product.findMany),
   },
+  $queryRawUnsafe: vi.mocked(prisma.$queryRawUnsafe),
 };
 
 describe('AnalyticsService', () => {
@@ -78,12 +80,12 @@ describe('AnalyticsService', () => {
   describe('getSalesMetrics', () => {
     it('should return correct sales metrics for valid date range', async () => {
       // Arrange
-      const mockOrders = [
-        { totalAmount: 100.50 },
-        { totalAmount: 250.75 },
-      ];
-
-      mockPrisma.order.findMany.mockResolvedValue(mockOrders as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: {
+          totalAmount: 351.25,
+        },
+        _count: 2,
+      } as any);
 
       // Act
       const result = await analyticsService.getSalesMetrics(storeId, dateRange);
@@ -96,7 +98,7 @@ describe('AnalyticsService', () => {
         averageOrderValue: 175.625,
       });
 
-      expect(mockPrisma.order.findMany).toHaveBeenCalledWith({
+      expect(mockPrisma.order.aggregate).toHaveBeenCalledWith({
         where: {
           storeId,
           createdAt: {
@@ -108,15 +110,21 @@ describe('AnalyticsService', () => {
           },
           deletedAt: null,
         },
-        select: {
+        _sum: {
           totalAmount: true,
         },
+        _count: true,
       });
     });
 
     it('should handle zero sales gracefully', async () => {
       // Arrange
-      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: {
+          totalAmount: null,
+        },
+        _count: 0,
+      } as any);
 
       // Act
       const result = await analyticsService.getSalesMetrics(storeId, dateRange);
@@ -264,27 +272,15 @@ describe('AnalyticsService', () => {
       const mockTotalCustomers = 150;
       const mockNewCustomers = 2;
       
-      const mockReturningCustomerIds = [
-        { customerId: 'cust3' },
-        { customerId: 'cust4' },
-      ];
-      
-      const mockCustomersWithPreviousOrders = [
-        { customerId: 'cust3' },
-        { customerId: 'cust4' },
-      ];
-
       // Mock in order of calls:
       // 1. Total customers count
       mockPrisma.customer.count.mockResolvedValueOnce(mockTotalCustomers);
       // 2. New customers count
       mockPrisma.customer.count.mockResolvedValueOnce(mockNewCustomers);
-      // 3. Returning customer IDs
-      mockPrisma.order.groupBy.mockResolvedValue(mockReturningCustomerIds as any);
-      // 4. Previous orders for those customers
-      mockPrisma.order.findMany.mockResolvedValueOnce(mockCustomersWithPreviousOrders as any);
-      // 5. Previous period customer count
+      // 3. Previous period customer count
       mockPrisma.customer.count.mockResolvedValueOnce(100);
+      // 4. Returning customers raw query
+      mockPrisma.$queryRawUnsafe.mockResolvedValueOnce([{ count: 2 }] as any);
 
       // Act
       const result = await analyticsService.getCustomerMetrics(storeId, dateRange);
@@ -301,13 +297,22 @@ describe('AnalyticsService', () => {
 
     it('should handle zero customers gracefully', async () => {
       // Arrange
-      mockPrisma.customer.count.mockResolvedValueOnce(0 as any);
+      // Mock getSalesMetrics (calls order.aggregate)
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: { totalAmount: null },
+        _count: 0,
+      } as any);
       
+      // Mock getRevenueByPeriod (calls order.findMany)
+      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      
+      // Mock getTopSellingProducts (calls orderItem.groupBy and product.findMany)
       mockPrisma.orderItem.groupBy.mockResolvedValue([] as any);
       mockPrisma.product.findMany.mockResolvedValue([] as any);
-
-      mockPrisma.customer.count.mockResolvedValue(50);
-      mockPrisma.order.groupBy.mockResolvedValue([] as any);
+      
+      // Mock getCustomerMetrics (calls customer.count x3 and $queryRawUnsafe)
+      mockPrisma.customer.count.mockResolvedValue(0); // all customer.count calls
+      mockPrisma.$queryRawUnsafe.mockResolvedValue([{ count: 0 }] as any);
 
       // Act
       const result = await analyticsService.getDashboardAnalytics(storeId, dateRange);
@@ -324,7 +329,10 @@ describe('AnalyticsService', () => {
     it('should handle invalid store ID', async () => {
       // Arrange
       vi.clearAllMocks(); // Ensure clean mock state
-      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: { totalAmount: null },
+        _count: 0,
+      } as any);
 
       // Act
       const result = await analyticsService.getSalesMetrics('invalid-store', dateRange);
@@ -343,7 +351,10 @@ describe('AnalyticsService', () => {
         endDate: new Date('2026-01-31'),
       };
 
-      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: { totalAmount: null },
+        _count: 0,
+      } as any);
 
       // Act
       const result = await analyticsService.getSalesMetrics(storeId, futureDateRange);
@@ -354,7 +365,7 @@ describe('AnalyticsService', () => {
 
     it('should handle database connection timeouts', async () => {
       // Arrange
-      mockPrisma.order.findMany.mockRejectedValue(new Error('Connection timeout'));
+      mockPrisma.order.aggregate.mockRejectedValue(new Error('Connection timeout'));
 
       // Act & Assert
       await expect(
@@ -366,13 +377,16 @@ describe('AnalyticsService', () => {
   describe('Performance Considerations', () => {
     it('should use appropriate filters for performance', async () => {
       // Arrange
-      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: { totalAmount: null },
+        _count: 0,
+      } as any);
 
       // Act
       await analyticsService.getSalesMetrics(storeId, dateRange);
 
       // Assert - Verify query includes proper filters
-      expect(mockPrisma.order.findMany).toHaveBeenCalledWith(
+      expect(mockPrisma.order.aggregate).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             storeId: expect.any(String),
@@ -387,17 +401,23 @@ describe('AnalyticsService', () => {
 
     it('should limit data selection to required fields only', async () => {
       // Arrange
-      mockPrisma.order.findMany.mockResolvedValue([] as any);
+      mockPrisma.order.aggregate.mockResolvedValue({
+        _sum: {
+          totalAmount: 0,
+        },
+        _count: 0,
+      } as any);
 
       // Act
       await analyticsService.getSalesMetrics(storeId, dateRange);
 
       // Assert
-      expect(mockPrisma.order.findMany).toHaveBeenCalledWith(
+      expect(mockPrisma.order.aggregate).toHaveBeenCalledWith(
         expect.objectContaining({
-          select: {
+          _sum: {
             totalAmount: true,
           },
+          _count: true,
         })
       );
     });

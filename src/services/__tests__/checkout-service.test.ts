@@ -49,27 +49,32 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'prod-2', quantity: 1, price: 49.99 },
     ];
 
-    vi.mocked(db.product.findFirst)
-      .mockResolvedValueOnce({
+    vi.mocked(db.product.findMany).mockResolvedValue([
+      {
         id: 'prod-1',
         name: 'Product 1',
         slug: 'product-1',
+        sku: 'SKU-1',
         price: 29.99,
+        thumbnailUrl: '/images/prod-1.jpg',
         inventoryQty: 10,
         trackInventory: true,
         storeId,
         variants: [],
-      } as any)
-      .mockResolvedValueOnce({
+      } as any,
+      {
         id: 'prod-2',
         name: 'Product 2',
         slug: 'product-2',
+        sku: 'SKU-2',
         price: 49.99,
+        thumbnailUrl: '/images/prod-2.jpg',
         inventoryQty: 5,
         trackInventory: true,
         storeId,
         variants: [],
-      } as any);
+      } as any,
+    ]);
 
     const result = await validateCart(storeId, cartItems);
 
@@ -84,7 +89,7 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'invalid-prod', quantity: 1, price: 29.99 },
     ];
 
-    vi.mocked(db.product.findFirst).mockResolvedValue(null);
+    vi.mocked(db.product.findMany).mockResolvedValue([]);
 
     const result = await validateCart(storeId, cartItems);
 
@@ -98,16 +103,20 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'prod-1', quantity: 15, price: 29.99 },
     ];
 
-    vi.mocked(db.product.findFirst).mockResolvedValue({
-      id: 'prod-1',
-      name: 'Product 1',
-      slug: 'product-1',
-      price: 29.99,
-      inventoryQty: 10,
-      trackInventory: true,
-      storeId,
-      variants: [],
-    } as any);
+    vi.mocked(db.product.findMany).mockResolvedValue([
+      {
+        id: 'prod-1',
+        name: 'Product 1',
+        slug: 'product-1',
+        sku: 'SKU-1',
+        price: 29.99,
+        thumbnailUrl: '/images/prod-1.jpg',
+        inventoryQty: 10,
+        trackInventory: true,
+        storeId,
+        variants: [],
+      } as any,
+    ]);
 
     const result = await validateCart(storeId, cartItems);
 
@@ -120,24 +129,29 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'prod-1', variantId: 'var-1', quantity: 3, price: 29.99 },
     ];
 
-    vi.mocked(db.product.findFirst).mockResolvedValue({
-      id: 'prod-1',
-      name: 'Product 1',
-      slug: 'product-1',
-      price: 29.99,
-      inventoryQty: 20,
-      trackInventory: true,
-      storeId,
-      variants: [
-        {
-          id: 'var-1',
-          productId: 'prod-1',
-          name: 'Size M',
-          inventoryQty: 5, // Use inventoryQty instead of stock
-          trackInventory: true,
-        } as any,
-      ],
-    } as any);
+    vi.mocked(db.product.findMany).mockResolvedValue([
+      {
+        id: 'prod-1',
+        name: 'Product 1',
+        slug: 'product-1',
+        sku: 'SKU-1',
+        price: 29.99,
+        thumbnailUrl: '/images/prod-1.jpg',
+        inventoryQty: 20,
+        trackInventory: true,
+        storeId,
+        variants: [
+          {
+            id: 'var-1',
+            productId: 'prod-1',
+            name: 'Size M',
+            sku: 'SKU-1-M',
+            price: 29.99,
+            inventoryQty: 5,
+          } as any,
+        ],
+      } as any,
+    ]);
 
     const result = await validateCart(storeId, cartItems);
 
@@ -151,24 +165,29 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'prod-1', variantId: 'var-1', quantity: 10, price: 29.99 },
     ];
 
-    vi.mocked(db.product.findFirst).mockResolvedValue({
-      id: 'prod-1',
-      name: 'Product 1',
-      slug: 'product-1',
-      price: 29.99,
-      inventoryQty: 20,
-      trackInventory: true,
-      storeId,
-      variants: [
-        {
-          id: 'var-1',
-          productId: 'prod-1',
-          name: 'Size M',
-          inventoryQty: 5, // Use inventoryQty instead of stock
-          trackInventory: true,
-        } as any,
-      ],
-    } as any);
+    vi.mocked(db.product.findMany).mockResolvedValue([
+      {
+        id: 'prod-1',
+        name: 'Product 1',
+        slug: 'product-1',
+        sku: 'SKU-1',
+        price: 29.99,
+        thumbnailUrl: '/images/prod-1.jpg',
+        inventoryQty: 20,
+        trackInventory: true,
+        storeId,
+        variants: [
+          {
+            id: 'var-1',
+            productId: 'prod-1',
+            name: 'Size M',
+            sku: 'SKU-1-M',
+            price: 29.99,
+            inventoryQty: 5,
+          } as any,
+        ],
+      } as any,
+    ]);
 
     const result = await validateCart(storeId, cartItems);
 
@@ -181,16 +200,20 @@ describe('CheckoutService - validateCart', () => {
       { productId: 'prod-1', quantity: 100, price: 29.99 },
     ];
 
-    vi.mocked(db.product.findFirst).mockResolvedValue({
-      id: 'prod-1',
-      name: 'Product 1',
-      slug: 'product-1',
-      price: 29.99,
-      inventoryQty: 0,
-      trackInventory: false,
-      storeId,
-      variants: [],
-    } as any);
+    vi.mocked(db.product.findMany).mockResolvedValue([
+      {
+        id: 'prod-1',
+        name: 'Product 1',
+        slug: 'product-1',
+        sku: 'SKU-1',
+        price: 29.99,
+        thumbnailUrl: '/images/prod-1.jpg',
+        inventoryQty: 0,
+        trackInventory: false,
+        storeId,
+        variants: [],
+      } as any,
+    ]);
 
     const result = await validateCart(storeId, cartItems);
 

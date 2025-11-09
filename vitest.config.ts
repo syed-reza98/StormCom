@@ -10,14 +10,11 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
-    // Use process isolation to prevent memory leaks between test suites
-    pool: 'threads',
+    // Use single-threaded mode to prevent memory issues
+    pool: 'forks',
     poolOptions: {
-      threads: {
-        singleThread: false,
-        maxThreads: 2, // Reduce from 4 to 2 to save memory
-        minThreads: 1,
-        isolate: true,
+      forks: {
+        singleFork: true,
       },
     },
     // Give async hooks (DB setup/reset) more time
