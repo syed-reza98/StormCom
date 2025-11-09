@@ -8,11 +8,23 @@ import { db } from '@/lib/db';
 import { comparePassword } from '@/lib/password';
 import { createAuditLog, AuditAction, AuditResource } from '@/lib/audit';
 
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('NEXTAUTH_SECRET environment variable is required');
+}
+
+if (!process.env.NEXTAUTH_URL) {
+  console.warn('NEXTAUTH_URL environment variable is not set. Using default: http://localhost:3000');
+}
+
 /**
  * NextAuth configuration
  * Compatible with Next.js v16.0.1
  */
 export const authOptions: NextAuthOptions = {
+  // Secret for JWT encryption and CSRF protection
+  secret: process.env.NEXTAUTH_SECRET,
+
   // Use JWT strategy for session management (FR-036, FR-040)
   session: {
     strategy: 'jwt',
