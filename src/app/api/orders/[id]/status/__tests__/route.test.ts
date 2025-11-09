@@ -13,6 +13,7 @@ import { OrderStatus } from '@prisma/client';
 
 // Mock next-auth
 vi.mock('next-auth', () => ({
+  default: vi.fn(),
   getServerSession: vi.fn(),
 } as any));
 
@@ -512,7 +513,7 @@ describe('PUT /api/orders/[id]/status', () => {
         expect.objectContaining({
           orderId: 'order-1',
           newStatus: OrderStatus.PROCESSING,
-          storeId: null,
+          storeId: undefined,
         } as any)
       );
     });
