@@ -24,6 +24,7 @@
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
+      // Need Clarification: This ./types folder's file (next-env.d.ts) should be moved to ./src/types or not?
       "./types"
     ],
     "types": [
