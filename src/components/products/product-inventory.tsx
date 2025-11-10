@@ -6,8 +6,8 @@
 import { Badge } from '@/components/ui/badge';
 
 interface Product {
-  trackQuantity: boolean;
-  quantity?: number;
+  trackInventory: boolean;
+  inventoryQty?: number;
   lowStockThreshold: number;
 }
 
@@ -17,11 +17,11 @@ interface ProductInventoryProps {
 
 export function ProductInventory({ product }: ProductInventoryProps) {
   const getInventoryStatus = () => {
-    if (!product.trackQuantity) {
+    if (!product.trackInventory) {
       return { status: 'Not Tracked', variant: 'outline' as const };
     }
     
-    const quantity = product.quantity || 0;
+    const quantity = product.inventoryQty || 0;
     if (quantity === 0) {
       return { status: 'Out of Stock', variant: 'destructive' as const };
     } else if (quantity <= product.lowStockThreshold) {
@@ -38,18 +38,18 @@ export function ProductInventory({ product }: ProductInventoryProps) {
       <div>
         <label className="text-sm font-medium text-muted-foreground">Inventory Tracking</label>
         <div className="mt-1">
-          <Badge variant={product.trackQuantity ? 'success' : 'secondary'}>
-            {product.trackQuantity ? 'Enabled' : 'Disabled'}
+          <Badge variant={product.trackInventory ? 'success' : 'secondary'}>
+            {product.trackInventory ? 'Enabled' : 'Disabled'}
           </Badge>
         </div>
       </div>
 
-      {product.trackQuantity && (
+      {product.trackInventory && (
         <>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Current Stock</label>
             <div className="mt-1 flex items-center gap-2">
-              <span className="text-2xl font-bold">{product.quantity || 0}</span>
+              <span className="text-2xl font-bold">{product.inventoryQty || 0}</span>
               <Badge variant={inventoryStatus.variant}>
                 {inventoryStatus.status}
               </Badge>
@@ -61,7 +61,7 @@ export function ProductInventory({ product }: ProductInventoryProps) {
             <p className="mt-1 text-sm">{product.lowStockThreshold} units</p>
           </div>
 
-          {product.quantity !== undefined && product.quantity <= product.lowStockThreshold && (
+          {product.inventoryQty !== undefined && product.inventoryQty <= product.lowStockThreshold && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
                 ⚠️ Stock is running low. Consider restocking soon.
@@ -69,7 +69,7 @@ export function ProductInventory({ product }: ProductInventoryProps) {
             </div>
           )}
 
-          {product.quantity === 0 && (
+          {product.inventoryQty === 0 && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-sm text-red-800">
                 🚫 Product is out of stock and unavailable for purchase.

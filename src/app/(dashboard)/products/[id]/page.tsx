@@ -22,39 +22,45 @@ interface ProductDetailsPageProps {
 interface Product {
   id: string;
   name: string;
+  slug: string;
   sku?: string;
+  barcode?: string;
   description?: string;
   shortDescription?: string;
   price: number;
-  salePrice?: number;
+  compareAtPrice?: number;
   costPrice?: number;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-  isVisible: boolean;
+  inventoryStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'LOW_STOCK' | 'DISCONTINUED';
+  isPublished: boolean;
   isFeatured: boolean;
-  trackQuantity: boolean;
-  quantity?: number;
+  trackInventory: boolean;
+  inventoryQty?: number;
   lowStockThreshold: number;
   weight?: number;
-  dimensions?: any;
-  tags: string[];
+  length?: number;
+  width?: number;
+  height?: number;
   metaTitle?: string;
   metaDescription?: string;
-  category?: { id: string; name: string };
-  brand?: { id: string; name: string };
+  metaKeywords?: string;
+  thumbnailUrl?: string;
+  category?: { id: string; name: string; slug: string };
+  brand?: { id: string; name: string; slug: string };
   images: string[];
   variants: ProductVariant[];
   attributes: ProductAttribute[];
   createdAt: string;
   updatedAt: string;
+  publishedAt?: string;
 }
 
 interface ProductVariant {
   id: string;
   name: string;
   sku?: string;
-  price: number;
-  quantity: number;
-  attributes: Record<string, string>;
+  price?: number;
+  inventoryQty: number;
+  options: Record<string, string>;
 }
 
 interface ProductAttribute {
@@ -88,22 +94,119 @@ export async function generateMetadata({ params }: ProductDetailsPageProps): Pro
 // DATA FETCHING
 // ============================================================================
 
+/**
+ * Fetch product data directly from database (Server Component best practice)
+ * 
+ * CRITICAL: In Next.js 16, Server Components should fetch data directly from
+ * the database using ORM (Prisma) instead of calling internal API routes.
+ * 
+ * Benefits:
+ * - No HTTP round-trip overhead
+ * - No need for NEXT_PUBLIC_APP_URL environment variable
+ * - Type-safe database queries with Prisma
+ * - Better performance (direct database access)
+ * - Follows Next.js App Router best practices
+ * 
+ * @see https://nextjs.org/docs/app/getting-started/fetching-data#with-an-orm-or-database
+ */
 async function getProduct(id: string): Promise<Product | null> {
   // Make this route dynamic - fetches authenticated data at request time
   await connection();
   
   try {
-    // In a real app, this would use the authenticated API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/products/${id}`, {
-      cache: 'no-store', // Always fetch fresh data
-    });
-
-    if (!response.ok) {
+    const { db } = await import('@/lib/db');
+    const { getServerSession } = await import('next-auth');
+    const { authOptions } = await import('@/lib/auth');
+    
+    // Get session to check storeId for multi-tenant filtering
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.storeId) {
+      console.error('No storeId in session - tenant isolation failed');
       return null;
     }
 
-    const data = await response.json();
-    return data.data;
+    // Query product directly from database with Prisma
+    const product = await db.product.findUnique({
+      where: { 
+        id,
+        storeId: session.user.storeId, // Multi-tenant filtering
+        deletedAt: null, // Soft delete filter
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        sku: true,
+        barcode: true,
+        description: true,
+        shortDescription: true,
+        price: true,
+        compareAtPrice: true,
+        costPrice: true,
+        inventoryStatus: true,
+        isPublished: true,
+        isFeatured: true,
+        trackInventory: true,
+        inventoryQty: true,
+        lowStockThreshold: true,
+        weight: true,
+        length: true,
+        width: true,
+        height: true,
+        metaTitle: true,
+        metaDescription: true,
+        metaKeywords: true,
+        thumbnailUrl: true,
+        createdAt: true,
+        updatedAt: true,
+        publishedAt: true,
+        category: {
+          select: { id: true, name: true, slug: true }
+        },
+        brand: {
+          select: { id: true, name: true, slug: true }
+        },
+        images: true,
+        variants: {
+          select: {
+            id: true,
+            name: true,
+            sku: true,
+            price: true,
+            inventoryQty: true,
+            options: true,
+          }
+        },
+        attributes: {
+          select: {
+            id: true,
+            attribute: {
+              select: { name: true }
+            },
+            value: true,
+          }
+        },
+      },
+    });
+
+    if (!product) {
+      return null;
+    }
+
+    // Transform Prisma result to match Product interface
+    return {
+      ...product,
+      images: JSON.parse(product.images) as string[],
+      metaKeywords: product.metaKeywords ? (JSON.parse(product.metaKeywords) as string[]) : undefined,
+      variants: product.variants.map(v => ({
+        ...v,
+        options: JSON.parse(v.options) as Record<string, string>,
+      })),
+      createdAt: product.createdAt.toISOString(),
+      updatedAt: product.updatedAt.toISOString(),
+      publishedAt: product.publishedAt?.toISOString(),
+    } as Product;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
@@ -134,10 +237,10 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge color={product.status === 'PUBLISHED' ? 'green' : 'gray'}>
-                {product.status}
+              <Badge color={product.isPublished ? 'green' : 'gray'}>
+                {product.isPublished ? 'PUBLISHED' : 'DRAFT'}
               </Badge>
-              {!product.isVisible && <Badge color="gray">Hidden</Badge>}
+              {!product.isPublished && <Badge color="gray">Hidden</Badge>}
               {product.isFeatured && <Badge color="amber">Featured</Badge>}
               {product.sku && (
                 <span className="text-sm text-muted-foreground">SKU: {product.sku}</span>
@@ -203,11 +306,11 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
                   </p>
                 </div>
 
-                {product.salePrice && (
+                {product.compareAtPrice && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Sale Price</label>
-                    <p className="mt-1 font-medium text-lg text-destructive">
-                      ${product.salePrice.toFixed(2)}
+                    <label className="text-sm font-medium text-muted-foreground">Compare At Price</label>
+                    <p className="mt-1 font-medium text-lg text-destructive line-through">
+                      ${product.compareAtPrice.toFixed(2)}
                     </p>
                   </div>
                 )}
@@ -244,13 +347,13 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
               </div>
             )}
 
-            {product.tags.length > 0 && (
+            {product.metaKeywords && Array.isArray(product.metaKeywords) && product.metaKeywords.length > 0 && (
               <div className="mt-6">
-                <label className="text-sm font-medium text-muted-foreground">Tags</label>
+                <label className="text-sm font-medium text-muted-foreground">Keywords</label>
                 <div className="mt-1 flex flex-wrap gap-2">
-                  {product.tags.map((tag, index) => (
+                  {product.metaKeywords.map((keyword: string, index: number) => (
                     <Badge key={index} variant="outline">
-                      {tag}
+                      {keyword}
                     </Badge>
                   ))}
                 </div>
@@ -321,14 +424,14 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span>Status:</span>
-                <Badge color={product.status === 'PUBLISHED' ? 'green' : 'gray'}>
-                  {product.status}
+                <Badge color={product.isPublished ? 'green' : 'gray'}>
+                  {product.isPublished ? 'PUBLISHED' : 'DRAFT'}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span>Visibility:</span>
-                <Badge color={product.isVisible ? 'green' : 'gray'}>
-                  {product.isVisible ? 'Visible' : 'Hidden'}
+                <Badge color={product.isPublished ? 'green' : 'gray'}>
+                  {product.isPublished ? 'Visible' : 'Hidden'}
                 </Badge>
               </div>
               <div className="flex justify-between">

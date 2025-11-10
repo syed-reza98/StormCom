@@ -5,6 +5,7 @@ Route (app)
 ├ ○ /analytics/customers
 ├ ○ /analytics/sales
 ├ ƒ /api/analytics/customers
+├ ƒ /api/analytics/dashboard
 ├ ƒ /api/analytics/products
 ├ ƒ /api/analytics/revenue
 ├ ƒ /api/analytics/sales
@@ -12,15 +13,15 @@ Route (app)
 ├ ƒ /api/attributes/[id]
 ├ ƒ /api/attributes/[id]/products
 ├ ƒ /api/audit-logs
+├ ƒ /api/auth/[...nextauth]
 ├ ƒ /api/auth/forgot-password
-├ ƒ /api/auth/login
-├ ƒ /api/auth/logout
 ├ ƒ /api/auth/mfa/backup-codes
 ├ ƒ /api/auth/mfa/enroll
 ├ ƒ /api/auth/mfa/verify
 ├ ƒ /api/auth/register
 ├ ƒ /api/auth/reset-password
 ├ ƒ /api/auth/session
+├ ƒ /api/auth/test
 ├ ƒ /api/brands
 ├ ƒ /api/brands/[id]
 ├ ƒ /api/brands/[id]/products
@@ -37,9 +38,7 @@ Route (app)
 ├ ƒ /api/checkout/shipping
 ├ ƒ /api/checkout/validate
 ├ ƒ /api/csrf-token
-├ ƒ /api/dev/create-session
 ├ ƒ /api/dev/echo-cookies
-├ ƒ /api/dev/session-info
 ├ ƒ /api/docs
 ├ ƒ /api/emails/send
 ├ ƒ /api/gdpr/consent
@@ -117,3 +116,4 @@ Route (app)
 
 
 ○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
