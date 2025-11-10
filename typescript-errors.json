@@ -1,19 +1,38 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  0,
-                    "exitCode":  0,
-                    "timestamp":  "2025-11-08T05:42:20Z",
+                    "totalErrors":  2,
+                    "exitCode":  1,
+                    "timestamp":  "2025-11-10T03:36:37Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  4
+                    "totalLines":  6
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit --incremental",
-                      ""
+                      "",
+                      ".next/dev/types/validator.ts(593,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/session/route.js\u0027 or its corresponding type declarations.",
+                      "tests/unit/app/api/analytics-routes.test.ts(441,13): error TS6133: \u0027data\u0027 is declared but its value is never read."
                   ],
     "errors":  [
-
+                   {
+                       "message":  "Cannot find module \u0027../../../src/app/api/auth/session/route.js\u0027 or its corresponding type declarations.",
+                       "column":  39,
+                       "line":  593,
+                       "fullText":  ".next/dev/types/validator.ts(593,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/session/route.js\u0027 or its corresponding type declarations.",
+                       "code":  "TS2307",
+                       "severity":  "error",
+                       "file":  ".next/dev/types/validator.ts"
+                   },
+                   {
+                       "message":  "\u0027data\u0027 is declared but its value is never read.",
+                       "column":  13,
+                       "line":  441,
+                       "fullText":  "tests/unit/app/api/analytics-routes.test.ts(441,13): error TS6133: \u0027data\u0027 is declared but its value is never read.",
+                       "code":  "TS6133",
+                       "severity":  "error",
+                       "file":  "tests/unit/app/api/analytics-routes.test.ts"
+                   }
                ]
 }

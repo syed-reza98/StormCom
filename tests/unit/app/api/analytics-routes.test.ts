@@ -438,7 +438,8 @@ describe('Analytics API Routes', () => {
 
       // Act
       const response = await productsHandler(request);
-      const data = await response.json();
+      // response body is not inspected in this test - consume to avoid unused var
+      await response.json();
 
       // Assert - should succeed but cap limit at 50
       expect(response.status).toBe(200);

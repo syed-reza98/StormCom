@@ -571,13 +571,17 @@ describe('Analytics Dashboard Components', () => {
 
         return (
           <div data-testid="date-range-selector">
+            <label htmlFor="start-date" className="sr-only">Start date</label>
             <input
+              id="start-date"
               type="date"
               data-testid="start-date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
+            <label htmlFor="end-date" className="sr-only">End date</label>
             <input
+              id="end-date"
               type="date"
               data-testid="end-date"
               value={endDate}
@@ -632,13 +636,17 @@ describe('Analytics Dashboard Components', () => {
 
         return (
           <div data-testid="validating-date-selector">
+            <label htmlFor="start-date" className="sr-only">Start date</label>
             <input
+              id="start-date"
               type="date"
               data-testid="start-date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
+            <label htmlFor="end-date" className="sr-only">End date</label>
             <input
+              id="end-date"
               type="date"
               data-testid="end-date"
               value={endDate}
@@ -691,7 +699,9 @@ describe('Analytics Dashboard Components', () => {
 
         return (
           <div>
+            <label htmlFor="debounced-date" className="sr-only">Date</label>
             <input
+              id="debounced-date"
               data-testid="debounced-date"
               type="date"
               value={date}
