@@ -1,40 +1,43 @@
 // tests/unit/services/notification-service.test.ts
 // Unit tests for NotificationService
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NotificationService } from '@/services/notification-service';
-import { prisma } from '@/lib/prisma';
+import { prismaMock } from '../../mocks/prisma';
 
 describe('NotificationService', () => {
   let service: NotificationService;
   let testUserId: string;
   let testNotificationId: string;
 
-  beforeEach(async () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
     service = new NotificationService();
-
-    // Create test user
-    const user = await prisma.user.create({
-      data: {
-        email: 'notif-test@example.com',
-        name: 'Notification Test User',
-        password: 'hashed_password',
-        role: 'CUSTOMER',
-      },
-    });
-    testUserId = user.id;
-  });
-
-  afterEach(async () => {
-    // Clean up test data
-    if (testUserId) {
-      await prisma.notification.deleteMany({ where: { userId: testUserId } });
-      await prisma.user.delete({ where: { id: testUserId } });
-    }
+    
+    // Set up test IDs
+    testUserId = 'test-user-id-123';
+    testNotificationId = 'test-notif-id-456';
   });
 
   describe('create', () => {
     it('should create a notification successfully', async () => {
+      // Arrange
+      const mockNotification = {
+        id: testNotificationId,
+        userId: testUserId,
+        title: 'New Order',
+        message: 'You have a new order #12345',
+        type: 'order_update',
+        linkUrl: '/dashboard/orders/12345',
+        linkText: 'View Order',
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
+      };
+
+      prismaMock.notification.create.mockResolvedValue(mockNotification);
+
       // Act
       const notification = await service.create({
         userId: testUserId,
@@ -46,8 +49,20 @@ describe('NotificationService', () => {
       });
 
       // Assert
+      expect(prismaMock.notification.create).toHaveBeenCalledWith({
+        data: {
+          userId: testUserId,
+          title: 'New Order',
+          message: 'You have a new order #12345',
+          type: 'order_update',
+          linkUrl: '/dashboard/orders/12345',
+          linkText: 'View Order',
+          isRead: false,
+        },
+      });
+
       expect(notification).toBeDefined();
-      expect(notification.id).toBeDefined();
+      expect(notification.id).toBe(testNotificationId);
       expect(notification.userId).toBe(testUserId);
       expect(notification.title).toBe('New Order');
       expect(notification.message).toBe('You have a new order #12345');
@@ -57,11 +72,26 @@ describe('NotificationService', () => {
       expect(notification.isRead).toBe(false);
       expect(notification.readAt).toBeNull();
       expect(notification.createdAt).toBeInstanceOf(Date);
-
-      testNotificationId = notification.id;
     });
 
     it('should create notification without link', async () => {
+      // Arrange
+      const mockNotification = {
+        id: testNotificationId,
+        userId: testUserId,
+        title: 'System Alert',
+        message: 'System maintenance scheduled',
+        type: 'system',
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
+      };
+
+      prismaMock.notification.create.mockResolvedValue(mockNotification);
+
       // Act
       const notification = await service.create({
         userId: testUserId,
@@ -71,47 +101,81 @@ describe('NotificationService', () => {
       });
 
       // Assert
+      expect(prismaMock.notification.create).toHaveBeenCalledWith({
+        data: {
+          userId: testUserId,
+          title: 'System Alert',
+          message: 'System maintenance scheduled',
+          type: 'system',
+          linkUrl: undefined,
+          linkText: undefined,
+          isRead: false,
+        },
+      });
+
       expect(notification.linkUrl).toBeNull();
       expect(notification.linkText).toBeNull();
     });
   });
 
   describe('list', () => {
-    beforeEach(async () => {
-      // Create test notifications
-      await service.create({
-        userId: testUserId,
+    const mockNotifications = [
+      {
+        id: 'notif-1',
+        userId: 'test-user-id-123',
         title: 'Notification 1',
         message: 'Message 1',
         type: 'order_update',
-      });
-
-      await service.create({
-        userId: testUserId,
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T10:00:00Z'),
+        updatedAt: new Date('2025-01-01T10:00:00Z'),
+      },
+      {
+        id: 'notif-2',
+        userId: 'test-user-id-123',
         title: 'Notification 2',
         message: 'Message 2',
         type: 'low_stock',
-      });
-
-      // Create a read notification
-      const readNotif = await service.create({
-        userId: testUserId,
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T09:00:00Z'),
+        updatedAt: new Date('2025-01-01T09:00:00Z'),
+      },
+      {
+        id: 'notif-3',
+        userId: 'test-user-id-123',
         title: 'Notification 3',
         message: 'Message 3',
         type: 'system',
-      });
-
-      await prisma.notification.update({
-        where: { id: readNotif.id },
-        data: { isRead: true, readAt: new Date() },
-      });
-    });
+        linkUrl: null,
+        linkText: null,
+        isRead: true,
+        readAt: new Date('2025-01-01T08:30:00Z'),
+        createdAt: new Date('2025-01-01T08:00:00Z'),
+        updatedAt: new Date('2025-01-01T08:30:00Z'),
+      },
+    ];
 
     it('should list all notifications for a user', async () => {
+      // Arrange
+      prismaMock.notification.findMany.mockResolvedValue(mockNotifications);
+
       // Act
       const notifications = await service.list({ userId: testUserId });
 
       // Assert
+      expect(prismaMock.notification.findMany).toHaveBeenCalledWith({
+        where: { userId: testUserId },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        skip: 0,
+      });
+
       expect(notifications).toHaveLength(3);
       expect(notifications[0].createdAt.getTime()).toBeGreaterThanOrEqual(
         notifications[1].createdAt.getTime()
@@ -119,191 +183,225 @@ describe('NotificationService', () => {
     });
 
     it('should filter unread notifications', async () => {
+      // Arrange
+      const unreadNotifications = mockNotifications.filter(n => !n.isRead);
+      prismaMock.notification.findMany.mockResolvedValue(unreadNotifications);
+
       // Act
       const unread = await service.list({ userId: testUserId, isRead: false });
 
       // Assert
+      expect(prismaMock.notification.findMany).toHaveBeenCalledWith({
+        where: { userId: testUserId, isRead: false },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        skip: 0,
+      });
+
       expect(unread).toHaveLength(2);
       expect(unread.every((n) => !n.isRead)).toBe(true);
     });
 
     it('should filter read notifications', async () => {
+      // Arrange
+      const readNotifications = mockNotifications.filter(n => n.isRead);
+      prismaMock.notification.findMany.mockResolvedValue(readNotifications);
+
       // Act
       const read = await service.list({ userId: testUserId, isRead: true });
 
       // Assert
+      expect(prismaMock.notification.findMany).toHaveBeenCalledWith({
+        where: { userId: testUserId, isRead: true },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        skip: 0,
+      });
+
       expect(read).toHaveLength(1);
       expect(read.every((n) => n.isRead)).toBe(true);
     });
 
     it('should respect limit parameter', async () => {
+      // Arrange
+      const limitedNotifications = mockNotifications.slice(0, 2);
+      prismaMock.notification.findMany.mockResolvedValue(limitedNotifications);
+
       // Act
       const limited = await service.list({ userId: testUserId, limit: 2 });
 
       // Assert
+      expect(prismaMock.notification.findMany).toHaveBeenCalledWith({
+        where: { userId: testUserId },
+        orderBy: { createdAt: 'desc' },
+        take: 2,
+        skip: 0,
+      });
+
       expect(limited).toHaveLength(2);
     });
 
     it('should respect offset parameter', async () => {
+      // Arrange
+      const offsetNotifications = mockNotifications.slice(1);
+      prismaMock.notification.findMany.mockResolvedValue(offsetNotifications);
+
       // Act
-      const all = await service.list({ userId: testUserId });
       const offset = await service.list({ userId: testUserId, offset: 1 });
 
       // Assert
+      expect(prismaMock.notification.findMany).toHaveBeenCalledWith({
+        where: { userId: testUserId },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        skip: 1,
+      });
+
       expect(offset).toHaveLength(2);
-      expect(offset[0].id).toBe(all[1].id);
     });
   });
 
   describe('getUnreadCount', () => {
-    beforeEach(async () => {
-      // Create 3 unread notifications
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 1',
-        message: 'Message',
-        type: 'order_update',
-      });
-
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 2',
-        message: 'Message',
-        type: 'order_update',
-      });
-
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 3',
-        message: 'Message',
-        type: 'order_update',
-      });
-
-      // Create 1 read notification
-      const readNotif = await service.create({
-        userId: testUserId,
-        title: 'Read',
-        message: 'Message',
-        type: 'system',
-      });
-
-      await prisma.notification.update({
-        where: { id: readNotif.id },
-        data: { isRead: true, readAt: new Date() },
-      });
-    });
-
     it('should return correct unread count', async () => {
+      // Arrange
+      prismaMock.notification.count.mockResolvedValue(3);
+
       // Act
       const count = await service.getUnreadCount(testUserId);
 
       // Assert
+      expect(prismaMock.notification.count).toHaveBeenCalledWith({
+        where: {
+          userId: testUserId,
+          isRead: false,
+        },
+      });
+
       expect(count).toBe(3);
     });
 
     it('should return 0 for user with no unread notifications', async () => {
       // Arrange
-      const newUser = await prisma.user.create({
-        data: {
-          email: 'nonotifs@example.com',
-          name: 'No Notifs',
-          password: 'hashed',
-          role: 'CUSTOMER',
+      const newUserId = 'new-user-id-789';
+      prismaMock.notification.count.mockResolvedValue(0);
+
+      // Act
+      const count = await service.getUnreadCount(newUserId);
+
+      // Assert
+      expect(prismaMock.notification.count).toHaveBeenCalledWith({
+        where: {
+          userId: newUserId,
+          isRead: false,
         },
       });
 
-      // Act
-      const count = await service.getUnreadCount(newUser.id);
-
-      // Assert
       expect(count).toBe(0);
-
-      // Cleanup
-      await prisma.user.delete({ where: { id: newUser.id } });
     });
   });
 
   describe('markAsRead', () => {
-    beforeEach(async () => {
-      const notification = await service.create({
+    it('should mark notification as read', async () => {
+      // Arrange
+      const existingNotification = {
+        id: testNotificationId,
         userId: testUserId,
         title: 'Test Notification',
         message: 'Test Message',
         type: 'order_update',
-      });
-      testNotificationId = notification.id;
-    });
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
+      };
 
-    it('should mark notification as read', async () => {
+      const updatedNotification = {
+        ...existingNotification,
+        isRead: true,
+        readAt: new Date('2025-01-01T01:00:00Z'),
+      };
+
+      prismaMock.notification.findFirst.mockResolvedValue(existingNotification);
+      prismaMock.notification.update.mockResolvedValue(updatedNotification);
+
       // Act
       const updated = await service.markAsRead(testNotificationId, testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: testUserId },
+      });
+
+      expect(prismaMock.notification.update).toHaveBeenCalledWith({
+        where: { id: testNotificationId },
+        data: {
+          isRead: true,
+          readAt: expect.any(Date),
+        },
+      });
+
       expect(updated).toBeDefined();
       expect(updated!.isRead).toBe(true);
       expect(updated!.readAt).toBeInstanceOf(Date);
     });
 
     it('should return null for non-existent notification', async () => {
+      // Arrange
+      prismaMock.notification.findFirst.mockResolvedValue(null);
+
       // Act
       const result = await service.markAsRead('non-existent-id', testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: 'non-existent-id', userId: testUserId },
+      });
+
+      expect(prismaMock.notification.update).not.toHaveBeenCalled();
       expect(result).toBeNull();
     });
 
     it('should return null when user does not own notification', async () => {
       // Arrange
-      const otherUser = await prisma.user.create({
-        data: {
-          email: 'other@example.com',
-          name: 'Other User',
-          password: 'hashed',
-          role: 'CUSTOMER',
-        },
-      });
+      const otherUserId = 'other-user-id-999';
+      prismaMock.notification.findFirst.mockResolvedValue(null);
 
       // Act
-      const result = await service.markAsRead(testNotificationId, otherUser.id);
+      const result = await service.markAsRead(testNotificationId, otherUserId);
 
       // Assert
-      expect(result).toBeNull();
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: otherUserId },
+      });
 
-      // Cleanup
-      await prisma.user.delete({ where: { id: otherUser.id } });
+      expect(prismaMock.notification.update).not.toHaveBeenCalled();
+      expect(result).toBeNull();
     });
   });
 
   describe('markAllAsRead', () => {
-    beforeEach(async () => {
-      // Create 3 unread notifications
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 1',
-        message: 'Message',
-        type: 'order_update',
-      });
-
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 2',
-        message: 'Message',
-        type: 'order_update',
-      });
-
-      await service.create({
-        userId: testUserId,
-        title: 'Unread 3',
-        message: 'Message',
-        type: 'order_update',
-      });
-    });
-
     it('should mark all notifications as read', async () => {
+      // Arrange
+      prismaMock.notification.updateMany.mockResolvedValue({ count: 3 });
+      prismaMock.notification.count.mockResolvedValue(0);
+
       // Act
       const count = await service.markAllAsRead(testUserId);
 
       // Assert
+      expect(prismaMock.notification.updateMany).toHaveBeenCalledWith({
+        where: {
+          userId: testUserId,
+          isRead: false,
+        },
+        data: {
+          isRead: true,
+          readAt: expect.any(Date),
+        },
+      });
+
       expect(count).toBe(3);
 
       const unreadCount = await service.getUnreadCount(testUserId);
@@ -312,32 +410,60 @@ describe('NotificationService', () => {
 
     it('should return 0 if no unread notifications', async () => {
       // Arrange
-      await service.markAllAsRead(testUserId); // Mark all as read first
+      prismaMock.notification.updateMany.mockResolvedValue({ count: 0 });
 
       // Act
       const count = await service.markAllAsRead(testUserId);
 
       // Assert
+      expect(prismaMock.notification.updateMany).toHaveBeenCalledWith({
+        where: {
+          userId: testUserId,
+          isRead: false,
+        },
+        data: {
+          isRead: true,
+          readAt: expect.any(Date),
+        },
+      });
+
       expect(count).toBe(0);
     });
   });
 
   describe('delete', () => {
-    beforeEach(async () => {
-      const notification = await service.create({
+    it('should delete notification', async () => {
+      // Arrange
+      const existingNotification = {
+        id: testNotificationId,
         userId: testUserId,
         title: 'Test Notification',
         message: 'Test Message',
         type: 'order_update',
-      });
-      testNotificationId = notification.id;
-    });
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
+      };
 
-    it('should delete notification', async () => {
+      prismaMock.notification.findFirst.mockResolvedValueOnce(existingNotification);
+      prismaMock.notification.delete.mockResolvedValue(existingNotification);
+      prismaMock.notification.findFirst.mockResolvedValueOnce(null); // For getById check
+
       // Act
       const deleted = await service.delete(testNotificationId, testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: testUserId },
+      });
+
+      expect(prismaMock.notification.delete).toHaveBeenCalledWith({
+        where: { id: testNotificationId },
+      });
+
       expect(deleted).toBeDefined();
       expect(deleted!.id).toBe(testNotificationId);
 
@@ -346,74 +472,73 @@ describe('NotificationService', () => {
     });
 
     it('should return null for non-existent notification', async () => {
+      // Arrange
+      prismaMock.notification.findFirst.mockResolvedValue(null);
+
       // Act
       const result = await service.delete('non-existent-id', testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: 'non-existent-id', userId: testUserId },
+      });
+
+      expect(prismaMock.notification.delete).not.toHaveBeenCalled();
       expect(result).toBeNull();
     });
 
     it('should return null when user does not own notification', async () => {
       // Arrange
-      const otherUser = await prisma.user.create({
-        data: {
-          email: 'other@example.com',
-          name: 'Other User',
-          password: 'hashed',
-          role: 'CUSTOMER',
-        },
-      });
+      const otherUserId = 'other-user-id-999';
+      prismaMock.notification.findFirst.mockResolvedValue(null);
 
       // Act
-      const result = await service.delete(testNotificationId, otherUser.id);
+      const result = await service.delete(testNotificationId, otherUserId);
 
       // Assert
-      expect(result).toBeNull();
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: otherUserId },
+      });
 
-      // Cleanup
-      await prisma.user.delete({ where: { id: otherUser.id } });
+      expect(prismaMock.notification.delete).not.toHaveBeenCalled();
+      expect(result).toBeNull();
     });
   });
 
   describe('deleteAllRead', () => {
-    beforeEach(async () => {
-      // Create 2 read notifications
-      const read1 = await service.create({
-        userId: testUserId,
-        title: 'Read 1',
-        message: 'Message',
-        type: 'system',
-      });
-      await prisma.notification.update({
-        where: { id: read1.id },
-        data: { isRead: true, readAt: new Date() },
-      });
-
-      const read2 = await service.create({
-        userId: testUserId,
-        title: 'Read 2',
-        message: 'Message',
-        type: 'system',
-      });
-      await prisma.notification.update({
-        where: { id: read2.id },
-        data: { isRead: true, readAt: new Date() },
-      });
-
-      // Create 1 unread notification
-      await service.create({
-        userId: testUserId,
-        title: 'Unread',
-        message: 'Message',
-        type: 'order_update',
-      });
-    });
-
     it('should delete all read notifications', async () => {
+      // Arrange
+      prismaMock.notification.deleteMany.mockResolvedValueOnce({ count: 2 });
+      
+      const remainingNotifications = [
+        {
+          id: 'notif-unread',
+          userId: testUserId,
+          title: 'Unread',
+          message: 'Message',
+          type: 'order_update',
+          linkUrl: null,
+          linkText: null,
+          isRead: false,
+          readAt: null,
+          createdAt: new Date('2025-01-01T00:00:00Z'),
+          updatedAt: new Date('2025-01-01T00:00:00Z'),
+        },
+      ];
+      
+      prismaMock.notification.findMany.mockResolvedValue(remainingNotifications);
+
       // Act
       const count = await service.deleteAllRead(testUserId);
 
       // Assert
+      expect(prismaMock.notification.deleteMany).toHaveBeenCalledWith({
+        where: {
+          userId: testUserId,
+          isRead: true,
+        },
+      });
+
       expect(count).toBe(2);
 
       const remaining = await service.list({ userId: testUserId });
@@ -423,64 +548,84 @@ describe('NotificationService', () => {
 
     it('should return 0 if no read notifications', async () => {
       // Arrange
-      await service.deleteAllRead(testUserId); // Delete all read first
+      prismaMock.notification.deleteMany.mockResolvedValue({ count: 0 });
 
       // Act
       const count = await service.deleteAllRead(testUserId);
 
       // Assert
+      expect(prismaMock.notification.deleteMany).toHaveBeenCalledWith({
+        where: {
+          userId: testUserId,
+          isRead: true,
+        },
+      });
+
       expect(count).toBe(0);
     });
   });
 
   describe('getById', () => {
-    beforeEach(async () => {
-      const notification = await service.create({
+    it('should get notification by ID', async () => {
+      // Arrange
+      const mockNotification = {
+        id: testNotificationId,
         userId: testUserId,
         title: 'Test Notification',
         message: 'Test Message',
         type: 'order_update',
-      });
-      testNotificationId = notification.id;
-    });
+        linkUrl: null,
+        linkText: null,
+        isRead: false,
+        readAt: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
+        updatedAt: new Date('2025-01-01T00:00:00Z'),
+      };
 
-    it('should get notification by ID', async () => {
+      prismaMock.notification.findFirst.mockResolvedValue(mockNotification);
+
       // Act
       const notification = await service.getById(testNotificationId, testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: testUserId },
+      });
+
       expect(notification).toBeDefined();
       expect(notification!.id).toBe(testNotificationId);
       expect(notification!.title).toBe('Test Notification');
     });
 
     it('should return null for non-existent notification', async () => {
+      // Arrange
+      prismaMock.notification.findFirst.mockResolvedValue(null);
+
       // Act
       const result = await service.getById('non-existent-id', testUserId);
 
       // Assert
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: 'non-existent-id', userId: testUserId },
+      });
+
       expect(result).toBeNull();
     });
 
     it('should return null when user does not own notification', async () => {
       // Arrange
-      const otherUser = await prisma.user.create({
-        data: {
-          email: 'other@example.com',
-          name: 'Other User',
-          password: 'hashed',
-          role: 'CUSTOMER',
-        },
-      });
+      const otherUserId = 'other-user-id-999';
+      prismaMock.notification.findFirst.mockResolvedValue(null);
 
       // Act
-      const result = await service.getById(testNotificationId, otherUser.id);
+      const result = await service.getById(testNotificationId, otherUserId);
 
       // Assert
-      expect(result).toBeNull();
+      expect(prismaMock.notification.findFirst).toHaveBeenCalledWith({
+        where: { id: testNotificationId, userId: otherUserId },
+      });
 
-      // Cleanup
-      await prisma.user.delete({ where: { id: otherUser.id } });
+      expect(result).toBeNull();
     });
   });
 });

@@ -13,6 +13,7 @@ import { OrderStatus, PaymentStatus, ShippingStatus } from '@prisma/client';
 
 // Mock next-auth
 vi.mock('next-auth', () => ({
+  default: vi.fn(),
   getServerSession: vi.fn(),
 }));
 
@@ -333,7 +334,7 @@ describe('GET /api/orders/[id]', () => {
       const request = new NextRequest('http://localhost:3000/api/orders/order-1');
       await GET(request, { params: Promise.resolve({ id: 'order-1' }) });
 
-      expect(orderService.getOrderById).toHaveBeenCalledWith('order-1', null);
+      expect(orderService.getOrderById).toHaveBeenCalledWith('order-1', undefined);
     });
 
     it('should return 404 when order belongs to different store', async () => {

@@ -1,24 +1,19 @@
 import '@testing-library/jest-dom';
 import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { prismaMock } from './mocks/prisma';
 
 // Mock Prisma Client before any tests run
-vi.mock('@/lib/db', () => {
-  const { prismaMock } = require('./mocks/prisma');
-  return {
-    db: prismaMock,
-    prisma: prismaMock,
-  };
-});
+vi.mock('@/lib/db', () => ({
+  db: prismaMock,
+  prisma: prismaMock,
+}));
 
 // Mock Prisma (alternate import path)
-vi.mock('@/lib/prisma', () => {
-  const { prismaMock } = require('./mocks/prisma');
-  return {
-    prisma: prismaMock,
-    default: prismaMock,
-  };
-});
+vi.mock('@/lib/prisma', () => ({
+  prisma: prismaMock,
+  default: prismaMock,
+}));
 
 // Cleanup after each test
 afterEach(() => {

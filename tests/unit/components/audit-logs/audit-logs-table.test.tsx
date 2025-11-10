@@ -86,9 +86,11 @@ describe('AuditLogsTable', () => {
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/audit-logs?')
-      );
+      const fetchSpy = global.fetch as ReturnType<typeof vi.fn>;
+      const calls = fetchSpy.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      const url = calls[0][0];
+      expect(url).toContain('/api/audit-logs?');
     });
   });
 
@@ -112,9 +114,11 @@ describe('AuditLogsTable', () => {
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('storeId=store-123')
-      );
+      const fetchSpy = global.fetch as ReturnType<typeof vi.fn>;
+      const calls = fetchSpy.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      const url = calls[0][0];
+      expect(url).toContain('storeId=store-123');
     });
   });
 

@@ -260,8 +260,9 @@ export function renderTemplate(
 
 /**
  * Escape HTML entities to prevent XSS attacks
+ * Exported for testing purposes
  */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
@@ -683,4 +684,43 @@ export async function sendAccountVerification(
     user.id,
     'account-verification'
   );
+}
+
+/**
+ * Test helpers - exported for unit testing only
+ * @internal
+ */
+
+/**
+ * Check if email would be considered a duplicate (test helper)
+ * @param entityId - Entity identifier (e.g., order ID, user ID)
+ * @param eventType - Event type (e.g., 'order-confirmation')
+ */
+export async function isDuplicateEmail(
+  entityId: string,
+  eventType: string
+): Promise<boolean> {
+  return isDuplicate(entityId, eventType);
+}
+
+/**
+ * Mark email as sent in deduplication store (test helper)
+ * @param entityId - Entity identifier
+ * @param eventType - Event type
+ * @param timestamp - Optional timestamp (defaults to now)
+ */
+export function markEmailAsSent(
+  entityId: string,
+  eventType: string,
+  timestamp?: number
+): void {
+  const key = generateDeduplicationKey(entityId, eventType);
+  deduplicationStore.set(key, timestamp || Date.now());
+}
+
+/**
+ * Clear deduplication store (test helper)
+ */
+export function clearDeduplicationStore(): void {
+  deduplicationStore.clear();
 }
