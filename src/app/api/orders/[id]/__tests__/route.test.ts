@@ -12,8 +12,7 @@ import * as orderService from '@/services/order-service';
 import { OrderStatus, PaymentStatus, ShippingStatus } from '@prisma/client';
 
 // Mock next-auth
-vi.mock('next-auth', () => ({
-  default: vi.fn(),
+vi.mock('next-auth/next', () => ({
   getServerSession: vi.fn(),
 }));
 
@@ -23,7 +22,7 @@ vi.mock('@/services/order-service', () => ({
 }));
 
 // Import mocked functions
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 
 describe('GET /api/orders/[id]', () => {
   const mockSession = {

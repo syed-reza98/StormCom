@@ -161,7 +161,7 @@ export async function applySecurityProtections(request: NextRequest): Promise<Ne
   // This must happen BEFORE any database queries
   try {
     const { setStoreIdContext } = await import('./src/lib/prisma-middleware');
-    const { getServerSession } = await import('next-auth');
+    const { getServerSession } = await import('next-auth/next');
     const { authOptions } = await import('./src/lib/auth');
     
     const session = await getServerSession(authOptions);

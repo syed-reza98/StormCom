@@ -10,7 +10,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
 import { authOptions } from '@/lib/auth';
 import { updateOrderStatus } from '@/services/order-service';

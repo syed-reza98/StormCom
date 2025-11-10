@@ -2,7 +2,7 @@
 // Individual Product API Routes - Get, Update, Delete
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 import { productService } from '@/services/product-service';

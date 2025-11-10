@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { updateStoreTheme, resetStoreTheme } from '@/services/theme-service';
 import { validateTheme } from '@/lib/theme-utils';

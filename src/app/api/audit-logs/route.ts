@@ -9,7 +9,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { AuditLogService } from '@/services/audit-log-service';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { z } from 'zod';
 
 /**
@@ -92,8 +93,8 @@ const AuditLogsQuerySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // Authenticate user
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json(
         {
           error: {
@@ -136,8 +137,8 @@ export async function GET(request: NextRequest) {
     // Apply multi-tenant isolation
     // SUPER_ADMIN can access all logs (no storeId filter)
     // STORE_ADMIN/STAFF can only access logs for their store
-    if (session.role !== 'SUPER_ADMIN') {
-      if (!session.storeId) {
+    if (session.user.role !== 'SUPER_ADMIN') {
+      if (!session.user.storeId) {
         return NextResponse.json(
           {
             error: {
@@ -150,7 +151,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Override storeId filter with session storeId for non-super-admins
-      filters.storeId = session.storeId;
+      filters.storeId = session.user.storeId;
     } else if (filters.storeId) {
       // SUPER_ADMIN can filter by storeId if provided
       // (already set in filters)

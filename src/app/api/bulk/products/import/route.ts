@@ -2,7 +2,7 @@
 // Bulk Product Import API Route - CSV/Excel file upload and processing
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
 

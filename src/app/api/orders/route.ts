@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // attempt to prerender it and cause `headers()`/`request.cookies` to fail
 // during the build step.
 export const dynamic = 'force-dynamic';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
 import { authOptions } from '@/lib/auth';
 import { listOrders, exportOrdersToCSV } from '@/services/order-service';

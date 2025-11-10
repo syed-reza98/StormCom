@@ -5,12 +5,12 @@ import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vites
 import { GET as getNotifications } from '@/app/api/notifications/route';
 import { PUT as markAsRead } from '@/app/api/notifications/[id]/read/route';
 import { prisma } from '@/lib/prisma';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
 import { UserRole } from '@prisma/client';
 
-// Mock session storage
-vi.mock('@/lib/session-storage', () => ({
-  getSessionFromRequest: vi.fn(),
+// Mock NextAuth.js
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
 
 describe('Notifications API Endpoints', () => {
@@ -83,7 +83,7 @@ describe('Notifications API Endpoints', () => {
   describe('GET /api/notifications', () => {
     it('should retrieve all notifications successfully', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -109,7 +109,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should filter unread notifications', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -133,7 +133,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should filter read notifications', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -157,7 +157,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should respect limit parameter', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -180,7 +180,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should reject invalid limit parameter', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -204,7 +204,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should require authentication', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new Request('http://localhost:3000/api/notifications', {
         method: 'GET',
@@ -223,7 +223,7 @@ describe('Notifications API Endpoints', () => {
   describe('PUT /api/notifications/[id]/read', () => {
     it('should mark notification as read successfully', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -249,7 +249,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should return 404 for non-existent notification', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'notif-api-test@example.com',
         role: 'CUSTOMER',
@@ -273,7 +273,7 @@ describe('Notifications API Endpoints', () => {
 
     it('should require authentication', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new Request(`http://localhost:3000/api/notifications/${testNotificationId}/read`, {
         method: 'PUT',
@@ -299,7 +299,7 @@ describe('Notifications API Endpoints', () => {
         },
       });
 
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: otherUser.id,
         email: 'other-notif-user@example.com',
         role: 'CUSTOMER',

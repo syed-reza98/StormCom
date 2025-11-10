@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { signIn } from 'next-auth/react';
 import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
 import { LockClosedIcon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
@@ -28,35 +29,10 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-interface LoginResponse {
-  data?: {
-    sessionId: string;
-    user: {
-      id: string;
-      email: string;
-      role: string;
-      storeId?: string;
-    };
-    requiresMFA: boolean;
-  };
-  error?: {
-    code: string;
-    message: string;
-    details?: Record<string, string>;
-  };
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [lockedUntil, setLockedUntil] = useState<Date | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Track client-side mounting to prevent hydration errors
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const {
     register,
@@ -69,44 +45,43 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
     setServerError(null);
-    setLockedUntil(null);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        credentials: 'include', // Include cookies
+      // Use NextAuth signIn with credentials provider
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false, // Don't redirect automatically
       });
 
-      const result: LoginResponse = await response.json();
+      if (!result) {
+        setServerError('An unexpected error occurred. Please try again.');
+        return;
+      }
 
-      if (!response.ok) {
-        // Handle error responses
-        if (result.error) {
-          if (result.error.code === 'ACCOUNT_LOCKED' && result.error.details?.lockedUntil) {
-            setLockedUntil(new Date(result.error.details.lockedUntil));
-          }
-          setServerError(result.error.message);
+      if (result.error) {
+        // NextAuth returns error as string
+        // Parse common error codes
+        if (result.error === 'CredentialsSignin') {
+          setServerError('Invalid email or password. Please try again.');
+        } else if (result.error === 'ACCOUNT_LOCKED') {
+          setServerError('Your account has been locked due to too many failed login attempts.');
+        } else if (result.error === 'EMAIL_NOT_VERIFIED') {
+          setServerError('Please verify your email address before logging in.');
+        } else if (result.error === 'MFA_REQUIRED') {
+          // Redirect to MFA challenge page
+          router.push('/mfa/challenge');
+          return;
         } else {
-          setServerError('An unexpected error occurred. Please try again.');
+          setServerError(result.error);
         }
         return;
       }
 
-      // Success - check if MFA is required
-      if (result.data?.requiresMFA) {
-        router.push('/mfa/challenge');
-      } else {
-        // Check user role for redirect
-        if (result.data?.user.role === 'SuperAdmin') {
-          router.push('/admin/dashboard');
-        } else {
-          router.push('/dashboard');
-        }
-      }
+      // Success - redirect based on user role
+      // NextAuth session will be available after successful sign in
+      router.push('/dashboard');
+      router.refresh(); // Refresh to update session on server
     } catch (error) {
       console.error('Login error:', error);
       setServerError('Network error. Please check your connection and try again.');
@@ -149,15 +124,7 @@ export default function LoginPage() {
               {/* Login Form */}
               <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                 {/* Server Error Message */}
-                <FormError
-                  message={
-                    serverError
-                      ? lockedUntil && isMounted
-                        ? `${serverError} Your account is locked until ${lockedUntil.toLocaleString()}`
-                        : serverError
-                      : undefined
-                  }
-                />
+                <FormError message={serverError ?? undefined} />
 
                 <div className="space-y-4">
                   {/* Email Field */}

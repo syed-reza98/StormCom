@@ -14,12 +14,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET } from '@/app/api/audit-logs/route';
 import { NextRequest } from 'next/server';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
 import { AuditLogService } from '@/services/audit-log-service';
 
 // Mock dependencies
-vi.mock('@/lib/session-storage', () => ({
-  getSessionFromRequest: vi.fn(),
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
 
 vi.mock('@/services/audit-log-service', () => ({
@@ -36,7 +36,7 @@ describe('GET /api/audit-logs', () => {
   describe('Authentication', () => {
     it('should return 401 if not authenticated', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/audit-logs');
 
@@ -56,7 +56,7 @@ describe('GET /api/audit-logs', () => {
   describe('Authorization', () => {
     it('should allow SUPER_ADMIN to access all logs', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-super',
         storeId: null,
         role: 'SUPER_ADMIN',
@@ -88,7 +88,7 @@ describe('GET /api/audit-logs', () => {
 
     it('should restrict STORE_ADMIN to their store logs only', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-admin',
         storeId: 'store-123',
         role: 'STORE_ADMIN',
@@ -120,7 +120,7 @@ describe('GET /api/audit-logs', () => {
 
     it('should return 403 if STAFF user has no storeId', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-staff',
         storeId: null,
         role: 'STAFF',
@@ -142,7 +142,7 @@ describe('GET /api/audit-logs', () => {
 
     it('should override storeId filter for non-SUPER_ADMIN users', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-admin',
         storeId: 'store-123',
         role: 'STORE_ADMIN',
@@ -171,7 +171,7 @@ describe('GET /api/audit-logs', () => {
 
     it('should allow SUPER_ADMIN to filter by storeId', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-super',
         storeId: null,
         role: 'SUPER_ADMIN',
@@ -201,7 +201,7 @@ describe('GET /api/audit-logs', () => {
 
   describe('Query Parameters', () => {
     beforeEach(() => {
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-super',
         storeId: null,
         role: 'SUPER_ADMIN',
@@ -330,7 +330,7 @@ describe('GET /api/audit-logs', () => {
 
   describe('Success Response', () => {
     beforeEach(() => {
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-admin',
         storeId: 'store-123',
         role: 'STORE_ADMIN',
@@ -387,7 +387,7 @@ describe('GET /api/audit-logs', () => {
 
   describe('Error Handling', () => {
     beforeEach(() => {
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: 'user-admin',
         storeId: 'store-123',
         role: 'STORE_ADMIN',

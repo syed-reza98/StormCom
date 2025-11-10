@@ -15,7 +15,7 @@ import { useContext } from 'react';
 import { AuthContext } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { signIn, signOut } from 'next-auth/react';
-import type { User } from 'next-auth';
+import type { Session } from 'next-auth';
 
 export interface LoginCredentials {
   email: string;
@@ -33,7 +33,7 @@ export interface RegisterData {
 }
 
 export interface AuthState {
-  user: User | null;
+  user: Session['user'] | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;

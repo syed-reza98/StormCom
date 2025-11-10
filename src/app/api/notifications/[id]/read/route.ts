@@ -7,7 +7,8 @@ import {
   unauthorizedResponse,
   errorResponse,
 } from '@/lib/api-response';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { notificationService } from '@/services/notification-service';
 
 /**
@@ -39,20 +40,20 @@ import { notificationService } from '@/services/notification-service';
  * ```
  */
 export async function PUT(
-  request: NextRequest,
+  _request: NextRequest,  // Prefix with underscore to indicate intentionally unused
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return unauthorizedResponse();
     }
 
     const { id } = await params;
 
     // Mark notification as read
-    const notification = await notificationService.markAsRead(id, session.userId);
+    const notification = await notificationService.markAsRead(id, session.user.id);
 
     if (!notification) {
       return errorResponse('Notification not found or unauthorized', 404, {

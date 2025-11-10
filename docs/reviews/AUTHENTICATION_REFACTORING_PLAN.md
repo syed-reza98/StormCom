@@ -26,9 +26,11 @@
 
 ---
 
-## 📋 Phase 1: Extract Reusable Utilities (Week 1)
+## 📋 Phase 1: Extract Reusable Utilities (Week 1) ✅ COMPLETED
 
-### ✅ Task 1.1: Create Password Reset Utility
+### ✅ Task 1.1: Create Password Reset Utility ✅ COMPLETED (2025-01-29)
+
+**Status**: ✅ **COMPLETED** - Created `src/lib/password-reset.ts` with requestPasswordReset, resetPassword, validatePasswordResetToken functions
 
 **Priority**: 🔴 HIGH
 
@@ -101,7 +103,9 @@ describe('password-reset', () => {
 
 ---
 
-### ✅ Task 1.2: Create Email Verification Utility
+### ✅ Task 1.2: Create Email Verification Utility ✅ COMPLETED (2025-01-29)
+
+**Status**: ✅ **COMPLETED** - Created `src/lib/email-verification.ts` with verifyEmail, resendVerificationEmail, validateVerificationToken functions
 
 **Priority**: 🔴 HIGH
 
@@ -135,7 +139,9 @@ export async function resendVerificationEmail(email: string): Promise<{ success:
 
 ---
 
-### ✅ Task 1.3: Update Registration Endpoint
+### ✅ Task 1.3: Update Registration Endpoint ✅ COMPLETED (2025-01-29)
+
+**Status**: ✅ **COMPLETED** - Updated `src/app/api/auth/register/route.ts` with NextAuth guidance in JSDoc and success message
 
 **Priority**: 🟡 MEDIUM
 
@@ -172,9 +178,11 @@ return NextResponse.json({
 
 ---
 
-## 📋 Phase 2: Remove Custom Auth Endpoints (Week 1-2)
+## 📋 Phase 2: Remove Custom Auth Endpoints (Week 1-2) ✅ COMPLETED
 
-### ✅ Task 2.1: Delete Custom Login Endpoint
+### ✅ Task 2.1: Delete Custom Login Endpoint ✅ COMPLETED (2025-01-29)
+
+**Status**: ✅ **COMPLETED** - Updated `src/app/(auth)/login/page.tsx` to use NextAuth `signIn('credentials')` instead of fetch('/api/auth/login'). Rate limiting updated in `src/lib/simple-rate-limit.ts` to check NextAuth callback paths.
 
 **Priority**: 🔴 CRITICAL
 

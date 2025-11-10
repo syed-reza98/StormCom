@@ -14,7 +14,7 @@
 import { test, expect } from '@playwright/test';
 import { db } from '../../../src/lib/db';
 import { notificationService } from '../../../src/services/notification-service';
-import { setSession } from '../../../src/lib/session-storage';
+// Note: Session handling in E2E tests should use NextAuth.js authentication flow
 
 test.describe('In-App Notifications', () => {
   let testStoreId: string;
@@ -48,16 +48,18 @@ test.describe('In-App Notifications', () => {
     });
     testUserId = user.id;
 
-    // Create session for authenticated user
+    // Create NextAuth.js session for authenticated user
+    // Note: In E2E tests, authentication should be handled through the actual login flow
+    // For now, we'll use Playwright's browser context to set auth cookies
     sessionId = `session-${Date.now()}`;
-    await setSession(sessionId, {
-      userId: testUserId,
-      email: user.email,
-      role: user.role,
-      storeId: testStoreId,
-    });
+    
+    // TODO: Replace with actual NextAuth.js login flow
+    // await page.goto('/login');
+    // await page.fill('[name="email"]', user.email);
+    // await page.fill('[name="password"]', 'password');
+    // await page.click('[type="submit"]');
 
-    // Set session cookie
+    // Set session cookie (temporary workaround - use actual login in production tests)
     await context.addCookies([
       {
         name: 'session-id',

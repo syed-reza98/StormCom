@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { analyticsService } from '@/services/analytics-service';
 import { z } from 'zod';
 
@@ -14,24 +15,16 @@ const customerQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Get session ID from cookie
-    const sessionId = request.cookies.get('session-id')?.value;
-    if (!sessionId) {
+    // Authenticate user with NextAuth
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
 
-    const session = await getSession(sessionId);
-    if (!session) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Invalid session' } },
-        { status: 401 }
-      );
-    }
-
-    if (!session.storeId) {
+    if (!session.user.storeId) {
       return NextResponse.json(
         { error: { code: 'FORBIDDEN', message: 'No store access' } },
         { status: 403 }
@@ -63,7 +56,7 @@ export async function GET(request: NextRequest) {
     dateRange.endDate.setHours(23, 59, 59, 999);
 
     const customerMetrics = await analyticsService.getCustomerMetrics(
-      session.storeId,
+      session.user.storeId,
       dateRange
     );
 

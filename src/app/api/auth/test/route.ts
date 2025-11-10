@@ -1,6 +1,6 @@
 // Test route to verify NextAuth configuration
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
 
 export async function GET() {

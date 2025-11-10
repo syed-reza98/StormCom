@@ -2,7 +2,7 @@
 // Individual Brand API Routes - Get, Update, Delete
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { brandService, createBrandSchema } from '@/services/brand-service';
 import { z } from 'zod';

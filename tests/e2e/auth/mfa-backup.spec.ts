@@ -98,8 +98,9 @@ test.describe('MFA Backup Codes', () => {
       await mfaChallengePage.submitButton.click();
       await page.waitForURL(/\/dashboard/, { timeout: 10000 });
 
-      // Logout
-      await page.goto('/api/auth/logout');
+      // Logout using NextAuth signOut
+      await page.goto('/api/auth/signout');
+      await page.click('button[type="submit"]'); // NextAuth signout confirmation
       await page.waitForTimeout(1000);
 
       // Second use - should fail

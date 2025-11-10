@@ -2,7 +2,8 @@
 // GET /api/subscriptions/[storeId] - Retrieve subscription status
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/db';
 import { SubscriptionService } from '@/services/subscription-service';
 
@@ -11,7 +12,7 @@ import { SubscriptionService } from '@/services/subscription-service';
  * Retrieve subscription status and usage for a store
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,  // Prefix with underscore to indicate intentionally unused
   { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
@@ -26,8 +27,8 @@ export async function GET(
     }
 
     // Authentication check
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
@@ -39,8 +40,8 @@ export async function GET(
       where: {
         id: storeId,
         OR: [
-          { users: { some: { id: session.userId } } },
-          { admins: { some: { id: session.userId } } },
+          { users: { some: { id: session.user.id } } },
+          { admins: { some: { id: session.user.id } } },
         ],
         deletedAt: null,
       },

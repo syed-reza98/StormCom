@@ -1,37 +1,29 @@
 // src/lib/get-current-user.ts
-// Server-side helper to get current authenticated user from session cookie
+// Server-side helper to get current authenticated user from NextAuth session
 // Used in Server Components and API routes
 
-import { cookies } from 'next/headers';
-import { SessionService } from '@/services/session-service';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/db';
 
 /**
- * Get current authenticated user from session cookie
- * Use this in Server Components instead of getServerSession
+ * Get current authenticated user from NextAuth session
+ * Use this in Server Components
  * 
  * @returns User data with session info or null if not authenticated
  */
 export async function getCurrentUser() {
   try {
-    // Get session token from cookie (use sessionId, not session_token)
-    const cookieStore = await cookies();
-    const sessionToken = cookieStore.get('sessionId')?.value;
+    // Get NextAuth session
+    const session = await getServerSession(authOptions);
 
-    if (!sessionToken) {
-      return null;
-    }
-
-    // Validate session
-    const session = await SessionService.getSession(sessionToken);
-
-    if (!session) {
+    if (!session?.user?.id) {
       return null;
     }
 
     // Fetch user data (excluding sensitive fields)
     const user = await db.user.findUnique({
-      where: { id: session.userId },
+      where: { id: session.user.id },
       select: {
         id: true,
         email: true,
@@ -56,7 +48,7 @@ export async function getCurrentUser() {
     return {
       ...user,
       sessionData: {
-        mfaVerified: session.mfaVerified,
+        mfaVerified: session.user.mfaVerified || false,
       },
     };
   } catch (error) {

@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // during the build.
 export const dynamic = 'force-dynamic';
 import { getInventoryLevels } from '@/services/inventory-service';
-import { getUserFromSession } from '@/services/session-service';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 /**
  * GET /api/inventory
@@ -36,26 +37,17 @@ import { getUserFromSession } from '@/services/session-service';
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication - get session token from cookie
-    const sessionToken =
-      request.cookies.get('session_token')?.value ||
-      request.cookies.get('sessionId')?.value;
+    // Verify authentication using NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!sessionToken) {
+    if (!session?.user) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
       );
     }
 
-    const user = await getUserFromSession(sessionToken);
-
-    if (!user) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Invalid session' } },
-        { status: 401 }
-      );
-    }
+    const user = session.user;
 
     // Check role - only Store Admin and Staff with inventory permission
     if (

@@ -3,7 +3,14 @@
 // Implements FR-049, FR-050 from spec.md
 
 import { db } from '@/lib/db';
-import type { SessionData } from '@/lib/session-storage';
+
+// SessionData type for compatibility (maps to NextAuth Session.user)
+export type SessionData = {
+  userId: string;
+  role: string;
+  storeId?: string | null;
+  mfaVerified?: boolean;
+};
 
 /**
  * Role hierarchy (higher number = more permissions)

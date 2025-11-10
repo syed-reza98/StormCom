@@ -6,7 +6,8 @@ import { Section, Container, Flex, Heading, Text, Card, Button } from '@radix-ui
 import { FileTextIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { AuditLogsTable } from '@/components/audit-logs/audit-logs-table';
 import { AuditLogsFilters } from '@/components/audit-logs/audit-logs-filters';
-import { getSessionFromCookies } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
@@ -46,13 +47,13 @@ export default async function AuditLogsPage({
   searchParams: Promise<AuditLogsPageProps['searchParams']> 
 }) {
   // Get session and verify authentication
-  const session = await getSessionFromCookies();
-  if (!session?.userId) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
     redirect('/login');
   }
 
   // Only SUPER_ADMIN and STORE_ADMIN roles can access audit logs
-  if (!['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.role)) {
+  if (!['SUPER_ADMIN', 'STORE_ADMIN'].includes(session.user.role)) {
     redirect('/dashboard');
   }
 
@@ -79,8 +80,8 @@ export default async function AuditLogsPage({
                 {/* Export to CSV Action */}
                 <form action="/api/audit-logs" method="GET" target="_blank">
                   <input type="hidden" name="export" value="csv" />
-                  {session.role !== 'SUPER_ADMIN' && session.storeId && (
-                    <input type="hidden" name="storeId" value={session.storeId} />
+                  {session.user.role !== 'SUPER_ADMIN' && session.user.storeId && (
+                    <input type="hidden" name="storeId" value={session.user.storeId} />
                   )}
                   {params.userId && <input type="hidden" name="userId" value={params.userId} />}
                   {params.entityType && <input type="hidden" name="entityType" value={params.entityType} />}
@@ -101,8 +102,8 @@ export default async function AuditLogsPage({
           <Card size="2">
             <AuditLogsFilters 
               searchParams={params}
-              userRole={session.role}
-              storeId={session.storeId || undefined}
+              userRole={session.user.role}
+              storeId={session.user.storeId || undefined}
             />
           </Card>
 
@@ -110,8 +111,8 @@ export default async function AuditLogsPage({
           <Card>
             <AuditLogsTable 
               searchParams={params}
-              userRole={session.role}
-              storeId={session.storeId || undefined}
+              userRole={session.user.role}
+              storeId={session.user.storeId || undefined}
             />
           </Card>
         </Flex>

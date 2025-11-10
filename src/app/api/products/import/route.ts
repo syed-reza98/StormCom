@@ -2,7 +2,7 @@
 // Bulk Product Import API Route
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { bulkImportService } from '@/services/bulk-import-service';
 import { z } from 'zod';

@@ -10,7 +10,7 @@ import {
   checkOrderCreationLimit 
 } from '@/lib/plan-enforcement';
 import { SubscriptionService } from '@/services/subscription-service';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
 
 // Mock dependencies
 vi.mock('@/services/subscription-service', () => ({
@@ -20,13 +20,13 @@ vi.mock('@/services/subscription-service', () => ({
   },
 }));
 
-vi.mock('@/lib/session-storage', () => ({
-  getSessionFromRequest: vi.fn(),
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
 
 const mockCanCreateProduct = SubscriptionService.canCreateProduct as MockedFunction<any>;
 const mockCanCreateOrder = SubscriptionService.canCreateOrder as MockedFunction<any>;
-const mockGetSessionFromRequest = getSessionFromRequest as MockedFunction<typeof getSessionFromRequest>;
+const mockGetServerSession = getServerSession as MockedFunction<typeof getServerSession>;
 
 describe('Plan Enforcement Middleware', () => {
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe('Plan Enforcement Middleware', () => {
 
   describe('checkProductCreationLimit', () => {
     it('should allow product creation when within limits', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -59,7 +59,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should block product creation when limit exceeded', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -87,7 +87,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should return error when session is not found', async () => {
-      mockGetSessionFromRequest.mockResolvedValue(null);
+      mockGetServerSession.mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/products');
       const result = await checkProductCreationLimit(request);
@@ -105,7 +105,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should return error when storeId is missing', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: null,
@@ -131,7 +131,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle service errors gracefully', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -161,7 +161,7 @@ describe('Plan Enforcement Middleware', () => {
 
   describe('checkOrderCreationLimit', () => {
     it('should allow order creation when within limits', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -181,7 +181,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should block order creation when limit exceeded', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -209,7 +209,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should return error when session is not found', async () => {
-      mockGetSessionFromRequest.mockResolvedValue(null);
+      mockGetServerSession.mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders');
       const result = await checkOrderCreationLimit(request);
@@ -219,7 +219,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle service errors gracefully', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -247,7 +247,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should call handler when product creation is allowed', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -278,7 +278,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should call handler when order creation is allowed', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -306,7 +306,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should block handler when product limit exceeded', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -334,7 +334,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle invalid resource type', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -426,7 +426,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should create a wrapped handler for product enforcement', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -455,7 +455,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should create a wrapped handler for order enforcement', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -481,7 +481,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should preserve handler context and parameters', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -517,7 +517,7 @@ describe('Plan Enforcement Middleware', () => {
       const timeoutError = new Error('Session timeout');
       (timeoutError as any).code = 'SESSION_TIMEOUT';
       
-      mockGetSessionFromRequest.mockRejectedValue(timeoutError);
+      mockGetServerSession.mockRejectedValue(timeoutError);
 
       const request = new NextRequest('http://localhost:3000/api/products');
       const result = await checkProductCreationLimit(request);
@@ -527,7 +527,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle database connection errors', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
@@ -550,7 +550,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle malformed session data', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: null,
@@ -569,7 +569,7 @@ describe('Plan Enforcement Middleware', () => {
     });
 
     it('should handle concurrent limit checks', async () => {
-      mockGetSessionFromRequest.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         userId: 'user-123',
         email: 'test@example.com',
         storeId: 'store-123',
