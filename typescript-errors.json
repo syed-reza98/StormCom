@@ -1,108 +1,19 @@
 ﻿{
     "summary":  {
-                    "totalErrors":  9,
-                    "exitCode":  1,
-                    "timestamp":  "2025-11-10T08:04:02Z",
+                    "totalErrors":  0,
+                    "exitCode":  0,
+                    "timestamp":  "2025-11-10T08:19:16Z",
                     "command":  "npm run type-check",
                     "totalWarnings":  0,
-                    "totalLines":  13
+                    "totalLines":  4
                 },
     "rawOutput":  [
                       "",
                       "\u003e stormcom@0.1.0 type-check",
                       "\u003e tsc --noEmit --incremental",
-                      "",
-                      ".next/dev/types/validator.ts(530,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                      ".next/dev/types/validator.ts(539,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                      ".next/dev/types/validator.ts(746,39): error TS2307: Cannot find module \u0027../../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                      ".next/dev/types/validator.ts(764,39): error TS2307: Cannot find module \u0027../../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations.",
-                      ".next/types/validator.ts(530,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/custom-session/route.js\u0027 or its corresponding type declarations.",
-                      ".next/types/validator.ts(548,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                      ".next/types/validator.ts(557,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                      ".next/types/validator.ts(773,39): error TS2307: Cannot find module \u0027../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                      ".next/types/validator.ts(791,39): error TS2307: Cannot find module \u0027../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations."
+                      ""
                   ],
     "errors":  [
-                   {
-                       "message":  "Cannot find module \u0027../../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  530,
-                       "fullText":  ".next/dev/types/validator.ts(530,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/dev/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  539,
-                       "fullText":  ".next/dev/types/validator.ts(539,39): error TS2307: Cannot find module \u0027../../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/dev/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  746,
-                       "fullText":  ".next/dev/types/validator.ts(746,39): error TS2307: Cannot find module \u0027../../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/dev/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  764,
-                       "fullText":  ".next/dev/types/validator.ts(764,39): error TS2307: Cannot find module \u0027../../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/dev/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../src/app/api/auth/custom-session/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  530,
-                       "fullText":  ".next/types/validator.ts(530,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/custom-session/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  548,
-                       "fullText":  ".next/types/validator.ts(548,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/login/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  557,
-                       "fullText":  ".next/types/validator.ts(557,39): error TS2307: Cannot find module \u0027../../src/app/api/auth/logout/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  773,
-                       "fullText":  ".next/types/validator.ts(773,39): error TS2307: Cannot find module \u0027../../src/app/api/dev/create-session/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/types/validator.ts"
-                   },
-                   {
-                       "message":  "Cannot find module \u0027../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations.",
-                       "column":  39,
-                       "line":  791,
-                       "fullText":  ".next/types/validator.ts(791,39): error TS2307: Cannot find module \u0027../../src/app/api/dev/session-info/route.js\u0027 or its corresponding type declarations.",
-                       "code":  "TS2307",
-                       "severity":  "error",
-                       "file":  ".next/types/validator.ts"
-                   }
+
                ]
 }
