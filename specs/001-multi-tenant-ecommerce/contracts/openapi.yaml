@@ -387,64 +387,11 @@ components:
 
 paths:
   # Authentication
-  /auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: User login
-      description: Authenticate user with email and password. Returns JWT token if MFA is not enabled, or requires MFA challenge if enabled.
-      operationId: login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                rememberMe:
-                  type: boolean
-                  default: false
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      user:
-                        $ref: '#/components/schemas/User'
-                      requiresMfa:
-                        type: boolean
-                      token:
-                        type: string
-                        description: JWT token (only if MFA not required)
-                      expiresAt:
-                        $ref: '#/components/schemas/DateTime'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-                
+  # NOTE: Login/logout handled by NextAuth.js (not exposed via OpenAPI)
+  # - Login: POST /api/auth/callback/credentials (NextAuth internal)
+  # - Logout: GET /api/auth/signout (NextAuth internal)
+  # - Session: Uses JWT tokens (stateless)
+  
   /auth/register:
     post:
       tags:

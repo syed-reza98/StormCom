@@ -17,14 +17,14 @@ Route (app)
 ├ ƒ /api/audit-logs
 ├ ƒ /api/auth/[...nextauth]
 ├ ƒ /api/auth/forgot-password
-├ ƒ /api/auth/login
-├ ƒ /api/auth/logout
+├ λ /api/auth/login (REMOVED - use NextAuth /api/auth/callback/credentials)
+├ λ /api/auth/logout (REMOVED - use NextAuth /api/auth/signout)
 ├ ƒ /api/auth/mfa/backup-codes
 ├ ƒ /api/auth/mfa/enroll
 ├ ƒ /api/auth/mfa/verify
 ├ ƒ /api/auth/register
 ├ ƒ /api/auth/reset-password
-├ ƒ /api/auth/session
+├ ƒ /api/auth/session (NextAuth built-in)
 ├ ƒ /api/brands
 ├ ƒ /api/brands/[id]
 ├ ƒ /api/brands/[id]/products

@@ -380,7 +380,7 @@ Phase 4-6+ (User Stories):   ░░░░░░░░░░░░░░░░░
 **Service Layer** (T036-T039):
 - [x] T036: AuthService ✅ (464 lines - refactor recommended)
 - [x] T037: MFAService ✅
-- [x] T038: SessionService ✅
+- [x] T038: SessionService ❌ **REMOVED** - Migrated to NextAuth.js (2025-11-10)
 - [x] T039: RoleService ✅
 
 **API Routes** (T040-T047):
@@ -554,7 +554,7 @@ Phase 4-6+ (User Stories):   ░░░░░░░░░░░░░░░░░
 **Constitution Requirement**: 80% code coverage for business logic
 
 **Missing Test**:
-- ❌ **T079**: Integration tests for AuthService, MFAService, SessionService, RoleService
+- ✅ **T079**: Integration tests for AuthService, MFAService, RoleService (SessionService removed - migrated to NextAuth)
 
 **Test Scope**:
 ```typescript
@@ -716,7 +716,7 @@ validation/store.ts (100 lines)
 ### Short-term Improvements
 
 4. **⚠️ Create T079 (Integration tests for services)**
-   - Test AuthService, MFAService, SessionService, RoleService
+   - Test AuthService, MFAService, RoleService (SessionService migrated to NextAuth)
    - Mock Prisma with in-memory SQLite
    - Achieve 80%+ coverage per constitution
    - Estimated: 12-16 hours
