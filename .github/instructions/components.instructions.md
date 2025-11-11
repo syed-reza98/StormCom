@@ -324,6 +324,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 **REQUIRED**: Use shadcn/ui Form components for all forms. This provides consistent styling, accessibility, and validation.
 
+> **Note:** For simple forms such as single-field search bars or newsletter subscription inputs that do not require complex validation, it is acceptable to use shadcn/ui Input components directly without the full Form structure.  
+> Examples include:
+> - Search input in a navbar or sidebar
+> - Newsletter signup with only an email field and basic validation
+> - Quick filter fields with no multi-field dependencies
+>  
+> In these cases, ensure accessibility (label, ARIA attributes) and consistent styling are maintained. For multi-field forms or forms requiring advanced validation, always use the full shadcn/ui Form pattern.
 **Pattern**: `<Form><FormField><FormItem><FormLabel><FormControl><Input /></FormControl><FormMessage /></FormItem></FormField></Form>`
 
 **Reference**: https://ui.shadcn.com/docs/components/form

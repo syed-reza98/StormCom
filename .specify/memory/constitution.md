@@ -24,7 +24,6 @@ Templates & files checked and sync status:
 
 Follow-up TODOs:
 - Run `npx shadcn@latest init` to set up shadcn/ui configuration (creates components.json)
-- Install shadcn MCP server in .mcp.json for AI-assisted component installation
 - Audit existing UI components in src/components/ to align with shadcn/ui patterns
 - Update component documentation to reference shadcn/ui component library
 - Create design system documentation referencing shadcn/ui theming guide
@@ -274,7 +273,7 @@ Performance is a priority. All features must meet defined performance budgets: p
   - Test with screen readers (NVDA, JAWS, VoiceOver).
 - **Theme Customization**:
   - Configure design tokens in `tailwind.config.ts` and CSS variables in `globals.css`.
-  - Use shadcn/ui theming system (https://ui.shadcn.com/docs/theming).
+  - Use shadcn/ui theming system (https://ui.shadcn.com/themes).
   - Support light/dark modes via `next-themes` provider.
 - **Component Installation Workflow**:
   1. Search components: `npx shadcn@latest add` (interactive) or use shadcn MCP server.
