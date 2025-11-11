@@ -15,8 +15,8 @@ Added / Removed sections:
 
 Templates & files checked and sync status:
 - .specify/memory/constitution.md — ✅ updated
-- .github/instructions/components.instructions.md — ⚠️ pending (requires update for shadcn/ui component patterns)
-- .github/instructions/nextjs.instructions.md — ⚠️ pending (requires update for shadcn/ui + Next.js integration)
+- .github/instructions/components.instructions.md — ✅ updated (shadcn/ui component patterns included)
+- .github/instructions/nextjs.instructions.md — ✅ updated (shadcn/ui + Next.js integration included)
 - specs/001-multi-tenant-ecommerce/plan.md — ⚠️ pending (requires update to reference shadcn/ui architecture)
 - .specify/templates/plan-template.md — ✅ reviewed (no changes required)
 - .specify/templates/spec-template.md — ✅ reviewed (no changes required)
