@@ -1,0 +1,408 @@
+---
+name: StormCom Development
+description: Comprehensive collection of GitHub Copilot customizations for StormCom multi-tenant e-commerce SaaS platform development
+tags:
+  - saas
+  - ecommerce
+  - nextjs
+  - typescript
+  - prisma
+  - react
+  - testing
+  - security
+  - devops
+
+items:
+  # === SaaS Application Developer Tools ===
+  
+  - type: prompt
+    name: Create Implementation Plan
+    file: create-implementation-plan.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-implementation-plan.prompt.md
+    description: Create a new implementation plan file for new features, refactoring existing code or upgrading packages, design, architecture or infrastructure.
+    category: SaaS Developer
+    
+  - type: prompt
+    name: Create Specification
+    file: create-specification.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-specification.prompt.md
+    description: Create a new specification file for the solution, optimized for Generative AI consumption.
+    category: SaaS Developer
+    
+  - type: prompt
+    name: Next.js + Tailwind Development
+    file: nextjs-tailwind-scaffold.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/next-intl-add-language.prompt.md
+    description: Add new language to a Next.js + next-intl application
+    category: SaaS Developer
+    
+  - type: prompt
+    name: ASP.NET Minimal API with OpenAPI
+    file: aspnet-minimal-api-openapi.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/aspnet-minimal-api-openapi.prompt.md
+    description: Create ASP.NET Minimal API endpoints with proper OpenAPI documentation
+    category: SaaS Developer
+    
+  - type: instruction
+    name: Next.js Best Practices for LLMs (2025)
+    file: nextjs.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/nextjs.instructions.md
+    description: (2025) specific coding standards and best practices
+    category: SaaS Developer
+    applyTo: "**/*.tsx,**/*.ts,**/app/**/*,**/pages/**/*"
+    
+  - type: instruction
+    name: TypeScript Development
+    file: typescript.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/reactjs.instructions.md
+    description: TypeScript and React development standards
+    category: SaaS Developer
+    applyTo: "**/*.ts,**/*.tsx"
+    
+  - type: instruction
+    name: Tailwind CSS Best Practices
+    file: tailwind.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/nextjs-tailwind.instructions.md
+    description: Tailwind CSS utility-first styling standards
+    category: SaaS Developer
+    applyTo: "**/*.tsx,**/*.jsx"
+    
+  - type: chatmode
+    name: Expert React Frontend Engineer
+    file: expert-react-frontend-engineer.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/expert-react-frontend-engineer.chatmode.md
+    description: Provide expert React frontend engineering guidance using modern TypeScript and design patterns.
+    category: SaaS Developer
+    
+  - type: chatmode
+    name: Principal Software Engineer
+    file: principal-software-engineer.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/principal-software-engineer.chatmode.md
+    description: Provide principal-level software engineering guidance with focus on engineering excellence, technical leadership, and pragmatic implementation.
+    category: SaaS Developer
+    
+  # === Database & Prisma Tools ===
+  
+  - type: instruction
+    name: Prisma ORM Best Practices
+    file: prisma.instructions.md
+    description: Custom instructions for Prisma schema, migrations, and query optimization based on project standards
+    category: SaaS Developer
+    applyTo: "**/prisma/**/*,**/*.prisma"
+    
+  # === Market Researcher Tools ===
+  
+  - type: prompt
+    name: Create PRD
+    file: prd.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/gen-specs-as-issues.prompt.md
+    description: Generate a comprehensive Product Requirements Document (PRD) in Markdown
+    category: Market Researcher
+    
+  - type: prompt
+    name: Epic Product Requirements Document (PRD) Prompt
+    file: breakdown-epic-pm.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/breakdown-epic-pm.prompt.md
+    description: Prompt for creating an Epic Product Requirements Document (PRD) for a new epic.
+    category: Market Researcher
+    
+  - type: prompt
+    name: Feature PRD Prompt
+    file: breakdown-feature-prd.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/breakdown-feature-prd.prompt.md
+    description: Prompt for creating Product Requirements Documents (PRDs) for new features, based on an Epic.
+    category: Market Researcher
+    
+  - type: chatmode
+    name: Create PRD Chat Mode
+    file: prd.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/prd.chatmode.md
+    description: Generate a comprehensive Product Requirements Document (PRD) in Markdown, detailing user stories, acceptance criteria, technical considerations, and metrics.
+    category: Market Researcher
+    
+  # === Documentation Reviewer Tools ===
+  
+  - type: prompt
+    name: Create README
+    file: create-readme.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-readme.prompt.md
+    description: Create a README.md file for the project
+    category: Documentation Reviewer
+    
+  - type: prompt
+    name: README Generator Prompt
+    file: readme-blueprint-generator.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/readme-blueprint-generator.prompt.md
+    description: Intelligent README.md generation prompt that analyzes project documentation structure
+    category: Documentation Reviewer
+    
+  - type: prompt
+    name: Diátaxis Documentation Expert
+    file: documentation-writer.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/documentation-writer.prompt.md
+    description: Expert technical writer specializing in creating high-quality software documentation
+    category: Documentation Reviewer
+    
+  - type: prompt
+    name: Generate Standard OO Component Documentation
+    file: create-oo-component-documentation.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-oo-component-documentation.prompt.md
+    description: Create comprehensive, standardized documentation for object-oriented components
+    category: Documentation Reviewer
+    
+  - type: instruction
+    name: Markdown Best Practices
+    file: markdown.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/markdown.instructions.md
+    description: Documentation and content creation standards
+    category: Documentation Reviewer
+    applyTo: "**/*.md"
+    
+  # === System Designer & Architecture Tools ===
+  
+  - type: prompt
+    name: Comprehensive Project Architecture Blueprint Generator
+    file: architecture-blueprint-generator.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/architecture-blueprint-generator.prompt.md
+    description: Comprehensive project architecture blueprint generator that analyzes codebases
+    category: System Designer
+    
+  - type: prompt
+    name: Create Architectural Decision Record
+    file: create-architectural-decision-record.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-architectural-decision-record.prompt.md
+    description: Create an Architectural Decision Record (ADR) document for AI-optimized decision documentation.
+    category: System Designer
+    
+  - type: prompt
+    name: Epic Architecture Specification Prompt
+    file: breakdown-epic-arch.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/breakdown-epic-arch.prompt.md
+    description: Prompt for creating the high-level technical architecture for an Epic
+    category: System Designer
+    
+  - type: prompt
+    name: Feature Implementation Plan Prompt
+    file: breakdown-feature-implementation.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/breakdown-feature-implementation.prompt.md
+    description: Prompt for creating detailed feature implementation plans
+    category: System Designer
+    
+  - type: chatmode
+    name: Azure SaaS Architect
+    file: azure-saas-architect.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/azure-saas-architect.chatmode.md
+    description: Provide expert Azure SaaS Architect guidance focusing on multitenant applications
+    category: System Designer
+    
+  - type: chatmode
+    name: API Architect
+    file: api-architect.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/api-architect.chatmode.md
+    description: Your role is that of an API architect. Help mentor the engineer by providing guidance, support, and working code.
+    category: System Designer
+    
+  - type: chatmode
+    name: Plan Mode - Strategic Planning & Architecture Assistant
+    file: plan.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/plan.chatmode.md
+    description: Strategic planning and architecture assistant focused on thoughtful analysis before implementation
+    category: System Designer
+    
+  # === UI/UX Designer Tools ===
+  
+  - type: instruction
+    name: React Components Best Practices
+    file: react-components.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/reactjs.instructions.md
+    description: ReactJS development standards and best practices
+    category: UI/UX Designer
+    applyTo: "**/*.tsx,**/*.jsx,**/components/**/*"
+    
+  - type: instruction
+    name: Accessibility Standards
+    file: a11y.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/a11y.instructions.md
+    description: Guidance for creating more accessible code
+    category: UI/UX Designer
+    applyTo: "**/*.tsx,**/*.jsx,**/*.html"
+    
+  - type: chatmode
+    name: Accessibility Mode
+    file: accessibility.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/accesibility.chatmode.md
+    description: Accessibility mode for WCAG 2.1 Level AA compliance
+    category: UI/UX Designer
+    
+  # === Q/A Specialist Tools ===
+  
+  - type: prompt
+    name: Playwright Typescript Test Generation
+    file: playwright-typescript.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/playwright-automation-fill-in-form.prompt.md
+    description: Automate filling in a form using Playwright MCP
+    category: Q/A Specialist
+    
+  - type: prompt
+    name: Javascript Typescript Jest
+    file: javascript-typescript-jest.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/javascript-typescript-jest.prompt.md
+    description: Best practices for writing JavaScript/TypeScript tests using Jest
+    category: Q/A Specialist
+    
+  - type: instruction
+    name: Playwright Typescript Testing
+    file: playwright-typescript.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/playwright-typescript.instructions.md
+    description: Playwright test generation instructions
+    category: Q/A Specialist
+    applyTo: "**/tests/**/*.ts,**/tests/**/*.spec.ts,**/*.test.ts"
+    
+  - type: instruction
+    name: Vitest Testing Standards
+    file: vitest.instructions.md
+    description: Custom instructions for Vitest unit and integration testing based on project standards
+    category: Q/A Specialist
+    applyTo: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts"
+    
+  - type: chatmode
+    name: Playwright Tester
+    file: playwright-tester.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/playwright-tester.chatmode.md
+    description: Testing mode for Playwright tests
+    category: Q/A Specialist
+    
+  - type: chatmode
+    name: TDD Red Phase - Write Failing Tests First
+    file: tdd-red.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/tdd-red.chatmode.md
+    description: Guide test-first development by writing failing tests
+    category: Q/A Specialist
+    
+  - type: chatmode
+    name: TDD Green Phase - Make Tests Pass Quickly
+    file: tdd-green.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/tdd-green.chatmode.md
+    description: Implement minimal code to make failing tests pass
+    category: Q/A Specialist
+    
+  - type: chatmode
+    name: TDD Refactor Phase - Improve Quality & Security
+    file: tdd-refactor.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/tdd-refactor.chatmode.md
+    description: Improve code quality whilst maintaining green tests
+    category: Q/A Specialist
+    
+  # === Security Expert Tools ===
+  
+  - type: prompt
+    name: AI Prompt Engineering Safety Review & Improvement
+    file: ai-prompt-engineering-safety-review.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/ai-prompt-engineering-safety-review.prompt.md
+    description: Comprehensive AI prompt engineering safety review and improvement
+    category: Security Expert
+    
+  - type: instruction
+    name: Security Best Practices
+    file: security-best-practices.instructions.md
+    description: Custom security guidelines for authentication, authorization, input validation, and data protection
+    category: Security Expert
+    applyTo: "**/api/**/*,**/auth/**/*,**/middleware/**/*"
+    
+  - type: instruction
+    name: AI Prompt Engineering & Safety Best Practices
+    file: ai-prompt-engineering-safety-best-practices.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/ai-prompt-engineering-safety-best-practices.instructions.md
+    description: Comprehensive best practices for AI prompt engineering and safety
+    category: Security Expert
+    applyTo: "**/*.prompt.md,**/*.chatmode.md"
+    
+  - type: chatmode
+    name: Wg Code Sentinel
+    file: wg-code-sentinel.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/wg-code-sentinel.chatmode.md
+    description: Ask WG Code Sentinel to review your code for security issues.
+    category: Security Expert
+    
+  # === DevOps Expert Tools ===
+  
+  - type: prompt
+    name: Multi Stage Dockerfile
+    file: multi-stage-dockerfile.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/multi-stage-dockerfile.prompt.md
+    description: Create optimized multi-stage Dockerfiles for any language or framework
+    category: DevOps Expert
+    
+  - type: prompt
+    name: Create GitHub Actions Workflow Specification
+    file: create-github-action-workflow-specification.prompt.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/prompts/create-github-action-workflow-specification.prompt.md
+    description: Create a formal specification for an existing GitHub Actions CI/CD workflow
+    category: DevOps Expert
+    
+  - type: instruction
+    name: GitHub Actions CI/CD Best Practices
+    file: github-actions-ci-cd-best-practices.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/github-actions-ci-cd-best-practices.instructions.md
+    description: Comprehensive guide for building robust CI/CD pipelines using GitHub Actions
+    category: DevOps Expert
+    applyTo: ".github/workflows/**/*.yml,.github/workflows/**/*.yaml"
+    
+  - type: instruction
+    name: Containerization & Docker Best Practices
+    file: containerization-docker-best-practices.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/containerization-docker-best-practices.instructions.md
+    description: Best practices for creating optimized, secure Docker images
+    category: DevOps Expert
+    applyTo: "**/Dockerfile,**/.dockerfile,**/docker-compose.yml"
+    
+  - type: chatmode
+    name: DevOps Core Principles
+    file: devops-core-principles.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/devops-core-principles.instructions.md
+    description: Foundational instructions covering core DevOps principles, culture (CALMS), and key metrics (DORA)
+    category: DevOps Expert
+    
+  # === Performance Optimization ===
+  
+  - type: instruction
+    name: Performance Optimization Best Practices
+    file: performance-optimization.instructions.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/instructions/performance-optimization.instructions.md
+    description: Comprehensive performance optimization instructions for all languages and frameworks
+    category: SaaS Developer
+    applyTo: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+    
+  # === General Code Quality ===
+  
+  - type: chatmode
+    name: Universal Janitor
+    file: janitor.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/janitor.chatmode.md
+    description: Perform janitorial tasks on any codebase including cleanup, simplification, and tech debt remediation.
+    category: SaaS Developer
+    
+  - type: chatmode
+    name: Code Review - Gilfoyle
+    file: gilfoyle.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/gilfoyle.chatmode.md
+    description: Code review and analysis with brutal honesty about your code (for fun).
+    category: SaaS Developer
+    
+  - type: chatmode
+    name: Mentor Mode
+    file: mentor.chatmode.md
+    source: https://raw.githubusercontent.com/github/awesome-copilot/main/chatmodes/mentor.chatmode.md
+    description: Help mentor the engineer by providing guidance and support.
+    category: SaaS Developer
+
+metadata:
+  version: "1.0.0"
+  created: "2025-10-24"
+  author: "StormCom Development Team"
+  license: "MIT"
+  source_attribution: "https://github.com/rezwana-karim/awesome-copilot"
+  project_context:
+    - ".specify/memory/constitution.md"
+    - "specs/001-multi-tenant-ecommerce/spec.md"
+    - "specs/001-multi-tenant-ecommerce/plan.md"

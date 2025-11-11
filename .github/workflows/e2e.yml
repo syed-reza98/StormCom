@@ -1,0 +1,190 @@
+# E2E Tests CI/CD Workflow
+#
+# Runs Playwright E2E tests automatically on:
+# - Pull requests to main branch
+# - Pushes to main branch
+# - Manual workflow dispatch
+#
+# Features:
+# - Matrix testing across browsers (Chromium, Firefox, WebKit)
+# - Test artifacts (videos, screenshots) on failure
+# - Test results summary in PR comments
+# - Slack notifications on failure
+
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_VERSION: '1.56.0'
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🗄️ Setup test database
+        run: |
+          npx prisma generate
+          npx prisma db push --skip-generate
+          npx prisma db seed
+        env:
+          DATABASE_URL: file:./test.db
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NEXTAUTH_SECRET: test-secret-for-ci
+          NEXTAUTH_URL: http://localhost:3000
+
+      - name: 🚀 Start application
+        run: npm run start &
+        env:
+          PORT: 3000
+          NEXTAUTH_SECRET: test-secret-for-ci
+          NEXTAUTH_URL: http://localhost:3000
+          DATABASE_URL: file:./test.db
+
+      - name: ⏳ Wait for application to be ready
+        run: npx wait-on http://localhost:3000 --timeout 30000
+
+      - name: 🧪 Run Playwright tests
+        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+
+      - name: 📹 Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.browser }}
+          path: test-results/**/*.webm
+          retention-days: 7
+
+      - name: 📸 Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-${{ matrix.browser }}
+          path: test-results/**/*.png
+          retention-days: 7
+
+  notify:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: failure() && github.event_name == 'push'
+
+    steps:
+      - name: 📢 Send Slack notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "❌ E2E Tests Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* :x:\n\n*Repository:* ${{ github.repository }}\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Author:* ${{ github.actor }}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Workflow Run"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  comment:
+    name: Comment Test Results
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: 💬 Comment PR with test results
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const status = '${{ needs.e2e-tests.result }}';
+            const icon = status === 'success' ? '✅' : '❌';
+            const message = status === 'success' ? 'All E2E tests passed!' : 'Some E2E tests failed.';
+            
+            const body = `## ${icon} E2E Test Results
+            
+            ${message}
+            
+            - **Status**: ${status}
+            - **Workflow**: [View run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            - **Commit**: ${context.sha.substring(0, 7)}
+            
+            <details>
+            <summary>Test Configuration</summary>
+            
+            - **Browsers**: Chromium, Firefox, WebKit
+            - **Node Version**: ${process.env.NODE_VERSION}
+            - **Playwright Version**: ${process.env.PLAYWRIGHT_VERSION}
+            
+            </details>
+            `;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

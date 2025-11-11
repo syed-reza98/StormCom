@@ -37,6 +37,10 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 768, 1024, 1280, 1536, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Allow SVG images from placehold.co (demo/development only)
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   /* Security Headers */
@@ -55,7 +59,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
@@ -79,16 +83,47 @@ const nextConfig: NextConfig = {
   },
   
   /* Performance Optimization */
-  // experimental: {
-  //   optimizeCss: true,
-  //   optimizePackageImports: [
-  //     '@radix-ui/react-dialog',
-  //     '@radix-ui/react-dropdown-menu',
-  //     '@radix-ui/react-select',
-  //     '@radix-ui/react-toast',
-  //     'lucide-react',
-  //   ],
-  // },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: [
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-icons',
+      'lucide-react',
+      'recharts',
+      'date-fns',
+      'react-hook-form',
+      '@hookform/resolvers',
+    ],
+  },
+  
+  /* Compiler Optimization */
+  compiler: {
+    // Remove console.log statements in production (keep error and warn)
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  
+  /* Performance Optimization */
+  // Enable compression for better performance
+  compress: true,
+  
+  /* Output Optimization */
+  // On Windows the standalone build copies traced files which can include
+  // filenames with characters (like `:`) that are invalid on NTFS. To avoid
+  // build-time copyfile errors during local development on Windows, disable
+  // the `standalone` output there. It will still be used on non-Windows
+  // environments (CI / Linux containers) where filenames are supported.
+  output: process.platform === 'win32' ? undefined : 'standalone',
+  
+  // Note: swcMinify removed - it's now default in Next.js 16
 };
 
 export default nextConfig;

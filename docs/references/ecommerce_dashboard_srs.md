@@ -1642,10 +1642,10 @@ CREATE TABLE add_ons (
 - Recharts for analytics visualization
 
 ### 10.2 Backend
-- Next.js 15.5.5 (App Router with Server Components)
+- Next.js 16 (App Router with Server Components)
 - TypeScript 5.9.3 (Strict Mode)
 - RESTful API architecture (Route Handlers)
-- NextAuth.js v5 authentication
+- NextAuth.js v4+ authentication
 - Database: PostgreSQL (production) / SQLite (local dev) with Prisma ORM
 
 ### 10.3 Infrastructure

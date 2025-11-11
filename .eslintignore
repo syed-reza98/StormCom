@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+
+# Vercel
+.vercel/
+
+# Generated files
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+prisma/migrations/
+
+# Config files
+*.config.js
+*.config.ts
+!tailwind.config.ts
+!next.config.ts
+!vitest.config.ts
+!playwright.config.ts
+
+# Logs
+*.log

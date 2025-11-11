@@ -69,7 +69,7 @@ model Product {
 }
 ```
 
-**Prisma middleware** automatically injects `storeId` filter (configured in `src/lib/prisma.ts`).
+**Prisma middleware** automatically injects `storeId` filter (configured in `src/lib/prisma.ts`). See `.specify/memory/constitution.md` for multi-tenant isolation standards.
 
 ### Naming Conventions
 
@@ -264,19 +264,21 @@ npx prisma migrate deploy
 ### Migration Best Practices
 
 1. **Descriptive names**: Use clear, descriptive migration names
-   - Good: `add_product_variants`, `add_customer_email_index`
-   - Bad: `migration1`, `update_schema`
+  - Good: `add_product_variants`, `add_customer_email_index`
+  - Bad: `migration1`, `update_schema`
 
 2. **Small, focused changes**: One logical change per migration
 
 3. **Test migrations**:
-   - Test on local database first
-   - Test on staging before production
-   - Have rollback plan ready
+  - Test on local database first
+  - Test on staging before production
+  - Have rollback plan ready
 
 4. **Never edit migration files** after creation
 
 5. **Backup before production migrations**
+
+> See `.specify/memory/constitution.md` for migration and schema standards.
 
 ### Handling Schema Changes
 

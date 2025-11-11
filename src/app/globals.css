@@ -1,0 +1,177 @@
+@import 'tailwindcss';
+@import '@radix-ui/colors/slate.css';
+@import '@radix-ui/colors/slate-dark.css';
+@import '@radix-ui/colors/teal.css';
+@import '@radix-ui/colors/teal-dark.css';
+@import '@radix-ui/colors/purple.css';
+@import '@radix-ui/colors/purple-dark.css';
+@import '@radix-ui/colors/grass.css';
+@import '@radix-ui/colors/grass-dark.css';
+@import '@radix-ui/colors/amber.css';
+@import '@radix-ui/colors/amber-dark.css';
+@import '@radix-ui/colors/tomato.css';
+@import '@radix-ui/colors/tomato-dark.css';
+
+/* Tailwind base/components/utilities should be first. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Custom base layer: define CSS variables, base element styles and
+  accessibility helpers inside a single @layer base block. This follows
+  Tailwind's recommended pattern of placing custom base rules in
+  `@layer base` after `@tailwind base` so they override preflight where
+  necessary.
+*/
+@layer base {
+  :root {
+    /* Base colors - using Radix Slate scale */
+    --background: var(--slate-1);
+    --foreground: var(--slate-12);
+
+    /* Card colors */
+    --card: var(--slate-1);
+    --card-foreground: var(--slate-12);
+
+    /* Popover colors */
+    --popover: var(--slate-1);
+    --popover-foreground: var(--slate-12);
+
+    /* Primary brand color - using Radix Teal scale */
+    --primary: var(--teal-9);
+    --primary-foreground: white;
+
+    /* Secondary/accent color - using Radix Purple scale */
+    --secondary: var(--purple-3);
+    --secondary-foreground: var(--purple-11);
+
+    /* Muted backgrounds - using Radix Slate scale */
+    --muted: var(--slate-3);
+    --muted-foreground: var(--slate-11);
+
+    /* Accent highlights */
+    --accent: var(--slate-3);
+    --accent-foreground: var(--slate-12);
+
+    /* Destructive/error states - using Radix Tomato scale */
+    --destructive: var(--tomato-9);
+    --destructive-foreground: white;
+
+    /* Success states - using Radix Grass scale */
+    --success: var(--grass-9);
+    --success-foreground: white;
+
+    /* Warning states - using Radix Amber scale */
+    --warning: var(--amber-9);
+    --warning-foreground: var(--amber-12);
+
+    /* Border and input colors */
+    --border: var(--slate-6);
+    --input: var(--slate-6);
+    --ring: var(--teal-9);
+
+    /* Border radius */
+    --radius: 0.5rem;
+  }
+
+  /* Dark mode using Radix dark scales */
+  :root.dark {
+    --background: var(--slate-1);
+    --foreground: var(--slate-12);
+
+    --card: var(--slate-2);
+    --card-foreground: var(--slate-12);
+
+    --popover: var(--slate-2);
+    --popover-foreground: var(--slate-12);
+
+    --primary: var(--teal-9);
+    --primary-foreground: var(--slate-1);
+
+    --secondary: var(--purple-3);
+    --secondary-foreground: var(--purple-11);
+
+    --muted: var(--slate-3);
+    --muted-foreground: var(--slate-11);
+
+    --accent: var(--slate-3);
+    --accent-foreground: var(--slate-12);
+
+    --destructive: var(--tomato-9);
+    --destructive-foreground: white;
+
+    --success: var(--grass-9);
+    --success-foreground: white;
+
+    --warning: var(--amber-9);
+    --warning-foreground: var(--amber-12);
+
+    --border: var(--slate-6);
+    --input: var(--slate-6);
+    --ring: var(--teal-9);
+  }
+
+  /* Custom store theme overrides */
+  [data-store-theme] {
+    --primary: var(--store-primary, var(--teal-9));
+    --primary-foreground: var(--store-primary-foreground, white);
+  }
+
+  /* Global border default — useful for forms and components that don't
+     explicitly set border color (keeps design consistent). */
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Focus-visible styles: keep visual focus rings for accessibility while
+     avoiding default outlines. */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Remove number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@layer utilities {
+  /* Text balance for headings — feature-detect before using */
+  @supports (text-wrap: balance) {
+    .text-balance {
+      text-wrap: balance;
+    }
+  }
+
+  /* Screen reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

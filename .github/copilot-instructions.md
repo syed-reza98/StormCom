@@ -1,379 +1,198 @@
-# StormCom - Copilot Instructions
+# StormCom - Copilot Agent Onboarding
 
-StormCom is a comprehensive multi-tenant e-commerce SaaS platform built with Next.js 15.5.5, TypeScript 5.9.3, and Prisma ORM. This file provides guidance for GitHub Copilot Coding Agent to work effectively with this codebase.
+**Multi-tenant e-commerce SaaS platform: Next.js 16, TypeScript 5.9.3, Prisma ORM, React 19 Server Components**
 
-## Project Overview
+## Quick Facts
+- **Size**: 295 TypeScript/React files, 42+ DB models, 100+ API endpoints
+- **Stack**: Next.js 16 App Router, Prisma (SQLite dev/PostgreSQL prod), Tailwind v4.1.14, Vitest, Playwright
+- **Standards**: 300 line files max, 50 line functions max, 80% test coverage, WCAG 2.1 AA, multi-tenant isolation
+- **Node**: ≥20.0.0 (tested v20.19.5) | **npm**: ≥10.0.0 (tested v10.9.4)
 
-- **Purpose**: Multi-tenant e-commerce management system for managing stores, products, orders, customers, and marketing campaigns
-- **Architecture**: Next.js App Router with React Server Components, Prisma ORM, PostgreSQL/SQLite
-- **Development Methodology**: Spec-Driven Development using GitHub Specs Kit
-- **Target**: SaaS platform enabling businesses to run complete online stores
+## Critical Build Issues (Read First!)
 
-## Repository Structure
+**BEFORE ANY WORK**, understand these known issues:
 
-```
-StormCom/
-├── docs/                          # Documentation
-│   ├── specifications/            # Spec-Driven Development specs
-│   │   ├── .speckit/             # Project constitution and standards
-│   │   └── 001-stormcom-platform/ # Platform specifications
-│   ├── analysis/                  # SRS analysis documents
-│   └── references/                # Legacy documentation
-├── src/
-│   ├── app/                       # Next.js App Router (pages & API routes)
-│   ├── components/                # React components (Server & Client)
-│   ├── lib/                       # Utilities, config, helpers
-│   ├── services/                  # Business logic layer
-│   ├── hooks/                     # Custom React hooks
-│   └── types/                     # TypeScript type definitions
-├── prisma/
-│   ├── schema.prisma              # Database schema
-│   ├── migrations/                # Database migrations
-│   └── seed.ts                    # Database seed data
-└── tests/                         # Test files
-```
+1. **Build Currently FAILS**: TypeScript errors in `src/services/analytics-service.ts:384` (syntax) + Radix UI module resolution errors
+2. **ESLint Broken**: `npm run lint` fails (eslint not in PATH) - use `npx eslint .` instead
+3. **Vitest Not Global**: `npm run test` fails - use `npx vitest run` instead
+4. **Fresh Install Required**: Always `npm install` first (~2-3 mins, peer dep warnings are safe)
+5. **Prisma Auto-Generated**: Postinstall hook runs `prisma generate` - manual run only if schema changes
 
-## Tech Stack & Versions
-
-### Core Framework
-- **Next.js**: 15.5.5 (App Router only, NO Pages Router)
-- **React**: 19.x (Server Components by default)
-- **TypeScript**: 5.9.3 (strict mode enabled)
-- **Node.js**: 18.x or higher
-
-### Styling & UI
-- **Tailwind CSS**: 4.1.14 (utility-first, NO CSS-in-JS)
-- **Radix UI** + **shadcn/ui**: Accessible component primitives
-
-### Database & ORM
-- **Prisma**: Latest stable (type-safe ORM)
-- **SQLite**: Local development only (file: `./prisma/dev.db`)
-- **PostgreSQL**: Production (Vercel Postgres)
-
-### Authentication
-- **NextAuth.js**: v5 (authentication & sessions)
-- **bcrypt**: Password hashing
-
-### Testing
-- **Vitest**: 3.2.4 (unit/integration tests)
-- **Playwright**: 1.56.0 with MCP (E2E tests)
-- **Testing Library**: React component testing
-
-### Deployment
-- **Vercel**: Serverless deployment platform
-
-## Development Workflow
-
-### Building & Running
-
+**First Commands** (validated workflow):
 ```bash
-# Install dependencies
-npm install
-
-# Setup environment
-cp .env.example .env.local
-# Edit .env.local with your configuration
-
-# Initialize database (development)
-npx prisma db push
-npx prisma db seed
-
-# Start development server
-npm run dev
-# Visit http://localhost:3000
-
-# Build for production
-npm run build
-
-# Start production server
-npm run start
+npm install                    # 2-3 mins, ignore peer warnings
+npm run type-check            # Shows current 3 TypeScript errors
+npx eslint .                  # Lint check (don't use npm run lint)
+npm run dev                   # Starts dev server (works despite build issues)
 ```
 
-### Database Commands
+## Validated Build Workflows
 
+### Initial Setup (First Time)
 ```bash
-# Sync schema to database (development only)
-npm run db:push
-
-# Create a migration (production workflow)
-npm run db:migrate
-
-# Open Prisma Studio (database GUI)
-npm run db:studio
-
-# Seed database with initial data
-npm run db:seed
+npm install                           # Install deps (~2-3 min)
+cp .env.example .env                  # Copy and edit: DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL
+npx prisma db push                    # Sync schema (dev.db already exists with data)
+npx prisma db seed                    # Optional: re-seed test data
+npm run dev                           # Start http://localhost:3000
 ```
 
-### Testing
-
+### Daily Development
 ```bash
-# Run all unit tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Run E2E tests
-npm run test:e2e
+npm run dev                           # Dev server with Turbopack
+npm run type-check                    # TypeScript strict check
+npx eslint . --fix                    # Lint with auto-fix
+npm run format                        # Prettier formatting
+npm run db:studio                     # Prisma Studio GUI
+npx vitest run                        # Unit tests (when working)
+npx playwright test                   # E2E tests (requires browser install)
 ```
 
-### Code Quality
-
+### Database Operations
 ```bash
-# Run ESLint (check for issues)
-npm run lint
-
-# Run ESLint with auto-fix
-npm run lint -- --fix
-
-# Run Prettier (format code)
-npm run format
-
-# TypeScript type checking
-npm run type-check
+npm run db:push                       # Sync schema changes (dev)
+npm run db:migrate                    # Create migration (prod workflow)
+npm run db:seed                       # Seed database
+npx prisma studio                     # Database browser GUI
 ```
 
-## Code Standards
+### Known Command Workarounds
+| Broken Command | Working Alternative | Reason |
+|----------------|---------------------|--------|
+| `npm run lint` | `npx eslint .` | eslint not in PATH |
+| `npm run test` | `npx vitest run` | vitest not in PATH |
+| `npm run build` | ❌ Currently fails | See Critical Issues above |
 
-### TypeScript Requirements
+## Architecture Quick Reference
 
-- **Strict Mode**: All code MUST use `strict: true` in tsconfig.json
-- **No `any` types**: Except when interfacing with untyped third-party libraries (must be documented)
-- **Explicit return types**: For all exported functions and class methods
-- **Type guards**: Use proper type narrowing for runtime type safety
-- **Modern features**: Use TypeScript 5.9+ features (const type parameters, satisfies operator)
+**Multi-Tenant Isolation** (SECURITY CRITICAL):
+- ALL queries MUST filter by `storeId` - Prisma middleware auto-injects for tenant tables
+- Session includes `storeId` via NextAuth.js
+- Route groups: `(admin)` cross-store, `(dashboard)` tenant-scoped, `(storefront)` public
 
-### Naming Conventions
+**Next.js 16 Breaking Changes**:
+- Route handler `params` are now Promises: `const { id } = await params` (not `params.id`)
+- Server Components default (70%+ target) - `'use client'` only for events/hooks/browser APIs
+- App Router only - NO Pages Router
 
-- **Variables/Functions**: `camelCase` (e.g., `getUserById`, `productList`)
-- **Components/Types/Classes**: `PascalCase` (e.g., `ProductCard`, `UserProfile`, `OrderStatus`)
-- **Constants**: `UPPER_SNAKE_CASE` (e.g., `MAX_FILE_SIZE`, `API_ENDPOINT`)
-- **Files**: Match the primary export (e.g., `ProductCard.tsx`, `use-cart.ts`)
+**Database Patterns** (Prisma):
+- Primary key: `id String @id @default(cuid())`
+- Timestamps: `createdAt DateTime @default(now())`, `updatedAt DateTime @updatedAt`
+- Soft delete: `deletedAt DateTime?` (filter in all queries: `where: { deletedAt: null }`)
+- Multi-tenant: `storeId String` + `@@index([storeId, createdAt])`
 
-### File Organization
+**Code Quality Limits** (from `.specify/memory/constitution.md`):
+- Max 300 lines per file | Max 50 lines per function (refactor if exceeded)
+- NO `any` types (use `unknown` + type guards) | TypeScript strict mode REQUIRED
+- Test coverage: 80% business logic, 100% utilities
+- Naming: camelCase (vars), PascalCase (components/types), UPPER_SNAKE_CASE (constants)
 
-- **Group by feature**, not by type
-- **Co-locate** related files (component + styles + tests in same directory)
-- **Use barrel exports** (`index.ts`) for clean imports
-- **Maximum depth**: ≤ 4 folder levels
-- **File size**: Maximum 300 lines (refactor if exceeded)
-- **Function size**: Maximum 50 lines (extract smaller functions)
+## Project Structure
 
-### React Components
+```
+.github/instructions/           # File-specific coding rules (READ BEFORE EDITING)
+  ├── api-routes.instructions.md      # REST patterns, Zod validation, multi-tenant
+  ├── components.instructions.md      # Server vs Client components
+  ├── database.instructions.md        # Prisma patterns, migrations
+  └── nextjs.instructions.md          # Next.js 16 App Router, MCP
 
-**Server Components by Default**:
-- All components are Server Components unless explicitly marked with `'use client'`
-- Use Client Components only for:
-  - Event handlers (onClick, onChange, etc.)
-  - Browser APIs (window, document, localStorage)
-  - React hooks (useState, useEffect, useContext, custom hooks)
-  - Third-party libraries that require client-side JavaScript
+src/app/                        # Next.js App Router
+  ├── (admin)/                  # Cross-store admin routes
+  ├── (dashboard)/              # Tenant-scoped: products, orders, customers
+  ├── (storefront)/             # Customer-facing pages
+  └── api/                      # 100+ API Route Handlers
 
-**Component Structure**:
-```typescript
-// Server Component (default)
-export default function ProductList({ storeId }: Props) {
-  const products = await getProducts(storeId);
-  return <div>...</div>;
-}
+prisma/
+  ├── schema.prisma             # 42+ models (DO NOT edit migrations manually)
+  ├── dev.db                    # SQLite (991KB, already seeded)
+  └── migrations/               # Database migrations
 
-// Client Component (when needed)
-'use client';
+specs/001-multi-tenant-ecommerce/  # Spec-Driven Development docs
+  ├── spec.md                   # Feature requirements (1042 lines)
+  ├── data-model.md             # DB schema docs (2106 lines)
+  └── contracts/openapi.yaml    # API specification
 
-export default function ProductForm({ onSubmit }: Props) {
-  const [name, setName] = useState('');
-  return <form>...</form>;
-}
+.specify/memory/constitution.md # PROJECT STANDARDS - READ FIRST
 ```
 
-### API Design
+## CI/CD & Validation
 
-**RESTful Conventions**:
-- `GET /api/resource` - List resources (with pagination)
-- `GET /api/resource/[id]` - Get single resource
-- `POST /api/resource` - Create resource
-- `PUT /api/resource/[id]` - Update resource (full replacement)
-- `PATCH /api/resource/[id]` - Update resource (partial)
-- `DELETE /api/resource/[id]` - Delete resource (soft delete)
+**GitHub Workflows** (`.github/workflows/`):
+- **e2e.yml**: Playwright tests on PR/push (chromium, firefox, webkit matrix, 30 min timeout)
+  - Steps: `npm ci` → `prisma generate/db push` → `build` → `start` → `test`
+- **copilot-setup-steps.yml**: Validation workflow (Node 20, npm 10, Playwright browsers, Prisma SQLite)
+
+**Pre-Commit Checklist**:
+```bash
+npm run type-check          # TypeScript strict
+npx eslint . --fix          # Lint + auto-fix
+npm run format              # Prettier
+npx vitest run              # Unit tests (when passing)
+```
+
+## Critical Documentation (Mandatory Reading)
+
+**Reading Order**:
+1. `.specify/memory/constitution.md` - Standards, limits, requirements (300/50 line limits, 80% coverage)
+2. `.github/instructions/*.md` - File-specific rules (match pattern before editing)
+3. `specs/001-multi-tenant-ecommerce/spec.md` - Feature requirements, user stories
+4. `NEXT16_COMPATIBILITY_FIXES.md` - Breaking changes from Next.js 15→16
+
+**File-Specific Instructions** (`.github/instructions/`):
+- Editing `src/app/api/**/route.ts` or Server Actions? → `api-routes.instructions.md`
+- Creating React components? → `components.instructions.md`
+- Modifying Prisma schema? → `database.instructions.md`
+- Writing tests? → `testing.instructions.md`
+
+## Common Pitfalls & Best Practices
+
+**NEVER**:
+- ❌ Use `any` type (use proper types or `unknown` + guards)
+- ❌ Skip `storeId` filtering (security vulnerability)
+- ❌ Use Client Components unnecessarily (kills Server Component benefits)
+- ❌ Edit Prisma migrations manually (always `npx prisma migrate dev`)
+- ❌ Commit secrets to git (use `.env.local`, never `.env`)
+- ❌ Exceed 300 lines/file or 50 lines/function
+- ❌ Use CSS-in-JS (Tailwind v4.1.14 only)
+
+**ALWAYS**:
+- ✅ Read matching `.github/instructions/*.md` before editing
+- ✅ Await `params` in route handlers: `const { id } = await params`
+- ✅ Filter by `storeId` in tenant-scoped queries
+- ✅ Use Server Components by default, Client only when necessary
+- ✅ Run type-check and lint before committing
+- ✅ Write tests for new features (80% coverage target)
+- ✅ Run `npm install` after pulling changes
+
+## API Patterns & Response Format
+
+**REST Conventions**:
+- `GET /api/resource` - List (paginated) | `POST /api/resource` - Create
+- `GET /api/resource/[id]` - Get | `PATCH /api/resource/[id]` - Update | `DELETE /api/resource/[id]` - Soft delete
 
 **Response Format**:
 ```typescript
-// Success
-{ 
-  data: T, 
-  message?: string,
-  meta?: { page: number, total: number, perPage: number }
-}
-
-// Error
-{ 
-  error: { 
-    code: string,       // VALIDATION_ERROR, NOT_FOUND, UNAUTHORIZED
-    message: string,    // Human-readable message
-    details?: any       // Validation errors (dev only)
-  } 
-}
+// Success: { data: T, message?: string, meta?: { page, total, perPage } }
+// Error: { error: { code: "VALIDATION_ERROR", message: string, details?: any } }
 ```
 
-**HTTP Status Codes**:
-- `200 OK` - Successful GET, PUT, PATCH
-- `201 Created` - Successful POST
-- `204 No Content` - Successful DELETE
-- `400 Bad Request` - Validation error
-- `401 Unauthorized` - Not authenticated
-- `403 Forbidden` - Not authorized
-- `404 Not Found` - Resource not found
-- `500 Internal Server Error` - Server error
+**HTTP Status**: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Error
 
-## Database Guidelines
+## Environment Variables
 
-### Prisma Schema Conventions
+**Required in `.env`**:
+```bash
+DATABASE_URL="file:./prisma/dev.db"                    # SQLite dev, PostgreSQL prod
+NEXTAUTH_SECRET="<generate with: openssl rand -base64 32>"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-- **Primary keys**: `id String @id @default(cuid())`
-- **Timestamps**: All tables include `createdAt`, `updatedAt`
-- **Soft deletes**: Use `deletedAt DateTime?` for user data
-- **Multi-tenancy**: All tenant-scoped tables include `storeId String`
-- **Naming**: Snake_case in database, auto-mapped to camelCase in TypeScript
-- **Indexes**: Add compound indexes for common queries: `@@index([storeId, createdAt])`
-- **Unique constraints**: `@@unique([storeId, email])`, `@@unique([storeId, slug])`
+## Next.js MCP Integration (Optional)
 
-### Working with Migrations
+Next.js 16+ includes built-in MCP server (auto-enabled in dev). Config exists at `.mcp.json` for Next DevTools MCP package. See full MCP docs in existing `.github/copilot-instructions.md` (lines 486-649).
 
-1. **Make schema changes** in `prisma/schema.prisma`
-2. **Create migration**: `npx prisma migrate dev --name descriptive-name`
-3. **Never edit** migration files manually
-4. **Test migrations** on staging before production
-5. **Backup database** before running migrations in production
+**MCP Tools**: `get_errors`, `get_logs`, `get_page_metadata`, `nextjs_docs`, `nextjs_runtime`
 
-### Query Best Practices
+## Trust These Instructions
 
-- **Select only needed fields**: Use `select: { id: true, name: true }`
-- **Avoid N+1 queries**: Use `include` carefully, prefer joins
-- **Paginate large results**: Use `take` and `skip` parameters
-- **Add indexes**: On foreign keys and frequently queried columns
-- **Use transactions**: For multi-step operations that must succeed/fail together
-
-## Testing Requirements
-
-### Test Coverage Goals
-
-- **Business logic** (`src/services/`, `src/lib/`): Minimum 80% coverage
-- **Utility functions**: 100% coverage
-- **Critical paths**: 100% E2E coverage (auth, checkout, orders, payments)
-- **API routes**: 100% integration test coverage
-
-### Test Structure
-
-- **Unit tests**: Co-located with source files in `__tests__/` subdirectory
-- **Integration tests**: In `tests/integration/`
-- **E2E tests**: In `tests/e2e/` using Playwright
-- **Use AAA pattern**: Arrange, Act, Assert
-- **Descriptive names**: Use `it('should...')` format
-- **Mock external dependencies**: Database, APIs, third-party services
-- **Clean up**: Reset state and close connections after tests
-
-## Security Requirements
-
-### Authentication & Authorization
-
-- **NextAuth.js v5** for all authentication
-- **JWT sessions** with HTTP-only cookies
-- **bcrypt** password hashing (cost factor: 12)
-- **Role-Based Access Control (RBAC)** with granular permissions
-- **Multi-tenant isolation** via Prisma middleware (auto-inject storeId)
-
-### Input Validation
-
-- **Zod schemas** for all user inputs (client + server validation)
-- **Sanitize HTML** content (use DOMPurify)
-- **Validate file uploads** (type, size, content)
-- **Rate limiting** on API routes (100 req/min per IP)
-
-### Data Protection
-
-- **Environment variables** for all secrets (never commit to git)
-- **HTTPS only** (enforced by Vercel)
-- **Encrypted database** at rest (managed by Vercel Postgres)
-- **GDPR compliance**: Support data export, deletion, consent management
-
-## Performance Guidelines
-
-### Frontend Performance
-
-- **Server Components first**: Minimize client-side JavaScript (target: <200KB initial bundle)
-- **Dynamic imports**: Use `next/dynamic` for heavy components
-- **Image optimization**: Use Next.js `<Image>` component (automatic WebP, lazy loading)
-- **Code splitting**: Automatic by route, but consider manual splits for large pages
-
-### Backend Performance
-
-- **Connection pooling**: Prisma default (5 connections per serverless function)
-- **Query optimization**: Select only needed fields, use indexes
-- **Caching**: 5-minute TTL for analytics/reports
-- **Database indexes**: On all foreign keys and frequently queried columns
-
-### Performance Budgets
-
-- **Page Load (LCP)**: < 2.0s (desktop), < 2.5s (mobile)
-- **First Input Delay (FID)**: < 100ms
-- **API Response (p95)**: < 500ms
-- **Database Query (p95)**: < 100ms
-
-## Accessibility Standards
-
-- **WCAG 2.1 Level AA** compliance required
-- **Keyboard navigation**: All interactive elements must be keyboard accessible
-- **ARIA labels**: Proper labels and roles on all components
-- **Color contrast**: ≥ 4.5:1 ratio for text
-- **Focus indicators**: Visible on all interactive elements
-- **Semantic HTML**: Use HTML5 semantic elements
-- **Alt text**: Required for all images
-- **Screen reader tested**: Test with NVDA, JAWS, or VoiceOver
-
-## Common Pitfalls to Avoid
-
-1. **DO NOT use Pages Router** - Only use App Router
-2. **DO NOT use `any` type** - Use proper TypeScript types
-3. **DO NOT use CSS-in-JS** - Use Tailwind CSS only
-4. **DO NOT use client components unnecessarily** - Default to Server Components
-5. **DO NOT skip multi-tenant checks** - Always filter by storeId
-6. **DO NOT commit secrets** - Use environment variables
-7. **DO NOT skip tests** - Write tests for all new features
-8. **DO NOT use raw SQL** - Use Prisma Client only
-9. **DO NOT use Redux/Zustand** - Use React Server Components + hooks
-10. **DO NOT exceed file/function size limits** - Refactor when approaching limits
-
-## Key Documentation References
-
-- **Project Standards**: `docs/specifications/.speckit/constitution.md`
-- **Platform Specifications**: `docs/specifications/001-stormcom-platform/spec.md`
-- **Implementation Plan**: `docs/specifications/001-stormcom-platform/plan.md`
-- **Database Schema**: `docs/specifications/001-stormcom-platform/data-model.md`
-- **SRS Analysis**: `docs/analysis/ecommerce_complete_srs.md`
-
-## Working with Copilot
-
-When Copilot Coding Agent works on tasks in this repository:
-
-1. **Always read** the project constitution and specifications first
-2. **Follow the tech stack** strictly (no substitutions without discussion)
-3. **Write tests** before or alongside implementation
-4. **Validate changes** with linting, type checking, and tests before committing
-5. **Update documentation** when adding new features or changing behavior
-6. **Use descriptive commit messages** following Conventional Commits format
-7. **Keep changes focused** - one feature/fix per pull request
-8. **Respect security requirements** - never bypass authentication or tenant isolation
-9. **Optimize for performance** - follow performance budgets and best practices
-10. **Ensure accessibility** - all UI changes must meet WCAG 2.1 Level AA standards
-
-## Getting Help
-
-- **Documentation**: Start with `docs/` directory
-- **Constitution**: See `docs/specifications/.speckit/constitution.md` for all standards
-- **Specifications**: See `docs/specifications/001-stormcom-platform/` for detailed specs
-- **Issues**: Check existing GitHub issues for context and discussions
-- **Demo**: Reference demo at https://ecom-demo.workdo.io/ for UI/UX guidance
+Only search/explore if instructions are incomplete or incorrect. This document is validated against actual codebase and known issues.

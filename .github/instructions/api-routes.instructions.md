@@ -6,7 +6,7 @@ applyTo: "src/app/api/**/route.ts,src/app/**/actions.ts"
 
 ## Route Handlers (REST API)
 
-Route handlers are defined in `route.ts` files within the `app/api` directory.
+Route handlers are defined in `route.ts` files within the `src/app/api` directory.
 
 ### File Location & Naming
 
@@ -274,7 +274,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
 ## Server Actions
 
-Server Actions are defined in `actions.ts` files and called from Client Components.
+Server Actions are defined in `actions.ts` files within `src/app/` and called from Client Components.
 
 ### File Location & Naming
 
@@ -453,6 +453,8 @@ const products = await prisma.product.findMany({
 // Bad - No storeId filter (security vulnerability)
 const products = await prisma.product.findMany();
 ```
+
+// See `.specify/memory/constitution.md` for multi-tenant standards.
 
 ## Input Validation
 

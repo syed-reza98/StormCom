@@ -1,3 +1,28 @@
+# Sync Impact Report
+<!--
+Version change: 1.1.0 → 1.2.0
+
+Modified principles:
+- Required Technologies: replaced "Custom Auth System" note with a pinned NextAuth.js requirement (NextAuth.js v4.24.13).
+- Authentication & Authorization: pinned to NextAuth.js v4.24.13 and added compatibility guidance for Next.js v16.0.1.
+
+Added / Removed sections:
+- Removed: explicit note recommending a custom auth system due to NextAuth v5 incompatibility.
+
+Templates & files checked and sync status:
+- .specify/memory/constitution.md — ✅ updated
+- specs/001-multi-tenant-ecommerce/plan.md — ✅ updated to reference NextAuth.js v4.24.13
+- specs/001-multi-tenant-ecommerce/tasks.md — ✅ updated to reinstate T022 for NextAuth.js v4.24.13
+- .specify/templates/plan-template.md — ✅ reviewed (no changes required)
+- .specify/templates/spec-template.md — ✅ reviewed (no changes required)
+- .specify/templates/tasks-template.md — ✅ reviewed (no changes required)
+
+Follow-up TODOs:
+- Verify `package.json` pins or allows `next-auth@4.24.13` and `next@16.0.1`. If not, propose dependency update and run `npm install`.
+- Run full test suite (Vitest + Playwright) to validate NextAuth integration and resolve any auth-related test mocks.
+- Remove or migrate any legacy custom-auth code paths once NextAuth integration is fully validated.
+-->
+
 # StormCom Constitution
 
 ## Core Principles
@@ -45,7 +70,11 @@ Testing is mandatory. All features must include unit, integration, and end-to-en
 **Testing Tools**
 - **Unit/Integration**: Vitest 3.2.4 + Testing Library.
 - **E2E**: Playwright 1.56.0 with MCP support.
-- **Coverage**: Vitest coverage (c8/istanbul).
+- **Visual Regression**: Percy (BrowserStack) with 0.1% difference threshold.
+- **Accessibility**: axe-core with WCAG 2.1 Level AA enforcement.
+- **Performance**: k6 (Grafana) for load testing + Lighthouse CI for Web Vitals.
+- **Cross-Browser**: BrowserStack (Chromium, Firefox, WebKit, Mobile Safari, Mobile Chrome).
+- **Coverage**: Vitest coverage (v8 provider).
 - **Mocking**: Vitest mocking utilities + MSW for API mocking.
 
 **Test Quality**
@@ -54,6 +83,36 @@ Testing is mandatory. All features must include unit, integration, and end-to-en
 - Follow the AAA pattern (Arrange, Act, Assert).
 - Mock external dependencies (database, APIs).
 - Clean up after tests (reset state, close connections).
+
+**E2E Testing Requirements**
+- **Page Object Model**: All E2E tests must use POM pattern for maintainability.
+- **Critical Path Coverage**: 100% coverage for authentication, checkout, order management, payment flows.
+- **Cross-Browser**: Test on Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari.
+- **Test Data Isolation**: Use fixture functions to seed test data (no shared state between tests).
+- **Retry Logic**: Maximum 2 retries in CI for flaky network/timing issues.
+- **Screenshots**: Capture screenshots on failure for debugging.
+- **Trace Files**: Enable Playwright traces on first retry.
+
+**Visual Regression Testing Requirements**
+- **Percy Integration**: All UI components must have Percy snapshots.
+- **Threshold**: 0.1% difference threshold (blocking deployment if exceeded).
+- **Viewports**: Test on mobile (375px), tablet (768px), desktop (1280px).
+- **Approval Workflow**: Visual changes require manual approval before merging PR.
+- **Critical Pages**: Dashboard, product list, checkout flow, admin settings.
+
+**Accessibility Testing Requirements**
+- **axe-core Integration**: Run axe checks on all pages during E2E tests.
+- **WCAG 2.1 Level AA**: Zero violations blocking deployment (errors must be fixed).
+- **Manual Testing**: Quarterly screen reader testing with NVDA/JAWS/VoiceOver.
+- **Keyboard Navigation**: All interactive elements must be keyboard accessible (Tab, Enter, Escape).
+- **Focus Management**: Visible focus indicators on all elements (2px solid ring).
+
+**Performance Testing Requirements**
+- **Load Testing**: Use k6 to simulate 100 concurrent users for 5 minutes.
+- **Thresholds**: 95% of requests < 500ms, error rate < 1%.
+- **Lighthouse CI**: Performance score ≥ 90, LCP < 2s, CLS < 0.1, TBT < 300ms.
+- **Bundle Analysis**: JavaScript bundle < 200KB (blocking), warn at 180KB.
+- **Database Performance**: Slow query monitoring (> 100ms threshold).
 
 ### III. User Experience Consistency
 Ensure a seamless and intuitive user experience. All user-facing components must comply with WCAG 2.1 Level AA accessibility standards. Maintain consistency in design and interaction patterns across features.
@@ -117,7 +176,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 ## Additional Constraints
 
 ### Required Technologies
-- ✅ **Next.js** `15.5.5+` (App Router only, NO Pages Router).
+- ✅ **Next.js** `16.0.0+` (App Router only, NO Pages Router, **includes built-in Next.js MCP Server**).
 - ✅ **React** `19.x` (Server Components by default).
 - ✅ **TypeScript** `5.9.3+` (strict mode enabled).
 - ✅ **Prisma ORM** (latest stable version).
@@ -125,12 +184,16 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **PostgreSQL** (production on Vercel Postgres).
 - ✅ **Tailwind CSS** `4.1.14+` (utility-first styling).
 - ✅ **Radix UI** + **shadcn/ui** (accessible component library).
-- ✅ **NextAuth.js** `v5` (authentication).
+- ✅ **NextAuth.js** `v4.24.13` - Official authentication framework configured for Next.js `v16.0.1`. Use NextAuth.js v4.24.13 for session management (JWT sessions), provider integrations, and optional 2FA/TOTP flows. In production, session state SHOULD be stored in Vercel KV or another secure session store. This replaces the prior custom-auth note: NextAuth v4.x is the supported authentication system for the project and is verified compatible with Next.js 16.0.1.
 - ✅ **Zod** (runtime validation).
 - ✅ **React Hook Form** (form state management).
 - ✅ **Vitest** `3.2.4+` (unit/integration testing).
 - ✅ **Playwright** `1.56.0+` with MCP (E2E testing).
-- ✅ **Vercel** (deployment platform).
+- ✅ **BrowserStack** (cross-browser E2E testing + Percy visual regression).
+- ✅ **k6** (Grafana - performance/load testing).
+- ✅ **Lighthouse CI** (performance budgets and auditing).
+- ✅ **axe-core** (accessibility testing - WCAG 2.1 Level AA).
+- ✅ **Vercel** (deployment platform with native observability: Analytics, Logs, Speed Insights).
 
 ### Prohibited Technologies
 - ❌ **Redux/MobX/Zustand** (use React Server Components + hooks).
@@ -237,7 +300,7 @@ Performance is a priority. All features must meet defined performance budgets: p
 Ensure all user data is encrypted at rest and in transit. Follow industry best practices for authentication and authorization, including HTTPS, secure cookies, and role-based access control.
 
 **Authentication & Authorization**
-- Use NextAuth.js v5 for authentication.
+- Use NextAuth.js `v4.24.13` (compatible with Next.js `v16.0.1`) for authentication. Configure providers, JWT session handling, and optional 2FA/TOTP via NextAuth integrations where applicable. Session cookies MUST be HTTP-only and SameSite=Lax; store session state in Vercel KV in production.
 - Implement JWT sessions with HTTP-only cookies (SameSite=Lax).
 - Hash passwords with bcrypt (cost factor: 12).
 - Enforce Role-Based Access Control (RBAC) with granular permissions.
@@ -271,4 +334,4 @@ Ensure compliance with GDPR, CCPA, and other relevant data protection regulation
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All pull requests and reviews must verify compliance with the principles outlined in this document. Complexity must be justified, and runtime development guidance must be followed as outlined in the project documentation.
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-10-17
+**Version**: 1.2.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-11-08

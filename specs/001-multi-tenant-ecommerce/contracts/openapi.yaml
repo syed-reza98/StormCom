@@ -1,0 +1,692 @@
+openapi: 3.1.0
+info:
+  title: StormCom Multi-tenant E-commerce API
+  version: 1.0.0
+  description: |
+    RESTful API for StormCom multi-tenant e-commerce platform.
+    
+    ## Authentication
+    All authenticated endpoints require a JWT Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer <token>
+    ```
+    
+    ## Multi-tenancy
+    Most endpoints are scoped to a store via the `storeId` parameter or automatically filtered based on the authenticated user's store.
+    
+    ## Rate Limiting
+    Rate limits vary by subscription plan:
+    - **FREE**: 60 requests/minute
+    - **BASIC**: 120 requests/minute
+    - **PRO**: 300 requests/minute
+    - **ENTERPRISE**: 1000 requests/minute
+    
+    ## Error Responses
+    All error responses follow this format:
+    ```json
+    {
+      "error": {
+        "code": "ERROR_CODE",
+        "message": "Human-readable error message",
+        "details": {}  // Optional validation errors
+      }
+    }
+    ```
+    
+  contact:
+    name: StormCom Support
+    email: support@stormcom.io
+  license:
+    name: Proprietary
+    
+servers:
+  - url: https://api.stormcom.io/v1
+    description: Production server
+  - url: https://staging-api.stormcom.io/v1
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Stores
+    description: Store management (SUPER_ADMIN, STORE_ADMIN)
+  - name: Products
+    description: Product catalog management
+  - name: Orders
+    description: Order lifecycle management
+  - name: Checkout
+    description: Shopping cart and checkout flow
+  - name: Customers
+    description: Customer management
+  - name: Analytics
+    description: Reporting and business intelligence
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  schemas:
+    # Common
+    UUID:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      
+    DateTime:
+      type: string
+      format: date-time
+      example: "2025-10-23T14:30:00Z"
+      
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        perPage:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        total:
+          type: integer
+        totalPages:
+          type: integer
+          
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - NOT_FOUND
+                - CONFLICT
+                - RATE_LIMIT_EXCEEDED
+                - INTERNAL_ERROR
+                - SERVICE_UNAVAILABLE
+            message:
+              type: string
+            details:
+              type: object
+              
+    # User & Auth
+    UserRole:
+      type: string
+      enum:
+        - SUPER_ADMIN
+        - STORE_ADMIN
+        - STAFF
+        - CUSTOMER
+        
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - role
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+          nullable: true
+        emailVerified:
+          type: boolean
+        mfaEnabled:
+          type: boolean
+        lastLoginAt:
+          $ref: '#/components/schemas/DateTime'
+          nullable: true
+          
+    # Store
+    SubscriptionPlan:
+      type: string
+      enum:
+        - FREE
+        - BASIC
+        - PRO
+        - ENTERPRISE
+        
+    SubscriptionStatus:
+      type: string
+      enum:
+        - TRIAL
+        - ACTIVE
+        - PAST_DUE
+        - CANCELED
+        - PAUSED
+        
+    Store:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - subscriptionPlan
+        - subscriptionStatus
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        description:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        subscriptionPlan:
+          $ref: '#/components/schemas/SubscriptionPlan'
+        subscriptionStatus:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    # Product
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - price
+        - sku
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        description:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        compareAtPrice:
+          type: number
+          format: decimal
+          nullable: true
+        sku:
+          type: string
+        inventoryQty:
+          type: integer
+          minimum: 0
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        isPublished:
+          type: boolean
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    # Order
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - PAYMENT_FAILED
+        - PAID
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+        - CANCELED
+        - REFUNDED
+        
+    PaymentStatus:
+      type: string
+      enum:
+        - PENDING
+        - AUTHORIZED
+        - PAID
+        - FAILED
+        - REFUNDED
+        - DISPUTED
+        
+    ShippingStatus:
+      type: string
+      enum:
+        - PENDING
+        - LABEL_CREATED
+        - PICKED_UP
+        - IN_TRANSIT
+        - OUT_FOR_DELIVERY
+        - DELIVERED
+        - FAILED_DELIVERY
+        - RETURNED
+        
+    Order:
+      type: object
+      required:
+        - id
+        - orderNumber
+        - status
+        - subtotal
+        - totalAmount
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        orderNumber:
+          type: string
+          example: "ORD-1001"
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+        shippingStatus:
+          $ref: '#/components/schemas/ShippingStatus'
+        subtotal:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+        shippingAmount:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        totalAmount:
+          type: number
+          format: decimal
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+          
+    OrderItem:
+      type: object
+      required:
+        - id
+        - productName
+        - sku
+        - price
+        - quantity
+        - totalAmount
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        productId:
+          $ref: '#/components/schemas/UUID'
+          nullable: true
+        productName:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+          format: decimal
+        quantity:
+          type: integer
+          minimum: 1
+        subtotal:
+          type: number
+          format: decimal
+        taxAmount:
+          type: number
+          format: decimal
+        discountAmount:
+          type: number
+          format: decimal
+        totalAmount:
+          type: number
+          format: decimal
+
+paths:
+  # Authentication
+  # NOTE: Login/logout handled by NextAuth.js (not exposed via OpenAPI)
+  # - Login: POST /api/auth/callback/credentials (NextAuth internal)
+  # - Logout: GET /api/auth/signout (NextAuth internal)
+  # - Session: Uses JWT tokens (stateless)
+  
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User registration
+      description: Create new customer account
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+                  minLength: 2
+                phone:
+                  type: string
+                  pattern: '^\+[1-9]\d{1,14}$'
+                acceptsMarketing:
+                  type: boolean
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      verificationEmailSent:
+                        type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Get authenticated user's profile
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      session:
+                        type: object
+                        properties:
+                          expiresAt:
+                            $ref: '#/components/schemas/DateTime'
+                          lastActivityAt:
+                            $ref: '#/components/schemas/DateTime'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  # Stores
+  /stores:
+    get:
+      tags:
+        - Stores
+      summary: List stores
+      description: List all stores (SUPER_ADMIN) or user's store (STORE_ADMIN/STAFF)
+      operationId: listStores
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: List of stores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Store'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Stores
+      summary: Create store
+      description: Create new store (SUPER_ADMIN only)
+      operationId: createStore
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - slug
+                - email
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                  pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+                description:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Store created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Store'
+                  message:
+                    type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  # Products
+  /products:
+    get:
+      tags:
+        - Products
+      summary: List products
+      description: List products in store
+      operationId: listProducts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          description: Search in product name, description, SKU
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: isPublished
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+                    
+  # Orders
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: List orders
+      description: List orders in store
+      operationId: listOrders
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+
+# Note: This is a comprehensive OpenAPI 3.1 specification outline.
+# Full implementation would include all endpoints from the contracts/ directory.
+# For complete API documentation, refer to individual contract files.

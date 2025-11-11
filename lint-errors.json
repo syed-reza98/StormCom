@@ -1,0 +1,19 @@
+﻿{
+    "summary":  {
+                    "totalErrors":  0,
+                    "exitCode":  0,
+                    "timestamp":  "2025-11-03T16:48:41Z",
+                    "command":  "npm run lint",
+                    "totalWarnings":  0,
+                    "totalLines":  4
+                },
+    "rawOutput":  [
+                      "",
+                      "\u003e stormcom@0.1.0 lint",
+                      "\u003e eslint .",
+                      ""
+                  ],
+    "errors":  [
+
+               ]
+}

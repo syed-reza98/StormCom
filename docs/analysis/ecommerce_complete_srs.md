@@ -98,8 +98,8 @@ This SRS was generated through:
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
 │               Application Layer                             │
-│  - Next.js 15 App Router (React Server Components)          │
-│  - Authentication & Authorization (NextAuth.js v5)          │
+│  - Next.js 16 App Router (React Server Components)          │
+│  - Authentication & Authorization (NextAuth.js v4+)          │
 │  - Business Logic (Server Actions & Route Handlers)         │
 │  - RESTful API (Next.js API Routes)                         │
 │  - TypeScript 5.9.3 (Strict Mode)                           │
@@ -156,11 +156,11 @@ The system supports multiple user roles with hierarchical permissions:
 
 ### 2.3 Technology Stack (StormCom Implementation)
 
-- **Framework**: Next.js 15.5.5 (App Router with React Server Components)
+- **Framework**: Next.js 16 (App Router with React Server Components)
 - **Language**: TypeScript 5.9.3 (Strict Mode)
 - **Styling**: Tailwind CSS 4.1.14 with Radix UI components
 - **Database**: Prisma ORM with PostgreSQL (production) / SQLite (local dev)
-- **Authentication**: NextAuth.js v5 with RBAC
+- **Authentication**: NextAuth.js v4+ with RBAC
 - **Session**: Server-side session management (NextAuth.js)
 - **File Storage**: Vercel Blob Storage (production) / Local (development)
 - **Testing**: Vitest 3.2.4 + Playwright 1.56.0 (MCP)
@@ -1342,80 +1342,84 @@ Admin View:
 
 ---
 
-## 11. ERD Diagram
+## 11. ERD Diagram: https://www.mermaidchart.com/d/e90a991b-f77b-4e62-9111-2a035322ea98
 
 ```mermaid
+// [MermaidChart: e90a991b-f77b-4e62-9111-2a035322ea98]
+---
+id: e90a991b-f77b-4e62-9111-2a035322ea98
+---
 erDiagram
-    USERS ||--o{{ ROLE_USER : "has"
-    ROLES ||--o{{ ROLE_USER : "assigned_to"
-    USERS {{
-        int id PK
+    USERS ||--o{ ROLE_USER : "has"
+    ROLES ||--o{ ROLE_USER : "assigned_to"
+    USERS {
+        string id PK
         string name
         string email UK
         string password
         timestamp created_at
-    }}
-    ROLES {{
-        int id PK
+    }
+    ROLES {
+        string id PK
         string name
         json permissions
-    }}
+    }
     
-    CUSTOMERS ||--o{{ ORDERS : "places"
-    CUSTOMERS ||--o{{ WISHLISTS : "creates"
-    CUSTOMERS ||--o{{ SUPPORT_TICKETS : "submits"
-    CUSTOMERS ||--o{{ CUSTOMER_ADDRESSES : "has"
-    CUSTOMERS {{
-        int id PK
+    CUSTOMERS ||--o{ ORDERS : "places"
+    CUSTOMERS ||--o{ WISHLISTS : "creates"
+    CUSTOMERS ||--o{ SUPPORT_TICKETS : "submits"
+    CUSTOMERS ||--o{ CUSTOMER_ADDRESSES : "has"
+    CUSTOMERS {
+        string id PK
         string name
         string email UK
         string phone
         timestamp created_at
-    }}
+    }
     
-    PRODUCTS ||--o{{ PRODUCT_VARIANTS : "has"
-    PRODUCTS ||--o{{ PRODUCT_IMAGES : "has"
-    PRODUCTS ||--o{{ ORDER_ITEMS : "sold_in"
-    PRODUCTS ||--o{{ WISHLIST_ITEMS : "featured_in"
-    PRODUCTS ||--o{{ TESTIMONIALS : "reviewed_in"
-    PRODUCTS ||--o{{ PRODUCT_ATTRIBUTE_VALUES : "has"
-    CATEGORIES ||--o{{ PRODUCTS : "contains"
-    BRANDS ||--o{{ PRODUCTS : "manufactures"
-    LABELS ||--o{{ PRODUCT_LABELS : "tags"
-    PRODUCTS ||--o{{ PRODUCT_LABELS : "tagged_with"
-    PRODUCTS {{
-        int id PK
+    PRODUCTS ||--o{ PRODUCT_VARIANTS : "has"
+    PRODUCTS ||--o{ PRODUCT_IMAGES : "has"
+    PRODUCTS ||--o{ ORDER_ITEMS : "sold_in"
+    PRODUCTS ||--o{ WISHLIST_ITEMS : "featured_in"
+    PRODUCTS ||--o{ TESTIMONIALS : "reviewed_in"
+    PRODUCTS ||--o{ PRODUCT_ATTRIBUTE_VALUES : "has"
+    CATEGORIES ||--o{ PRODUCTS : "contains"
+    BRANDS ||--o{ PRODUCTS : "manufactures"
+    LABELS ||--o{ PRODUCT_LABELS : "tags"
+    PRODUCTS ||--o{ PRODUCT_LABELS : "tagged_with"
+    PRODUCTS {
+        string id PK
         string name
         string slug UK
-        text description
+        string description
         decimal price
         int stock_quantity
-        int category_id FK
-        int brand_id FK
+        string category_id FK
+        string brand_id FK
         string sku UK
         boolean is_featured
-    }}
+    }
     
-    CATEGORIES {{
-        int id PK
+    CATEGORIES {
+        string id PK
         string name
-        int parent_id FK
-    }}
+        string parent_id FK
+    }
     
-    BRANDS {{
-        int id PK
+    BRANDS {
+        string id PK
         string name
         string logo
         boolean is_popular
-    }}
+    }
     
-    ORDERS ||--o{{ ORDER_ITEMS : "contains"
-    ORDERS ||--o{{ REFUND_REQUESTS : "may_have"
-    ORDERS ||--o{{ ORDER_STATUS_HISTORY : "tracks"
-    ORDERS {{
-        int id PK
+    ORDERS ||--o{ ORDER_ITEMS : "contains"
+    ORDERS ||--o{ REFUND_REQUESTS : "may_have"
+    ORDERS ||--o{ ORDER_STATUS_HISTORY : "tracks"
+    ORDERS {
+        string id PK
         string order_number UK
-        int customer_id FK
+        string customer_id FK
         decimal subtotal
         decimal tax_amount
         decimal shipping_cost
@@ -1423,72 +1427,72 @@ erDiagram
         string status
         string payment_status
         timestamp created_at
-    }}
+    }
     
-    ORDER_ITEMS {{
-        int id PK
-        int order_id FK
-        int product_id FK
-        int variant_id FK
+    ORDER_ITEMS {
+        string id PK
+        string order_id FK
+        string product_id FK
+        string variant_id FK
         int quantity
         decimal unit_price
         decimal total_price
-    }}
+    }
     
-    REFUND_REQUESTS {{
-        int id PK
-        int order_id FK
-        int order_item_id FK
+    REFUND_REQUESTS {
+        string id PK
+        string order_id FK
+        string order_item_id FK
         string reason
         decimal refund_amount
         string status
-    }}
+    }
     
-    SHIPPING_ZONES ||--o{{ SHIPPING_RATES : "defines"
-    SHIPPING_CLASSES ||--o{{ SHIPPING_RATES : "applies_to"
+    SHIPPING_ZONES ||--o{ SHIPPING_RATES : "defines"
+    SHIPPING_CLASSES ||--o{ SHIPPING_RATES : "applies_to"
     
-    COUPONS {{
-        int id PK
+    COUPONS {
+        string id PK
         string code UK
         string discount_type
         decimal discount_value
         date valid_from
         date valid_to
         int usage_limit
-    }}
+    }
     
-    FLASH_SALES ||--o{{ FLASH_SALE_PRODUCTS : "includes"
-    PRODUCTS ||--o{{ FLASH_SALE_PRODUCTS : "featured_in"
+    FLASH_SALES ||--o{ FLASH_SALE_PRODUCTS : "includes"
+    PRODUCTS ||--o{ FLASH_SALE_PRODUCTS : "featured_in"
     
-    BLOGS ||--o{{ BLOG_CATEGORIES : "belongs_to"
-    USERS ||--o{{ BLOGS : "authors"
+    BLOGS }o--|| BLOG_CATEGORIES : "belongs_to"
+    USERS ||--o{ BLOGS : "authors"
     
-    PAGES {{
-        int id PK
+    PAGES {
+        string id PK
         string title
         string slug UK
-        text content
+        string content
         boolean published
-    }}
+    }
     
-    MENUS ||--o{{ MENU_ITEMS : "contains"
+    MENUS ||--o{ MENU_ITEMS : "contains"
     
-    FAQS {{
-        int id PK
+    FAQS {
+        string id PK
         string question
-        text answer
+        string answer
         int sort_order
-    }}
+    }
     
-    SUPPORT_TICKETS ||--o{{ TICKET_REPLIES : "has"
-    USERS ||--o{{ SUPPORT_TICKETS : "assigned_to"
+    SUPPORT_TICKETS ||--o{ TICKET_REPLIES : "has"
+    USERS ||--o{ SUPPORT_TICKETS : "assigned_to"
     
-    STORES ||--o{{ PRODUCTS : "owns"
-    STORES ||--o{{ ORDERS : "receives"
-    USERS ||--o{{ STORES : "owns"
+    STORES ||--o{ PRODUCTS : "owns"
+    STORES ||--o{ ORDERS : "receives"
+    USERS ||--o{ STORES : "owns"
     
-    DELIVERY_BOYS ||--o{{ DELIVERY_ASSIGNMENTS : "handles"
-    ORDERS ||--o{{ DELIVERY_ASSIGNMENTS : "assigned_to"
+    DELIVERY_BOYS ||--o{ DELIVERY_ASSIGNMENTS : "handles"
+    ORDERS ||--o{ DELIVERY_ASSIGNMENTS : "assigned_to"
 ```
 
 ---
