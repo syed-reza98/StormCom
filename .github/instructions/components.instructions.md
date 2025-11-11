@@ -143,27 +143,197 @@ export default function ProductCard({
 - **Extract smaller components** when component becomes too large
 - **Extract logic to custom hooks** or utility functions
 
-## shadcn/ui Components
+## shadcn/ui Component Architecture
 
-We use **shadcn/ui** components built on **Radix UI**:
+We use **shadcn/ui** as our primary component library, built on **Radix UI** primitives with **Tailwind CSS** styling.
 
-  - **Import from `@/components/ui`**: All UI primitives (see `src/components/ui`)
-- **Customize via Tailwind**: Modify classes in component files
-- **Follow accessibility**: shadcn/ui components are accessible by default
-- **Add new components**: Use `npx shadcn-ui@latest add [component-name]`
+### Installation & Setup
 
-Common components:
+- **Initial Setup**: Run `npx shadcn@latest init` to create `components.json` configuration
+- **Add Components**: Use `npx shadcn@latest add <component>` to install components
+- **Component Location**: CLI adds components to `src/components/ui/` with full source code
+- **MCP Server**: Use shadcn MCP server for AI-assisted component discovery and installation
+- **Documentation**: https://ui.shadcn.com/docs/components
+
+### Component Installation Workflow
+
+1. **Search Components**:
+   ```powershell
+   # Interactive search
+   npx shadcn@latest add
+   
+   # Or use MCP server with natural language:
+   # "Show me button components from shadcn/ui"
+   # "Install the dialog component"
+   ```
+
+2. **Install Component**:
+   ```powershell
+   npx shadcn@latest add button
+   npx shadcn@latest add dialog
+   npx shadcn@latest add form
+   ```
+
+3. **Import and Use**:
+   ```typescript
+   import { Button } from '@/components/ui/button';
+   import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+   ```
+
+4. **Customize** (edit `src/components/ui/button.tsx` for project-wide changes):
+   ```typescript
+   // src/components/ui/button.tsx
+   import { cva } from "class-variance-authority";
+   const buttonVariants = cva(
+     "inline-flex items-center justify-center rounded-md text-sm font-medium",
+     {
+       variants: {
+         variant: {
+           default: "bg-primary text-primary-foreground hover:bg-primary/90",
+           destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+           // Add custom variants here
+         },
+       },
+     }
+   );
+   ```
+
+### Composition Patterns
+
+**Composition over Inheritance** - Build complex components by composing primitives:
+
 ```typescript
+// ✅ GOOD: Compose primitives at usage site
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+export function CreateProductDialog({ open, onOpenChange }: Props) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Product</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">Product Name</Label>
+            <Input id="name" placeholder="Enter product name" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button type="submit">Create</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ❌ BAD: Don't create wrapper components
+function CustomDialog({ children }) {
+  return <Dialog>{children}</Dialog>; // Unnecessary abstraction
+}
+```
+
+### Component Customization
+
+- **Project-wide changes**: Edit components directly in `src/components/ui/`
+- **One-off styling**: Use `className` prop
+- **Extend variants**: Use `class-variance-authority` (cva) pattern
+
+```typescript
+// One-off customization
+<Button className="w-full mt-4">Submit</Button>
+
+// Using variants
+<Button variant="destructive" size="sm">Delete</Button>
+
+// Conditional classes with cn() utility
+import { cn } from '@/lib/utils';
+
+<Button 
+  className={cn(
+    "w-full",
+    isPending && "opacity-50 cursor-not-allowed"
+  )}
+>
+  Submit
+</Button>
+```
+
+### Accessibility Requirements
+
+- **WCAG 2.1 Level AA**: Radix UI primitives provide accessibility by default
+- **Keyboard Navigation**: Tab, Enter, Escape work automatically
+- **ARIA Labels**: Add descriptive labels for screen readers
+- **Focus Management**: Visible focus indicators on all elements
+- **Screen Reader Testing**: Test with NVDA, JAWS, VoiceOver quarterly
+
+```typescript
+// ✅ GOOD: Accessible button with proper labels
+<Button
+  aria-label={`Add ${product.name} to cart`}
+  className="focus:ring-2 focus:ring-primary focus:outline-none"
+>
+  Add to Cart
+</Button>
+```
+
+### Common shadcn/ui Components
+
+```typescript
+// Forms & Inputs
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+// Layout & Navigation
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+// Overlays & Dialogs
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+// Feedback & Status
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/use-toast';
+
+// Display & Data
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 ```
 
 ## Forms & Validation
 
-### Use React Hook Form + Zod (see `.specify/memory/constitution.md` for validation standards)
+### Use shadcn/ui Form + React Hook Form + Zod
+
+**REQUIRED**: Use shadcn/ui Form components for all forms. This provides consistent styling, accessibility, and validation.
+
+> **Note:** For simple forms such as single-field search bars or newsletter subscription inputs that do not require complex validation, it is acceptable to use shadcn/ui Input components directly without the full Form structure.  
+> Examples include:
+> - Search input in a navbar or sidebar
+> - Newsletter signup with only an email field and basic validation
+> - Quick filter fields with no multi-field dependencies
+>  
+> In these cases, ensure accessibility (label, ARIA attributes) and consistent styling are maintained. For multi-field forms or forms requiring advanced validation, always use the full shadcn/ui Form pattern.
+**Pattern**: `<Form><FormField><FormItem><FormLabel><FormControl><Input /></FormControl><FormMessage /></FormItem></FormField></Form>`
+
+**Reference**: https://ui.shadcn.com/docs/components/form
 
 ```typescript
 'use client';
@@ -171,29 +341,149 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const productSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  price: z.number().min(0, 'Price must be positive'),
-  description: z.string().optional(),
+  name: z.string().min(1, 'Name is required').max(200, 'Name too long'),
+  price: z.number().positive('Price must be positive'),
+  sku: z.string().min(1, 'SKU is required'),
+  description: z.string().max(5000, 'Description too long').optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
 
 export default function ProductForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: '',
+      price: 0,
+      sku: '',
+      description: '',
+    },
   });
   
   const onSubmit = (data: ProductFormData) => {
     // Handle submission
+    console.log(data);
   };
   
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Input {...register('name')} />
-      {errors.name && <span className="text-red-500">{errors.name.message}</span>}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter product name" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is the public display name for your product.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  step="0.01"
+                  placeholder="0.00" 
+                  {...field}
+                  onChange={e => field.onChange(parseFloat(e.target.value))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Enter product description"
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? 'Creating...' : 'Create Product'}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+```
+
+### Form with Server Actions
+
+```typescript
+'use client';
+
+import { useFormState, useFormStatus } from 'react-dom';
+import { createProduct } from './actions';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+export function CreateProductForm() {
+  const [state, formAction] = useFormState(createProduct, null);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <div>
+        <Label htmlFor="name">Product Name</Label>
+        <Input id="name" name="name" required />
+      </div>
+      
+      {state?.error && (
+        <div className="text-sm text-destructive">
+          {state.error.message}
+        </div>
+      )}
+      
+      <SubmitButton />
     </form>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? 'Creating...' : 'Create Product'}
+    </Button>
   );
 }
 ```

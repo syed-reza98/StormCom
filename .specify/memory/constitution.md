@@ -1,26 +1,34 @@
 # Sync Impact Report
 <!--
-Version change: 1.1.0 → 1.2.0
+Version change: 1.2.0 → 1.3.0
 
 Modified principles:
-- Required Technologies: replaced "Custom Auth System" note with a pinned NextAuth.js requirement (NextAuth.js v4.24.13).
-- Authentication & Authorization: pinned to NextAuth.js v4.24.13 and added compatibility guidance for Next.js v16.0.1.
+- User Experience Consistency: Added comprehensive UI Component Architecture section with shadcn/ui best practices
+- Required Technologies: Expanded shadcn/ui details with CLI, MCP server, and Radix UI primitives
+- Architecture Patterns: Added new UI Component Patterns section covering composition, customization, accessibility, and theming
 
 Added / Removed sections:
-- Removed: explicit note recommending a custom auth system due to NextAuth v5 incompatibility.
+- Added: UI Component Architecture section under User Experience Consistency principle
+- Added: UI Component Patterns section under Architecture Patterns
+- Added: shadcn MCP Server integration guidance
+- Expanded: shadcn/ui component library requirements with official CLI and registry usage
 
 Templates & files checked and sync status:
 - .specify/memory/constitution.md — ✅ updated
-- specs/001-multi-tenant-ecommerce/plan.md — ✅ updated to reference NextAuth.js v4.24.13
-- specs/001-multi-tenant-ecommerce/tasks.md — ✅ updated to reinstate T022 for NextAuth.js v4.24.13
+- .github/instructions/components.instructions.md — ✅ updated (shadcn/ui component patterns included)
+- .github/instructions/nextjs.instructions.md — ✅ updated (shadcn/ui + Next.js integration included)
+- specs/001-multi-tenant-ecommerce/plan.md — ⚠️ pending (requires update to reference shadcn/ui architecture)
 - .specify/templates/plan-template.md — ✅ reviewed (no changes required)
 - .specify/templates/spec-template.md — ✅ reviewed (no changes required)
 - .specify/templates/tasks-template.md — ✅ reviewed (no changes required)
 
 Follow-up TODOs:
-- Verify `package.json` pins or allows `next-auth@4.24.13` and `next@16.0.1`. If not, propose dependency update and run `npm install`.
-- Run full test suite (Vitest + Playwright) to validate NextAuth integration and resolve any auth-related test mocks.
-- Remove or migrate any legacy custom-auth code paths once NextAuth integration is fully validated.
+- Run `npx shadcn@latest init` to set up shadcn/ui configuration (creates components.json)
+- Audit existing UI components in src/components/ to align with shadcn/ui patterns
+- Update component documentation to reference shadcn/ui component library
+- Create design system documentation referencing shadcn/ui theming guide
+- Migrate custom UI components to shadcn/ui equivalents where applicable
+- Set up dark mode using next-themes as per shadcn/ui Next.js integration guide
 -->
 
 # StormCom Constitution
@@ -150,6 +158,22 @@ Ensure a seamless and intuitive user experience. All user-facing components must
 - Use toast notifications for user actions (success, error, warning).
 - Ensure graceful degradation for unsupported browsers.
 
+**UI Component Architecture**
+- Use shadcn/ui as the primary component library (built on Radix UI primitives).
+- Install components via CLI: `npx shadcn@latest add <component>` (adds to `src/components/ui/`).
+- Customize components by editing source files directly (no wrapper abstractions).
+- Compose complex UI patterns from primitive components (Button, Input, Dialog, etc.).
+- Follow shadcn/ui conventions:
+  - Store base components in `src/components/ui/` (CLI-managed).
+  - Create feature components in `src/components/` that compose UI primitives.
+  - Use `cn()` utility from `src/lib/utils.ts` for conditional class merging.
+  - Apply Tailwind CSS utilities for styling (NO CSS-in-JS).
+  - Leverage Radix UI for accessible, unstyled primitives.
+- Use shadcn MCP Server for AI-assisted component installation and discovery.
+- Reference official documentation: https://ui.shadcn.com/docs/components
+- Maintain component consistency across admin dashboard and storefront.
+- Ensure all UI components meet WCAG 2.1 Level AA accessibility standards.
+
 ### IV. Performance Requirements
 Performance is a priority. All features must meet defined performance budgets: page load times under 2 seconds, API response times under 500ms (p95), and database query times under 100ms (p95). Conduct regular performance audits.
 
@@ -184,6 +208,16 @@ Performance is a priority. All features must meet defined performance budgets: p
 - ✅ **PostgreSQL** (production on Vercel Postgres).
 - ✅ **Tailwind CSS** `4.1.14+` (utility-first styling).
 - ✅ **Radix UI** + **shadcn/ui** (accessible component library).
+  - **shadcn/ui**: Component collection built on Radix UI primitives with Tailwind CSS styling.
+  - **Installation**: Use official CLI (`npx shadcn@latest init` for setup, `npx shadcn@latest add <component>` for components).
+  - **Component Structure**: CLI adds components to `src/components/ui/` with full source code (editable, no npm package).
+  - **Customization**: Modify components directly in `src/components/ui/` (color schemes, variants, sizing via Tailwind).
+  - **Composition**: Build feature components by composing shadcn/ui primitives (Button, Input, Dialog, Form, etc.).
+  - **Dark Mode**: Use `next-themes` for theme switching (documented at https://ui.shadcn.com/docs/dark-mode/next).
+  - **Form Integration**: Combines React Hook Form + Zod validation with shadcn/ui Form components.
+  - **MCP Server**: Use shadcn MCP server for AI-assisted component browsing and installation (https://ui.shadcn.com/docs/mcp).
+  - **Registry**: Access official component registry at https://ui.shadcn.com/docs/components.
+  - **Documentation**: https://ui.shadcn.com/docs/installation/next (Next.js integration guide).
 - ✅ **NextAuth.js** `v4.24.13` - Official authentication framework configured for Next.js `v16.0.1`. Use NextAuth.js v4.24.13 for session management (JWT sessions), provider integrations, and optional 2FA/TOTP flows. In production, session state SHOULD be stored in Vercel KV or another secure session store. This replaces the prior custom-auth note: NextAuth v4.x is the supported authentication system for the project and is verified compatible with Next.js 16.0.1.
 - ✅ **Zod** (runtime validation).
 - ✅ **React Hook Form** (form state management).
@@ -224,6 +258,32 @@ Performance is a priority. All features must meet defined performance budgets: p
 - Implement soft deletes for user data (set `deletedAt`).
 - Use transactions for multi-step operations.
 - Enable connection pooling for PostgreSQL.
+
+**UI Component Patterns**
+- **Composition over Inheritance**: Build complex components by composing shadcn/ui primitives.
+  - Example: Combine `Dialog` + `Form` + `Button` for modal forms.
+  - Avoid creating wrapper components; compose at usage site.
+- **Component Customization**:
+  - Edit shadcn/ui components directly in `src/components/ui/` for project-wide changes.
+  - Use `className` prop for one-off styling adjustments.
+  - Extend variants using `class-variance-authority` (cva) pattern already in shadcn/ui components.
+- **Accessibility Requirements**:
+  - Radix UI primitives provide WCAG 2.1 Level AA accessibility by default.
+  - Maintain keyboard navigation, ARIA labels, and focus management.
+  - Test with screen readers (NVDA, JAWS, VoiceOver).
+- **Theme Customization**:
+  - Configure design tokens in `tailwind.config.ts` and CSS variables in `globals.css`.
+  - Use shadcn/ui theming system (https://ui.shadcn.com/themes).
+  - Support light/dark modes via `next-themes` provider.
+- **Component Installation Workflow**:
+  1. Search components: `npx shadcn@latest add` (interactive) or use shadcn MCP server.
+  2. Install component: `npx shadcn@latest add button` (adds to `src/components/ui/button.tsx`).
+  3. Import and use: `import { Button } from '@/components/ui/button'`.
+  4. Customize if needed by editing `src/components/ui/button.tsx`.
+- **Form Components**:
+  - Use shadcn/ui Form components with React Hook Form + Zod validation.
+  - Pattern: `<Form><FormField><FormItem><FormLabel><FormControl><Input /></FormControl><FormMessage /></FormItem></FormField></Form>`.
+  - Reference: https://ui.shadcn.com/docs/components/form
 
 ### Database Guidelines
 
@@ -334,4 +394,4 @@ Ensure compliance with GDPR, CCPA, and other relevant data protection regulation
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All pull requests and reviews must verify compliance with the principles outlined in this document. Complexity must be justified, and runtime development guidance must be followed as outlined in the project documentation.
 
-**Version**: 1.2.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-11-08
+**Version**: 1.3.0 | **Ratified**: 2025-10-17 | **Last Amended**: 2025-11-12
