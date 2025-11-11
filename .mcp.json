@@ -6,7 +6,7 @@
     },
     "shadcn": {
       "command": "npx",
-      "args": ["-y", "@upstash/mcp-server-shadcn"]
+      "args": ["-y", "shadcn-mcp-server"]
     }
   }
 }
