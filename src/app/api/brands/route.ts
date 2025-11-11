@@ -29,17 +29,22 @@ const createBrandSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user and storeId
+    // Get authenticated user
     const user = await getCurrentUser();
-    if (!user?.storeId) {
+    
+    // For storefront access, try to get storeId from query param or default to demo store
+    const url = new URL(request.url);
+    const requestedStoreId = url.searchParams.get('storeId');
+    
+    // Allow public access for storefront - use storeId from query or user session
+    const storeId = requestedStoreId || user?.storeId || 'fa30516f-dd0d-4b24-befe-e4c7606b841e'; // Demo Store as fallback
+    
+    if (!storeId) {
       return Response.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Store ID required' } },
         { status: 401 }
       );
     }
-    const storeId = user.storeId;
-    
-    const url = new URL(request.url);
 
     // Parse query parameters
     const search = url.searchParams.get('search') || undefined;

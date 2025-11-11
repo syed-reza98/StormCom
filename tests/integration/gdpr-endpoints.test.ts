@@ -8,13 +8,12 @@ import { POST as exportHandler } from '@/app/api/gdpr/export/route';
 import { POST as deleteHandler } from '@/app/api/gdpr/delete/route';
 import { GET as getConsentHandler, POST as postConsentHandler } from '@/app/api/gdpr/consent/route';
 import { GdprRequestType, ConsentType, UserRole } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
 
-// Mock session storage
-vi.mock('@/lib/session-storage', () => ({
-  getSessionFromRequest: vi.fn(),
+// Mock NextAuth.js
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
-
-import { getSessionFromRequest } from '@/lib/session-storage';
 
 describe('GDPR API Endpoints', () => {
   let testUserId: string;
@@ -65,7 +64,7 @@ describe('GDPR API Endpoints', () => {
   describe('POST /api/gdpr/export', () => {
     it('should create export request successfully', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -102,7 +101,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should reject duplicate export request', async () => {
       // Arrange - request already exists from previous test
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -133,7 +132,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should reject unauthenticated request', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new Request('http://localhost:3000/api/gdpr/export', {
         method: 'POST',
@@ -155,7 +154,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should validate request body', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -197,7 +196,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should create deletion request successfully', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -236,7 +235,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should require confirmation', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -268,7 +267,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should reject duplicate deletion request', async () => {
       // Arrange - request already exists from first test
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -324,7 +323,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should retrieve consent records', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -354,7 +353,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should require authentication', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new Request('http://localhost:3000/api/gdpr/consent', {
         method: 'GET',
@@ -373,7 +372,7 @@ describe('GDPR API Endpoints', () => {
   describe('POST /api/gdpr/consent', () => {
     it('should update consent preference', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -412,7 +411,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should revoke consent', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',
@@ -446,7 +445,7 @@ describe('GDPR API Endpoints', () => {
 
     it('should validate consent type', async () => {
       // Arrange
-      vi.mocked(getSessionFromRequest).mockResolvedValue({
+      vi.mocked(getServerSession).mockResolvedValue({
         userId: testUserId,
         email: 'gdpr-test@example.com',
         role: 'USER',

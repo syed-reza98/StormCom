@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { IntegrationService } from '@/services/integration-service';
 
 type RouteContext = {

@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { SubscriptionPlan } from '@prisma/client';
 import { createSubscriptionCheckoutSession } from '@/lib/stripe-subscription';
 import { db } from '@/lib/db';
@@ -26,8 +27,8 @@ const createSubscriptionSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Authentication check
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
@@ -68,14 +69,14 @@ export async function POST(request: NextRequest) {
       where: {
         id: storeId,
         OR: [
-          { users: { some: { id: session.userId } } },
-          { admins: { some: { id: session.userId } } },
+          { users: { some: { id: session.user.id } } },
+          { admins: { some: { id: session.user.id } } },
         ],
         deletedAt: null,
       },
       include: {
         users: {
-          where: { id: session.userId },
+          where: { id: session.user.id },
           select: { id: true, email: true, name: true, role: true },
         },
       },

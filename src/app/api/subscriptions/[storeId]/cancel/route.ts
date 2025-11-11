@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/db';
 import { SubscriptionService } from '@/services/subscription-service';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
@@ -36,8 +37,8 @@ export async function POST(
     }
 
     // Authentication check
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
@@ -68,8 +69,8 @@ export async function POST(
       where: {
         id: storeId,
         OR: [
-          { admins: { some: { id: session.userId } } },
-          { users: { some: { id: session.userId, role: 'STORE_ADMIN' } } },
+          { admins: { some: { id: session.user.id } } },
+          { users: { some: { id: session.user.id, role: 'STORE_ADMIN' } } },
         ],
         deletedAt: null,
       },

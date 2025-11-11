@@ -4,7 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
 import { sendEmail } from '@/services/email-service';
 import { createAuditLog, AuditAction, AuditResource } from '@/lib/audit';
@@ -112,8 +113,8 @@ async function checkRateLimit(
 export async function POST(request: NextRequest) {
   try {
     // 1. Authenticate user
-    const session = await getSessionFromRequest(request);
-    if (!session?.userId) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
       return NextResponse.json(
         { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
         { status: 401 }
@@ -121,13 +122,13 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Check permissions (Store Admin, Super Admin only)
-    if (!['STORE_ADMIN', 'SUPER_ADMIN'].includes(session.role || '')) {
+    if (!['STORE_ADMIN', 'SUPER_ADMIN'].includes(session.user.role || '')) {
       await createAuditLog({
-        userId: session.userId,
+        userId: session.user.id,
         action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_SEND_FORBIDDEN to AuditAction enum
         resource: AuditResource.USER,
-        storeId: session.storeId || undefined,
-        metadata: { role: session.role, context: 'EMAIL_SEND_FORBIDDEN' },
+        storeId: session.user.storeId || undefined,
+        metadata: { role: session.user.role, context: 'EMAIL_SEND_FORBIDDEN' },
         ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
       });
 
@@ -162,7 +163,7 @@ export async function POST(request: NextRequest) {
     const emailData: SendEmailRequest = validationResult.data;
 
     // 4. Get store subscription plan for rate limiting
-    const storeId = session.storeId;
+    const storeId = session.user.storeId;
     if (!storeId) {
       return NextResponse.json(
         {
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
     const rateLimitResult = await checkRateLimit(storeId, plan);
     if (!rateLimitResult.allowed) {
       await createAuditLog({
-        userId: session.userId,
+        userId: session.user.id,
         action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_RATE_LIMIT_EXCEEDED to AuditAction enum
         resource: AuditResource.SETTINGS,
         resourceId: storeId,
@@ -232,7 +233,7 @@ export async function POST(request: NextRequest) {
 
     // 7. Log audit event
     await createAuditLog({
-      userId: session.userId,
+      userId: session.user.id,
       action: AuditAction.USER_UPDATED, // TODO: Add EMAIL_SENT/EMAIL_SEND_FAILED to AuditAction enum
       resource: AuditResource.SETTINGS,
       resourceId: result.messageId || 'unknown',

@@ -2,7 +2,7 @@
 // Bulk Product Export API Route - Export products to CSV/Excel
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { productService } from '@/services/product-service';
 import { z } from 'zod';

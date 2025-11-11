@@ -6,10 +6,10 @@ import {
   type ReactNode,
 } from 'react';
 import { useAuth as useNextAuthSession } from '@/hooks/use-session';
-import type { User } from 'next-auth';
+import type { Session } from 'next-auth';
 
 export interface AuthContextValue {
-  user: User | null;
+  user: Session['user'] | null;
   isLoading: boolean;
   error: string | null;
   checkPermission: (permission: string) => boolean;

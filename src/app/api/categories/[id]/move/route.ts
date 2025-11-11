@@ -2,7 +2,7 @@
 // Category Move API Route - Handle hierarchical operations
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { categoryService } from '@/services/category-service';
 import { z } from 'zod';

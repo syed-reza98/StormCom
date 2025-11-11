@@ -117,18 +117,19 @@ test.describe('Rate Limiting', () => {
     test('should enforce stricter rate limits on login endpoint (10/min)', async ({ request }) => {
       const AUTH_RATE_LIMIT = 10; // Stricter limit for authentication
 
-      // Make requests to login endpoint
+      // Make requests to NextAuth callback endpoint (credentials provider)
       const promises: Promise<any>[] = [];
       
       for (let i = 0; i < AUTH_RATE_LIMIT + 2; i++) {
         promises.push(
-          request.post('/api/auth/login', {
+          request.post('/api/auth/callback/credentials', {
             data: {
               email: 'test@example.com',
               password: 'invalid',
+              callbackUrl: '/dashboard',
             },
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
           })
         );
@@ -146,17 +147,18 @@ test.describe('Rate Limiting', () => {
     test('should return appropriate error message for auth rate limiting', async ({ request }) => {
       const AUTH_RATE_LIMIT = 10;
 
-      // Exhaust auth rate limit
+      // Exhaust auth rate limit using NextAuth callback endpoint
       const promises: Promise<any>[] = [];
       for (let i = 0; i < AUTH_RATE_LIMIT + 3; i++) {
         promises.push(
-          request.post('/api/auth/login', {
+          request.post('/api/auth/callback/credentials', {
             data: {
               email: 'test@example.com',
               password: 'invalid',
+              callbackUrl: '/dashboard',
             },
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
           })
         );

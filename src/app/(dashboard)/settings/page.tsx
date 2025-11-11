@@ -1,18 +1,9 @@
+'use client';
+
 // src/app/(dashboard)/settings/page.tsx
 // Settings Page - User preferences, store settings, and account management
-
-import { Metadata } from 'next';
 import { Flex, Heading, Text, Container, Section, Tabs, Card, Switch } from '@radix-ui/themes';
 import { GearIcon, PersonIcon, BellIcon, LockClosedIcon, IdCardIcon } from '@radix-ui/react-icons';
-
-// ============================================================================
-// METADATA
-// ============================================================================
-
-export const metadata: Metadata = {
-  title: 'Settings | Dashboard',
-  description: 'Manage your account settings, preferences, and notifications',
-};
 
 // ============================================================================
 // MAIN COMPONENT

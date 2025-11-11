@@ -3,8 +3,9 @@
 // Checks subscription limits before operations to prevent overages
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { SubscriptionService, type PlanEnforcementResult } from '@/services/subscription-service';
-import { getSessionFromRequest } from '@/lib/session-storage';
 
 /**
  * Plan enforcement result with HTTP response
@@ -157,9 +158,9 @@ export function withPlanEnforcement(
 
       // Try to get from session if still not found
       if (!storeId) {
-        const session = await getSessionFromRequest(request);
-        if (session?.storeId) {
-          storeId = session.storeId;
+        const session = await getServerSession(authOptions);
+        if (session?.user?.storeId) {
+          storeId = session.user.storeId;
         }
       }
 
@@ -350,14 +351,14 @@ export default planEnforcement;
 
 // Compatibility implementations for legacy test/api usage
 // Legacy helpers used by older tests and route handlers
-export async function checkProductCreationLimit(request: NextRequest): Promise<null | NextResponse> {
+export async function checkProductCreationLimit(_request: NextRequest): Promise<null | NextResponse> {
   try {
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
     }
 
-    const storeId = (session as any).storeId;
+    const storeId = session.user.storeId;
     if (!storeId) {
       return NextResponse.json({ error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } }, { status: 400 });
     }
@@ -379,14 +380,14 @@ export async function checkProductCreationLimit(request: NextRequest): Promise<n
   }
 }
 
-export async function checkOrderCreationLimit(request: NextRequest): Promise<null | NextResponse> {
+export async function checkOrderCreationLimit(_request: NextRequest): Promise<null | NextResponse> {
   try {
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
     }
 
-    const storeId = (session as any).storeId;
+    const storeId = session.user.storeId;
     if (!storeId) {
       return NextResponse.json({ error: { code: 'MISSING_STORE_ID', message: 'Store ID is required' } }, { status: 400 });
     }

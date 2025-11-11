@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { regenerateBackupCodes } from '@/services/mfa-service';
-import { getSession } from '@/lib/session-storage';
 
 /**
  * POST /api/auth/mfa/backup-codes
@@ -23,30 +24,15 @@ const regenerateBackupCodesSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Get session ID from cookie
-    const sessionId = request.cookies.get('sessionId')?.value;
+    // Authenticate user with NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!sessionId) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         {
           error: {
             code: 'UNAUTHORIZED',
             message: 'Not authenticated',
-          },
-        },
-        { status: 401 }
-      );
-    }
-
-    // Get session to retrieve userId
-    const session = await getSession(sessionId);
-    
-    if (!session) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Invalid or expired session',
           },
         },
         { status: 401 }
@@ -79,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Call service layer
     try {
       const result = await regenerateBackupCodes(
-        session.userId,
+        session.user.id,
         validation.data.password,
         ipAddress,
         userAgent

@@ -14,7 +14,8 @@
 - ✅ **Phase 1: Setup (T001-T015)** - 15/15 complete (100%)
 - ✅ **Phase 2: Foundational (T016-T035)** - 20/20 complete (100%)
 - ✅ **Phase 3: US0 Authentication (T036-T080)** - 45/45 complete (100%)
-  - ✅ Service layer: AuthService, MFAService, SessionService, RoleService (T036-T039)
+  - ✅ Service layer: AuthService (registration only), MFAService, RoleService (T036-T039)
+  - 🔄 **SessionService removed** - Migrated to NextAuth.js (JWT-based sessions)
   - ✅ API routes: register, login, logout, forgot-password, reset-password, mfa/enroll, mfa/verify, mfa/backup-codes (T040-T047)
   - ✅ UI pages: login, register, forgot-password, reset-password, mfa/enroll, mfa/challenge (T048-T052) - **UPDATED with design system**
   - ✅ Hooks & Context: useAuth hook, AuthProvider context (T053-T054)
@@ -128,11 +129,11 @@
 
 - [x] T036 [US0] Create AuthService in src/services/auth-service.ts with register, login, logout, password reset, and account lockout logic
 - [x] T037 [US0] Create MFAService in src/services/mfa-service.ts with TOTP generation, QR code generation, backup codes, and verification
-- [x] T038 [US0] Create SessionService in src/services/session-service.ts with session creation, validation, refresh, and revocation
+- [x] T038 [US0] ~~Create SessionService in src/services/session-service.ts with session creation, validation, refresh, and revocation~~ - **REMOVED** - Migrated to NextAuth.js JWT sessions (2025-11-10)
 - [x] T039 [US0] Create RoleService in src/services/role-service.ts with role assignment, permission checking, and role hierarchy validation
 - [x] T040 [US0] [P] Create API route POST /api/auth/register in src/app/api/auth/register/route.ts for user registration with email verification
-- [x] T041 [US0] [P] Create API route POST /api/auth/login in src/app/api/auth/login/route.ts with credentials validation and session creation
-- [x] T042 [US0] [P] Create API route POST /api/auth/logout in src/app/api/auth/logout/route.ts with session invalidation
+- [x] T041 [US0] [P] ~~Create API route POST /api/auth/login in src/app/api/auth/login/route.ts with credentials validation and session creation~~ - **REMOVED** - Replaced by NextAuth credentials provider (2025-11-10)
+- [x] T042 [US0] [P] ~~Create API route POST /api/auth/logout in src/app/api/auth/logout/route.ts with session invalidation~~ - **REMOVED** - Replaced by NextAuth signOut() (2025-11-10)
 - [x] T043 [US0] [P] Create API route POST /api/auth/forgot-password in src/app/api/auth/forgot-password/route.ts with reset token generation
 - [x] T044 [US0] [P] Create API route POST /api/auth/reset-password in src/app/api/auth/reset-password/route.ts with token validation and password update
 - [x] T045 [US0] [P] Create API route POST /api/auth/mfa/enroll in src/app/api/auth/mfa/enroll/route.ts with TOTP secret generation and QR code
@@ -173,7 +174,7 @@
 - [x] T076 [US0] Create E2E test "Password reset token expires after 1 hour" in tests/e2e/auth/password-reset-expiry.spec.ts using PasswordResetPage POM (requests reset, waits 1 hour, clicks link, validates expiry message)
 - [x] T077 [US0] Create E2E test "Email verification required before login" in tests/e2e/auth/email-verification.spec.ts using RegisterPage, LoginPage POMs (registers, attempts login without verifying, validates "verify email" message)
 - [x] T078 [US0] Create E2E test "Logout from user menu succeeds" in tests/e2e/auth/logout.spec.ts using DashboardPage, UserMenuPOM (clicks logout, validates redirect to /login, "logged out" message announced to screen reader)
-- [x] T079 [US0] Create integration tests for AuthService, MFAService, SessionService, RoleService in tests/integration/services/auth.test.ts (unit tests for all service methods, mocks Prisma, validates business logic)
+- [x] T079 [US0] Create integration tests for AuthService, MFAService, RoleService in tests/integration/services/auth.test.ts (unit tests for all service methods, mocks Prisma, validates business logic) - **SessionService tests removed** (migrated to NextAuth)
 - [x] T080 [US0] Create E2E accessibility tests for auth pages in tests/e2e/auth/accessibility.spec.ts using axe-core (runs WCAG 2.1 AA checks on login, register, MFA pages; validates keyboard navigation, focus indicators, ARIA labels) - **CONSTITUTION REQUIREMENT**
 
 ---

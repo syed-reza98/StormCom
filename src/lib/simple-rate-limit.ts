@@ -58,7 +58,8 @@ export function getSimpleRateLimitConfig(pathname: string): {
   windowMs: number;
 } {
   // Authentication endpoints: stricter limits
-  if (pathname.startsWith('/api/auth/login') || 
+  // NextAuth callback endpoints
+  if (pathname.startsWith('/api/auth/callback/') || 
       pathname.startsWith('/api/auth/register') ||
       pathname.startsWith('/api/auth/forgot-password')) {
     return SIMPLE_RATE_LIMIT_CONFIG.auth;

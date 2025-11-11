@@ -7,8 +7,7 @@ import { createTestStore, createTestUser, createTestCategory, createTestProduct 
 import { NextRequest } from 'next/server';
 
 // Mock NextAuth to prevent "headers called outside request scope" errors
-vi.mock('next-auth', () => ({
-  default: vi.fn(),
+vi.mock('next-auth/next', () => ({
   getServerSession: vi.fn(),
 }));
 
@@ -29,7 +28,7 @@ describe('Products API Integration Tests', () => {
     testCategoryId = category.id;
 
     // Mock authenticated session for all tests by default
-    const { getServerSession } = await import('next-auth');
+    const { getServerSession } = await import('next-auth/next');
     vi.mocked(getServerSession).mockResolvedValue({
       user: {
         id: testUserId,

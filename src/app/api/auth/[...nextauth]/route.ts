@@ -2,7 +2,8 @@
 // NextAuth.js v4.24.13 Configuration for Next.js v16.0.1
 // Implements T022 - JWT strategy with credentials provider
 
-import NextAuth, { type NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { db } from '@/lib/db';
 import { comparePassword } from '@/lib/password';
@@ -178,7 +179,7 @@ export const authOptions: NextAuthOptions = {
   // Callbacks for session and JWT customization
   callbacks: {
     // JWT callback: Add custom fields to JWT token
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session }: any) {
       // Initial sign in
       if (user) {
         token.id = user.id;
@@ -198,7 +199,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     // Session callback: Add custom fields to session object
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
@@ -212,16 +213,20 @@ export const authOptions: NextAuthOptions = {
     },
 
     // Redirect callback: Handle post-login redirects
-    async redirect({ url, baseUrl }) {
-      // Allow relative callback URLs
+    // Note: This callback doesn't have access to user data, so role-based redirects
+    // are handled in the proxy.ts after authentication
+    async redirect({ url, baseUrl }: any) {
+      // If URL is provided and is a relative path
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
       }
-      // Allow callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) {
+      // If URL is provided and on same origin
+      else if (url && new URL(url).origin === baseUrl) {
         return url;
       }
-      return baseUrl;
+      
+      // Default: redirect to /dashboard (proxy will handle role-based redirects)
+      return `${baseUrl}/dashboard`;
     },
   },
 
@@ -239,7 +244,7 @@ export const authOptions: NextAuthOptions = {
     async signIn() {
       // Audit log handled in authorize callback
     },
-    async signOut({ token }) {
+    async signOut({ token }: any) {
       if (token?.id) {
         await createAuditLog({
           userId: token.id as string,

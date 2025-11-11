@@ -15,10 +15,12 @@
 
 import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
 import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { analyticsService } from '@/services/analytics-service';
 
-// Mock the session storage
-vi.mock('@/lib/session-storage', () => ({
-  getSession: vi.fn(),
+// Mock NextAuth.js
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
 
 // Mock the analytics service
@@ -32,11 +34,7 @@ vi.mock('@/services/analytics-service', () => ({
 }));
 
 // Import the mocked modules
-import { getSession } from '@/lib/session-storage';
-import { analyticsService } from '@/services/analytics-service';
-
-// Import handlers dynamically to ensure mocks are applied
-const mockGetSession = getSession as MockedFunction<typeof getSession>;
+const mockGetServerSession = getServerSession as MockedFunction<typeof getServerSession>;
 const mockAnalyticsService = analyticsService as any;
 
 describe('Analytics API Routes', () => {
@@ -59,7 +57,7 @@ describe('Analytics API Routes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetSession.mockResolvedValue(mockSession);
+    mockGetServerSession.mockResolvedValue(mockSession);
   });
 
   describe('Sales Analytics API', () => {
@@ -101,7 +99,7 @@ describe('Analytics API Routes', () => {
       expect(data.data).toEqual(mockSalesData);
       expect(data.meta.dateRange).toBeDefined();
 
-      expect(mockGetSession).toHaveBeenCalledWith('session-123');
+      expect(mockGetServerSession).toHaveBeenCalledWith('session-123');
       expect(mockAnalyticsService.getSalesMetrics).toHaveBeenCalledWith(
         'store-123',
         expect.objectContaining({
@@ -135,7 +133,7 @@ describe('Analytics API Routes', () => {
 
     it('should return 401 for invalid session', async () => {
       // Arrange
-      mockGetSession.mockResolvedValue(null);
+      mockGetServerSession.mockResolvedValue(null);
 
       const url = new URL(`http://localhost:3000/api/analytics/sales?startDate=${validDateRange.startDate}&endDate=${validDateRange.endDate}`);
       const request = new NextRequest(url);
@@ -158,7 +156,7 @@ describe('Analytics API Routes', () => {
 
     it('should return 403 for session without store access', async () => {
       // Arrange
-      mockGetSession.mockResolvedValue({
+      mockGetServerSession.mockResolvedValue({
         ...mockSession,
         storeId: null,
       });
@@ -397,7 +395,7 @@ describe('Analytics API Routes', () => {
   describe('Cross-cutting Concerns', () => {
     it('should handle session validation errors consistently', async () => {
       // Arrange
-      mockGetSession.mockRejectedValue(new Error('Session validation failed'));
+      mockGetServerSession.mockRejectedValue(new Error('Session validation failed'));
 
       const { GET: salesHandler } = await import('@/app/api/analytics/sales/route');
       

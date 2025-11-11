@@ -10,7 +10,8 @@ import {
   validationErrorResponse,
   unauthorizedResponse,
 } from '@/lib/api-response';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { gdprService } from '@/services/gdpr-service';
 
 /**
@@ -59,8 +60,8 @@ const deletionRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return unauthorizedResponse();
     }
 
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Create deletion request
     const deletionRequest = await gdprService.createDeletionRequest(
-      session.userId,
+      session.user.id,
       storeId,
       {
         ipAddress,

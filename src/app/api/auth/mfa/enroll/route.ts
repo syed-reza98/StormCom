@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { setupMFA } from '@/services/mfa-service';
-import { getSession } from '@/lib/session-storage';
 
 /**
  * POST /api/auth/mfa/enroll
@@ -16,10 +17,10 @@ import { getSession } from '@/lib/session-storage';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get session ID from cookie
-    const sessionId = request.cookies.get('sessionId')?.value;
+    // Authenticate user with NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!sessionId) {
+    if (!session?.user?.id) {
       return NextResponse.json(
         {
           error: {
@@ -31,27 +32,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get session to retrieve userId
-    const session = await getSession(sessionId);
-    
-    if (!session) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Invalid or expired session',
-          },
-        },
-        { status: 401 }
-      );
-    }
-
     // Extract client metadata
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Call service layer
-    const result = await setupMFA(session.userId, ipAddress, userAgent);
+    const result = await setupMFA(session.user.id, ipAddress, userAgent);
 
     return NextResponse.json({
       data: {

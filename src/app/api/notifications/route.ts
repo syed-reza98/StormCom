@@ -3,7 +3,8 @@
 
 import { NextRequest } from 'next/server';
 import { successResponse, unauthorizedResponse, errorResponse } from '@/lib/api-response';
-import { getSessionFromRequest } from '@/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { notificationService } from '@/services/notification-service';
 
 /**
@@ -46,8 +47,8 @@ import { notificationService } from '@/services/notification-service';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getSessionFromRequest(request);
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
       return unauthorizedResponse();
     }
 
@@ -74,12 +75,12 @@ export async function GET(request: NextRequest) {
     // Get notifications and unread count
     const [notifications, unreadCount] = await Promise.all([
       notificationService.list({
-        userId: session.userId,
+        userId: session.user.id,
         isRead,
         limit,
         offset,
       }),
-      notificationService.getUnreadCount(session.userId),
+      notificationService.getUnreadCount(session.user.id),
     ]);
 
     return successResponse({

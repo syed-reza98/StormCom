@@ -31,19 +31,25 @@ const createCategorySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser();
-    if (!user?.storeId) {
+    
+    // For storefront access, try to get storeId from query param or default to demo store
+    const { searchParams } = new URL(request.url);
+    const requestedStoreId = searchParams.get('storeId');
+    
+    // Allow public access for storefront - use storeId from query or user session
+    const storeId = requestedStoreId || user?.storeId || 'fa30516f-dd0d-4b24-befe-e4c7606b841e'; // Demo Store as fallback
+    
+    if (!storeId) {
       return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Store ID required' } },
         { status: 401 }
       );
     }
 
-    const { searchParams } = new URL(request.url);
-
     // Check if requesting tree structure
     const treeMode = searchParams.get('tree') === 'true';
     if (treeMode) {
-      const tree = await categoryService.getCategoryTree(user.storeId);
+      const tree = await categoryService.getCategoryTree(storeId);
       return NextResponse.json({ 
         data: { categories: tree, meta: { structure: 'tree' } },
         message: 'Category tree retrieved successfully'
@@ -53,7 +59,7 @@ export async function GET(request: NextRequest) {
     // Check if requesting root categories only
     const rootOnly = searchParams.get('rootOnly') === 'true';
     if (rootOnly) {
-      const rootCategories = await categoryService.getRootCategories(user.storeId);
+      const rootCategories = await categoryService.getRootCategories(storeId);
       return NextResponse.json({ 
         data: { categories: rootCategories, meta: { structure: 'root' } },
         message: 'Root categories retrieved successfully'
@@ -74,7 +80,7 @@ export async function GET(request: NextRequest) {
     };
 
     const result = await categoryService.getCategories(
-      user.storeId,
+      storeId,
       filters,
       page,
       perPage

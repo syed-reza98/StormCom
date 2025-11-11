@@ -2,7 +2,7 @@
 // Server-side session utilities for NextAuth.js v4.24.13
 // Use these helpers in Server Components and API Route Handlers
 
-import { getServerSession as nextAuthGetServerSession } from 'next-auth';
+import { getServerSession as nextAuthGetServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import type { Session } from 'next-auth';
 

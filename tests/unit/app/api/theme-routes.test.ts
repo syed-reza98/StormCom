@@ -10,12 +10,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/themes/route';
 import { PUT, DELETE } from '@/app/api/stores/[id]/theme/route';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { getStoreTheme, updateStoreTheme, resetStoreTheme } from '@/services/theme-service';
 import { ThemeMode } from '@prisma/client';
 
 // Mock dependencies
-vi.mock('next-auth', () => ({
+vi.mock('next-auth/next', () => ({
   getServerSession: vi.fn(),
 }));
 

@@ -9,9 +9,9 @@ interface ProductVariant {
   id: string;
   name: string;
   sku?: string;
-  price: number;
-  quantity: number;
-  attributes: Record<string, string>;
+  price?: number;
+  inventoryQty: number;
+  options: Record<string, string>;
 }
 
 interface ProductVariantsProps {
@@ -30,9 +30,11 @@ export function ProductVariants({ variants }: ProductVariantsProps) {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-medium">{variant.name}</h3>
             <div className="text-right">
-              <div className="font-semibold">${variant.price.toFixed(2)}</div>
+              {variant.price && (
+                <div className="font-semibold">${variant.price.toFixed(2)}</div>
+              )}
               <div className="text-sm text-muted-foreground">
-                Qty: {variant.quantity}
+                Qty: {variant.inventoryQty}
               </div>
             </div>
           </div>
@@ -43,9 +45,9 @@ export function ProductVariants({ variants }: ProductVariantsProps) {
             </div>
           )}
           
-          {Object.keys(variant.attributes).length > 0 && (
+          {Object.keys(variant.options).length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {Object.entries(variant.attributes).map(([key, value]) => (
+              {Object.entries(variant.options).map(([key, value]) => (
                 <Badge key={key} variant="outline">
                   {key}: {value}
                 </Badge>

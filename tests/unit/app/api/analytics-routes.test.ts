@@ -31,13 +31,13 @@ vi.mock('../../../../src/services/analytics-service', () => ({
   },
 }));
 
-// Mock session storage
-vi.mock('../../../../src/lib/session-storage', () => ({
-  getSession: vi.fn(),
+// Mock NextAuth.js
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
 }));
 
 import { analyticsService } from '../../../../src/services/analytics-service';
-import { getSession } from '../../../../src/lib/session-storage';
+import { getServerSession } from 'next-auth/next';
 
 // Stub for unimplemented orders route
 const ordersHandler = async (_request: NextRequest) => {
@@ -45,7 +45,7 @@ const ordersHandler = async (_request: NextRequest) => {
 };
 
 const mockAnalyticsService = analyticsService as any;
-const mockGetSession = getSession as any;
+const mockGetSession = getServerSession as any;
 
 describe('Analytics API Routes', () => {
   const mockSession = {

@@ -6,10 +6,15 @@ import { register } from '@/services/auth-service';
  * POST /api/auth/register
  * User registration endpoint with email verification
  * 
+ * Note: Registration creates user account only. After email verification,
+ * users must log in using NextAuth signIn() method. This endpoint does NOT
+ * create a session or authenticate the user.
+ * 
  * Request Body:
  * - email: string (valid email format)
- * - password: string (min 8 chars, complexity requirements)
- * - name: string (min 2 chars)
+ * - password: string (min 8 chars, complexity requirements, bcrypt cost factor 12)
+ * - firstName: string (min 2 chars)
+ * - lastName: string (min 2 chars)
  * - role: 'CUSTOMER' | 'STAFF' | 'STORE_ADMIN' (optional, defaults to CUSTOMER)
  * 
  * Response:
@@ -72,7 +77,7 @@ export async function POST(request: NextRequest) {
           data: {
             userId: result.userId,
             email: validation.data.email,
-            message: 'Registration successful. Please check your email to verify your account.',
+            message: 'Registration successful. Please check your email to verify your account, then log in using your credentials.',
           },
         },
         { status: 201 }

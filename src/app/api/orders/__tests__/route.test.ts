@@ -24,7 +24,7 @@ vi.mock('@/services/order-service', () => ({
 }));
 
 // Import mocked functions
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 
 describe('GET /api/orders', () => {
   const mockSession = {

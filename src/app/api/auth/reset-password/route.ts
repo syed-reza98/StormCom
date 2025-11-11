@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { resetPassword } from '@/services/auth-service';
+import { resetPassword } from '@/lib/password-reset';
 
 /**
  * POST /api/auth/reset-password

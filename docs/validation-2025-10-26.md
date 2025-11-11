@@ -210,7 +210,7 @@
 
 2. **src/services/session-service.ts**
    - ✅ 10 exported functions: createSession, getSession, validateAndRefreshSession, deleteSession, deleteAllSessions, isSessionValid, getUserFromSession, updateMFAStatus, updateSessionActivity
-   - ✅ SessionService object with all methods exported
+   - ❌ SessionService removed (migrated to NextAuth.js 2025-11-10)
    - **Status**: PASS - Complete session management per spec.md
 
 3. **src/services/role-service.ts**
@@ -296,7 +296,7 @@
 - ❌ T057: User account locked after 5 failed attempts (tests/e2e/auth/account-lockout.spec.ts)
 - ❌ T058: User can complete MFA enrollment (tests/e2e/auth/mfa.spec.ts)
 - ❌ T059: User can reset password via email (tests/e2e/auth/password-reset.spec.ts)
-- ❌ T079: Integration tests for AuthService, MFAService, SessionService, RoleService (tests/integration/services/auth.test.ts)
+- ✅ T079: Integration tests for AuthService, MFAService, RoleService (SessionService migrated to NextAuth)
 
 **Extended E2E Tests** (19 scenarios):
 - ❌ T060: Invalid email format validation (tests/e2e/auth/validation.spec.ts)
