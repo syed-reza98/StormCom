@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { withAuth } from 'next-auth/middleware';
+import { getToken } from 'next-auth/jwt';
 import type { JWT } from 'next-auth/jwt';
 import {
   validateCsrfTokenFromRequest,
@@ -157,22 +157,9 @@ export async function applySecurityProtections(request: NextRequest): Promise<Ne
   const { method, url } = request;
   const { pathname } = new URL(url);
 
-  // 0. Multi-tenant Context: Set storeId in AsyncLocalStorage for Prisma middleware
-  // This must happen BEFORE any database queries
-  try {
-    const { setStoreIdContext } = await import('./src/lib/prisma-middleware');
-    const { getServerSession } = await import('next-auth/next');
-    const { authOptions } = await import('./src/lib/auth');
-    
-    const session = await getServerSession(authOptions);
-    if (session?.user && (session.user as any).storeId) {
-      setStoreIdContext((session.user as any).storeId);
-    }
-  } catch (error) {
-    // Best effort - if session retrieval fails, continue without context
-    // Individual routes will enforce authentication as needed
-    console.error('Failed to set storeId context:', error);
-  }
+  // 0. Multi-tenant Context (removed in proxy):
+  // Do not attempt to access getServerSession or Prisma in proxy (Edge runtime).
+  // Tenant context is enforced within server routes and Prisma middleware.
 
   // 1. Rate Limiting: Check request limits
   const rateLimitResult = checkSimpleRateLimit(request);
@@ -219,71 +206,131 @@ export async function applySecurityProtections(request: NextRequest): Promise<Ne
 }
 
 /**
- * Main proxy function with NextAuth integration
- * 
- * Uses NextAuth's withAuth HOC to handle authentication and authorization.
- * Delegates to applySecurityProtections for additional security layers.
+ * Main proxy function with NextAuth JWT integration (no withAuth wrapper)
+ * Implements role-based access control (RBAC) and applies security protections.
  */
-export default withAuth(
-  async function proxy(req) {
-    const { pathname } = req.nextUrl;
-    const token = req.nextauth.token as JWT & { role?: string; requiresMFA?: boolean };
+// Debug: indicate module has been loaded by Next.js
+console.log('[PROXY] Module loaded');
 
-    // Allow authenticated users to continue
-    if (token) {
-      // Check role-based access for admin routes
-      if (pathname.startsWith('/admin') && token.role !== 'SuperAdmin') {
-        return NextResponse.redirect(new URL('/unauthorized', req.url));
-      }
+export default async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-      // Check if user needs to complete MFA
-      if (token.requiresMFA && !pathname.startsWith('/auth/mfa')) {
-        return NextResponse.redirect(new URL('/auth/mfa/challenge', req.url));
-      }
+  // Import RBAC helpers lazily to keep edge bundle small
+  const { canAccess, isPublicRoute, getDefaultRedirect } = await import('./src/lib/auth/permissions');
 
-      // Apply security protections and continue
-      return applySecurityProtections(req as NextRequest);
-    }
-
-    // Not authenticated - redirect to login
-    return NextResponse.redirect(new URL('/login', req.url));
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => {
-        // This callback determines if the request is authorized
-        // Return true to allow the proxy function above to run
-        // Return false to redirect to the sign-in page
-        return !!token;
-      },
-    },
-    pages: {
-      signIn: '/login',
-      error: '/login',
-    },
+  // 1) Allow public routes
+  if (isPublicRoute(pathname)) {
+    console.log('[PROXY] Public route allowed', pathname);
+    return applySecurityProtections(req);
   }
-);
+
+  // 2) Get JWT token (NextAuth)
+  const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as (JWT & { role?: string; requiresMFA?: boolean }) | null;
+
+  if (!token) {
+    console.warn('[PROXY] Unauthenticated access blocked → /login', pathname);
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  // 3) Enforce MFA if required
+  if (token.requiresMFA && !pathname.startsWith('/auth/mfa')) {
+    return NextResponse.redirect(new URL('/auth/mfa/challenge', req.url));
+  }
+
+  // 4) Role-based default redirect when visiting /dashboard
+  if (pathname === '/dashboard') {
+    const defaultPath = getDefaultRedirect(token.role);
+    if (defaultPath !== '/dashboard') {
+      return NextResponse.redirect(new URL(defaultPath, req.url));
+    }
+  }
+
+  // 5) RBAC check for protected routes
+  if (!canAccess(pathname, token.role)) {
+    console.warn(`[RBAC] Access denied: ${token.role} → ${pathname}`);
+    return new NextResponse(
+      JSON.stringify({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to access this resource',
+          details: { pathname, userRole: token.role },
+        },
+      }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  // 6) Apply security protections and continue
+  return applySecurityProtections(req);
+}
 
 /**
  * Matcher configuration
  * 
- * Apply proxy to protected routes only (authenticated routes).
- * Public routes (login, register, static assets) are excluded.
+ * Apply proxy to all routes that require authentication or role-based access control.
+ * Public routes will be allowed through by the authorized callback.
  * 
  * Protected routes:
- * - /dashboard/* - Store admin/staff routes (requires storeId in session)
- * - /admin/* - Super admin routes (requires SuperAdmin role)
- * - /api/* - API routes (except public webhooks and auth endpoints)
+ * - /dashboard/* - Store admin/staff routes (requires authentication + role check)
+ * - /admin/* - Super admin routes (requires SUPER_ADMIN role)
+ * - /products/* - Admin product management (requires authentication + role check)
+ * - /orders/* - Admin order management (requires authentication + role check)
+ * - /customers/* - Admin customer management (requires authentication + role check)
+ * - /settings/* - Store settings (requires STORE_ADMIN role)
+ * - /stores/* - Store management (requires SUPER_ADMIN role)
+ * - /inventory/* - Inventory management (requires authentication + role check)
+ * - /analytics/* - Analytics routes (requires authentication + role check)
+ * - /account/* - Customer account routes (requires CUSTOMER role)
+ * - /api/* - API routes (except public endpoints like /api/auth/* and /api/webhooks/*)
  * 
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/proxy#matcher
  */
 export const config = {
   matcher: [
-    // Protected application routes
+    // Admin routes
     '/dashboard/:path*',
     '/admin/:path*',
     
-    // Protected API routes
+    // Store management routes (admin) - include exact paths AND wildcard paths
+    '/products',
+    '/products/:path*',
+    '/categories',
+    '/categories/:path*',
+    '/attributes',
+    '/attributes/:path*',
+    '/brands',
+    '/brands/:path*',
+    '/orders',
+    '/orders/:path*',
+    '/customers',
+    '/customers/:path*',
+    '/inventory',
+    '/inventory/:path*',
+    '/analytics',
+    '/analytics/:path*',
+    '/reports',
+    '/reports/:path*',
+    '/marketing',
+    '/marketing/:path*',
+    '/coupons',
+    '/coupons/:path*',
+    '/pages',
+    '/pages/:path*',
+    '/blog',
+    '/blog/:path*',
+    '/pos',
+    '/pos/:path*',
+    '/settings',
+    '/settings/:path*',
+    '/stores',        // CRITICAL: Exact path for stores list
+    '/stores/:path*', // Wildcard for stores sub-routes
+    '/bulk-import',
+    '/bulk-import/:path*',
+    
+    // Customer account routes
+    '/account/:path*',
+    
+    // Protected API routes (exclude /api/auth/* and /api/webhooks/* via authorized callback)
     '/api/:path*',
   ],
 };

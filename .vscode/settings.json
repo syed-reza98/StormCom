@@ -10,5 +10,10 @@
         ".specify/scripts/bash/": true,
         ".specify/scripts/powershell/": true
     },
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "github.copilot.chat.agent.autoFix": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "chat.customAgentInSubagent.enabled": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.todoListTool.writeOnly": true
 }

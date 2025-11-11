@@ -213,16 +213,20 @@ export const authOptions: NextAuthOptions = {
     },
 
     // Redirect callback: Handle post-login redirects
+    // Note: This callback doesn't have access to user data, so role-based redirects
+    // are handled in the proxy.ts after authentication
     async redirect({ url, baseUrl }: any) {
-      // Allow relative callback URLs
+      // If URL is provided and is a relative path
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
       }
-      // Allow callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) {
+      // If URL is provided and on same origin
+      else if (url && new URL(url).origin === baseUrl) {
         return url;
       }
-      return baseUrl;
+      
+      // Default: redirect to /dashboard (proxy will handle role-based redirects)
+      return `${baseUrl}/dashboard`;
     },
   },
 

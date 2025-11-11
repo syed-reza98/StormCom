@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Theme } from '@radix-ui/themes';
 
 interface ThemeProviderProps {
@@ -11,6 +11,8 @@ interface ThemeProviderProps {
  * Client-side Theme Provider wrapper
  * Isolates Radix UI Theme's client-side hydration from server rendering
  * to prevent hydration mismatches caused by dynamic theme attributes
+ * 
+ * Wrapped with Suspense to prevent hydration errors from async theme loading
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
   return (
@@ -22,7 +24,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       radius="medium"
       scaling="100%"
     >
-      {children}
+      <Suspense fallback={<div className="min-h-screen bg-background" />}>
+        {children}
+      </Suspense>
     </Theme>
   );
 }
