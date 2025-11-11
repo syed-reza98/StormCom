@@ -273,7 +273,7 @@ Performance is a priority. All features must meet defined performance budgets: p
   - Test with screen readers (NVDA, JAWS, VoiceOver).
 - **Theme Customization**:
   - Configure design tokens in `tailwind.config.ts` and CSS variables in `globals.css`.
-  - Use shadcn/ui theming system (https://ui.shadcn.com/docs/theming).
+  - Use shadcn/ui theming system (https://ui.shadcn.com/themes).
   - Support light/dark modes via `next-themes` provider.
 - **Component Installation Workflow**:
   1. Search components: `npx shadcn@latest add` (interactive) or use shadcn MCP server.
