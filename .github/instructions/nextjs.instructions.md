@@ -30,7 +30,17 @@ This document defines instructions for the authoritative Next.js best practices 
 
 ### Styling & UI (MANDATORY)
 - **Tailwind CSS**: `4.1.14+` (utility-first, CSS-in-JS is PROHIBITED)
-- **Radix UI** + **shadcn/ui**: Accessible component primitives
+- **Radix UI** + **shadcn/ui**: Accessible component library
+  - **shadcn/ui**: Component collection built on Radix UI primitives with Tailwind CSS styling
+  - **Installation**: Use official CLI (`npx shadcn@latest init` for setup, `npx shadcn@latest add <component>` for components)
+  - **Component Structure**: CLI adds components to `src/components/ui/` with full source code (editable, no npm package)
+  - **Customization**: Modify components directly in `src/components/ui/` (color schemes, variants, sizing via Tailwind)
+  - **Composition**: Build feature components by composing shadcn/ui primitives (Button, Input, Dialog, Form, etc.)
+  - **Dark Mode**: Use `next-themes` for theme switching (documented at https://ui.shadcn.com/docs/dark-mode/next)
+  - **Form Integration**: Combines React Hook Form + Zod validation with shadcn/ui Form components
+  - **MCP Server**: Use shadcn MCP server for AI-assisted component browsing and installation (https://ui.shadcn.com/docs/mcp)
+  - **Registry**: Access official component registry at https://ui.shadcn.com/docs/components
+  - **Documentation**: https://ui.shadcn.com/docs/installation/next (Next.js integration guide)
 - **Framer Motion**: Latest (animations with reduced-motion support)
 - **lucide-react**: Latest (icons)
 
@@ -328,17 +338,117 @@ function ProductCard({
   );
 }
 
-// ✅ GOOD: Composition pattern, single responsibility
+// ✅ GOOD: Composition pattern with shadcn/ui primitives
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
 function ProductCard({ product, actions }: Props) {
   return (
-    <div>
-      <ProductBadges product={product} />
-      <ProductImage src={product.image} alt={product.name} />
-      <ProductInfo product={product} />
-      <ProductActions actions={actions} />
-    </div>
+    <Card>
+      <CardHeader>
+        <ProductBadges product={product} />
+      </CardHeader>
+      <CardContent>
+        <ProductImage src={product.image} alt={product.name} />
+        <ProductInfo product={product} />
+      </CardContent>
+      <CardFooter>
+        <Button onClick={() => actions.onAddToCart(product.id)}>
+          Add to Cart
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
+```
+
+### UI Component Patterns with shadcn/ui
+
+**Composition over Inheritance** - Build complex UI by composing shadcn/ui primitives:
+
+```typescript
+// ✅ GOOD: Compose Dialog + Form + Button for modal forms
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+export function CreateProductDialog({ open, onOpenChange }: Props) {
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+  });
+  
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Product</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button type="submit">Create</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ❌ BAD: Don't create wrapper components
+function CustomDialog({ children }) {
+  return <Dialog>{children}</Dialog>; // Unnecessary abstraction
+}
+```
+
+**Component Customization Strategies**:
+
+```typescript
+// 1. Edit shadcn/ui components directly for project-wide changes
+// src/components/ui/button.tsx
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        // Add custom variant
+        brand: "bg-brand text-white hover:bg-brand/90",
+      },
+    },
+  }
+);
+
+// 2. Use className prop for one-off styling
+<Button className="w-full mt-4">Submit</Button>
+
+// 3. Use cn() utility for conditional classes
+import { cn } from '@/lib/utils';
+
+<Button 
+  className={cn(
+    "w-full",
+    isPending && "opacity-50 cursor-not-allowed"
+  )}
+>
+  Submit
+</Button>
 ```
 
 ## 2.1. Server and Client Component Integration (App Router)
