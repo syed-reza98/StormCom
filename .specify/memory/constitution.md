@@ -24,7 +24,6 @@ Templates & files checked and sync status:
 
 Follow-up TODOs:
 - Run `npx shadcn@latest init` to set up shadcn/ui configuration (creates components.json)
-- Install shadcn MCP server in .mcp.json for AI-assisted component installation
 - Audit existing UI components in src/components/ to align with shadcn/ui patterns
 - Update component documentation to reference shadcn/ui component library
 - Create design system documentation referencing shadcn/ui theming guide
