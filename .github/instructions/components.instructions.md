@@ -183,6 +183,7 @@ We use **shadcn/ui** as our primary component library, built on **Radix UI** pri
 4. **Customize** (edit `src/components/ui/button.tsx` for project-wide changes):
    ```typescript
    // src/components/ui/button.tsx
+   import { cva } from "class-variance-authority";
    const buttonVariants = cva(
      "inline-flex items-center justify-center rounded-md text-sm font-medium",
      {
