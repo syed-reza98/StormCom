@@ -1,7 +1,10 @@
 # StormCom – Consolidated Issues, Recommendations, Status Tracker
 Date: 2025-11-11
 Scope: docs/reviews/*.md and subfolders (detailed, components, database)
-Branch/ref reviewed: 6b033f33e1bd887870f48211b0659889c6657b5d (where applicable)
+Provenance & Context:
+- This audit was performed against commit `6b033f33e1bd887870f48211b0659889c6657b5d` (2025-11-10), which may not exist in the current target branch. The commit hash is provided for historical traceability; findings may need to be re-verified against the latest codebase.
+- This document is a comprehensive audit report extracted for the purpose of tracking critical issues and recommendations. It is intended to inform ongoing work, including shadcn/ui integration and related refactors.
+- If the referenced commit is not present in the current branch, reviewers should cross-check issues with the latest code. Please update this document as fixes are applied or as the codebase evolves.
 
 Methodology
 - Enumerated and read all review markdowns under docs/reviews and subfolders:
