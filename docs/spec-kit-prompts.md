@@ -24,6 +24,13 @@ This specification defines the objectives, constraints, acceptance criteria, and
 8. Introduce caching strategy (cache tags + revalidateTag w/ second arg + optional Cache Components adoption plan, selective stable fetch caching with "use cache").
 9. Performance & accessibility validation (maintain budgets: LCP<2.5s mobile, CLS<0.1, JS bundle<200KB gzipped; Axe core zero blocking violations; multi-tenant queries optimized).
 10. Comprehensive test coverage uplift (≥80% services, 100% utilities; E2E coverage for checkout, tenancy resolution, newsletter; error handling cases; migration tests).
+11. Establish API middleware pipeline (auth, rate limit, request validation, structured logging with requestId header) eliminating string-based error matching.
+12. Correct REST semantics & response consistency (PUT requires full resource; PATCH partial; remove inconsistent `success` flags; uniform error payloads).
+13. Implement streaming CSV export with size limits & background job fallback for large order datasets.
+14. Elevate storefront SEO & accessibility (dynamic per-store metadata, Open Graph/Twitter, optional JSON-LD, figure/figcaption for charts, skip links, aria-live status components).
+15. Harden dashboard access (remove DEFAULT_STORE_ID fallback, enforce redirect for unauthenticated, introduce Suspense + skeleton patterns).
+16. Integrate GDPR cookie consent banner (ConsentRecord persistence, respect DNT) and align newsletter & tracking behavior.
+17. Improve analytics & chart accessibility (textual summaries, data transformation utilities, cache tags for expensive aggregations).
 
 ### 3. Scope
 IN-SCOPE:
@@ -67,6 +74,14 @@ FR-010: Data schema consistency: targeted fields migrated to correct types (stri
 FR-011: Caching: Tag definitions for products, categories, pages; invalidation on create/update/delete (revalidateTag(tag,"max")).
 FR-012: Introduce Cache Components plan (flag disabled initially; documented enabling steps).
 FR-013: Test coverage thresholds enforced by CI; new tests for checkout fraud scenarios, multi-tenant isolation breach attempts, newsletter flows, error mapping.
+FR-014: API middleware pipeline enforces auth, rate limits (100 req/min IP baseline; stricter for login), request validation (Zod), structured logging with requestId.
+FR-015: Products endpoints: PUT requires full schema; PATCH allows partial; error payload uniform (no `success` field); uses error classes.
+FR-016: Orders CSV export streams response for <=10k rows; >10k triggers background job & downloadable link notification.
+FR-017: Dashboard pages redirect unauthenticated users; no DEFAULT_STORE_ID fallback present; list pages use Suspense + skeleton components.
+FR-018: Analytics & chart components include `<figure>` + `<figcaption>` or textual summary; axe accessibility audit passes with zero violations.
+FR-019: GDPR cookie consent banner writes ConsentRecord per store and honors DNT (no tracking or analytics beyond essential).
+FR-020: Storefront dynamic metadata (title, description, Open Graph, Twitter card) per store; optional JSON-LD for product & shop pages.
+FR-021: Request/response include `X-Request-Id` header on all API responses produced by middleware.
 
 ### 6. Acceptance Criteria
 AC-001: All critical issues resolved; manual penetration test reports 0 high severity findings.
@@ -79,6 +94,13 @@ AC-007: Error responses standardized (sample audit shows 100% conformity for mod
 AC-008: Cache tag invalidation observed (revalidateTag invoked with second argument) after product update test.
 AC-009: Coverage reports meet thresholds (≥80% services, 100% utilities).
 AC-010: Lighthouse CI and Axe tests pass budgets and accessibility checks.
+AC-011: Streaming CSV export integration test completes under memory threshold; large export job path validated.
+AC-012: All API responses include `X-Request-Id`; logs correlate (sampled verification with grep).
+AC-013: PUT/PATCH semantics verified by integration tests (PUT fails on partial; PATCH succeeds on partial) & consistent error payloads (no stray `success` flag).
+AC-014: Dashboard unauthenticated access redirects to /login; grep confirms absence of DEFAULT_STORE_ID fallback.
+AC-015: Storefront metadata dynamic per store; Open Graph tags present; optional JSON-LD validated in test snapshot.
+AC-016: Charts audited: each has `<figure>` & `<figcaption>`; accessibility scan shows zero violations in analytics page.
+AC-017: GDPR consent persisted; DNT requests bypass non-essential tracking (log sample demonstrates skip).
 
 ### 7. Constraints
 - Next.js 16 App Router only; async params/searchParams; proxy.ts for auth/rate limiting.
@@ -145,7 +167,7 @@ Risks: Hidden edge cases. Mitigation: grep + dynamic runtime assertion tests.
 Exit Criteria: Inventory complete; baseline reports stored.
 
 Phase 1: Security & Isolation Core
-Actions: Implement server-side price recalculation service, auth enforcement in checkout route/server action, domain-based store resolver (lib/store/resolve-store.ts), remove hardcoded storeIds, adjust proxy.ts to enforce tenancy for storefront paths.
+Actions: Implement server-side price recalculation service, auth enforcement in checkout route/server action, domain-based store resolver (lib/store/resolve-store.ts), remove hardcoded storeIds, adjust proxy.ts to enforce tenancy for storefront paths. Remove DEFAULT_STORE_ID fallback; introduce Suspense + skeleton components for dashboard lists; ensure unauthenticated redirect.
 Testing: E2E checkout tamper test; unit tests store resolver; integration test unauthorized checkout.
 Exit: Tamper attempt corrected; unauthorized blocked; no hardcoded storeIds left.
 
@@ -155,7 +177,7 @@ Testing: Integration rollback tests (forced failure at payment validation), inve
 Exit: All writes atomic; rollback verified.
 
 Phase 3: Error Handling Standardization
-Actions: Create src/lib/errors.ts (BaseError subclasses: ValidationError, AuthError, NotFoundError, ConflictError, RateLimitError, InternalError); refactor API route handlers & services to throw typed errors; implement mapper (lib/error-response.ts).
+Actions: Create src/lib/errors.ts (BaseError subclasses: ValidationError, AuthError, NotFoundError, ConflictError, RateLimitError, InternalError); refactor API route handlers & services to throw typed errors; implement mapper (lib/error-response.ts). Introduce API middleware (auth, rate limit, validation, logging, requestId header) and migrate routes away from string matching.
 Testing: Unit map tests, integration endpoint error shape tests.
 Exit: 100% of modified endpoints conform; legacy string matching removed.
 
@@ -165,12 +187,12 @@ Testing: Migration test script (seed pre-migration, run, verify shape), unit val
 Exit: Schema consistent; migrations applied; green type-check.
 
 Phase 5: Caching & Performance Foundations
-Actions: Define cache tag registry (lib/cache/tags.ts), implement tag usage in product/category/page fetch services, call revalidateTag(tag,"max") on mutations, document enabling Cache Components; add minimal metrics logging.
+Actions: Define cache tag registry (lib/cache/tags.ts), implement tag usage in product/category/page fetch services, call revalidateTag(tag,"max") on mutations, document enabling Cache Components; add minimal metrics logging. Add storefront unstable_cache wrappers for featured products & category tree with tag-based revalidation; instrument analytics data aggregation caching.
 Testing: Integration mutation triggers tag invalidation; manual build check; Lighthouse unaffected.
 Exit: Tags operational; invalidations logged; docs updated.
 
 Phase 6: Newsletter Engagement
-Actions: Implement Server Action (app/(storefront)/newsletter/actions.ts) with Zod schema, consent record creation, audit log entry, rate limiting integration, optimistic UI state.
+Actions: Implement Server Action (app/(storefront)/newsletter/actions.ts) with Zod schema, consent record creation, audit log entry, rate limiting integration, optimistic UI state. Implement GDPR cookie consent banner linked to ConsentRecord model & DNT respect.
 Testing: Unit validation tests, integration duplication prevention, E2E subscription path.
 Exit: Newsletter functional; consent & audit rows created; E2E passes.
 
@@ -189,6 +211,7 @@ Exit: Final report stored; all acceptance criteria satisfied.
 - Maintain services layer segregation (pure business logic). Keep transaction wrapper isolated.
 - Error classes centralize codes; enumerated codes exported.
 - Cache tags minimal first iteration; avoid premature complexity.
+ - API middleware centralizes cross-cutting concerns (auth, rate limiting, validation, logging, requestId) for consistency and observability.
 
 ### Testing Strategy (Detailed)
 - Use fixtures under tests/fixtures for deterministic product/discount/inventory states.
@@ -200,6 +223,7 @@ Exit: Final report stored; all acceptance criteria satisfied.
 - Monitor query times via instrumentation logs (only around new transaction boundary).
 - Ensure product fetch selects minimal fields.
 - Avoid client component sprawl; keep newsletter form minimal client footprint.
+ - Use dynamic import + Suspense for heavy analytics chart components; server-side aggregation with lean datasets and cache tags to reduce recalculation.
 
 ### Risk Matrix (Expanded)
 | Risk | Phase | Impact | Likelihood | Mitigation |
@@ -319,6 +343,10 @@ T-043 | Rate limit refinement (tier check) | ops | P1 | src/lib/rate-limit.ts | 
 - Cache invalidations verified in logs and tests.
 - No hardcoded storeId instances (automated script passes).
 - Error response uniformity (100% sample compliance).
+ - PUT/PATCH semantics corrected and verified.
+ - Streaming CSV export memory/time within thresholds; large exports queued.
+ - Accessibility audits show zero chart-related violations.
+ - GDPR consent & DNT behavior validated in logs.
 
 ---
 
