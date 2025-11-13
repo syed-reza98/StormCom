@@ -12,6 +12,10 @@ on:
 jobs:
   api-integration-gate:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: file:./prisma/dev.db
+      NEXTAUTH_SECRET: test_ci_secret_change_me
+      NEXTAUTH_URL: http://localhost:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: |
           npm install --no-audit --no-fund
+
+      - name: Create .env for CI
+        run: |
+          printf "DATABASE_URL=file:./prisma/dev.db\n" > .env
+          printf "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}\n" >> .env
+          printf "NEXTAUTH_URL=${NEXTAUTH_URL}\n" >> .env
 
       - name: Prisma generate & db push (SQLite dev)
         run: |
