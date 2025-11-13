@@ -1,90 +1,91 @@
 version: 2
 
 updates:
-  # npm dependency updates - DAILY (as per US12 Security requirements)
+  # npm dependency updates - batch minor/patch updates into one Dependabot PR
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "main"            # explicitly target main
     schedule:
-      interval: "daily" # Changed from weekly to daily for security patches
-      time: "03:00" # Run at 3 AM UTC (off-peak hours)
-    open-pull-requests-limit: 10 # Maximum 10 PRs at a time
+      interval: "daily"              # keep daily for fast security/patch cadence
+      time: "03:00"                  # off-peak UTC
+    open-pull-requests-limit: 1      # keep one batched PR at a time for npm
     reviewers:
-      - "CodeStorm-Hub" # Automatically assign reviewer
+      - "CodeStorm-Hub"
     labels:
       - "dependencies"
       - "npm"
-      - "automated" # Mark as automated PR
+      - "automated"
     commit-message:
-      prefix: "chore(deps)" # Conventional commit format
-      include: "scope" # Include package name in commit
-    # Group minor and patch updates together to reduce PR noise
+      prefix: "chore(deps)"
+      include: "scope"
+    versioning-strategy: "increase"  # allow lockfile bumps for transitive deps
+
+    # Group critical packages separately, then batch all remaining minor/patch updates
     groups:
-      # Group all Next.js related packages together
+      # Important framework/runtime packages handled individually
       nextjs:
         patterns:
-          - "next"
-          - "react"
-          - "react-dom"
-          - "@next/*"
+          - "^next$"
+          - "^react$"
+          - "^react-dom$"
+          - "^@next/.*"
         update-types:
           - "minor"
           - "patch"
 
-      # Group all Prisma related packages together
       prisma:
         patterns:
-          - "@prisma/*"
-          - "prisma"
+          - "^@prisma/.*"
+          - "^prisma$"
         update-types:
           - "minor"
           - "patch"
 
-      # Group all testing related packages together
+      # Testing and tooling grouped
       testing:
         patterns:
-          - "vitest"
-          - "@vitest/*"
-          - "@testing-library/*"
-          - "playwright"
-          - "@playwright/*"
+          - "^vitest$"
+          - "^@vitest/.*"
+          - "^@testing-library/.*"
+          - "^playwright$"
+          - "^@playwright/.*"
         update-types:
           - "minor"
           - "patch"
 
-      # Group all linting and formatting tools together
       code-quality:
         patterns:
-          - "eslint"
-          - "eslint-*"
-          - "@eslint/*"
-          - "prettier"
-          - "typescript"
-          - "typescript-eslint"
-          - "@typescript-eslint/*"
+          - "^eslint"
+          - "^eslint-.*"
+          - "^@eslint/.*"
+          - "^prettier$"
+          - "^typescript$"
+          - "^typescript-eslint"
+          - "^@typescript-eslint/.*"
         update-types:
           - "minor"
           - "patch"
 
-      # Group all UI library packages together
       ui-libraries:
         patterns:
-          - "@radix-ui/*"
-          - "tailwindcss"
-          - "@tailwindcss/*"
-          - "lucide-react"
-          - "framer-motion"
+          - "^@radix-ui/.*"
+          - "^tailwindcss$"
+          - "^@tailwindcss/.*"
+          - "^lucide-react$"
+          - "^framer-motion$"
         update-types:
           - "minor"
           - "patch"
 
-      # Group all development dependencies
-      dev-dependencies:
-        dependency-type: "development"
+      # Catch-all: everything else (minor/patch) will be batched into a single PR
+      batched-minor-patch:
+        patterns:
+          - "*"                        # match remaining packages not caught by above groups
         update-types:
           - "minor"
           - "patch"
 
-    # Ignore major version updates for stable packages (review manually)
+    # Ignore major version updates for packages that require manual review and planning
     ignore:
       - dependency-name: "next"
         update-types: ["version-update:semver-major"]
@@ -95,15 +96,14 @@ updates:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
 
-    # Allow Dependabot to update lockfile without opening PR for transitive deps
-    versioning-strategy: "increase"
-
-  # Enable version updates for GitHub Actions
+  # GitHub Actions updates (kept separate - cannot be combined with npm updates)
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "main"
     schedule:
       interval: "weekly"
       day: "tuesday"
+      time: "04:00"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
@@ -112,13 +112,14 @@ updates:
       prefix: "ci"
       include: "scope"
 
-  # Enable version updates for Docker (when Dockerfile is added)
-  # Uncomment when Docker is used:
+  # Docker updates — enable when Dockerfiles are present
   # - package-ecosystem: "docker"
   #   directory: "/"
+  #   target-branch: "main"
   #   schedule:
   #     interval: "weekly"
   #     day: "tuesday"
+  #     time: "04:00"
   #   labels:
   #     - "dependencies"
   #     - "docker"
