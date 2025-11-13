@@ -1,4 +1,4 @@
-# StormCom - Copilot Agent Onboarding
+﻿# StormCom - Copilot Agent Onboarding
 
 **Multi-tenant e-commerce SaaS platform: Next.js 16, TypeScript 5.9.3, Prisma ORM, React 19 Server Components**
 

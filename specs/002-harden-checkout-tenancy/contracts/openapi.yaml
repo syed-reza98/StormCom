@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: StormCom Hardened APIs
+  version: 0.1.0
+  description: APIs for secure checkout, multi-tenant storefront, newsletter, and exports
+servers:
+  - url: https://api.stormcom.local
+paths:
+  /api/checkout:
+    post:
+      summary: Secure checkout
+      description: Recalculate server-side pricing, validate payment intent, create order transactionally
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentIntent:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId: { type: string }
+                      quantity: { type: integer, minimum: 1 }
+                address:
+                  type: object
+              required: [paymentIntent, items]
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Order'
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Conflict (e.g., insufficient inventory) }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /api/newsletter/subscribe:
+    post:
+      summary: Subscribe to newsletter (single opt-in)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+              required: [email]
+      responses:
+        '200':
+          description: Subscribed (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string, enum: [active] }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  /api/orders/export.csv:
+    get:
+      summary: Stream CSV export (≤10k rows) or enqueue async job (>10k)
+      parameters:
+        - in: query
+          name: since
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: CSV stream
+          content:
+            text/csv: {}
+        '202':
+          description: Async job accepted, link will be sent via email and in-app notification
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+components:
+  responses:
+    ValidationError:
+      description: Input validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: {}
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        storeId: { type: string }
+        totals:
+          type: object
+          properties:
+            subtotal: { type: number }
+            discountTotal: { type: number }
+            taxTotal: { type: number }
+            shippingTotal: { type: number }
+            grandTotal: { type: number }
+        currency: { type: string }
+        status: { type: string, enum: [pending, paid, failed, refunded] }
+        createdAt: { type: string, format: date-time }
