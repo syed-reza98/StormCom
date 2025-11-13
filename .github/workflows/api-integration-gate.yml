@@ -51,7 +51,7 @@ jobs:
 
       - name: Run integration test suite
         run: |
-          npx vitest run tests/integration --reporter verbose
+          npx vitest run --config vitest.integration.config.ts --reporter verbose
 
       - name: Summary
         if: always()
