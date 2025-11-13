@@ -1,3 +1,88 @@
+# Tasks: Harden Checkout, Tenancy, and Newsletter
+
+Generated from `specs/002-harden-checkout-tenancy/spec.md` and `plan.md`.
+
+Total tasks: 36 (grouped by phase and user story)
+
+## Phase 1: Setup
+- [ ] T001 Initialize feature workspace and artifacts (create `specs/002-harden-checkout-tenancy/artifacts/`)
+- [ ] T002 [P] Create scaffolding for logs and request correlation header in `src/lib/request-context.ts`
+- [ ] T003 Add CI coverage gating placeholders in `.github/workflows/` for this branch (copy `ci` template) and document in `specs/002-harden-checkout-tenancy/quickstart.md`
+
+## Phase 2: Foundational (blocking prerequisites)
+- [ ] T004 [P] Create domain->store resolver at `src/lib/store/resolve-store.ts`
+- [ ] T005 [P] Add server-side pricing service at `src/services/pricing-service.ts` (recalculate line items, discounts, shipping, taxes)
+- [ ] T006 [P] Add transaction wrapper helper `src/services/transaction.ts` to centralize `prisma.$transaction` usage
+- [ ] T007 [P] Create minimal error class scaffolding `src/lib/errors.ts` (BaseError + placeholders)
+- [ ] T008 [P] Create API response mapper skeleton `src/lib/error-response.ts` and `src/lib/api-response.ts`
+- [ ] T009 [P] Create cache tag registry `src/lib/cache/tags.ts` (initial tags: products, categories, pages)
+
+## Phase 3: User Story Implementation (Priority Order)
+
+### User Story 1 (US1) — Shopper completes a secure checkout (Priority: P1)
+- [ ] T010 [US1] Refactor checkout route to require session auth and `storeId` at `src/app/api/checkout/complete/route.ts`
+- [ ] T011 [US1] Replace client-trusted monetary acceptance: wire `src/app/api/checkout/complete/route.ts` to call `src/services/pricing-service.ts` to recalc totals
+- [ ] T012 [US1] Integrate payment intent pre-validation adapter at `src/services/payments/intent-validator.ts`
+- [ ] T013 [US1] Refactor checkout flow to use `src/services/transaction.ts` and include order, items, inventory decrement, discount mark, payment record (edit `src/services/checkout-service.ts`)
+- [ ] T014 [US1] Add integration tests `tests/integration/checkout/checkout-atomic.spec.ts` (rollback on payment validation failure)
+- [ ] T015 [US1] Add E2E tamper test `tests/e2e/checkout/tamper.spec.ts` to attempt client price override and assert server recalculation
+
+### User Story 2 (US2) — Tenant isolation & canonical domains (Priority: P2)
+- [ ] T016 [US2] Implement mapping model `prisma` migration change: `StoreDomain` model and seed script adjustments (`prisma/schema.prisma` + `prisma/migrations/`)
+- [ ] T017 [US2] Implement store resolution middleware integration in `proxy.ts` to set request context `storeId` (use `src/lib/store/resolve-store.ts`)
+- [ ] T018 [US2] Remove `DEFAULT_STORE_ID` fallbacks in codebase (search & replace) and add failing unit tests for any removed fallbacks (`tests/unit/tenancy/*.spec.ts`)
+- [ ] T019 [US2] Add redirect canonicalization: when subdomain exists and custom domain present, redirect in `proxy.ts`
+- [ ] T020 [US2] Add integration tests `tests/integration/tenancy/store-resolution.spec.ts` (mapped domain -> storeId; unmapped -> 404)
+
+### User Story 3 (US3) — Newsletter subscription (Priority: P2)
+- [ ] T021 [US3] Implement Server Action at `app/(storefront)/newsletter/actions.ts` with Zod schema to validate email and record consent
+- [ ] T022 [US3] Implement `ConsentRecord` create logic in `src/services/newsletter-service.ts` and audit logs in `src/services/audit-service.ts`
+- [ ] T023 [US3] Enforce rate limiting for newsletter submissions via `src/lib/rate-limit.ts` integration and add unit tests `tests/unit/newsletter/*.spec.ts`
+- [ ] T024 [US3] Implement deduplication by `(storeId,email)` in DB and server logic; add integration test `tests/integration/newsletter/dedupe.spec.ts`
+- [ ] T025 [US3] Add consent banner component skeleton `src/components/ConsentBanner.tsx` and wire to Server Action
+
+### User Story 4 (US4) — Consistent APIs & CSV exports (Priority: P3)
+- [ ] T026 [US4] Implement API middleware pipeline skeleton `src/lib/api-middleware/index.ts` (auth, rateLimit, validation, logging, requestId)
+- [ ] T027 [US4] Migrate representative route `src/app/api/orders/route.ts` to use standardized API response format (`src/lib/api-response.ts`) and include `X-Request-Id` header
+- [ ] T028 [US4] Implement efficient CSV streaming for ≤10k rows in `src/app/api/orders/export/route.ts` and tests `tests/integration/export/stream.spec.ts`
+- [ ] T029 [US4] Implement async export job enqueue path for >10k rows and notification (email + in-app) wiring `src/services/export-service.ts`
+
+## Final Phase: Polish & Cross-Cutting Concerns
+- [ ] T030 [P] [US1] Add audit log entries for checkout actions in `src/services/audit-service.ts`
+- [ ] T031 [P] [US1] Ensure checkout responses include standardized error shapes and `X-Request-Id` header (update route & tests)
+- [ ] T032 [P] Add cache invalidation calls `revalidateTag(tag, 'max')` on product/category mutations (update services in `src/services/product-service.ts` and `src/services/category-service.ts`)
+- [ ] T033 [P] Add migration test harness `scripts/migration-test.sh` and `tests/integration/migrations/migration.spec.ts`
+- [ ] T034 [P] Update docs: `specs/002-harden-checkout-tenancy/quickstart.md` and `docs/testing-strategy.md` with new test instructions
+- [ ] T035 [P] Add accessibility checks to E2E flows for checkout and newsletter (axe assertions in `tests/e2e/*`)
+- [ ] T036 [P] Final audit: run grep for hardcoded `storeId`, run coverage, Lighthouse, and axe and store artifacts in `specs/002-harden-checkout-tenancy/artifacts/`
+
+---
+
+## Dependencies
+- Must complete Foundational (T004–T009) before heavy checkout (T010–T015) and tenancy (T016–T020) changes.
+- US1 (T010–T015) depends on Foundational pricing service (T005) and transaction wrapper (T006).
+- US2 (T016–T020) depends on Foundational resolver (T004).
+- US3 (T021–T025) depends on tenancy resolution (T017) so subscriptions are created with correct `storeId`.
+
+## Parallel execution examples
+- While T004 and T005 are in progress, T007/T008/T009 can be implemented in parallel (distinct files and low dependency).
+- Newsletter UI (T025) can be built in parallel with Server Action T021 once the Server Action API is agreed.
+
+## Implementation strategy
+- MVP-first: Start with US1 minimum slice (T010, T011, T013) to get a secure, server-verified checkout that can be validated by E2E; then add payment validation (T012) and tests (T014–T015).
+- Incremental: Keep changes small per commit, include unit tests early for each modified file, and run `npm run type-check` + `npx vitest run` frequently.
+
+---
+
+Path to generated tasks.md: `specs/002-harden-checkout-tenancy/tasks.md`
+
+Summary:
+- Total tasks: 36
+- Tasks per story: US1:6, US2:5, US3:5, US4:4, Foundational:6, Setup:3, Final/Polish:7
+- Parallel opportunities: Foundational helpers (T004–T009) and docs/tests (T033–T036)
+- Suggested MVP: US1 minimal slice (T010, T011, T013)
+
+All tasks follow checklist format with Task IDs and file paths. Each task is specific and intended to be directly executable by an LLM or developer.
 # Phase 2 Tasks — Harden Checkout, Tenancy, Newsletter
 
 Date: 2025-11-13  
