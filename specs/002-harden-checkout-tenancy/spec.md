@@ -50,6 +50,7 @@ As a visitor to the storefront on a given domain or subdomain, I see only the pr
 1. Given a mapped domain/subdomain, When a visitor requests storefront pages, Then the platform resolves to the correct store and returns only that store’s data.
 2. Given an unmapped domain/subdomain, When a visitor requests a page, Then a not-found response is returned (no fallback store).
 3. Given a store with specific title/description/social metadata, When pages are rendered, Then per-store metadata is present for search/social previews.
+4. Given a store with both a custom domain and a subdomain, When a visitor arrives on the subdomain, Then they are redirected to the custom domain as the canonical host.
 
 ---
 
@@ -66,7 +67,7 @@ As a visitor, I can subscribe to a store’s newsletter via a simple form that v
 1. Given a valid email and store, When the subscription form is submitted, Then a subscription record is created once per email+store with a consent record and audit log entry.
 2. Given repeated submissions for the same email+store, When the form is submitted again, Then the response indicates existing subscription without duplication and respects rate limits.
 3. Given a user agent signaling Do Not Track, When the form is submitted, Then only essential processing occurs and no non-essential tracking is performed.
-4. [NEEDS CLARIFICATION: Should subscription require double opt-in via email confirmation before activation, or proceed single opt-in with audit trail?]
+4. Given a valid submission, When the subscription is processed, Then it is activated immediately (single opt-in) and an audit trail is recorded.
 
 ---
 
@@ -82,7 +83,7 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 
 1. Given any API response, When received, Then the error shape is `{ error: { code, message, details? } }` and successes are `{ data, meta?, message? }` with an `X-Request-Id` header present.
 2. Given an orders export with ≤10,000 rows, When requested, Then the CSV is streamed without exhausting memory.
-3. Given an orders export with >10,000 rows, When requested, Then an asynchronous job is created and the user is notified to download when ready. [NEEDS CLARIFICATION: delivery mechanism for the link (email vs in-app notification)?]
+3. Given an orders export with >10,000 rows, When requested, Then an asynchronous job is created and the user is notified to download when ready via both email and in-app notification.
 
 ---
 
@@ -113,9 +114,9 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **FR-002**: Recalculate all line items, discounts, shipping, and taxes on the server; ignore client-submitted monetary values.
 - **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
 - **FR-004**: Execute order creation, order items, inventory decrement, discount usage mark, and payment record within a single atomic transaction.
-- **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists.
+- **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists. When both a custom domain and subdomain exist, redirect subdomain traffic to the custom domain as the canonical host.
 - **FR-006**: Eliminate hardcoded tenant identifiers from storefront components and services.
-- **FR-007**: Provide a newsletter subscription path that validates input, prevents duplicates per email+store, records explicit consent, supports rate limiting, and writes an audit entry; double opt-in behavior will be determined during clarification.
+- **FR-007**: Provide a newsletter subscription path that validates input, prevents duplicates per email+store, records explicit consent, supports rate limiting, and writes an audit entry; activate subscriptions immediately (single opt-in) with an audit trail.
 - **FR-008**: Standardize API responses: success `{ data, meta?, message? }`; error `{ error: { code, message, details? } }`.
 - **FR-009**: Enforce tenant scoping for all tenant-owned queries via a guaranteed filter on the tenant identifier.
 - **FR-010**: Align data fields where arrays vs delimited strings are inconsistent; add soft-delete fields where missing; validate forward data entry accordingly.
@@ -124,7 +125,7 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **FR-013**: Achieve and enforce test coverage thresholds (services ≥80%, utilities 100%) with tests for fraud scenarios, tenancy isolation, newsletter flows, and error mapping.
 - **FR-014**: Apply an API middleware pipeline covering authentication, rate limiting, request validation, and structured logging that includes a request correlation ID.
 - **FR-015**: Ensure REST semantics: PUT requires full resource payload; PATCH allows partial updates; no stray `success` flags; use standardized error payloads.
-- **FR-016**: Stream CSV exports for up to 10,000 rows within memory limits; for larger datasets, enqueue a background job and provide a downloadable link upon completion. [NEEDS CLARIFICATION: link delivery channel]
+- **FR-016**: Stream CSV exports for up to 10,000 rows within memory limits; for larger datasets, enqueue a background job and provide a downloadable link upon completion via both email and in-app notification.
 - **FR-017**: Redirect unauthenticated dashboard access to sign-in; remove any fallback tenant defaults; utilize progressive rendering patterns for lists.
 - **FR-018**: Make analytics and chart visualizations accessible with textual summaries or `<figure>`/`<figcaption>` structures; pass accessibility audits.
 - **FR-019**: Present a consent banner that stores per-store consent and honors the user’s Do Not Track preference by disabling non-essential tracking.
@@ -175,13 +176,9 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - Unknown domains should not resolve to a default tenant; they should return a not-found experience to prevent data leakage and SEO confusion.
 - Newsletter rate limiting at a baseline of 100 requests per minute per IP is sufficient to deter abuse for this phase.
 - Payment validation occurs prior to order creation and can be stubbed for testing; precise processor details are an implementation concern.
-- Background export jobs will use an existing job processing mechanism; precise delivery mechanism for the download link is to be clarified.
+- Background export jobs will use an existing job processing mechanism; download links will be delivered via both email and in-app notification.
 
 ---
 
-## Open Questions (for Clarification)
-
-1. Newsletter opt-in model: Should subscriptions be activated only after email confirmation (double opt-in), or is single opt-in acceptable with an audit trail? [Relates to FR-007]
-2. Canonical domain policy: When a store has both a custom domain and a subdomain, should visitors be redirected to a single canonical domain, and which takes precedence? [Impacts SEO/user experience]
-3. Large CSV export delivery: For exports exceeding the streaming threshold, how should the downloadable link be delivered (email vs in-app notification/queue)? [Relates to FR-016]
+<!-- Clarifications resolved: single opt-in with audit trail; canonical redirect subdomain → custom domain; CSV link via both email and in-app notification. -->
 

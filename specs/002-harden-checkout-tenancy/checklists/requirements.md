@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,9 +31,4 @@
 
 ## Notes
 
-- One or more [NEEDS CLARIFICATION] markers remain by design (max 3), requiring `/speckit.clarify`:
-	- Newsletter double opt-in model (see User Story 3)
-	- CSV export link delivery channel for large datasets (see FR-016 and User Story 4)
-	- Canonical domain policy for stores with multiple domains (see Open Questions #2)
-  
-- After clarifications are provided, update the spec to remove markers and re-run this checklist.
+- Clarifications incorporated: single opt-in with audit trail; canonical redirect subdomain → custom domain; large CSV link via both email and in-app notification.
