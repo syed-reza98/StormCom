@@ -2,11 +2,7 @@
 
 ## /speckit.specify
 
-Title: StormCom Security, Multi-Tenancy, Data Integrity & Platform Hardening Initiative (Q4 2025)
-Version: 1.0.0
-Status: Draft
-Owner: Architecture & Platform Team
-Last Updated: 2025-11-12
+StormCom Security, Multi-Tenancy, Data Integrity & Platform Hardening Initiative (Q4 2025)
 
 ### 1. Executive Summary
 StormCom has successfully completed the dual-auth migration and now runs exclusively on NextAuth.js. However, three critical issues remain: (1) insecure checkout flow (no auth enforcement, trusts client-submitted prices, incomplete transactional boundaries, missing payment verification), (2) storefront multi-tenancy bypass (hardcoded storeId, inconsistent domain-based store resolution propagation), and (3) a non-functional newsletter signup path. Additional high/medium issues include inconsistent schema arrays vs strings, ad hoc error handling via string matching, absence of a formal caching/tag invalidation strategy, incomplete Prisma multi-tenant middleware enforcement, and partial transaction scope in certain service flows.
