@@ -63,6 +63,18 @@ Total tasks: 42 (grouped by phase and user story)
 - [ ] T040 Background job infra validation: confirm existing job processing infra (worker/queue); if missing, add lightweight dev stub and update `src/services/export-service.ts` to support stub in dev/test
 - [ ] T041 Payment pre-validation robustness: add idempotency key handling, retry/backoff policy, and tests for provider outages (update `src/services/payments/intent-validator.ts` and tests)
 - [ ] T042 REST audit: scan `src/app/api/**/route.ts` for REST violations (PUT/PATCH misuse, stray `success` flags). Produce per-endpoint remediation tasks with deadlines and CI gating to ensure fixes are applied before merge.
+  - [ ] T038b Migrate `Product.images` from `String` JSON array to `Json` type; write migration + backfill parser.
+  - [ ] T038c Migrate `Product.metaKeywords` from `String` JSON array to `Json` type.
+  - [ ] T038d Migrate `ProductVariant.options` from `String` JSON object to `Json` type.
+  - [ ] T038e Migrate `ProductAttribute.values` from `String` JSON array to `Json` type.
+  - [ ] T038f Migrate `Review.images` from `String` JSON array to `Json` type.
+  - [ ] T038g Migrate `ShippingZone.countries` from `String` JSON array to `Json` type.
+  - [ ] T038h Migrate `Page.metaKeywords` from `String` JSON array to `Json` type.
+  - [ ] T038i Migrate `EmailTemplate.variables` from `String` JSON array to `Json` type.
+  - [ ] T038j Migrate `Webhook.events` from `String` JSON array to `Json` type.
+  - [ ] T038k Migrate optional `Payment.metadata` from `String?` to `Json?` with validation of malformed rows.
+  - [ ] T038l Migrate optional `SyncLog.metadata` from `String?` to `Json?`.
+  - [ ] T038m Migrate optional `AuditLog.changes` from `String?` to `Json?` and ensure diff object preserved.
 
 ## Additional Tasks (Governance & CI)
 - [ ] T043 Percy + Visual Regression: Integrate Percy visual regression for critical pages and UI components (dashboard, checkout, product list). Add Percy job to feature CI and create snapshot baselines. Map to constitution visual regression requirements.
@@ -89,7 +101,7 @@ Total tasks: 42 (grouped by phase and user story)
 Path to generated tasks.md: `specs/002-harden-checkout-tenancy/tasks.md`
 
 Summary:
-- Total tasks: 42
+- Total tasks: 55
 - Tasks per story (approx): US1:6, US2:6, US3:5, US4:5, Foundational:6, Setup:3, Final/Polish:7
 - Parallel opportunities: Foundational helpers (T004–T009) and docs/tests (T033–T036)
 - Suggested MVP: US1 minimal slice (T010, T011, T013)

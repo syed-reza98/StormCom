@@ -112,10 +112,11 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 
 - **FR-001**: Reject unauthenticated checkout attempts; require a valid signed-in session.
 - **FR-002**: Recalculate all line items, discounts, shipping, and taxes on the server; ignore client-submitted monetary values.
-- **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
+ - **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
  - **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
    - Clarification: Payment pre-validation MUST verify that the payment intent/authorization exists and that the expected amount and currency match server-side recalculated totals. The system SHOULD accept processor states such as "AUTHORIZED" or equivalent pre-authorized states for later capture; the implementation MUST document which states are merely validated vs which will be captured as part of order finalization.
-   - Idempotency & retries: Checkout submissions MUST include an idempotency key (client-provided or server-generated) to prevent duplicate captures. The payment adapter MUST implement safe retry/backoff semantics. In case of payment provider outages, the checkout flow MUST abort without creating an order or mutating inventory; a retryable error should be surfaced to the client and reconciliation attempted by background processes when appropriate.
+   - Decision: Primary approach is provider-backed idempotency combined with server-side deduplication and mapping. The server MUST record the provider reference (provider idempotency key / intent id) and maintain a durable mapping to the platform's idempotency record to prevent duplicate captures. If a provider does not support idempotency keys, the server should accept a server-generated idempotency key as a fallback.
+   - Idempotency & retries: Checkout submissions MUST include an idempotency key (provider-backed when available; otherwise server-generated) to prevent duplicate captures. The payment adapter MUST implement safe retry/backoff semantics and surface retryable errors to the client. In case of payment provider outages, the checkout flow MUST abort without creating an order or mutating inventory; a retryable error should be surfaced to the client and reconciliation attempted by background processes when appropriate. The implementation MUST document which provider states count as "validated" (e.g., AUTHORIZED) versus "captured" and include test cases for outage/retry scenarios.
 - **FR-004**: Execute order creation, order items, inventory decrement, discount usage mark, and payment record within a single atomic transaction.
 - **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists. When both a custom domain and subdomain exist, redirect subdomain traffic to the custom domain as the canonical host.
  - **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists. When both a custom domain and subdomain exist, redirect subdomain traffic to the custom domain as the canonical host.
@@ -132,7 +133,7 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **FR-013**: Achieve and enforce test coverage thresholds (services ≥80%, utilities 100%) with tests for fraud scenarios, tenancy isolation, newsletter flows, and error mapping.
 - **FR-014**: Apply an API middleware pipeline covering authentication, rate limiting, request validation, and structured logging that includes a request correlation ID.
 - **FR-015**: Ensure REST semantics: PUT requires full resource payload; PATCH allows partial updates; no stray `success` flags; use standardized error payloads.
-- **FR-016**: Stream CSV exports for up to 10,000 rows within memory limits; for larger datasets, enqueue a background job and provide a downloadable link upon completion via both email and in-app notification.
+ - **FR-016**: Stream CSV exports for up to 10,000 rows within explicit memory and time guardrails; for larger datasets, enqueue a background job and provide a downloadable link upon completion via both email and in-app notification.
 - **FR-017**: Redirect unauthenticated dashboard access to sign-in; remove any fallback tenant defaults; utilize progressive rendering patterns for lists.
 - **FR-018**: Make analytics and chart visualizations accessible with textual summaries or `<figure>`/`<figcaption>` structures; pass accessibility audits.
 - **FR-019**: Present a consent banner that stores per-store consent and honors the user’s Do Not Track preference by disabling non-essential tracking.
@@ -171,6 +172,7 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **SC-008**: Cache invalidation test demonstrates timely updates on product/category/page changes.
 - **SC-009**: Code coverage thresholds met: ≥80% services, 100% utilities; new tests cover fraud, tenancy, newsletter, and error mapping.
 - **SC-010**: Performance and accessibility budgets pass automated checks (e.g., LCP < 2.5s mobile, CLS < 0.1, zero blocking accessibility violations for targeted pages).
+ - **SC-010a**: API performance: p95 latency for representative interactive API endpoints ≤ 500ms under normal load (excluding background/job processing endpoints).
 - **SC-011**: CSV export streams complete within memory limits for ≤10k rows; >10k path enqueues background processing and delivers a downloadable link.
 - **SC-012**: Dashboard unauthenticated access redirects to sign-in; no fallback tenant default exists.
 - **SC-013**: Per-store metadata present and validated in snapshots (title, description, social previews); optional structured data validated when present.
@@ -189,4 +191,15 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 ---
 
 <!-- Clarifications resolved: single opt-in with audit trail; canonical redirect subdomain → custom domain; CSV link via both email and in-app notification. -->
+
+## Clarifications
+
+### Session 2025-11-14
+
+- Q: Payment idempotency & pre-validation strategy → A: Option C - Provider-backed idempotency + server-side deduplication and mapping. Server stores provider reference (intent id / idempotency key) and a durable mapping to prevent duplicate captures; implement retry/backoff semantics; abort checkout and do not mutate inventory if provider unreachable. Implementation MUST document which provider states are "validated" (e.g., AUTHORIZED) vs which are "captured".
+ - Q: Canonical redirect behavior for non-GET requests → A: Option B - Use HTTP 301 for storefront GET requests; for non-GET requests return a 4xx informative response (e.g., 409/422) with a `Link: <https://{primary-domain}{path}>; rel="canonical"` header and an explanatory body instructing clients to re-submit to the canonical host. Avoid method-changing redirects for non-GETs to preserve safety and make behavior explicit for clients.
+ - Q: Newsletter consent & audit retention policy → A: Option B - Retain consent and audit records for 3 years. Consent and audit entries MUST be retained for 3 years from creation to support dispute resolution and marketing audit trails; include export tooling to support legal requests and provide an expiry/archival process that removes or anonymizes personal details after retention period unless a legal hold exists.
+ - Q: CSV export threshold & guardrails → A: Option A - Keep 10,000 rows synchronous threshold with explicit memory/time caps and async fallback. Streaming must enforce per-request memory/time caps (e.g., 200MB heap, 120s) and fall back to async job when exceeded; tests must cover boundary conditions.
+ - Q: API performance SLA (p95) → A: Option B - p95 ≤ 500ms for representative interactive API endpoints under normal load.
+
 

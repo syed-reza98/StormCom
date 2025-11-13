@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2025-11-14T00:00:00.000Z",
+  "description": "Schema inventory of JSON-encoded array/object fields stored as String requiring normalization to Json type for Harden Checkout, Tenancy, Newsletter (T038).",
+  "fields": [
+    {
+      "model": "Product",
+      "field": "images",
+      "currentType": "String (JSON array of blob URLs)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038b",
+      "parseStrategy": "Try JSON.parse; if invalid or empty string, set []",
+      "risk": "low",
+      "tests": ["migration parses valid arrays", "empty string becomes []", "invalid JSON causes row flagged"]
+    },
+    {
+      "model": "Product",
+      "field": "metaKeywords",
+      "currentType": "String (JSON array)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038c",
+      "parseStrategy": "JSON.parse or [] if falsy",
+      "risk": "low",
+      "tests": ["keywords preserved", "null/empty -> []"]
+    },
+    {
+      "model": "ProductVariant",
+      "field": "options",
+      "currentType": "String (JSON object)",
+      "semantics": "OBJECT",
+      "recommendedType": "Json",
+      "migrationId": "T038d",
+      "parseStrategy": "JSON.parse; must be object else {}",
+      "risk": "medium",
+      "tests": ["object keys preserved", "non-object becomes {}"]
+    },
+    {
+      "model": "ProductAttribute",
+      "field": "values",
+      "currentType": "String (JSON array)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038e",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["values preserved", "empty -> []"]
+    },
+    {
+      "model": "Review",
+      "field": "images",
+      "currentType": "String (JSON array of blob URLs)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038f",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["images preserved", "empty -> []"]
+    },
+    {
+      "model": "ShippingZone",
+      "field": "countries",
+      "currentType": "String (JSON array of ISO country codes)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038g",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["countries preserved", "invalid -> []"]
+    },
+    {
+      "model": "Page",
+      "field": "metaKeywords",
+      "currentType": "String (JSON array)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038h",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["keywords preserved", "invalid -> []"]
+    },
+    {
+      "model": "EmailTemplate",
+      "field": "variables",
+      "currentType": "String (JSON array)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038i",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["variables preserved", "invalid -> []"]
+    },
+    {
+      "model": "Webhook",
+      "field": "events",
+      "currentType": "String (JSON array)",
+      "semantics": "ARRAY_STRING",
+      "recommendedType": "Json",
+      "migrationId": "T038j",
+      "parseStrategy": "JSON.parse or []",
+      "risk": "low",
+      "tests": ["events preserved", "invalid -> []"]
+    },
+    {
+      "model": "Payment",
+      "field": "metadata",
+      "currentType": "String? (JSON gateway-specific)",
+      "semantics": "OBJECT_OPTIONAL",
+      "recommendedType": "Json?",
+      "migrationId": "T038k",
+      "parseStrategy": "If null skip; else JSON.parse; if invalid -> store validation error separately",
+      "risk": "medium",
+      "tests": ["metadata preserved", "invalid JSON flagged"]
+    },
+    {
+      "model": "SyncLog",
+      "field": "metadata",
+      "currentType": "String? (JSON)",
+      "semantics": "OBJECT_OPTIONAL",
+      "recommendedType": "Json?",
+      "migrationId": "T038l",
+      "parseStrategy": "If null skip; else JSON.parse or {}",
+      "risk": "low",
+      "tests": ["preserves object", "null untouched"]
+    },
+    {
+      "model": "AuditLog",
+      "field": "changes",
+      "currentType": "String? (JSON diff object)",
+      "semantics": "OBJECT_OPTIONAL",
+      "recommendedType": "Json?",
+      "migrationId": "T038m",
+      "parseStrategy": "If null skip; else JSON.parse or {}",
+      "risk": "medium",
+      "tests": ["diff object preserved", "invalid -> {}"]
+    }
+  ],
+  "summary": {
+    "arrayFields": 9,
+    "objectFields": 1,
+    "optionalObjectFields": 3,
+    "total": 13,
+    "nextSteps": [
+      "Generate Prisma migration altering field types from String to Json/Json?",
+      "Write backfill script to parse existing data",
+      "Add integration tests under tests/integration/migrations/json-fields.spec.ts",
+      "Update application code to treat these fields as typed JSON instead of string",
+      "Add validation guards when writing to these fields going forward"
+    ]
+  }
+}

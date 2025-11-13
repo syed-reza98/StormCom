@@ -1,0 +1,49 @@
+name: API Integration Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+      - '002-harden-checkout-tenancy'
+  push:
+    branches:
+      - '002-harden-checkout-tenancy'
+
+jobs:
+  api-integration-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm install --no-audit --no-fund
+
+      - name: Prisma generate & db push (SQLite dev)
+        run: |
+          npx prisma generate
+          npx prisma db push
+
+      - name: Type check
+        run: |
+          npm run type-check || (echo 'Type-check failed' && exit 1)
+
+      - name: API route integration test coverage gate
+        run: |
+          node scripts/check-api-integration-tests.mjs
+
+      - name: Run integration test suite
+        run: |
+          npx vitest run tests/integration --reporter verbose
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "API integration gate completed"
