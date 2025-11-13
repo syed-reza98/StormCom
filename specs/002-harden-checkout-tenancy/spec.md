@@ -113,13 +113,20 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **FR-001**: Reject unauthenticated checkout attempts; require a valid signed-in session.
 - **FR-002**: Recalculate all line items, discounts, shipping, and taxes on the server; ignore client-submitted monetary values.
 - **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
+ - **FR-003**: Validate the provided payment intent/token with the payment processor prior to order creation; abort on validation failure.
+   - Clarification: Payment pre-validation MUST verify that the payment intent/authorization exists and that the expected amount and currency match server-side recalculated totals. The system SHOULD accept processor states such as "AUTHORIZED" or equivalent pre-authorized states for later capture; the implementation MUST document which states are merely validated vs which will be captured as part of order finalization.
+   - Idempotency & retries: Checkout submissions MUST include an idempotency key (client-provided or server-generated) to prevent duplicate captures. The payment adapter MUST implement safe retry/backoff semantics. In case of payment provider outages, the checkout flow MUST abort without creating an order or mutating inventory; a retryable error should be surfaced to the client and reconciliation attempted by background processes when appropriate.
 - **FR-004**: Execute order creation, order items, inventory decrement, discount usage mark, and payment record within a single atomic transaction.
 - **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists. When both a custom domain and subdomain exist, redirect subdomain traffic to the custom domain as the canonical host.
+ - **FR-005**: Resolve the active store from the request domain/subdomain and map it to a tenant identifier; return not-found if no mapping exists. When both a custom domain and subdomain exist, redirect subdomain traffic to the custom domain as the canonical host.
+   - Clarification: For storefront GET requests, the canonical redirect SHOULD use HTTP 301 (Permanent Redirect) and the response SHOULD include a `Link: <https://{primary-domain}{path}>; rel="canonical"` header to aid SEO. For non-GET requests (e.g., form POSTs), avoid automatic redirects that change method semantics; prefer returning an informative error so clients can re-submit to the canonical host if applicable.
 - **FR-006**: Eliminate hardcoded tenant identifiers from storefront components and services.
 - **FR-007**: Provide a newsletter subscription path that validates input, prevents duplicates per email+store, records explicit consent, supports rate limiting, and writes an audit entry; activate subscriptions immediately (single opt-in) with an audit trail.
 - **FR-008**: Standardize API responses: success `{ data, meta?, message? }`; error `{ error: { code, message, details? } }`.
 - **FR-009**: Enforce tenant scoping for all tenant-owned queries via a guaranteed filter on the tenant identifier.
 - **FR-010**: Align data fields where arrays vs delimited strings are inconsistent; add soft-delete fields where missing; validate forward data entry accordingly.
+ - **FR-010**: Align data fields where arrays vs delimited strings are inconsistent; add soft-delete fields where missing; validate forward data entry accordingly.
+   - Clarification: Candidate fields for normalization include, but are not limited to: `Product.images` (string[] vs CSV), `Product.tags` (string[] vs CSV), `Variant.attributes` (JSON vs CSV), and any CSV-encoded historical fields. The schema audit (T038) MUST produce an explicit per-field inventory artifact listing current type, recommended normalized type, migration approach, and backward-compatibility notes.
 - **FR-011**: Establish cache tag categories for key entities (e.g., products, categories, pages) and provide invalidation on create/update/delete actions.
 - **FR-012**: Produce a plan to adopt component-level caching in phases, initially disabled, with documented enablement steps and guardrails.
 - **FR-013**: Achieve and enforce test coverage thresholds (services ≥80%, utilities 100%) with tests for fraud scenarios, tenancy isolation, newsletter flows, and error mapping.
@@ -143,6 +150,7 @@ As an admin, I receive consistent API responses and can export orders as CSV; sm
 - **AuditLog**: Immutable record of significant actions (checkout created, subscription added) with correlation/request IDs.
 - **CacheTag**: Semantic identifiers used to manage cache invalidation across related views.
 - **RequestContext**: Correlation/request ID and store resolution used for logging and response headers.
+ - **RequestContext**: Correlation/request ID and store resolution used for logging and response headers. Implementation note: standardize the canonical store resolver filename to `src/lib/store/resolve-store.ts` across plan/tasks to avoid naming drift.
 
 ## Success Criteria *(mandatory)*
 

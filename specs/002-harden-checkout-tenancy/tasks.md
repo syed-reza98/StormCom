@@ -57,12 +57,16 @@ Total tasks: 42 (grouped by phase and user story)
 - [ ] T036 [P] Final audit: run grep for hardcoded `storeId`, run coverage, Lighthouse, and axe and store artifacts in `specs/002-harden-checkout-tenancy/artifacts/`
 
 ## Remediation & Constitution Tasks (critical follow-ups)
-- [ ] T037 Add integration tests for every modified API route under `src/app/api/**/route.ts`; ensure each modified route has a corresponding integration test in `tests/integration/` and fail pre-merge when missing (map to FR-013, constitution MUST)
-- [ ] T038 Schema audit: scan `prisma/schema.prisma` and codebase for CSV/string[] inconsistencies (images, tags, other arrays); create per-field migration tasks and tests under `tests/integration/migrations/`
+- [ ] T037 Add integration tests for every API route under `src/app/api/**/route.ts`; ensure each route (not only modified ones) has a corresponding integration test in `tests/integration/`. Add a CI check that fails pre-merge if any API route lacks an integration test. (maps to FR-013 and constitution MUST)
+- [ ] T038 Schema audit: scan `prisma/schema.prisma` and codebase for CSV/string[] inconsistencies (images, tags, attributes, variants, metadata arrays); create per-field migration tasks and tests under `tests/integration/migrations/` with an explicit inventory output artifact.
 - [ ] T039 Add k6 load test scripts for checkout and orders export and add Lighthouse CI job to feature CI pipeline; document thresholds and integrate into `.github/workflows/` (map to constitution performance requirements)
 - [ ] T040 Background job infra validation: confirm existing job processing infra (worker/queue); if missing, add lightweight dev stub and update `src/services/export-service.ts` to support stub in dev/test
 - [ ] T041 Payment pre-validation robustness: add idempotency key handling, retry/backoff policy, and tests for provider outages (update `src/services/payments/intent-validator.ts` and tests)
-- [ ] T042 REST audit: scan `src/app/api/**/route.ts` for REST violations (PUT/PATCH misuse, stray `success` flags) and create remediation subtasks to fix each violating endpoint
+- [ ] T042 REST audit: scan `src/app/api/**/route.ts` for REST violations (PUT/PATCH misuse, stray `success` flags). Produce per-endpoint remediation tasks with deadlines and CI gating to ensure fixes are applied before merge.
+
+## Additional Tasks (Governance & CI)
+- [ ] T043 Percy + Visual Regression: Integrate Percy visual regression for critical pages and UI components (dashboard, checkout, product list). Add Percy job to feature CI and create snapshot baselines. Map to constitution visual regression requirements.
+- [ ] T044 CI k6 & Lighthouse gating: Add CI jobs to run k6 (load) and Lighthouse CI with defined thresholds; fail PRs or block merge if thresholds are not met for PRs touching critical paths.
 
 ---
 
@@ -85,8 +89,8 @@ Total tasks: 42 (grouped by phase and user story)
 Path to generated tasks.md: `specs/002-harden-checkout-tenancy/tasks.md`
 
 Summary:
-- Total tasks: 36
-- Tasks per story: US1:6, US2:5, US3:5, US4:4, Foundational:6, Setup:3, Final/Polish:7
+- Total tasks: 42
+- Tasks per story (approx): US1:6, US2:6, US3:5, US4:5, Foundational:6, Setup:3, Final/Polish:7
 - Parallel opportunities: Foundational helpers (T004–T009) and docs/tests (T033–T036)
 - Suggested MVP: US1 minimal slice (T010, T011, T013)
 
@@ -155,8 +159,8 @@ This plan breaks the specification into implementable tasks with owners, concret
   - Schema: add `StoreDomain` model
     - `id`, `storeId`, `domain` (unique), `isPrimary` (canonical), timestamps
   - Files: `prisma/schema.prisma` (model + `@@unique([domain])`), migration; seed example
-  - Files: `src/lib/store-resolver.ts` (new): parse host, resolve `storeId` by domain OR `slug.subdomain`
-  - Proxy: add canonical redirect: if request for subdomain and primary custom domain exists → 308 redirect
+  - Files: `src/lib/store/resolve-store.ts` (new): parse host, resolve `storeId` by domain OR `slug.subdomain`
+  - Proxy: add canonical redirect: if request for subdomain and primary custom domain exists → 301 Permanent Redirect; include a `Link: <https://{primary-domain}{path}>; rel="canonical"` header for SEO
   - Tests: `tests/unit/store-resolver.test.ts`, `tests/integration/canonical-redirect.test.ts`
 
 - T2.2 Remove hardcoded store IDs and enforce tenant scoping (FR-006, FR-009)

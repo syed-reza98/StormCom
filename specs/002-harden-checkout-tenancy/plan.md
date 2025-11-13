@@ -44,6 +44,8 @@ Gates from constitution:
 - Testing thresholds (80% services, 100% utils), E2E on critical paths — PLANNED
 - Accessibility (WCAG 2.1 AA, axe‑core) — PLANNED ENFORCEMENT
 
+Note: The project constitution contains an inconsistent high-level coverage statement elsewhere (references to 90%). For implementation and CI gates this plan follows the constitution's detailed thresholds: **80% services** and **100% utilities**. If a stricter global threshold is required (e.g., 90%), update the constitution/governance documents and CI policy accordingly.
+
 No violations detected at plan time. Re‑check after Phase 1 artifacts.
 
 ## Project Structure
