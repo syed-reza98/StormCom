@@ -2,7 +2,7 @@
 
 Generated from `specs/002-harden-checkout-tenancy/spec.md` and `plan.md`.
 
-Total tasks: 36 (grouped by phase and user story)
+Total tasks: 42 (grouped by phase and user story)
 
 ## Phase 1: Setup
 - [ ] T001 Initialize feature workspace and artifacts (create `specs/002-harden-checkout-tenancy/artifacts/`)
@@ -55,6 +55,14 @@ Total tasks: 36 (grouped by phase and user story)
 - [ ] T034 [P] Update docs: `specs/002-harden-checkout-tenancy/quickstart.md` and `docs/testing-strategy.md` with new test instructions
 - [ ] T035 [P] Add accessibility checks to E2E flows for checkout and newsletter (axe assertions in `tests/e2e/*`)
 - [ ] T036 [P] Final audit: run grep for hardcoded `storeId`, run coverage, Lighthouse, and axe and store artifacts in `specs/002-harden-checkout-tenancy/artifacts/`
+
+## Remediation & Constitution Tasks (critical follow-ups)
+- [ ] T037 Add integration tests for every modified API route under `src/app/api/**/route.ts`; ensure each modified route has a corresponding integration test in `tests/integration/` and fail pre-merge when missing (map to FR-013, constitution MUST)
+- [ ] T038 Schema audit: scan `prisma/schema.prisma` and codebase for CSV/string[] inconsistencies (images, tags, other arrays); create per-field migration tasks and tests under `tests/integration/migrations/`
+- [ ] T039 Add k6 load test scripts for checkout and orders export and add Lighthouse CI job to feature CI pipeline; document thresholds and integrate into `.github/workflows/` (map to constitution performance requirements)
+- [ ] T040 Background job infra validation: confirm existing job processing infra (worker/queue); if missing, add lightweight dev stub and update `src/services/export-service.ts` to support stub in dev/test
+- [ ] T041 Payment pre-validation robustness: add idempotency key handling, retry/backoff policy, and tests for provider outages (update `src/services/payments/intent-validator.ts` and tests)
+- [ ] T042 REST audit: scan `src/app/api/**/route.ts` for REST violations (PUT/PATCH misuse, stray `success` flags) and create remediation subtasks to fix each violating endpoint
 
 ---
 
