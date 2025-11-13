@@ -15,5 +15,14 @@
     "github.copilot.chat.codesearch.enabled": true,
     "chat.customAgentInSubagent.enabled": true,
     "chat.useNestedAgentsMdFiles": true,
-    "chat.todoListTool.writeOnly": true
+    "chat.todoListTool.writeOnly": true,
+    "chat.mcp.serverSampling": {
+        "stormcom/.vscode/mcp.json: shadcn": {
+            "allowedModels": [
+                "copilot/gpt-5-mini",
+                "copilot/gpt-4.1",
+                "copilot/gpt-4o"
+            ]
+        }
+    }
 }

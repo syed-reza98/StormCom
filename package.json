@@ -117,6 +117,7 @@
     "prettier": "^3.3.0",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "prisma": "^6.19.0",
+    "shadcn": "^3.5.0",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.0",
