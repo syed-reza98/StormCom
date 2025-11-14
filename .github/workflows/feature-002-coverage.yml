@@ -129,6 +129,7 @@ jobs:
         run: npx vitest run --coverage --coverage.reporter=json --coverage.reporter=text
         env:
           NODE_ENV: test
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: 📊 Generate coverage report
         run: |
@@ -189,6 +190,7 @@ jobs:
         env:
           NODE_ENV: test
           DATABASE_URL: file:./test-integration.db
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: 📊 Generate integration coverage report
         run: |

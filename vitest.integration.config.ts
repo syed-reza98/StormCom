@@ -11,8 +11,19 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup.ts'],
     // Run only lightweight per-route placeholder specs for the CI gate
+    // Exclude T037 placeholder tests that use mocks (need to be converted to true integration tests)
     include: ['tests/integration/**/route.spec.ts'],
-    exclude: ['node_modules', 'dist', '.next', 'tests/e2e/**'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.next',
+      'tests/e2e/**',
+      // T037 placeholder tests (mocked, not true integration tests)
+      'tests/integration/audit-logs/route.spec.ts',
+      'tests/integration/auth/test/route.spec.ts',
+      'tests/integration/exports/[jobId]/route.spec.ts',
+      'tests/integration/orders/export/route.spec.ts',
+    ],
     pool: 'forks',
     poolOptions: { forks: { singleFork: true } },
     hookTimeout: 30000,
