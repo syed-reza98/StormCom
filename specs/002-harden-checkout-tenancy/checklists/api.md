@@ -35,11 +35,17 @@ Notes: This checklist tests the *requirements text* (not the implementation). Ea
   - ✅ PASS: Assumptions section states "100 requests per minute per IP"; contracts/openapi.yaml shows 429 RateLimited response; tasks T3.1 calls simple limiter (100 rpm/IP); constitution references rate-limit.ts implementation
 
 ## Requirement Consistency
-- [ ] CHK009 - Do authentication requirements align across spec/plan/tasks (no conflicting statements about anonymous checkout or default store fallbacks)? [Consistency, Spec §FR-001/FR-006]
-- [ ] CHK010 - Are tenant-scoping semantics consistently described (session.storeId vs domain-resolver) and not contradictory across plan and tasks? [Consistency, Spec §FR-005/FR-009]
-- [ ] CHK011 - Are the cache invalidation semantics (tags and revalidateTag signature) consistently used in plan and tasks (e.g., `revalidateTag(tag, 'max')`)? [Consistency, Plan P5]
+- [X] CHK009 - Do authentication requirements align across spec/plan/tasks (no conflicting statements about anonymous checkout or default store fallbacks)? [Consistency, Spec §FR-001/FR-006]
+  - ✅ PASS: spec.md FR-001 requires "valid signed-in session" with no anonymous fallback mentioned; plan.md P1 enforces auth via getServerSession(); tasks.md T1.1 implements auth-helpers.ts; FR-006 cache revalidation requires auth context - no contradictions found
+- [X] CHK010 - Are tenant-scoping semantics consistently described (session.storeId vs domain-resolver) and not contradictory across plan and tasks? [Consistency, Spec §FR-005/FR-009]
+  - ✅ PASS: spec.md FR-005 uses session.storeId for tenant isolation; FR-009 domain-resolver maps custom domains to storeId; plan.md P1/P2 creates store-resolver.ts for both flows; tasks.md T2.2 wires middleware - no contradictions, both mechanisms feed same storeId
+- [X] CHK011 - Are the cache invalidation semantics (tags and revalidateTag signature) consistently used in plan and tasks (e.g., `revalidateTag(tag, 'max')`)? [Consistency, Plan P5]
+  - ✅ PASS: spec.md FR-006 requires explicit cache invalidation; plan.md P5 T5.1 creates cache-tags.ts with tag registry and revalidateTag(tag, 'max') signature per Next.js 16; tasks.md T5.1 shows implementation file; clarifications confirm 'max' cacheLife profile usage
 
 ## Acceptance Criteria Quality
-- [ ] CHK012 - Are acceptance criteria measurable and tied to concrete checks (e.g., SC-003 specifies server-side recalculation validated by E2E across browsers)? [Measurability, Spec Success Criteria SC-003]
-- [ ] CHK013 - Do success criteria include pass/fail thresholds for non-functional requirements (LCP/CLS/API p95) with explicit measurement contexts? [Measurability, Spec SC-010]
-- [ ] CHK014 - Are rollback/compensation criteria specified for partial failures during checkout (what exact DB state indicates
+- [X] CHK012 - Are acceptance criteria measurable and tied to concrete checks (e.g., SC-003 specifies server-side recalculation validated by E2E across browsers)? [Measurability, Spec Success Criteria SC-003]
+  - ✅ PASS: SC-003 states "server-side total recalculation occurs for 100% of checkouts with E2E test validating across Chrome/Firefox/Safari"; SC-007 requires "100% API conformity to standardized response shapes with X-Request-Id header"; all SC items include concrete verification methods
+- [X] CHK013 - Do success criteria include pass/fail thresholds for non-functional requirements (LCP/CLS/API p95) with explicit measurement contexts? [Measurability, Spec SC-010]
+  - ✅ PASS: SC-010 specifies "LCP < 2.0s (desktop) and < 2.5s (mobile), CLS < 0.1, FID < 100ms, API p95 < 500ms"; SC-010a adds "DB query p95 < 100ms, JS bundle < 200KB gzipped"; all thresholds are quantified with measurement contexts (desktop/mobile, percentiles)
+- [X] CHK014 - Are rollback/compensation criteria specified for partial failures during checkout (what exact DB state indicates need for cleanup/reversal)? [Measurability, Spec §FR-010/FR-012]
+  - ✅ PASS: FR-010 specifies atomic transaction pattern "if payment capture fails, roll back entire order creation"; FR-012 requires idempotency checks to prevent duplicate orders; plan.md P2 details transaction semantics with db.$transaction() and payment validation adapter; tasks T1.4 implements compensation logic
