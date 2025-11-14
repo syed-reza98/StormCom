@@ -70,7 +70,6 @@ describe('Export Job Lifecycle (Integration)', () => {
           state: 'NY',
           postalCode: '10001',
           country: 'US',
-          storeId,
         },
       });
 
@@ -83,7 +82,6 @@ describe('Export Job Lifecycle (Integration)', () => {
           state: 'NY',
           postalCode: '10001',
           country: 'US',
-          storeId,
         },
       });
 
@@ -98,12 +96,8 @@ describe('Export Job Lifecycle (Integration)', () => {
           shippingAmount: 0,
           discountAmount: 0,
           totalAmount: 100 + i * 10,
-          shippingAddress: {
-            connect: { id: shippingAddr.id },
-          },
-          billingAddress: {
-            connect: { id: billingAddr.id },
-          },
+          shippingAddressId: shippingAddr.id,
+          billingAddressId: billingAddr.id,
         },
       });
     }

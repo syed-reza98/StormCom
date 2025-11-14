@@ -27,7 +27,8 @@ describe('Payment Intent Validator Robustness (T041)', () => {
     const store = await db.store.create({
       data: {
         name: 'Test Store',
-        domain: 'test-store.example.com',
+        slug: 'test-store',
+        email: 'test-store@example.com',
         currency: 'USD',
         timezone: 'America/New_York',
       },
@@ -358,7 +359,19 @@ describe('Payment Intent Validator Robustness (T041)', () => {
           email: 'test@example.com',
           name: 'Test User',
           password: 'hashed',
-          role: 'Customer',
+          role: 'CUSTOMER',
+        },
+      });
+
+      const shippingAddr = await db.address.create({
+        data: {
+          firstName: 'Test',
+          lastName: 'User',
+          address1: '123 Test St',
+          city: 'Test City',
+          state: 'TS',
+          postalCode: '12345',
+          country: 'US',
         },
       });
 
@@ -368,20 +381,26 @@ describe('Payment Intent Validator Robustness (T041)', () => {
           userId,
           orderNumber: 'ORD-USED',
           status: 'DELIVERED',
-          total: 1000,
-          shippingAddress: JSON.stringify({}),
-          billingAddress: JSON.stringify({}),
+          subtotal: 1000,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
+          totalAmount: 1000,
+          shippingAddressId: shippingAddr.id,
+          billingAddressId: shippingAddr.id,
         },
       });
 
       await db.payment.create({
         data: {
+          storeId,
           orderId: order.id,
           amount: 1000,
           currency: 'USD',
           status: 'PAID',
           gatewayPaymentId: paymentIntentId,
-          gateway: 'stripe',
+          gateway: 'STRIPE',
+          method: 'CREDIT_CARD',
         },
       });
 
