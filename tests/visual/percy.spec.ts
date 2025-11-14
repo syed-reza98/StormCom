@@ -39,8 +39,8 @@ import percySnapshot from '@percy/playwright';
  * - Wait for network idle before capturing snapshots
  */
 
-const TEST_STORE_SUBDOMAIN = 'test-store';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const TEST_STORE_SUBDOMAIN = 'test-store';
 
 /**
  * Percy snapshot options

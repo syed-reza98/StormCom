@@ -1308,6 +1308,214 @@ npm run lighthouse
 lhci autorun
 ```
 
+### CI Performance Gating (T044)
+
+**STATUS**: ✅ **ENABLED** - Performance budgets enforced in CI/CD pipeline
+
+#### Overview
+
+StormCom enforces strict performance budgets in CI to prevent performance regressions from being merged. Both k6 (load testing) and Lighthouse CI (frontend performance) will **block PRs** from merging if thresholds are breached.
+
+#### Gating Triggers
+
+Performance tests run automatically when PRs touch **critical paths**:
+
+**k6 Load Tests** (`.github/workflows/k6-load-tests.yml`):
+- `src/app/api/checkout/**`
+- `src/app/api/orders/**`
+- `src/services/checkout-service.ts`
+- `src/services/pricing-service.ts`
+- `src/services/export-service.ts`
+- `src/services/payment-service.ts`
+- `tests/performance/**`
+
+**Lighthouse CI** (`.github/workflows/lighthouse.yml`):
+- `src/app/(storefront)/**`
+- `src/app/(dashboard)/**`
+- `src/app/api/**`
+- `src/components/**`
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `public/**`
+
+#### k6 Thresholds (Constitution §118-120)
+
+| Metric | Threshold | Applies To | Severity |
+|--------|-----------|------------|----------|
+| API Response (p95) | < 500ms | All API endpoints | ❌ BLOCKING |
+| Checkout Complete (p95) | < 650ms | Checkout flow | ❌ BLOCKING |
+| Error Rate | < 1% | Checkout flow | ❌ BLOCKING |
+| Success Rate | > 99% | Checkout flow | ❌ BLOCKING |
+| Streaming Export (p95) | < 5s | Orders export (≤10k) | ❌ BLOCKING |
+| Async Enqueue (p95) | < 500ms | Orders export (>10k) | ❌ BLOCKING |
+| Error Rate | < 2% | Export flow | ❌ BLOCKING |
+| Success Rate | > 98% | Export flow | ❌ BLOCKING |
+
+**Test Scenarios**:
+- **Checkout Load Test**: 50 VUs for 2 minutes
+- **Export Load Test**: 20 VUs for 1.5 minutes
+
+**Failure Behavior**:
+```bash
+❌ k6 load test FAILED - Thresholds breached
+Thresholds: API p95 < 500ms, Checkout p95 < 650ms
+Error rate < 1%, Success rate > 99%
+```
+
+#### Lighthouse CI Budgets (Constitution §128-134)
+
+| Metric | Desktop | Mobile | Severity |
+|--------|---------|--------|----------|
+| LCP (Largest Contentful Paint) | < 2.0s | < 2.5s | ❌ BLOCKING |
+| FID (First Input Delay) | < 100ms | < 100ms | ❌ BLOCKING |
+| CLS (Cumulative Layout Shift) | < 0.1 | < 0.1 | ❌ BLOCKING |
+| TTI (Time to Interactive) | < 3.0s | < 3.0s | ❌ BLOCKING |
+| TBT (Total Blocking Time) | < 300ms | < 300ms | ❌ BLOCKING |
+| JavaScript Bundle (gzipped) | < 200KB | < 200KB | ❌ BLOCKING |
+| Performance Score | ≥ 90 | ≥ 90 | ❌ BLOCKING |
+| Accessibility Score | ≥ 90 | ≥ 90 | ❌ BLOCKING |
+
+**Test Pages**:
+- Homepage (`/`)
+- Product list (`/products`)
+- Checkout page (`/checkout`)
+- Dashboard (`/dashboard`)
+- Product management (`/dashboard/products`)
+
+**Failure Behavior**:
+```bash
+❌ Lighthouse CI FAILED (Desktop) - Performance budgets breached
+Constitution budgets: LCP < 2.0s, CLS < 0.1, FID < 100ms, TTI < 3.0s
+Performance score ≥ 90, Accessibility ≥ 90, Bundle < 200KB
+```
+
+#### Bypass Procedures
+
+**🚨 Emergency Bypass** (Requires approval from Tech Lead + Product Owner):
+
+If performance issues are blocking a **critical hotfix** or **time-sensitive security patch**:
+
+1. **Create bypass issue**:
+   ```bash
+   gh issue create --title "Performance Bypass Request: [PR #XXX]" \
+     --label "performance,bypass-request" \
+     --body "Reason: [Critical hotfix/Security patch]
+     PR: #XXX
+     Threshold breached: [k6 checkout p95 / Lighthouse LCP / etc.]
+     Remediation plan: [Link to remediation issue]
+     Approvals: @tech-lead @product-owner"
+   ```
+
+2. **Skip workflow** (temporarily):
+   ```yaml
+   # Add to PR description
+   [skip k6] - Bypass approved in issue #XXX
+   [skip lighthouse] - Bypass approved in issue #XXX
+   ```
+
+3. **Create remediation issue**:
+   - **Due date**: Within 2 sprints (4 weeks max)
+   - **Label**: `performance-debt`, `priority-p1`
+   - **Link**: Reference original bypass issue
+
+4. **Post-merge tracking**:
+   - Add to technical debt backlog
+   - Track in weekly performance review
+   - Re-run tests after remediation
+
+**⚠️ Standard Override** (Requires Tech Lead approval):
+
+For **known performance trade-offs** (new feature with acceptable temporary regression):
+
+1. **Update thresholds** (temporary):
+   ```javascript
+   // lighthouserc.js (add comment with expiration)
+   // TEMPORARY OVERRIDE: Expires 2025-12-31 (Issue #XXX)
+   'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }], // Was: 2000
+   ```
+
+2. **Document in PR**:
+   - Reason for regression
+   - Optimization plan
+   - Expected timeline
+   - Approved by: @tech-lead
+
+3. **Revert after optimization**:
+   ```bash
+   git revert <commit> # Revert threshold change
+   ```
+
+#### Best Practices
+
+**Before Opening PR**:
+```bash
+# Run k6 locally
+npm run build
+npm run start &
+k6 run tests/performance/checkout-load-test.js
+k6 run tests/performance/orders-export-load-test.js
+
+# Run Lighthouse locally
+npm run lighthouse
+```
+
+**Fixing Failures**:
+
+1. **k6 failures**:
+   - Review server logs for slow queries (DB query p95 < 100ms)
+   - Check API response sizes (gzip large payloads)
+   - Optimize database indexes
+   - Add caching for expensive computations
+   - Profile with Chrome DevTools Network tab
+
+2. **Lighthouse failures**:
+   - Reduce JavaScript bundle size (code splitting, tree shaking)
+   - Optimize images (WebP, responsive sizing, lazy loading)
+   - Minimize render-blocking resources
+   - Remove unused CSS/JS
+   - Use Next.js Image component with priority
+   - Defer non-critical scripts
+
+3. **Common issues**:
+   - **LCP slow**: Large images above fold → use Next.js Image with `priority`
+   - **CLS high**: Missing width/height on images → add dimensions
+   - **TBT high**: Heavy client-side JS → move to Server Components
+   - **Bundle bloat**: Large dependencies → use dynamic imports
+
+#### Monitoring
+
+**Daily Automated Runs**:
+- k6 tests run at 2 AM UTC (cron: `0 2 * * *`)
+- Results stored in GitHub Actions artifacts (30 days)
+
+**PR Comments**:
+Both workflows post detailed results to PRs:
+- ✅ Pass/fail status with emoji indicators
+- 📊 Detailed threshold breakdown
+- 🔗 Links to artifacts for deep dive
+- 📚 Constitution reference sections
+
+**Slack Notifications** (optional):
+```yaml
+# .github/workflows/k6-load-tests.yml
+- name: Notify Slack
+  uses: slackapi/slack-github-action@v1
+  if: failure()
+  with:
+    payload: |
+      {
+        "text": "❌ k6 load test FAILED on ${{ github.ref }}"
+      }
+```
+
+#### References
+
+- **Constitution**: Performance requirements §118-134, §177-195
+- **k6 workflow**: `.github/workflows/k6-load-tests.yml`
+- **Lighthouse workflow**: `.github/workflows/lighthouse.yml`
+- **k6 tests**: `tests/performance/checkout-load-test.js`, `tests/performance/orders-export-load-test.js`
+- **Lighthouse configs**: `lighthouserc.js` (desktop), `lighthouserc.mobile.js` (mobile)
+
 ---
 
 ## Accessibility Testing

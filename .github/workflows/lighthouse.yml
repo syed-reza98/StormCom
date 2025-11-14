@@ -3,8 +3,28 @@ name: Lighthouse CI
 on:
   pull_request:
     branches: [main, develop, '**-harden-**']
+    paths:
+      - 'src/app/(storefront)/**'
+      - 'src/app/(dashboard)/**'
+      - 'src/app/api/**'
+      - 'src/components/**'
+      - 'src/app/layout.tsx'
+      - 'src/app/page.tsx'
+      - 'public/**'
+      - 'lighthouserc*.js'
+      - '.github/workflows/lighthouse.yml'
   push:
     branches: ['**-harden-**']
+    paths:
+      - 'src/app/(storefront)/**'
+      - 'src/app/(dashboard)/**'
+      - 'src/app/api/**'
+      - 'src/components/**'
+      - 'src/app/layout.tsx'
+      - 'src/app/page.tsx'
+      - 'public/**'
+      - 'lighthouserc*.js'
+      - '.github/workflows/lighthouse.yml'
   workflow_dispatch:
 
 concurrency:
@@ -53,9 +73,10 @@ jobs:
         run: npx wait-on http://localhost:3000 -t 60000
       
       - name: 💡 Run Lighthouse CI (Desktop)
+        id: lhci-desktop
         run: |
           npm install -g @lhci/cli@0.13.x
-          lhci autorun --config=lighthouserc.js
+          lhci autorun --config=lighthouserc.js || exit 1
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
       
@@ -66,6 +87,15 @@ jobs:
           name: lighthouse-desktop-results
           path: .lighthouseci
           retention-days: 30
+      
+      - name: ❌ Fail if budgets breached
+        if: failure()
+        run: |
+          echo "::error::❌ Lighthouse CI FAILED (Desktop) - Performance budgets breached"
+          echo "::error::Constitution budgets: LCP < 2.0s, CLS < 0.1, FID < 100ms, TTI < 3.0s"
+          echo "::error::Performance score ≥ 90, Accessibility ≥ 90, Bundle < 200KB"
+          echo "::error::See artifacts for detailed reports"
+          exit 1
 
   lighthouse-mobile:
     name: Lighthouse (Mobile)
@@ -108,9 +138,10 @@ jobs:
         run: npx wait-on http://localhost:3000 -t 60000
       
       - name: 💡 Run Lighthouse CI (Mobile)
+        id: lhci-mobile
         run: |
           npm install -g @lhci/cli@0.13.x
-          lhci autorun --config=lighthouserc.mobile.js
+          lhci autorun --config=lighthouserc.mobile.js || exit 1
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
       
@@ -121,22 +152,33 @@ jobs:
           name: lighthouse-mobile-results
           path: .lighthouseci
           retention-days: 30
+      
+      - name: ❌ Fail if budgets breached
+        if: failure()
+        run: |
+          echo "::error::❌ Lighthouse CI FAILED (Mobile) - Performance budgets breached"
+          echo "::error::Constitution budgets: LCP < 2.5s, CLS < 0.1, FID < 100ms, TTI < 3.0s"
+          echo "::error::Performance score ≥ 90, Accessibility ≥ 90, Bundle < 200KB"
+          echo "::error::See artifacts for detailed reports"
+          exit 1
 
   lighthouse-comment:
     name: Comment PR with Lighthouse Results
     runs-on: ubuntu-latest
     needs: [lighthouse-desktop, lighthouse-mobile]
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request'
     
     steps:
       - name: 📥 Download desktop results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: lighthouse-desktop-results
           path: ./lighthouse-desktop
       
       - name: 📥 Download mobile results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: lighthouse-mobile-results
           path: ./lighthouse-mobile
@@ -147,26 +189,48 @@ jobs:
           script: |
             const fs = require('fs');
             
-            // Read results (simplified - actual implementation would parse JSON)
-            const desktopPassed = fs.existsSync('./lighthouse-desktop');
-            const mobilePassed = fs.existsSync('./lighthouse-mobile');
+            // Check job statuses
+            const desktopPassed = '${{ needs.lighthouse-desktop.result }}' === 'success';
+            const mobilePassed = '${{ needs.lighthouse-mobile.result }}' === 'success';
             
-            const comment = `## 💡 Lighthouse CI Results
+            const overallStatus = desktopPassed && mobilePassed ? '✅ PASSED' : '❌ FAILED';
+            const emoji = desktopPassed && mobilePassed ? '✅' : '❌';
             
-            ### Desktop
-            ${desktopPassed ? '✅ Passed' : '❌ Failed'}
+            const comment = `## 💡 Lighthouse CI Results - ${overallStatus}
             
-            ### Mobile
-            ${mobilePassed ? '✅ Passed' : '❌ Failed'}
+            ### Desktop ${desktopPassed ? '✅' : '❌'}
+            **Performance Budgets** (Constitution §128-134):
+            - ✓ LCP (Largest Contentful Paint): < 2.0s
+            - ✓ FID (First Input Delay): < 100ms
+            - ✓ CLS (Cumulative Layout Shift): < 0.1
+            - ✓ TTI (Time to Interactive): < 3.0s
+            - ✓ TBT (Total Blocking Time): < 300ms
+            - ✓ JavaScript Bundle: < 200KB (gzipped)
+            - ✓ Performance Score: ≥ 90
+            - ✓ Accessibility Score: ≥ 90
             
-            **Performance Budgets:**
-            - LCP < 2.0s (desktop), < 2.5s (mobile)
-            - FID < 100ms
-            - CLS < 0.1
-            - TTI < 3.0s
-            - JS Bundle < 200KB (gzipped)
+            ${desktopPassed ? '✅ All budgets passed' : '❌ **BLOCKING**: Budgets breached - see artifacts for details'}
             
-            See artifacts for detailed reports.
+            ### Mobile ${mobilePassed ? '✅' : '❌'}
+            **Performance Budgets**:
+            - ✓ LCP (Largest Contentful Paint): < 2.5s
+            - ✓ FID (First Input Delay): < 100ms
+            - ✓ CLS (Cumulative Layout Shift): < 0.1
+            - ✓ TTI (Time to Interactive): < 3.0s
+            - ✓ TBT (Total Blocking Time): < 300ms
+            - ✓ JavaScript Bundle: < 200KB (gzipped)
+            - ✓ Performance Score: ≥ 90
+            - ✓ Accessibility Score: ≥ 90
+            
+            ${mobilePassed ? '✅ All budgets passed' : '❌ **BLOCKING**: Budgets breached - see artifacts for details'}
+            
+            ---
+            
+            ${emoji} **${overallStatus}** - ${desktopPassed && mobilePassed ? 'Merge allowed' : '**MERGE BLOCKED** - Fix performance/accessibility issues before merging'}
+            
+            📊 Download artifacts for detailed Lighthouse reports.
+            
+            **Constitution Reference**: Performance requirements in §118-134, §177-195
             `;
             
             github.rest.issues.createComment({

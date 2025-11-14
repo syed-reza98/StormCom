@@ -3,8 +3,26 @@ name: k6 Load Tests
 on:
   pull_request:
     branches: [main, develop, '**-harden-**']
+    paths:
+      - 'src/app/api/checkout/**'
+      - 'src/app/api/orders/**'
+      - 'src/services/checkout-service.ts'
+      - 'src/services/pricing-service.ts'
+      - 'src/services/export-service.ts'
+      - 'src/services/payment-service.ts'
+      - 'tests/performance/**'
+      - '.github/workflows/k6-load-tests.yml'
   push:
     branches: ['**-harden-**']
+    paths:
+      - 'src/app/api/checkout/**'
+      - 'src/app/api/orders/**'
+      - 'src/services/checkout-service.ts'
+      - 'src/services/pricing-service.ts'
+      - 'src/services/export-service.ts'
+      - 'src/services/payment-service.ts'
+      - 'tests/performance/**'
+      - '.github/workflows/k6-load-tests.yml'
   workflow_dispatch:
   schedule:
     # Run load tests daily at 2 AM UTC
@@ -65,6 +83,7 @@ jobs:
           sudo apt-get install k6
       
       - name: 🚀 Run k6 Load Test - Checkout
+        id: k6-checkout-run
         run: k6 run tests/performance/checkout-load-test.js
         env:
           K6_OUT: json=checkout-results.json
@@ -80,7 +99,9 @@ jobs:
       - name: ❌ Fail if thresholds breached
         if: failure()
         run: |
-          echo "::error::k6 load test thresholds breached for checkout flow"
+          echo "::error::❌ k6 load test FAILED - Thresholds breached for checkout flow"
+          echo "::error::Thresholds: API p95 < 500ms, Checkout p95 < 650ms, Error rate < 1%, Success rate > 99%"
+          echo "::error::See artifacts for detailed metrics"
           exit 1
 
   k6-export:
@@ -134,6 +155,7 @@ jobs:
           sudo apt-get install k6
       
       - name: 🚀 Run k6 Load Test - Export
+        id: k6-export-run
         run: k6 run tests/performance/orders-export-load-test.js
         env:
           K6_OUT: json=export-results.json
@@ -149,24 +171,28 @@ jobs:
       - name: ❌ Fail if thresholds breached
         if: failure()
         run: |
-          echo "::error::k6 load test thresholds breached for orders export"
+          echo "::error::❌ k6 load test FAILED - Thresholds breached for orders export"
+          echo "::error::Thresholds: Streaming p95 < 5s, Async enqueue p95 < 500ms, Error rate < 2%, Success rate > 98%"
+          echo "::error::See artifacts for detailed metrics"
           exit 1
 
   k6-comment:
     name: Comment PR with k6 Results
     runs-on: ubuntu-latest
     needs: [k6-checkout, k6-export]
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request'
     
     steps:
       - name: 📥 Download checkout results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: k6-checkout-results
           path: ./k6-checkout
       
       - name: 📥 Download export results
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: k6-export-results
           path: ./k6-export
@@ -177,42 +203,38 @@ jobs:
           script: |
             const fs = require('fs');
             
-            let checkoutResults = {};
-            let exportResults = {};
+            // Check job statuses
+            const checkoutPassed = '${{ needs.k6-checkout.result }}' === 'success';
+            const exportPassed = '${{ needs.k6-export.result }}' === 'success';
             
-            try {
-              const checkoutData = fs.readFileSync('./k6-checkout/checkout-results.json', 'utf8');
-              checkoutResults = JSON.parse(checkoutData.split('\n').filter(line => line.includes('"type":"Point"')).pop() || '{}');
-            } catch (e) {
-              console.log('Could not parse checkout results');
-            }
+            const overallStatus = checkoutPassed && exportPassed ? '✅ PASSED' : '❌ FAILED';
+            const emoji = checkoutPassed && exportPassed ? '✅' : '❌';
             
-            try {
-              const exportData = fs.readFileSync('./k6-export/export-results.json', 'utf8');
-              exportResults = JSON.parse(exportData.split('\n').filter(line => line.includes('"type":"Point"')).pop() || '{}');
-            } catch (e) {
-              console.log('Could not parse export results');
-            }
+            const comment = `## 🚀 k6 Load Test Results - ${overallStatus}
             
-            const comment = `## 🚀 k6 Load Test Results
+            ### Checkout Flow (50 VUs, 2 min) ${checkoutPassed ? '✅' : '❌'}
+            **Thresholds** (Constitution §118-120):
+            - ✓ API Response (p95): < 500ms
+            - ✓ Checkout Complete (p95): < 650ms  
+            - ✓ Error Rate: < 1%
+            - ✓ Success Rate: > 99%
             
-            ### Checkout Flow (50 VUs, 2 min)
-            - **Status**: ${checkoutResults.metric ? '✅ Passed' : '⚠️ See artifacts'}
-            - **Thresholds**:
-              - API Response (p95): < 500ms
-              - Checkout Complete (p95): < 650ms
-              - Error Rate: < 1%
-              - Success Rate: > 99%
+            ${checkoutPassed ? '✅ All thresholds passed' : '❌ **BLOCKING**: Thresholds breached - see artifacts for details'}
             
-            ### Orders Export (20 VUs, 1.5 min)
-            - **Status**: ${exportResults.metric ? '✅ Passed' : '⚠️ See artifacts'}
-            - **Thresholds**:
-              - Streaming Export (p95): < 5s
-              - Async Enqueue (p95): < 500ms
-              - Error Rate: < 2%
-              - Success Rate: > 98%
+            ### Orders Export (20 VUs, 1.5 min) ${exportPassed ? '✅' : '❌'}
+            **Thresholds**:
+            - ✓ Streaming Export (p95): < 5s
+            - ✓ Async Enqueue (p95): < 500ms
+            - ✓ Error Rate: < 2%
+            - ✓ Success Rate: > 98%
             
-            See artifacts for detailed metrics and timings.
+            ${exportPassed ? '✅ All thresholds passed' : '❌ **BLOCKING**: Thresholds breached - see artifacts for details'}
+            
+            ---
+            
+            ${emoji} **${overallStatus}** - ${checkoutPassed && exportPassed ? 'Merge allowed' : '**MERGE BLOCKED** - Fix performance issues before merging'}
+            
+            📊 Download artifacts for detailed metrics and timings.
             `;
             
             github.rest.issues.createComment({

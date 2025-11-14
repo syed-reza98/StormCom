@@ -110,3 +110,96 @@ Tags are invalidated after:
 - `updateProduct/updateCategory` (both granular + list)
 - `deleteProduct/deleteCategory` (both granular + list)
 - `permanentlyDeleteProduct` (both granular + list)
+
+## CI Performance Gating (T044)
+
+**Automatic Gating**: PRs that modify critical paths are automatically tested for performance regressions. If thresholds are breached, **PR merge is blocked** until fixed or override approved.
+
+### When Tests Run
+
+**k6 Load Tests** (`.github/workflows/k6-load-tests.yml`) trigger on changes to:
+- `src/app/api/checkout/**` or `src/app/api/orders/**`
+- `src/services/checkout-service.ts`, `pricing-service.ts`, `export-service.ts`, `payment-service.ts`
+
+**Lighthouse CI** (`.github/workflows/lighthouse.yml`) triggers on changes to:
+- `src/app/(storefront)/**` or `src/app/(dashboard)/**`
+- `src/components/**`, `public/**`, or `lighthouserc*.js`
+
+### Performance Thresholds (BLOCKING)
+
+**k6 Load Testing**:
+| Metric | Threshold | Severity |
+|--------|-----------|----------|
+| API Response (p95) | < 500ms | BLOCKING |
+| Checkout Complete (p95) | < 650ms | BLOCKING |
+| Error Rate | < 1% | BLOCKING |
+| Success Rate | > 99% | BLOCKING |
+
+**Lighthouse CI Budgets**:
+| Metric | Desktop | Mobile | Severity |
+|--------|---------|--------|----------|
+| LCP | < 2.0s | < 2.5s | BLOCKING |
+| FID | < 100ms | < 100ms | BLOCKING |
+| CLS | < 0.1 | < 0.1 | BLOCKING |
+| TTI | < 3.0s | < 3.5s | BLOCKING |
+| Performance Score | ≥ 90 | ≥ 90 | BLOCKING |
+
+### Local Testing Before PR
+
+**k6 Load Tests**:
+```bash
+# Install k6 (one-time)
+# Windows: choco install k6
+# macOS: brew install k6
+# Linux: snap install k6
+
+# Run checkout load test
+k6 run tests/performance/checkout-load-test.js
+
+# Run streaming export test
+k6 run tests/performance/export-streaming-test.js
+
+# Run async export test
+k6 run tests/performance/export-async-test.js
+```
+
+**Lighthouse CI**:
+```bash
+# Start dev server
+npm run dev
+
+# Run Lighthouse (desktop + mobile)
+npm run lighthouse
+
+# Or run individually
+npx lhci autorun --config=lighthouserc.js          # Desktop
+npx lhci autorun --config=lighthouserc.mobile.js   # Mobile
+```
+
+### If CI Tests Fail
+
+**Merge Blocked**:
+- PR status check shows ❌ FAILED
+- PR comment includes detailed threshold violations
+- Cannot merge until tests pass or override approved
+
+**Emergency Bypass** (critical hotfix/security patch):
+1. Add `[skip-perf]` to PR title
+2. Get approval from Tech Lead + Product Owner
+3. Create remediation issue (must fix within 4 weeks)
+4. Document in PR description
+
+**Standard Override** (acceptable temporary regression):
+1. Add `[perf-override]` to PR title
+2. Get approval from Tech Lead
+3. Include justification in PR description
+4. Create follow-up issue with target metrics
+
+### Detailed Documentation
+
+See **[docs/testing-strategy.md § CI Performance Gating](../../docs/testing-strategy.md)** for:
+- Complete threshold breakdown
+- Bypass procedures
+- Troubleshooting common failures
+- Monitoring and daily automated runs
+- Constitution references (§118-120 k6, §128-134 Lighthouse)
