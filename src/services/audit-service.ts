@@ -96,8 +96,8 @@ export async function createAuditLog(options: CreateAuditLogOptions) {
   const storeId = options.storeId ?? context?.storeId;
   const userId = options.userId ?? context?.userId;
   
-  // Build changes JSON
-  const changes = options.changes ? JSON.stringify(options.changes) : null;
+  // Build changes JSON - use undefined instead of null for Prisma Json type
+  const changes = options.changes ? JSON.stringify(options.changes) : undefined;
   
   return db.auditLog.create({
     data: {
@@ -106,7 +106,7 @@ export async function createAuditLog(options: CreateAuditLogOptions) {
       entityId: options.entityId,
       storeId,
       userId,
-      changes,
+      ...(changes !== undefined && { changes }),
       ipAddress: options.ipAddress,
       userAgent: options.userAgent,
     },
@@ -147,7 +147,7 @@ export async function createAuditLogBatch(entries: CreateAuditLogOptions[]) {
     entries.map(options => {
       const storeId = options.storeId ?? context?.storeId;
       const userId = options.userId ?? context?.userId;
-      const changes = options.changes ? JSON.stringify(options.changes) : null;
+      const changes = options.changes ? JSON.stringify(options.changes) : undefined;
       
       return db.auditLog.create({
         data: {
@@ -156,7 +156,7 @@ export async function createAuditLogBatch(entries: CreateAuditLogOptions[]) {
           entityId: options.entityId,
           storeId,
           userId,
-          changes,
+          ...(changes !== undefined && { changes }),
           ipAddress: options.ipAddress,
           userAgent: options.userAgent,
         },

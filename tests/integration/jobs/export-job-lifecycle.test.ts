@@ -39,7 +39,7 @@ describe('Export Job Lifecycle (Integration)', () => {
     const store = await db.store.create({
       data: {
         name: 'Test Store',
-        domain: 'test-store.example.com',
+        slug: 'test-store',
         currency: 'USD',
         timezone: 'America/New_York',
       },
@@ -52,38 +52,56 @@ describe('Export Job Lifecycle (Integration)', () => {
         email: 'test@example.com',
         name: 'Test User',
         password: 'hashed_password',
-        role: 'StoreAdmin',
+        role: 'STORE_ADMIN',
       },
     });
     userId = user.id;
 
     // Create test orders
     for (let i = 0; i < 5; i++) {
+      // Create addresses for the order
+      const shippingAddr = await db.address.create({
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          address1: '123 Main St',
+          city: 'New York',
+          state: 'NY',
+          zip: '10001',
+          country: 'US',
+          storeId,
+        },
+      });
+
+      const billingAddr = await db.address.create({
+        data: {
+          firstName: 'John',
+          lastName: 'Doe',
+          address1: '123 Main St',
+          city: 'New York',
+          state: 'NY',
+          zip: '10001',
+          country: 'US',
+          storeId,
+        },
+      });
+
       await db.order.create({
         data: {
           storeId,
           userId,
           orderNumber: `ORD-${1000 + i}`,
           status: 'DELIVERED',
-          total: 100 + i * 10,
-          shippingAddress: JSON.stringify({
-            firstName: 'John',
-            lastName: 'Doe',
-            address: '123 Main St',
-            city: 'New York',
-            state: 'NY',
-            zip: '10001',
-            country: 'US',
-          }),
-          billingAddress: JSON.stringify({
-            firstName: 'John',
-            lastName: 'Doe',
-            address: '123 Main St',
-            city: 'New York',
-            state: 'NY',
-            zip: '10001',
-            country: 'US',
-          }),
+          subtotal: 100 + i * 10,
+          tax: 0,
+          shippingCost: 0,
+          discount: 0,
+          shippingAddress: {
+            connect: { id: shippingAddr.id },
+          },
+          billingAddress: {
+            connect: { id: billingAddr.id },
+          },
         },
       });
     }
@@ -268,6 +286,10 @@ describe('Export Job Lifecycle (Integration)', () => {
         .mockRejectedValueOnce(new Error('Transient error'))
         .mockResolvedValueOnce({
           url: 'https://blob.vercel-storage.com/test-export.csv',
+          downloadUrl: 'https://blob.vercel-storage.com/test-export.csv',
+          pathname: 'test-export.csv',
+          contentType: 'text/csv',
+          contentDisposition: 'attachment; filename="test-export.csv"',
         });
 
       const { jobId } = await enqueueOrderExport(storeId, userId, {}, 5);
