@@ -285,6 +285,7 @@ model Store {
   webhooks        Webhook[]
   gdprRequests    GdprRequest[]
   consentRecords  ConsentRecord[]
+  domains         StoreDomain[]
 
   @@index([slug])
   @@index([subscriptionPlan])
@@ -293,6 +294,28 @@ model Store {
   @@index([subscriptionStatus, subscriptionEndsAt])
   @@index([deletedAt, createdAt])
   @@map("stores")
+}
+
+// ============================================================================
+// STORE DOMAINS (Multi-tenancy)
+// ============================================================================
+
+model StoreDomain {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  
+  // Domain configuration
+  domain    String   @unique // e.g., "shop.example.com" or "example.com"
+  isPrimary Boolean  @default(false) // Canonical domain for redirects
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([domain])
+  @@map("store_domains")
 }
 
 // ============================================================================

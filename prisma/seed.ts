@@ -85,6 +85,53 @@ async function main() {
   console.log(`✓ Created stores: ${demoStore.name}, ${testStore.name}\n`);
 
   // ============================================================================
+  // 2a. STORE DOMAINS
+  // ============================================================================
+  console.log('Creating store domains...');
+
+  await prisma.storeDomain.upsert({
+    where: { domain: 'demo.stormcom.io' },
+    update: {},
+    create: {
+      storeId: demoStore.id,
+      domain: 'demo.stormcom.io',
+      isPrimary: true,
+    },
+  });
+
+  await prisma.storeDomain.upsert({
+    where: { domain: 'demo-store.localhost' },
+    update: {},
+    create: {
+      storeId: demoStore.id,
+      domain: 'demo-store.localhost',
+      isPrimary: false,
+    },
+  });
+
+  await prisma.storeDomain.upsert({
+    where: { domain: 'test.stormcom.io' },
+    update: {},
+    create: {
+      storeId: testStore.id,
+      domain: 'test.stormcom.io',
+      isPrimary: true,
+    },
+  });
+
+  await prisma.storeDomain.upsert({
+    where: { domain: 'test-store.localhost' },
+    update: {},
+    create: {
+      storeId: testStore.id,
+      domain: 'test-store.localhost',
+      isPrimary: false,
+    },
+  });
+
+  console.log(`✓ Created store domains for: ${demoStore.name}, ${testStore.name}\n`);
+
+  // ============================================================================
   // 3. STORE USERS
   // ============================================================================
   console.log('Creating store users...');

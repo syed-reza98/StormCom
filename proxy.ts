@@ -147,8 +147,11 @@ const SECURITY_HEADERS = {
 /**
  * Apply security protections to the request
  * 
- * Handles multi-tenant context, rate limiting, CSRF protection, and security headers.
+ * Handles multi-tenant context preparation, rate limiting, CSRF protection, and security headers.
  * Exported for testing purposes.
+ * 
+ * Note: Proxy runs in Edge runtime - cannot use Prisma or AsyncLocalStorage.
+ * Store resolution must happen in API routes/Server Components using resolveStore().
  * 
  * @param request - NextRequest to protect
  * @returns NextResponse with security headers applied
@@ -157,9 +160,10 @@ export async function applySecurityProtections(request: NextRequest): Promise<Ne
   const { method, url } = request;
   const { pathname } = new URL(url);
 
-  // 0. Multi-tenant Context (removed in proxy):
-  // Do not attempt to access getServerSession or Prisma in proxy (Edge runtime).
-  // Tenant context is enforced within server routes and Prisma middleware.
+  // 0. Multi-tenant Context Preparation:
+  // Proxy sets X-Forwarded-Host header for API routes/Server Components to resolve storeId.
+  // Actual resolution happens in server context using resolveStore() from @/lib/store/resolve-store
+  // due to Edge runtime limitations (no Prisma, no AsyncLocalStorage).
 
   // 1. Rate Limiting: Check request limits
   const rateLimitResult = checkSimpleRateLimit(request);
@@ -191,6 +195,10 @@ export async function applySecurityProtections(request: NextRequest): Promise<Ne
   // 3. Security Headers: Apply to all responses
   const response = NextResponse.next();
 
+  // Set X-Forwarded-Host for store resolution in API routes
+  const host = request.headers.get('host') || '';
+  response.headers.set('x-forwarded-host', host);
+
   // Apply all security headers
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value);
@@ -214,6 +222,12 @@ console.log('[PROXY] Module loaded');
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // 0. Canonical Domain Redirect
+  // Note: Actual canonical redirect happens in storefront Server Components via
+  // checkCanonicalRedirect() from @/lib/store/canonical-redirect
+  // Proxy only sets x-forwarded-host header for server-side resolution
+  // (Edge runtime cannot access Prisma for StoreDomain lookup)
 
   // Import RBAC helpers lazily to keep edge bundle small
   const { canAccess, isPublicRoute, getDefaultRedirect } = await import('./src/lib/auth/permissions');

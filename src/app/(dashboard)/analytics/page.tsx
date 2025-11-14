@@ -3,10 +3,7 @@
 
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-// import { getSessionFromCookies } from '@/lib/session-storage';
-
-// export const dynamic = 'force-dynamic';
-// import { redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { AnalyticsDatePicker } from '@/components/analytics/analytics-date-picker';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,11 +12,6 @@ import { getCurrentUser } from '@/lib/get-current-user';
 
 // ============================================================================
 // ROUTE CONFIG
-// ============================================================================
-
-// Mark as dynamic since this route uses cookies() for authentication
-// export const dynamic = 'force-dynamic';
-
 // ============================================================================
 // ROUTE CONFIG
 // ============================================================================
@@ -107,12 +99,14 @@ export default async function AnalyticsPage({
 }: { 
   searchParams: Promise<AnalyticsPageProps['searchParams']> 
 }) {
-  // Get current user and verify authentication
+  // Get current user and verify authentication (REQUIRED - no fallback)
   const user = await getCurrentUser();
-  // const storeId = user?.storeId || process.env.DEFAULT_STORE_ID;
-  // if (!user?.storeId) {
-  //   redirect('/login');
-  // }
+  
+  if (!user?.storeId) {
+    redirect('/login');
+  }
+  
+  const storeId = user.storeId;
 
   const params = await searchParams;
   const { startDate, endDate, period = 'month' } = params;
@@ -137,7 +131,7 @@ export default async function AnalyticsPage({
       {/* Analytics Dashboard with Loading State */}
       <Suspense fallback={<AnalyticsLoadingSkeleton />}>
         <AnalyticsDashboard
-          storeId={user?.storeId || process.env.DEFAULT_STORE_ID}
+          storeId={storeId}
         />
       </Suspense>
     </div>

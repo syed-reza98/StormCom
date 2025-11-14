@@ -28,11 +28,11 @@ Total tasks: 42 (grouped by phase and user story)
 - [X] T015 [US1] Add E2E tamper test `tests/e2e/checkout/tamper.spec.ts` to attempt client price override and assert server recalculation
 
 ### User Story 2 (US2) — Tenant isolation & canonical domains (Priority: P2)
-- [ ] T016 [US2] Implement mapping model `prisma` migration change: `StoreDomain` model and seed script adjustments (`prisma/schema.prisma` + `prisma/migrations/`)
-- [ ] T017 [US2] Implement store resolution middleware integration in `proxy.ts` to set request context `storeId` (use `src/lib/store/resolve-store.ts`)
-- [ ] T018 [US2] Remove `DEFAULT_STORE_ID` fallbacks in codebase (search & replace) and add failing unit tests for any removed fallbacks (`tests/unit/tenancy/*.spec.ts`)
-- [ ] T019 [US2] Add redirect canonicalization: when subdomain exists and custom domain present, redirect in `proxy.ts`
-- [ ] T020 [US2] Add integration tests `tests/integration/tenancy/store-resolution.spec.ts` (mapped domain -> storeId; unmapped -> 404)
+- [X] T016 [US2] Implement mapping model `prisma` migration change: `StoreDomain` model and seed script adjustments (`prisma/schema.prisma` + `prisma/migrations/`)
+- [X] T017 [US2] Implement store resolution middleware integration in `proxy.ts` to set request context `storeId` (use `src/lib/store/resolve-store.ts`)
+- [X] T018 [US2] Remove `DEFAULT_STORE_ID` fallbacks in codebase (search & replace) and add failing unit tests for any removed fallbacks (`tests/unit/tenancy/*.spec.ts`)
+- [X] T019 [US2] Add redirect canonicalization: when subdomain exists and custom domain present, redirect in `proxy.ts`
+- [X] T020 [US2] Add integration tests `tests/integration/tenancy/store-resolution.spec.ts` (mapped domain -> storeId; unmapped -> 404)
 
 ### User Story 3 (US3) — Newsletter subscription (Priority: P2)
 - [ ] T021 [US3] Implement Server Action at `app/(storefront)/newsletter/actions.ts` with Zod schema to validate email and record consent

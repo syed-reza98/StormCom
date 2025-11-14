@@ -76,34 +76,41 @@ export async function resolveStore(
 ): Promise<ResolvedStore> {
   const cleanHost = host.split(':')[0]; // Remove port
   
-  // Attempt 1: Custom domain lookup
-  // TODO: Uncomment after StoreDomain model migration (T016)
-  // const storeDomain = await db.storeDomain.findUnique({
-  //   where: { domain: cleanHost },
-  //   include: { 
-  //     store: { 
-  //       select: { 
-  //         id: true, 
-  //         slug: true,
-  //         domains: true, // Array of domain strings
-  //       } 
-  //     } 
-  //   },
-  // });
+  // Attempt 1: Custom domain lookup via StoreDomain table
+  const storeDomain = await db.storeDomain.findUnique({
+    where: { domain: cleanHost },
+    include: { 
+      store: { 
+        select: { 
+          id: true, 
+          slug: true,
+          domains: {
+            select: {
+              domain: true,
+              isPrimary: true,
+            }
+          }
+        } 
+      } 
+    },
+  });
   
-  // if (storeDomain) {
-  //   const primaryDomain = storeDomain.isPrimary 
-  //     ? cleanHost 
-  //     : findPrimaryDomain(storeDomain.store.domains);
-  //   
-  //   return {
-  //     storeId: storeDomain.storeId,
-  //     slug: storeDomain.store.slug,
-  //     primaryDomain,
-  //     isSubdomain: false,
-  //     needsCanonicalRedirect: false,
-  //   };
-  // }
+  if (storeDomain) {
+    // Find primary domain from store's domains
+    const primaryDomainRecord = storeDomain.store.domains.find(d => d.isPrimary);
+    const primaryDomain = primaryDomainRecord?.domain;
+    
+    // Check if we need to redirect to primary domain
+    const needsCanonicalRedirect = primaryDomain && primaryDomain !== cleanHost;
+    
+    return {
+      storeId: storeDomain.storeId,
+      slug: storeDomain.store.slug,
+      primaryDomain,
+      isSubdomain: false,
+      needsCanonicalRedirect: !!needsCanonicalRedirect,
+    };
+  }
   
   // Attempt 2: Subdomain extraction
   const subdomain = extractSubdomain(cleanHost, baseDomain);
@@ -118,7 +125,12 @@ export async function resolveStore(
     select: {
       id: true,
       slug: true,
-      // domains: true, // TODO: Uncomment after migration
+      domains: {
+        select: {
+          domain: true,
+          isPrimary: true,
+        }
+      },
     },
   });
   
@@ -126,30 +138,20 @@ export async function resolveStore(
     throw new NotFoundError('Store', subdomain);
   }
   
-  // Check if custom domain exists and redirect is needed
-  // TODO: Uncomment after StoreDomain model migration (T016)
-  // const primaryDomain = store.domains?.find(d => d !== `${subdomain}.${baseDomain}`);
-  // const needsCanonicalRedirect = !!primaryDomain;
+  // Check if custom primary domain exists
+  const primaryDomainRecord = store.domains.find(d => d.isPrimary);
+  const primaryDomain = primaryDomainRecord?.domain;
+  
+  // If we're on subdomain but have a primary custom domain, redirect is needed
+  const needsCanonicalRedirect = !!primaryDomain && primaryDomain !== `${subdomain}.${baseDomain}`;
   
   return {
     storeId: store.id,
     slug: store.slug,
-    primaryDomain: undefined, // TODO: Set after migration
+    primaryDomain,
     isSubdomain: true,
-    needsCanonicalRedirect: false, // TODO: Set after migration
+    needsCanonicalRedirect,
   };
-}
-
-/**
- * Find primary domain from domains array
- * Primary domain is the first custom domain (not subdomain)
- * 
- * @param domains - Array of domain strings
- * @returns Primary domain or undefined
- */
-function findPrimaryDomain(domains: string[]): string | undefined {
-  const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'stormcom.app';
-  return domains.find(d => !d.endsWith(`.${baseDomain}`));
 }
 
 /**

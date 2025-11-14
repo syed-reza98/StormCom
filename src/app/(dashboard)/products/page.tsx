@@ -3,6 +3,7 @@
 
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Flex, Heading, Text, Container, Section } from '@radix-ui/themes';
 import { PlusIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import ProductsTable from '@/components/products/products-table';
@@ -53,9 +54,14 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<ProductsPageProps['searchParams']> }) {
   const params = await searchParams;
-  // Determine storeId from session
+  // Determine storeId from session (REQUIRED - no fallback)
   const user = await getCurrentUser();
-  const storeId = user?.storeId || process.env.DEFAULT_STORE_ID;
+  
+  if (!user?.storeId) {
+    redirect('/login');
+  }
+  
+  const storeId = user.storeId;
 
   // Parse pagination
   const page = parseInt(String(params.page || '1')) || 1;
@@ -74,7 +80,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     sortOrder: (params.sortOrder as any) || 'desc',
   };
 
-  const result = await productService.getProducts(storeId as string, filters as any, page, perPage);
+  const result = await productService.getProducts(storeId, filters as any, page, perPage);
 
   return (
     <Section size="2">
