@@ -1425,3 +1425,35 @@ model ConsentRecord {
   @@index([storeId, consentType, granted])
   @@map("consent_records")
 }
+
+// ============================================================================
+// EXPORT JOBS (T029 - Async CSV Export)
+// ============================================================================
+
+model ExportJob {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Export configuration
+  type      String   // "orders", "customers", "products"
+  status    String   // "pending", "processing", "completed", "failed"
+  filters   String   // JSON string of export filters
+  totalRows Int
+
+  // Export result
+  fileUrl   String?  // Vercel Blob Storage URL
+  error     String?  // Error message if failed
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  @@index([storeId, status, createdAt])
+  @@index([userId, createdAt])
+  @@map("export_jobs")
+}
+
