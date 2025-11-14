@@ -23,6 +23,12 @@ import { db } from '@/lib/db';
 import { OrderStatus } from '@prisma/client';
 import { sendEmail } from '@/lib/email';
 import { put } from '@vercel/blob';
+import { jobQueue } from '@/lib/job-queue-stub';
+
+// Register export job handler (auto-called when module loads)
+jobQueue.registerHandler('export-orders', async (payload: { jobId: string }) => {
+  await processOrderExportJob(payload.jobId);
+});
 
 /**
  * Export job status
@@ -81,9 +87,10 @@ export async function enqueueOrderExport(
     },
   });
 
-  // TODO: Trigger background worker (e.g., via queue or cron)
-  // For MVP, return job ID and rely on polling or manual worker trigger
-  // In production, integrate with Vercel Cron or external queue (BullMQ, SQS)
+  // Enqueue job for background processing (T040: Job queue integration)
+  await jobQueue.enqueue('export-orders', {
+    jobId: job.id,
+  });
 
   return {
     jobId: job.id,

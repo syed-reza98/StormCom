@@ -1,5 +1,5 @@
 /**
- * Payment Intent Pre-Validator Service (T012)
+ * Payment Intent Pre-Validator Service (T012 + T041)
  * 
  * Validates payment intents BEFORE creating orders to prevent:
  * - Orders being created with failed/insufficient payments
@@ -10,10 +10,179 @@
  * - FR-003: Pre-validate payment intent before order creation
  * - Must verify: amount matches, status is valid, belongs to correct store
  * - Must handle Stripe payment intents (extensible for other providers)
+ * 
+ * T041 Enhancements:
+ * - Idempotency key handling (prevent duplicate validations)
+ * - Exponential backoff retry for transient errors
+ * - 30-second timeout handling for provider API calls
+ * - Provider outage resilience
  */
 
 import { db } from '@/lib/db';
 import { PaymentError, ValidationError } from '@/lib/errors';
+
+/**
+ * Configuration for retry logic
+ */
+const RETRY_CONFIG = {
+  maxAttempts: 3,           // Retry up to 3 times
+  baseDelayMs: 100,         // Start with 100ms delay
+  maxDelayMs: 5000,         // Cap at 5 seconds
+  timeoutMs: 30000,         // 30-second timeout per attempt
+} as const;
+
+/**
+ * Transient error patterns (safe to retry)
+ */
+const TRANSIENT_ERROR_PATTERNS = [
+  /timeout/i,
+  /ETIMEDOUT/i,
+  /ECONNRESET/i,
+  /ENOTFOUND/i,
+  /rate_limit/i,
+  /temporarily unavailable/i,
+  /503/,
+  /502/,
+  /504/,
+] as const;
+
+/**
+ * In-memory cache for idempotency keys (TTL: 24 hours)
+ * 
+ * In production, replace with Redis or database-backed cache
+ * Key format: "payment-validation:{idempotencyKey}"
+ */
+interface CachedValidation {
+  result: PaymentIntentValidation;
+  timestamp: number;
+}
+
+const idempotencyCache = new Map<string, CachedValidation>();
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+/**
+ * Clean expired cache entries (called periodically)
+ */
+function cleanExpiredCache(): void {
+  const now = Date.now();
+  for (const [key, value] of idempotencyCache.entries()) {
+    if (now - value.timestamp > CACHE_TTL_MS) {
+      idempotencyCache.delete(key);
+    }
+  }
+}
+
+// Auto-clean cache every hour
+setInterval(cleanExpiredCache, 60 * 60 * 1000);
+
+/**
+ * Check if error is transient (safe to retry)
+ */
+function isTransientError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+/**
+ * Calculate exponential backoff delay
+ * 
+ * Formula: min(baseDelay * 2^attempt, maxDelay) + jitter
+ */
+function calculateBackoffDelay(attempt: number): number {
+  const exponentialDelay = RETRY_CONFIG.baseDelayMs * Math.pow(2, attempt);
+  const cappedDelay = Math.min(exponentialDelay, RETRY_CONFIG.maxDelayMs);
+  const jitter = Math.random() * 100; // Add 0-100ms jitter
+  return cappedDelay + jitter;
+}
+
+/**
+ * Sleep for specified milliseconds
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Execute function with timeout
+ * 
+ * @throws Error if function exceeds timeout
+ */
+async function withTimeout<T>(
+  fn: () => Promise<T>,
+  timeoutMs: number,
+  errorMessage: string
+): Promise<T> {
+  return Promise.race([
+    fn(),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+    ),
+  ]);
+}
+
+/**
+ * Retry function with exponential backoff
+ * 
+ * @param fn - Async function to retry
+ * @param options - Retry configuration (defaults to RETRY_CONFIG)
+ * @returns Function result
+ * @throws Error if all retries exhausted
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  options: {
+    maxAttempts?: number;
+    baseDelayMs?: number;
+    maxDelayMs?: number;
+    timeoutMs?: number;
+  } = {}
+): Promise<T> {
+  const config = { ...RETRY_CONFIG, ...options };
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < config.maxAttempts; attempt++) {
+    try {
+      // Execute function with timeout
+      return await withTimeout(
+        fn,
+        config.timeoutMs,
+        `Payment validation timeout after ${config.timeoutMs}ms`
+      );
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry non-transient errors
+      if (!isTransientError(error)) {
+        throw error;
+      }
+
+      // Don't retry on last attempt
+      if (attempt === config.maxAttempts - 1) {
+        break;
+      }
+
+      // Calculate backoff delay
+      const delay = calculateBackoffDelay(attempt);
+      
+      // Log retry attempt (in production, use proper logger)
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn(
+          `[Payment Validator] Attempt ${attempt + 1}/${config.maxAttempts} failed, retrying in ${delay}ms:`,
+          error instanceof Error ? error.message : error
+        );
+      }
+
+      // Wait before retrying
+      await sleep(delay);
+    }
+  }
+
+  // All retries exhausted
+  throw new PaymentError(
+    `Payment validation failed after ${config.maxAttempts} attempts`,
+    { originalError: lastError instanceof Error ? lastError.message : String(lastError) }
+  );
+}
 
 /**
  * Payment intent validation result
@@ -30,9 +199,15 @@ export interface PaymentIntentValidation {
 /**
  * Validate payment intent before order creation
  * 
+ * T041 Enhancements:
+ * - Idempotency key support (prevent duplicate validations)
+ * - Retry with exponential backoff for transient errors
+ * - 30-second timeout per attempt
+ * 
  * @param paymentIntentId - Stripe payment intent ID
  * @param expectedAmount - Expected amount in cents (server-calculated)
  * @param storeId - Store ID for multi-tenant isolation
+ * @param idempotencyKey - Optional: Idempotency key for caching (e.g., checkout session ID)
  * @returns Validation result with status and reason if invalid
  * 
  * @throws ValidationError if paymentIntentId is missing
@@ -41,13 +216,50 @@ export interface PaymentIntentValidation {
 export async function validatePaymentIntent(
   paymentIntentId: string,
   expectedAmount: number,
-  storeId: string
+  storeId: string,
+  idempotencyKey?: string
 ): Promise<PaymentIntentValidation> {
   if (!paymentIntentId) {
     throw new ValidationError('Payment intent ID is required');
   }
 
-  try {
+  // Check idempotency cache (prevent duplicate validations)
+  if (idempotencyKey) {
+    const cached = idempotencyCache.get(idempotencyKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`[Payment Validator] Cache hit for idempotency key: ${idempotencyKey}`);
+      }
+      return cached.result;
+    }
+  }
+
+  // Validate with retry logic
+  const result = await retryWithBackoff(async () => {
+    return await performPaymentValidation(paymentIntentId, expectedAmount, storeId);
+  });
+
+  // Cache result if idempotency key provided
+  if (idempotencyKey) {
+    idempotencyCache.set(idempotencyKey, {
+      result,
+      timestamp: Date.now(),
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Internal function: Perform actual payment validation
+ * 
+ * Separated for retry logic and testing
+ */
+async function performPaymentValidation(
+  paymentIntentId: string,
+  expectedAmount: number,
+  storeId: string
+): Promise<PaymentIntentValidation> {
     // TODO: Integrate with actual Stripe SDK
     // For now, check database payment records
     // In production, this should call Stripe API:
@@ -126,16 +338,6 @@ export async function validatePaymentIntent(
       currency: 'usd',
       status: 'requires_confirmation',
     };
-  } catch (error) {
-    console.error('Payment intent validation error:', error);
-    throw new PaymentError(
-      'Failed to validate payment intent',
-      {
-        paymentIntentId,
-        originalError: error instanceof Error ? error.message : String(error),
-      }
-    );
-  }
 }
 
 /**
@@ -207,4 +409,22 @@ export function getValidCheckoutStatuses(): string[] {
     'AUTHORIZED',  // Payment authorized (not captured)
     // Note: 'PAID' is excluded - if payment is already PAID, order likely exists
   ];
+}
+
+/**
+ * Clear idempotency cache (for testing)
+ * 
+ * @internal
+ */
+export function clearIdempotencyCache(): void {
+  idempotencyCache.clear();
+}
+
+/**
+ * Get idempotency cache size (for testing)
+ * 
+ * @internal
+ */
+export function getIdempotencyCacheSize(): number {
+  return idempotencyCache.size;
 }

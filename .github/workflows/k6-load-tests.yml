@@ -1,0 +1,223 @@
+name: k6 Load Tests
+
+on:
+  pull_request:
+    branches: [main, develop, '**-harden-**']
+  push:
+    branches: ['**-harden-**']
+  workflow_dispatch:
+  schedule:
+    # Run load tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+concurrency:
+  group: k6-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  k6-checkout:
+    name: k6 Load Test - Checkout Flow
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 🗄️ Setup test database
+        run: |
+          cp .env.example .env
+          echo "DATABASE_URL=file:./prisma/test.db" >> .env
+          echo "NEXTAUTH_SECRET=test-secret-min-32-chars-long-for-testing" >> .env
+          echo "NEXTAUTH_URL=http://localhost:3000" >> .env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_TEST_SECRET_KEY }}" >> .env
+          npx prisma generate
+          npx prisma db push --force-reset
+          npx prisma db seed
+      
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: 🚀 Start application
+        run: npm run start &
+        env:
+          NODE_ENV: production
+      
+      - name: ⏳ Wait for application
+        run: npx wait-on http://localhost:3000 -t 60000
+      
+      - name: 🔧 Setup k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: 🚀 Run k6 Load Test - Checkout
+        run: k6 run tests/performance/checkout-load-test.js
+        env:
+          K6_OUT: json=checkout-results.json
+      
+      - name: 📊 Upload k6 results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-checkout-results
+          path: checkout-results.json
+          retention-days: 30
+      
+      - name: ❌ Fail if thresholds breached
+        if: failure()
+        run: |
+          echo "::error::k6 load test thresholds breached for checkout flow"
+          exit 1
+
+  k6-export:
+    name: k6 Load Test - Orders Export
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 🗄️ Setup test database with large dataset
+        run: |
+          cp .env.example .env
+          echo "DATABASE_URL=file:./prisma/test.db" >> .env
+          echo "NEXTAUTH_SECRET=test-secret-min-32-chars-long-for-testing" >> .env
+          echo "NEXTAUTH_URL=http://localhost:3000" >> .env
+          npx prisma generate
+          npx prisma db push --force-reset
+          npx prisma db seed
+          # Seed additional orders for export testing (15k+ orders)
+          node -e "require('./prisma/seed').seedLargeOrderSet()"
+      
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: 🚀 Start application
+        run: npm run start &
+        env:
+          NODE_ENV: production
+      
+      - name: ⏳ Wait for application
+        run: npx wait-on http://localhost:3000 -t 60000
+      
+      - name: 🔧 Setup k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: 🚀 Run k6 Load Test - Export
+        run: k6 run tests/performance/orders-export-load-test.js
+        env:
+          K6_OUT: json=export-results.json
+      
+      - name: 📊 Upload k6 results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-export-results
+          path: export-results.json
+          retention-days: 30
+      
+      - name: ❌ Fail if thresholds breached
+        if: failure()
+        run: |
+          echo "::error::k6 load test thresholds breached for orders export"
+          exit 1
+
+  k6-comment:
+    name: Comment PR with k6 Results
+    runs-on: ubuntu-latest
+    needs: [k6-checkout, k6-export]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📥 Download checkout results
+        uses: actions/download-artifact@v4
+        with:
+          name: k6-checkout-results
+          path: ./k6-checkout
+      
+      - name: 📥 Download export results
+        uses: actions/download-artifact@v4
+        with:
+          name: k6-export-results
+          path: ./k6-export
+      
+      - name: 💬 Comment PR with results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let checkoutResults = {};
+            let exportResults = {};
+            
+            try {
+              const checkoutData = fs.readFileSync('./k6-checkout/checkout-results.json', 'utf8');
+              checkoutResults = JSON.parse(checkoutData.split('\n').filter(line => line.includes('"type":"Point"')).pop() || '{}');
+            } catch (e) {
+              console.log('Could not parse checkout results');
+            }
+            
+            try {
+              const exportData = fs.readFileSync('./k6-export/export-results.json', 'utf8');
+              exportResults = JSON.parse(exportData.split('\n').filter(line => line.includes('"type":"Point"')).pop() || '{}');
+            } catch (e) {
+              console.log('Could not parse export results');
+            }
+            
+            const comment = `## 🚀 k6 Load Test Results
+            
+            ### Checkout Flow (50 VUs, 2 min)
+            - **Status**: ${checkoutResults.metric ? '✅ Passed' : '⚠️ See artifacts'}
+            - **Thresholds**:
+              - API Response (p95): < 500ms
+              - Checkout Complete (p95): < 650ms
+              - Error Rate: < 1%
+              - Success Rate: > 99%
+            
+            ### Orders Export (20 VUs, 1.5 min)
+            - **Status**: ${exportResults.metric ? '✅ Passed' : '⚠️ See artifacts'}
+            - **Thresholds**:
+              - Streaming Export (p95): < 5s
+              - Async Enqueue (p95): < 500ms
+              - Error Rate: < 2%
+              - Success Rate: > 98%
+            
+            See artifacts for detailed metrics and timings.
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
