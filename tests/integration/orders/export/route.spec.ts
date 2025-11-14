@@ -29,7 +29,7 @@ vi.mock('@/lib/api-middleware', async () => {
   const actual = await vi.importActual('@/lib/api-middleware');
   return {
     ...actual,
-    createApiHandler: (middlewares: any, handler: any) => {
+    createApiHandler: (_middlewares: any, handler: any) => {
       return async (request: any, context: any) => {
         // Simulate authenticated middleware with default store admin
         context = context || {};
@@ -63,7 +63,7 @@ describe('GET /api/orders/export', () => {
       const { createApiHandler } = await import('@/lib/api-middleware');
       const originalHandler = createApiHandler;
       
-      vi.mocked(createApiHandler).mockImplementation((middlewares, handler) => {
+      vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
         return async (request, context) => {
           context = context || {};
           context.session = {
@@ -89,7 +89,7 @@ describe('GET /api/orders/export', () => {
       const { createApiHandler } = await import('@/lib/api-middleware');
       const originalHandler = createApiHandler;
       
-      vi.mocked(createApiHandler).mockImplementation((middlewares, handler) => {
+      vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
         return async (request, context) => {
           context = context || {};
           context.session = {

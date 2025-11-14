@@ -285,9 +285,9 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_outage';
 
       // Simulate provider completely down
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         throw new Error('ENOTFOUND: Provider unreachable');
-      });
+      }) as any);
 
       await expect(
         validatePaymentIntent(paymentIntentId, 1000, storeId)
@@ -330,9 +330,9 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       expect(result1.isValid).toBe(true);
 
       // Simulate provider outage
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         throw new Error('ENOTFOUND: Provider unreachable');
-      });
+      }) as any);
 
       // Second call - should return cached result (no provider call)
       const result2 = await validatePaymentIntent(

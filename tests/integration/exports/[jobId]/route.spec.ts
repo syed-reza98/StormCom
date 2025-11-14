@@ -16,7 +16,7 @@ vi.mock('@/lib/api-middleware', async () => {
   const actual = await vi.importActual('@/lib/api-middleware');
   return {
     ...actual,
-    createApiHandler: (middlewares: any, handler: any) => {
+    createApiHandler: (_middlewares: any, handler: any) => {
       return async (request: any, context: any) => {
         // Simulate authenticated middleware
         context = context || { params: {} };
