@@ -15,7 +15,7 @@
  * @returns CSV stream (200) or job acceptance (202)
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 import { z } from 'zod';
@@ -40,8 +40,6 @@ const exportQuerySchema = z.object({
 
 // Export thresholds (FR-016 clarifications)
 const STREAMING_THRESHOLD = 10000; // ≤10k rows: stream directly
-const MEMORY_CAP_MB = 200; // 200MB heap limit
-const TIMEOUT_MS = 120000; // 120s timeout
 
 /**
  * Count orders matching filters
@@ -134,7 +132,11 @@ async function* streamOrdersCSV(
   if (filters.search) {
     where.OR = [
       { orderNumber: { contains: filters.search, mode: 'insensitive' } },
-      { customerEmail: { contains: filters.search, mode: 'insensitive' } },
+      {
+        customer: {
+          email: { contains: filters.search, mode: 'insensitive' },
+        },
+      },
     ];
   }
 
@@ -143,18 +145,16 @@ async function* streamOrdersCSV(
       where,
       select: {
         orderNumber: true,
-        customerEmail: true,
         status: true,
         totalAmount: true,
-        currency: true,
         createdAt: true,
-        _count: {
-          select: { items: true },
+        customer: {
+          select: { email: true },
         },
-        payments: {
-          select: { status: true },
-          take: 1,
+        items: {
+          select: { id: true },
         },
+        paymentStatus: true,
       },
       orderBy: { createdAt: 'desc' },
       skip,
@@ -168,16 +168,18 @@ async function* streamOrdersCSV(
 
     // Convert batch to CSV rows
     for (const order of orders) {
-      const paymentStatus = order.payments[0]?.status || 'pending';
+      const customerEmail = order.customer?.email || '';
+      const itemsCount = order.items?.length || 0;
+
       const row = [
         escapeCsvField(order.orderNumber),
-        escapeCsvField(order.customerEmail || ''),
+        escapeCsvField(customerEmail),
         escapeCsvField(order.status),
-        order.totalAmount.toString(),
-        order.currency,
+        order.totalAmount.toFixed(2),
+        'USD', // Default currency
         order.createdAt.toISOString(),
-        order._count.items.toString(),
-        escapeCsvField(paymentStatus),
+        itemsCount.toString(),
+        escapeCsvField(order.paymentStatus),
       ].join(',');
 
       yield row + '\n';
@@ -287,7 +289,7 @@ export const GET = createApiHandler(
       const requestId = getRequestId();
       const filename = `orders-${new Date().toISOString().split('T')[0]}.csv`;
 
-      return new Response(stream, {
+      return new NextResponse(stream, {
         status: 200,
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',

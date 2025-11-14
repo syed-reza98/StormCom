@@ -11,7 +11,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { db } from '@/lib/db';
-import { createMockSession } from '@tests/support/auth-helpers';
+import { createMockSession } from '@/tests/support/session-helpers';
 
 describe('CSV Export Streaming', () => {
   let testStoreId: string;
@@ -61,7 +61,7 @@ describe('CSV Export Streaming', () => {
               status: 'PENDING',
               totalAmount: (i + 1) * 10,
               currency: 'USD',
-              paymentMethod: 'stripe',
+              paymentMethod: 'CREDIT_CARD',
             },
           })
         )
@@ -123,7 +123,7 @@ describe('CSV Export Streaming', () => {
           status: 'PENDING',
           totalAmount: 100,
           currency: 'USD',
-          paymentMethod: 'stripe',
+          paymentMethod: 'CREDIT_CARD',
         },
       });
 
@@ -158,7 +158,7 @@ describe('CSV Export Streaming', () => {
           status: 'PENDING',
           totalAmount: 100,
           currency: 'USD',
-          paymentMethod: 'stripe',
+          paymentMethod: 'CREDIT_CARD',
         },
       });
 
@@ -253,7 +253,7 @@ describe('CSV Export Streaming', () => {
             status: 'PENDING',
             totalAmount: 100,
             currency: 'USD',
-            paymentMethod: 'stripe',
+            paymentMethod: 'CREDIT_CARD',
           },
         }),
         db.order.create({
@@ -264,7 +264,7 @@ describe('CSV Export Streaming', () => {
             status: 'PAID',
             totalAmount: 200,
             currency: 'USD',
-            paymentMethod: 'stripe',
+            paymentMethod: 'CREDIT_CARD',
           },
         }),
       ]);

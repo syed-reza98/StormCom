@@ -22,7 +22,7 @@ import { getExportJobStatus } from '@/services/export-service';
 
 export const GET = createApiHandler(
   middlewareStacks.authenticated,
-  async (request: NextRequest, context) => {
+  async (_request: NextRequest, context) => {
     const jobId = context.params?.jobId;
 
     if (!jobId) {

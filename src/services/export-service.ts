@@ -76,7 +76,7 @@ export async function enqueueOrderExport(
       userId,
       type: 'orders',
       status: 'pending',
-      filters: filters as Record<string, unknown>,
+      filters: JSON.stringify(filters),
       totalRows,
     },
   });
@@ -131,7 +131,7 @@ export async function processOrderExportJob(jobId: string): Promise<void> {
     // Generate CSV in batches
     const csv = await generateOrdersCSV(
       job.storeId,
-      job.filters as OrderExportFilters
+      JSON.parse(job.filters) as OrderExportFilters
     );
 
     // Upload to Vercel Blob Storage
@@ -166,9 +166,8 @@ export async function processOrderExportJob(jobId: string): Promise<void> {
         type: 'export_complete',
         title: 'Export Ready',
         message: `Your order export (${job.totalRows.toLocaleString()} rows) is ready for download.`,
-        actionUrl: blob.url,
-        actionLabel: 'Download CSV',
-        read: false,
+        linkUrl: blob.url,
+        linkText: 'Download CSV',
       },
     });
 
@@ -193,7 +192,6 @@ export async function processOrderExportJob(jobId: string): Promise<void> {
         type: 'export_failed',
         title: 'Export Failed',
         message: 'Your order export failed. Please try again or contact support.',
-        read: false,
       },
     });
   }
@@ -237,7 +235,11 @@ async function generateOrdersCSV(
   if (filters.search) {
     where.OR = [
       { orderNumber: { contains: filters.search, mode: 'insensitive' } },
-      { customerEmail: { contains: filters.search, mode: 'insensitive' } },
+      {
+        customer: {
+          email: { contains: filters.search, mode: 'insensitive' },
+        },
+      },
     ];
   }
 
@@ -246,18 +248,16 @@ async function generateOrdersCSV(
       where,
       select: {
         orderNumber: true,
-        customerEmail: true,
         status: true,
         totalAmount: true,
-        currency: true,
         createdAt: true,
-        _count: {
-          select: { items: true },
+        customer: {
+          select: { email: true },
         },
-        payments: {
-          select: { status: true },
-          take: 1,
+        items: {
+          select: { id: true },
         },
+        paymentStatus: true,
       },
       orderBy: { createdAt: 'desc' },
       skip,
@@ -270,16 +270,18 @@ async function generateOrdersCSV(
     }
 
     for (const order of orders) {
-      const paymentStatus = order.payments[0]?.status || 'pending';
+      const customerEmail = order.customer?.email || '';
+      const itemsCount = order.items?.length || 0;
+
       const row = [
         escapeCsvField(order.orderNumber),
-        escapeCsvField(order.customerEmail || ''),
+        escapeCsvField(customerEmail),
         escapeCsvField(order.status),
-        order.totalAmount.toString(),
-        order.currency,
+        order.totalAmount.toFixed(2),
+        'USD', // Default currency
         order.createdAt.toISOString(),
-        order._count.items.toString(),
-        escapeCsvField(paymentStatus),
+        itemsCount.toString(),
+        escapeCsvField(order.paymentStatus),
       ].join(',');
 
       csv += row + '\n';
@@ -371,7 +373,7 @@ export async function getExportJobStatus(
     userId: job.userId,
     type: job.type as 'orders' | 'customers' | 'products',
     status: job.status as ExportJobStatus,
-    filters: job.filters as Record<string, unknown>,
+    filters: JSON.parse(job.filters) as Record<string, unknown>,
     totalRows: job.totalRows,
     fileUrl: job.fileUrl || undefined,
     error: job.error || undefined,

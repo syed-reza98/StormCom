@@ -136,7 +136,7 @@ export function createApiHandler(
  * Ensures X-Request-Id header is present and propagates through context
  */
 export function requestIdMiddleware(): Middleware {
-  return async (context, next) => {
+  return async (_context, next) => {
     // Request ID already set by createApiHandler
     const response = await next();
     
