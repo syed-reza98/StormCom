@@ -29,7 +29,8 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
     const store = await db.store.create({
       data: {
         name: 'Integration Test Store',
-        domain: 'integration-test.example.com',
+        slug: 'integration-test',
+        email: 'integration-test@example.com',
         currency: 'USD',
         timezone: 'America/New_York',
       },
@@ -42,7 +43,7 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
         email: 'integration@example.com',
         name: 'Integration Test User',
         password: 'hashed',
-        role: 'Customer',
+        role: 'CUSTOMER',
       },
     });
     userId = user.id;
@@ -91,26 +92,59 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
       expect(result1.isValid).toBe(true);
 
       // Simulate creating order with this payment intent
+      // Create addresses first
+      const shippingAddr = await db.address.create({
+        data: {
+          firstName: 'Test',
+          lastName: 'User',
+          address1: '123 Test St',
+          city: 'Test City',
+          state: 'TS',
+          postalCode: '12345',
+          country: 'US',
+          phone: '555-0100',
+        },
+      });
+      
+      const billingAddr = await db.address.create({
+        data: {
+          firstName: 'Test',
+          lastName: 'User',
+          address1: '123 Test St',
+          city: 'Test City',
+          state: 'TS',
+          postalCode: '12345',
+          country: 'US',
+          phone: '555-0100',
+        },
+      });
+
       const order = await db.order.create({
         data: {
           storeId,
           userId,
           orderNumber: 'ORD-OUTAGE-TEST',
           status: 'PENDING',
-          total: 5000,
-          shippingAddress: JSON.stringify({ street: '123 Test St' }),
-          billingAddress: JSON.stringify({ street: '123 Test St' }),
+          subtotal: 5000,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
+          totalAmount: 5000,
+          shippingAddress: { connect: { id: shippingAddr.id } },
+          billingAddress: { connect: { id: billingAddr.id } },
         },
       });
 
       await db.payment.create({
         data: {
+          storeId,
           orderId: order.id,
           amount: 5000,
           currency: 'USD',
           status: 'PENDING',
+          method: 'CREDIT_CARD',
           gatewayPaymentId: paymentIntentId,
-          gateway: 'stripe',
+          gateway: 'STRIPE',
         },
       });
 
@@ -141,15 +175,45 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
       );
 
       // Simulate database changes (other users creating orders)
+      const otherShippingAddr = await db.address.create({
+        data: {
+          firstName: 'Other',
+          lastName: 'User',
+          address1: '789 Other St',
+          city: 'Other City',
+          state: 'OT',
+          postalCode: '67890',
+          country: 'US',
+          phone: '555-0200',
+        },
+      });
+      
+      const otherBillingAddr = await db.address.create({
+        data: {
+          firstName: 'Other',
+          lastName: 'User',
+          address1: '789 Other St',
+          city: 'Other City',
+          state: 'OT',
+          postalCode: '67890',
+          country: 'US',
+          phone: '555-0200',
+        },
+      });
+
       await db.order.create({
         data: {
           storeId,
           userId,
           orderNumber: 'ORD-OTHER-USER',
           status: 'PENDING',
-          total: 15000,
-          shippingAddress: JSON.stringify({}),
-          billingAddress: JSON.stringify({}),
+          subtotal: 15000,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
+          totalAmount: 15000,
+          shippingAddress: { connect: { id: otherShippingAddr.id } },
+          billingAddress: { connect: { id: otherBillingAddr.id } },
         },
       });
 
@@ -173,7 +237,8 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
       const store2 = await db.store.create({
         data: {
           name: 'Second Integration Store',
-          domain: 'store2-integration.example.com',
+          slug: 'store2-integration',
+          email: 'store2@example.com',
           currency: 'EUR',
           timezone: 'Europe/London',
         },
@@ -264,40 +329,60 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
 
       expect(validation.isValid).toBe(true);
 
-      // Step 2: Create order
+      // Step 2: Create order with addresses
+      const checkoutShippingAddr = await db.address.create({
+        data: {
+          firstName: 'Checkout',
+          lastName: 'User',
+          address1: '456 Main St',
+          city: 'Testville',
+          state: 'TS',
+          postalCode: '12345',
+          country: 'US',
+          phone: '555-0300',
+        },
+      });
+      
+      const checkoutBillingAddr = await db.address.create({
+        data: {
+          firstName: 'Checkout',
+          lastName: 'User',
+          address1: '456 Main St',
+          city: 'Testville',
+          state: 'TS',
+          postalCode: '12345',
+          country: 'US',
+          phone: '555-0300',
+        },
+      });
+
       const order = await db.order.create({
         data: {
           storeId,
           userId,
           orderNumber: 'ORD-FULL-FLOW',
           status: 'PENDING',
-          total: 12000,
-          shippingAddress: JSON.stringify({
-            street: '456 Main St',
-            city: 'Testville',
-            state: 'TS',
-            zip: '12345',
-            country: 'US',
-          }),
-          billingAddress: JSON.stringify({
-            street: '456 Main St',
-            city: 'Testville',
-            state: 'TS',
-            zip: '12345',
-            country: 'US',
-          }),
+          subtotal: 12000,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
+          totalAmount: 12000,
+          shippingAddress: { connect: { id: checkoutShippingAddr.id } },
+          billingAddress: { connect: { id: checkoutBillingAddr.id } },
         },
       });
 
       // Step 3: Create payment
       const payment = await db.payment.create({
         data: {
+          storeId,
           orderId: order.id,
           amount: 12000,
           currency: 'USD',
           status: 'PENDING',
+          method: 'CREDIT_CARD',
           gatewayPaymentId: paymentIntentId,
-          gateway: 'stripe',
+          gateway: 'STRIPE',
         },
       });
 

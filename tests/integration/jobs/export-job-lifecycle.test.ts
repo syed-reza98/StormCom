@@ -304,7 +304,7 @@ describe('Export Job Lifecycle (Integration)', () => {
 
       // Manually trigger retry (bypass delay)
       const queueJob = jobQueue.getJob(
-        jobQueue.getPendingJobs().find((j) => j.payload.jobId === jobId)?.id || ''
+        jobQueue.getPendingJobs().find((j) => (j.payload as any).jobId === jobId)?.id || ''
       );
       if (queueJob) queueJob.scheduledFor = new Date();
 
