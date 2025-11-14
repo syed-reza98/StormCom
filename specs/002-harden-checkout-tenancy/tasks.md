@@ -5,27 +5,27 @@ Generated from `specs/002-harden-checkout-tenancy/spec.md` and `plan.md`.
 Total tasks: 42 (grouped by phase and user story)
 
 ## Phase 1: Setup
-- [ ] T001 Initialize feature workspace and artifacts (create `specs/002-harden-checkout-tenancy/artifacts/`)
-- [ ] T002 [P] Create scaffolding for logs and request correlation header in `src/lib/request-context.ts`
-- [ ] T003 Add CI coverage gating placeholders in `.github/workflows/` for this branch (copy `ci` template) and document in `specs/002-harden-checkout-tenancy/quickstart.md`
+- [X] T001 Initialize feature workspace and artifacts (create `specs/002-harden-checkout-tenancy/artifacts/`)
+- [X] T002 [P] Create scaffolding for logs and request correlation header in `src/lib/request-context.ts`
+- [X] T003 Add CI coverage gating placeholders in `.github/workflows/` for this branch (copy `ci` template) and document in `specs/002-harden-checkout-tenancy/quickstart.md`
 
 ## Phase 2: Foundational (blocking prerequisites)
-- [ ] T004 [P] Create domain->store resolver at `src/lib/store/resolve-store.ts`
-- [ ] T005 [P] Add server-side pricing service at `src/services/pricing-service.ts` (recalculate line items, discounts, shipping, taxes)
-- [ ] T006 [P] Add transaction wrapper helper `src/services/transaction.ts` to centralize `prisma.$transaction` usage
-- [ ] T007 [P] Create minimal error class scaffolding `src/lib/errors.ts` (BaseError + placeholders)
-- [ ] T008 [P] Create API response mapper skeleton `src/lib/error-response.ts` and `src/lib/api-response.ts`
-- [ ] T009 [P] Create cache tag registry `src/lib/cache/tags.ts` (initial tags: products, categories, pages)
+- [X] T004 [P] Create domain->store resolver at `src/lib/store/resolve-store.ts`
+- [X] T005 [P] Add server-side pricing service at `src/services/pricing-service.ts` (recalculate line items, discounts, shipping, taxes)
+- [X] T006 [P] Add transaction wrapper helper `src/services/transaction.ts` to centralize `prisma.$transaction` usage
+- [X] T007 [P] Create minimal error class scaffolding `src/lib/errors.ts` (BaseError + placeholders)
+- [X] T008 [P] Create API response mapper skeleton `src/lib/error-response.ts` and `src/lib/api-response.ts`
+- [X] T009 [P] Create cache tag registry `src/lib/cache/tags.ts` (initial tags: products, categories, pages)
 
 ## Phase 3: User Story Implementation (Priority Order)
 
 ### User Story 1 (US1) — Shopper completes a secure checkout (Priority: P1)
-- [ ] T010 [US1] Refactor checkout route to require session auth and `storeId` at `src/app/api/checkout/complete/route.ts`
-- [ ] T011 [US1] Replace client-trusted monetary acceptance: wire `src/app/api/checkout/complete/route.ts` to call `src/services/pricing-service.ts` to recalc totals
-- [ ] T012 [US1] Integrate payment intent pre-validation adapter at `src/services/payments/intent-validator.ts`
-- [ ] T013 [US1] Refactor checkout flow to use `src/services/transaction.ts` and include order, items, inventory decrement, discount mark, payment record (edit `src/services/checkout-service.ts`)
-- [ ] T014 [US1] Add integration tests `tests/integration/checkout/checkout-atomic.spec.ts` (rollback on payment validation failure)
-- [ ] T015 [US1] Add E2E tamper test `tests/e2e/checkout/tamper.spec.ts` to attempt client price override and assert server recalculation
+- [X] T010 [US1] Refactor checkout route to require session auth and `storeId` at `src/app/api/checkout/complete/route.ts`
+- [X] T011 [US1] Replace client-trusted monetary acceptance: wire `src/app/api/checkout/complete/route.ts` to call `src/services/pricing-service.ts` to recalc totals
+- [X] T012 [US1] Integrate payment intent pre-validation adapter at `src/services/payments/intent-validator.ts`
+- [X] T013 [US1] Refactor checkout flow to use `src/services/transaction.ts` and include order, items, inventory decrement, discount mark, payment record (edit `src/services/checkout-service.ts`)
+- [X] T014 [US1] Add integration tests `tests/integration/checkout/checkout-atomic.spec.ts` (rollback on payment validation failure)
+- [X] T015 [US1] Add E2E tamper test `tests/e2e/checkout/tamper.spec.ts` to attempt client price override and assert server recalculation
 
 ### User Story 2 (US2) — Tenant isolation & canonical domains (Priority: P2)
 - [ ] T016 [US2] Implement mapping model `prisma` migration change: `StoreDomain` model and seed script adjustments (`prisma/schema.prisma` + `prisma/migrations/`)
