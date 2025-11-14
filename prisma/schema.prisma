@@ -16,94 +16,94 @@ datasource db {
 // ============================================================================
 
 enum UserRole {
-  SUPER_ADMIN  // Cross-store access, system settings
-  STORE_ADMIN  // Full store access, admin creation
-  STAFF        // Limited store access based on permissions
-  CUSTOMER     // Storefront access only
+  SUPER_ADMIN // Cross-store access, system settings
+  STORE_ADMIN // Full store access, admin creation
+  STAFF // Limited store access based on permissions
+  CUSTOMER // Storefront access only
 }
 
 enum SubscriptionPlan {
-  FREE        // 10 products, 100 orders/month
-  BASIC       // 100 products, 1K orders/month
-  PRO         // 1K products, 10K orders/month
-  ENTERPRISE  // Unlimited products/orders
+  FREE // 10 products, 100 orders/month
+  BASIC // 100 products, 1K orders/month
+  PRO // 1K products, 10K orders/month
+  ENTERPRISE // Unlimited products/orders
 }
 
 enum SubscriptionStatus {
-  TRIAL       // 14-day free trial
-  ACTIVE      // Paid and active
-  PAST_DUE    // Payment failed, grace period
-  CANCELED    // User canceled, ends at period_end
-  PAUSED      // Temporarily suspended
+  TRIAL // 14-day free trial
+  ACTIVE // Paid and active
+  PAST_DUE // Payment failed, grace period
+  CANCELED // User canceled, ends at period_end
+  PAUSED // Temporarily suspended
 }
 
 enum OrderStatus {
-  PENDING         // Order placed, awaiting payment
-  PAYMENT_FAILED  // Payment attempt failed
-  PAID            // Payment confirmed
-  PROCESSING      // Being prepared for shipment
-  SHIPPED         // In transit
-  DELIVERED       // Successfully delivered
-  CANCELED        // Canceled by customer/admin
-  REFUNDED        // Payment refunded
+  PENDING // Order placed, awaiting payment
+  PAYMENT_FAILED // Payment attempt failed
+  PAID // Payment confirmed
+  PROCESSING // Being prepared for shipment
+  SHIPPED // In transit
+  DELIVERED // Successfully delivered
+  CANCELED // Canceled by customer/admin
+  REFUNDED // Payment refunded
 }
 
 enum PaymentStatus {
-  PENDING    // Payment initiated
+  PENDING // Payment initiated
   AUTHORIZED // Payment authorized (not captured)
-  PAID       // Payment captured
-  FAILED     // Payment attempt failed
-  REFUNDED   // Payment refunded (full or partial)
-  DISPUTED   // Chargeback/dispute filed
+  PAID // Payment captured
+  FAILED // Payment attempt failed
+  REFUNDED // Payment refunded (full or partial)
+  DISPUTED // Chargeback/dispute filed
 }
 
 enum PaymentMethod {
-  CREDIT_CARD     // Stripe credit card
-  DEBIT_CARD      // Stripe debit card
-  MOBILE_BANKING  // SSLCommerz mobile banking (bKash, Rocket, Nagad)
-  BANK_TRANSFER   // SSLCommerz bank transfer
+  CREDIT_CARD // Stripe credit card
+  DEBIT_CARD // Stripe debit card
+  MOBILE_BANKING // SSLCommerz mobile banking (bKash, Rocket, Nagad)
+  BANK_TRANSFER // SSLCommerz bank transfer
   CASH_ON_DELIVERY // Pay on delivery
 }
 
 enum PaymentGateway {
-  STRIPE      // International credit/debit cards
-  SSLCOMMERZ  // Bangladesh payment methods
-  MANUAL      // Cash on delivery, bank transfer
+  STRIPE // International credit/debit cards
+  SSLCOMMERZ // Bangladesh payment methods
+  MANUAL // Cash on delivery, bank transfer
 }
 
 enum ShippingStatus {
-  PENDING         // Awaiting shipment
-  LABEL_CREATED   // Shipping label printed
-  PICKED_UP       // Picked up by carrier
-  IN_TRANSIT      // En route to customer
+  PENDING // Awaiting shipment
+  LABEL_CREATED // Shipping label printed
+  PICKED_UP // Picked up by carrier
+  IN_TRANSIT // En route to customer
   OUT_FOR_DELIVERY // Out for final delivery
-  DELIVERED       // Successfully delivered
+  DELIVERED // Successfully delivered
   FAILED_DELIVERY // Delivery attempt failed
-  RETURNED        // Returned to sender
+  RETURNED // Returned to sender
 }
 
 enum DiscountType {
-  PERCENTAGE  // e.g., 20% off
-  FIXED       // e.g., $10 off
+  PERCENTAGE // e.g., 20% off
+  FIXED // e.g., $10 off
   FREE_SHIPPING
 }
 
 enum InventoryStatus {
   IN_STOCK
-  LOW_STOCK      // Below reorder point
+  LOW_STOCK // Below reorder point
   OUT_OF_STOCK
   DISCONTINUED
 }
 
 enum MFAMethod {
-  TOTP  // Time-based OTP (RFC 6238) - primary method
-  SMS   // SMS OTP - optional fallback
+  TOTP // Time-based OTP (RFC 6238) - primary method
+  SMS // SMS OTP - optional fallback
 }
 
 enum ThemeMode {
   LIGHT
   DARK
-  AUTO  // Respects user's system preference
+  AUTO // Respects user's system preference
 }
 
 // ============================================================================
@@ -111,54 +111,55 @@ enum ThemeMode {
 // ============================================================================
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String   // bcrypt hash, cost factor 12
-  name      String
-  phone     String?
-  role      UserRole @default(CUSTOMER)
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String // bcrypt hash, cost factor 12
+  name     String
+  phone    String?
+  role     UserRole @default(CUSTOMER)
 
   // Multi-tenant association (null for SUPER_ADMIN)
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // MFA
-  mfaEnabled       Boolean   @default(false)
-  mfaMethod        MFAMethod?
-  totpSecret       String?   // Encrypted TOTP secret (AES-256)
-  mfaBackupCodes   MFABackupCode[]
+  mfaEnabled     Boolean         @default(false)
+  mfaMethod      MFAMethod?
+  totpSecret     String? // Encrypted TOTP secret (AES-256)
+  mfaBackupCodes MFABackupCode[]
 
   // Security
-  emailVerified    Boolean   @default(false)
-  emailVerifiedAt  DateTime?
-  verificationToken String?   // Email verification token
+  emailVerified       Boolean           @default(false)
+  emailVerifiedAt     DateTime?
+  verificationToken   String? // Email verification token
   verificationExpires DateTime? // Verification token expiration
-  resetToken        String?   // Password reset token
-  resetExpires      DateTime? // Reset token expiration
-  lastLoginAt      DateTime?
-  lastLoginIP      String?
-  failedLoginAttempts Int    @default(0)
-  lockedUntil      DateTime? // Account lockout after 5 failed attempts
-  passwordChangedAt DateTime @default(now())
-  passwordHistory  PasswordHistory[]
+  resetToken          String? // Password reset token
+  resetExpires        DateTime? // Reset token expiration
+  lastLoginAt         DateTime?
+  lastLoginIP         String?
+  failedLoginAttempts Int               @default(0)
+  lockedUntil         DateTime? // Account lockout after 5 failed attempts
+  passwordChangedAt   DateTime          @default(now())
+  passwordHistory     PasswordHistory[]
 
   // Soft delete
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
-  sessions      Session[]
-  orders        Order[]
-  auditLogs     AuditLog[]
-  storesManaged Store[]    @relation("StoreAdmins")
-  reviews       Review[]
-  carts         Cart[]
-  addresses     Address[]
-  wishlistItems WishlistItem[]
-  notifications Notification[]
-  gdprRequests  GdprRequest[]
+  sessions       Session[]
+  orders         Order[]
+  auditLogs      AuditLog[]
+  storesManaged  Store[]         @relation("StoreAdmins")
+  reviews        Review[]
+  carts          Cart[]
+  addresses      Address[]
+  wishlistItems  WishlistItem[]
+  notifications  Notification[]
+  gdprRequests   GdprRequest[]
   consentRecords ConsentRecord[]
+  exportJobs     ExportJob[]
 
   @@index([email])
   @@index([storeId])
@@ -171,18 +172,18 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique // JWT token ID
-  expiresAt DateTime // 12-hour absolute expiration
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token          String   @unique // JWT token ID
+  expiresAt      DateTime // 12-hour absolute expiration
   lastActivityAt DateTime @default(now()) // For 7-day idle timeout
-  ipAddress String?
-  userAgent String?
-  
+  ipAddress      String?
+  userAgent      String?
+
   // Multi-tenant tracking
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -193,11 +194,11 @@ model Session {
 }
 
 model MFABackupCode {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hashedCode String   // bcrypt hash, cost factor 12
-  isUsed     Boolean  @default(false)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hashedCode String // bcrypt hash, cost factor 12
+  isUsed     Boolean   @default(false)
   usedAt     DateTime?
   expiresAt  DateTime // 90 days from generation
 
@@ -211,7 +212,7 @@ model PasswordHistory {
   id             String   @id @default(uuid())
   userId         String
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hashedPassword String   // bcrypt hash of previous password
+  hashedPassword String // bcrypt hash of previous password
   createdAt      DateTime @default(now())
 
   @@index([userId, createdAt])
@@ -223,11 +224,11 @@ model PasswordHistory {
 // ============================================================================
 
 model Store {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
-  slug        String   @unique // URL-safe identifier (e.g., "demo-store")
+  slug        String  @unique // URL-safe identifier (e.g., "demo-store")
   description String?
-  logo        String?  // Vercel Blob URL
+  logo        String? // Vercel Blob URL
   email       String
   phone       String?
   website     String?
@@ -235,33 +236,33 @@ model Store {
   // Subscription
   subscriptionPlan   SubscriptionPlan   @default(FREE)
   subscriptionStatus SubscriptionStatus @default(TRIAL)
-  trialEndsAt        DateTime?          // 14 days from creation
+  trialEndsAt        DateTime? // 14 days from creation
   subscriptionEndsAt DateTime?
 
   // Limits (enforced by plan)
-  productLimit Int @default(10)   // FREE: 10, BASIC: 100, PRO: 1K, ENTERPRISE: unlimited
-  orderLimit   Int @default(100)  // Orders per month
+  productLimit Int @default(10) // FREE: 10, BASIC: 100, PRO: 1K, ENTERPRISE: unlimited
+  orderLimit   Int @default(100) // Orders per month
 
   // Address
   address    String?
   city       String?
   state      String?
   postalCode String?
-  country    String @default("US")
+  country    String  @default("US")
 
   // Settings
-  currency   String @default("USD")
-  timezone   String @default("UTC")
-  locale     String @default("en")
+  currency String @default("USD")
+  timezone String @default("UTC")
+  locale   String @default("en")
 
   // Soft delete
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
   users           User[]
-  admins          User[]    @relation("StoreAdmins")
+  admins          User[]                   @relation("StoreAdmins")
   products        Product[]
   orders          Order[]
   customers       Customer[]
@@ -286,6 +287,7 @@ model Store {
   gdprRequests    GdprRequest[]
   consentRecords  ConsentRecord[]
   domains         StoreDomain[]
+  exportJobs      ExportJob[]
 
   @@index([slug])
   @@index([subscriptionPlan])
@@ -301,14 +303,14 @@ model Store {
 // ============================================================================
 
 model StoreDomain {
-  id        String   @id @default(cuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
+  id      String @id @default(cuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   // Domain configuration
-  domain    String   @unique // e.g., "shop.example.com" or "example.com"
-  isPrimary Boolean  @default(false) // Canonical domain for redirects
-  
+  domain    String  @unique // e.g., "shop.example.com" or "example.com"
+  isPrimary Boolean @default(false) // Canonical domain for redirects
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -323,68 +325,68 @@ model StoreDomain {
 // ============================================================================
 
 model Product {
-  id          String   @id @default(uuid())
-  storeId     String
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Basic Info
-  name        String
-  slug        String   // URL-safe (e.g., "blue-t-shirt")
-  description String?
+  name             String
+  slug             String // URL-safe (e.g., "blue-t-shirt")
+  description      String?
   shortDescription String?
 
   // Pricing
-  price       Float    // Regular price
+  price          Float // Regular price
   compareAtPrice Float? // Original price (for sale display)
-  costPrice   Float?   // Cost from supplier (for profit calculation)
+  costPrice      Float? // Cost from supplier (for profit calculation)
 
   // Inventory
-  sku         String   // Stock Keeping Unit
-  barcode     String?
-  trackInventory Boolean @default(true)
-  inventoryQty   Int     @default(0)
-  lowStockThreshold Int  @default(5)
-  inventoryStatus InventoryStatus @default(IN_STOCK)
+  sku               String // Stock Keeping Unit
+  barcode           String?
+  trackInventory    Boolean         @default(true)
+  inventoryQty      Int             @default(0)
+  lowStockThreshold Int             @default(5)
+  inventoryStatus   InventoryStatus @default(IN_STOCK)
 
   // Physical attributes
-  weight      Float? // kg
-  length      Float? // cm
-  width       Float? // cm
-  height      Float? // cm
+  weight Float? // kg
+  length Float? // cm
+  width  Float? // cm
+  height Float? // cm
 
   // Organization
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  brandId     String?
-  brand       Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brandId    String?
+  brand      Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
 
   // Media
-  images      String  // JSON array of Vercel Blob URLs
+  images       String // JSON array of Vercel Blob URLs
   thumbnailUrl String?
 
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String  // JSON array
+  metaKeywords    String // JSON array
 
   // Visibility
-  isPublished Boolean @default(false)
+  isPublished Boolean   @default(false)
   publishedAt DateTime?
-  isFeatured  Boolean @default(false)
+  isFeatured  Boolean   @default(false)
 
   // Soft delete
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
-  variants      ProductVariant[]
-  orderItems    OrderItem[]
-  reviews       Review[]
-  attributes    ProductAttributeValue[]
-  cartItems     CartItem[]
-  wishlistItems WishlistItem[]
-  inventoryLogs InventoryLog[]
+  variants       ProductVariant[]
+  orderItems     OrderItem[]
+  reviews        Review[]
+  attributes     ProductAttributeValue[]
+  cartItems      CartItem[]
+  wishlistItems  WishlistItem[]
+  inventoryLogs  InventoryLog[]
   flashSaleItems FlashSaleItem[]
 
   @@unique([storeId, sku])
@@ -401,31 +403,31 @@ model Product {
 }
 
 model ProductVariant {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   // Variant details
-  name      String   // e.g., "Small / Red"
-  sku       String
-  barcode   String?
-  
+  name    String // e.g., "Small / Red"
+  sku     String
+  barcode String?
+
   // Pricing (overrides product price)
-  price     Float?
+  price          Float?
   compareAtPrice Float?
 
   // Inventory
-  inventoryQty Int @default(0)
+  inventoryQty      Int @default(0)
   lowStockThreshold Int @default(5)
 
   // Physical attributes (overrides product)
-  weight    Float?
-  
+  weight Float?
+
   // Media
-  image     String?  // Vercel Blob URL
-  
+  image String? // Vercel Blob URL
+
   // Options (e.g., { "Size": "Small", "Color": "Red" })
-  options   String   // JSON object
+  options String // JSON object
 
   isDefault Boolean @default(false)
 
@@ -443,19 +445,19 @@ model ProductVariant {
 }
 
 model Category {
-  id          String   @id @default(uuid())
-  storeId     String
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   name        String
-  slug        String   // URL-safe
+  slug        String // URL-safe
   description String?
-  image       String?  // Vercel Blob URL
-  
+  image       String? // Vercel Blob URL
+
   // Hierarchy
-  parentId    String?
-  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children    Category[] @relation("CategoryHierarchy")
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryHierarchy")
 
   // SEO
   metaTitle       String?
@@ -464,8 +466,8 @@ model Category {
   isPublished Boolean @default(true)
   sortOrder   Int     @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   products Product[]
@@ -479,14 +481,14 @@ model Category {
 }
 
 model Brand {
-  id          String   @id @default(uuid())
-  storeId     String
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   name        String
-  slug        String   // URL-safe
+  slug        String // URL-safe
   description String?
-  logo        String?  // Vercel Blob URL
+  logo        String? // Vercel Blob URL
   website     String?
 
   // SEO
@@ -495,8 +497,8 @@ model Brand {
 
   isPublished Boolean @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   products Product[]
@@ -508,9 +510,9 @@ model Brand {
 }
 
 model ProductAttribute {
-  id        String   @id @default(uuid())
-  name      String   // e.g., "Color", "Size"
-  values    String   // JSON array e.g., ["Red", "Blue", "Green"]
+  id     String @id @default(uuid())
+  name   String // e.g., "Color", "Size"
+  values String // JSON array e.g., ["Red", "Blue", "Green"]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -522,12 +524,12 @@ model ProductAttribute {
 }
 
 model ProductAttributeValue {
-  id          String   @id @default(uuid())
+  id          String           @id @default(uuid())
   productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   attributeId String
   attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
-  value       String   // e.g., "Red"
+  value       String // e.g., "Red"
 
   createdAt DateTime @default(now())
 
@@ -540,13 +542,13 @@ model ProductAttributeValue {
 // ============================================================================
 
 model Customer {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // User linkage (optional - guests have no userId)
-  userId    String?  @unique
-  
+  userId String? @unique
+
   // Basic info
   email     String
   firstName String
@@ -554,18 +556,18 @@ model Customer {
   phone     String?
 
   // Marketing
-  acceptsMarketing Boolean @default(false)
+  acceptsMarketing Boolean   @default(false)
   marketingOptInAt DateTime?
 
   // Stats
-  totalOrders    Int     @default(0)
-  totalSpent     Float   @default(0)
-  averageOrderValue Float @default(0)
-  lastOrderAt    DateTime?
+  totalOrders       Int       @default(0)
+  totalSpent        Float     @default(0)
+  averageOrderValue Float     @default(0)
+  lastOrderAt       DateTime?
 
   // Soft delete
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
@@ -583,9 +585,9 @@ model Customer {
 }
 
 model Address {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   userId     String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
@@ -598,11 +600,11 @@ model Address {
   city       String
   state      String
   postalCode String
-  country    String @default("US")
+  country    String  @default("US")
   phone      String?
 
-  isDefault  Boolean @default(false)
-  
+  isDefault Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -619,18 +621,18 @@ model Address {
 // ============================================================================
 
 model Order {
-  id        String      @id @default(uuid())
-  storeId   String
-  store     Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   // Customer
   customerId String?
-  customer   Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   userId     String?
-  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   // Order details
-  orderNumber String     // Human-readable (e.g., "ORD-1001")
+  orderNumber String // Human-readable (e.g., "ORD-1001")
   status      OrderStatus @default(PENDING)
 
   // Addresses
@@ -640,11 +642,11 @@ model Order {
   billingAddress    Address? @relation("BillingAddress", fields: [billingAddressId], references: [id], onDelete: SetNull)
 
   // Pricing
-  subtotal        Float // Sum of items before tax/shipping/discounts
-  taxAmount       Float @default(0)
-  shippingAmount  Float @default(0)
-  discountAmount  Float @default(0)
-  totalAmount     Float // subtotal + tax + shipping - discount
+  subtotal       Float // Sum of items before tax/shipping/discounts
+  taxAmount      Float @default(0)
+  shippingAmount Float @default(0)
+  discountAmount Float @default(0)
+  totalAmount    Float // subtotal + tax + shipping - discount
 
   // Discount
   discountCode String?
@@ -652,7 +654,7 @@ model Order {
   // Payment
   paymentMethod  PaymentMethod?
   paymentGateway PaymentGateway?
-  paymentStatus  PaymentStatus @default(PENDING)
+  paymentStatus  PaymentStatus   @default(PENDING)
 
   // Shipping
   shippingMethod String?
@@ -661,8 +663,8 @@ model Order {
   trackingUrl    String?
 
   // Fulfillment
-  fulfilledAt DateTime?
-  canceledAt  DateTime?
+  fulfilledAt  DateTime?
+  canceledAt   DateTime?
   cancelReason String?
 
   // Customer notes
@@ -670,11 +672,11 @@ model Order {
   adminNote    String?
 
   // IP tracking (fraud prevention)
-  ipAddress   String?
-  
+  ipAddress String?
+
   // Soft delete
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
@@ -696,13 +698,13 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
   // Product
   productId String?
-  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  product   Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
   variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 
@@ -713,12 +715,12 @@ model OrderItem {
   image       String?
 
   // Pricing
-  price       Float // Unit price at time of order
-  quantity    Int
-  subtotal    Float // price * quantity
-  taxAmount   Float @default(0)
+  price          Float // Unit price at time of order
+  quantity       Int
+  subtotal       Float // price * quantity
+  taxAmount      Float @default(0)
   discountAmount Float @default(0)
-  totalAmount Float
+  totalAmount    Float
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -729,29 +731,29 @@ model OrderItem {
 }
 
 model Payment {
-  id        String        @id @default(uuid())
-  storeId   String
-  store     Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  orderId   String
-  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   // Payment details
-  amount    Float
-  currency  String        @default("USD")
-  status    PaymentStatus @default(PENDING)
-  method    PaymentMethod
-  gateway   PaymentGateway
+  amount   Float
+  currency String         @default("USD")
+  status   PaymentStatus  @default(PENDING)
+  method   PaymentMethod
+  gateway  PaymentGateway
 
   // Gateway IDs
-  gatewayPaymentId   String? // Stripe payment_intent_id or SSLCommerz tran_id
-  gatewayCustomerId  String? // Stripe customer_id
-  gatewayChargeId    String? // Stripe charge_id
+  gatewayPaymentId  String? // Stripe payment_intent_id or SSLCommerz tran_id
+  gatewayCustomerId String? // Stripe customer_id
+  gatewayChargeId   String? // Stripe charge_id
 
   // Metadata
-  metadata  String?       // JSON gateway-specific data
+  metadata String? // JSON gateway-specific data
 
   // Refund
-  refundedAmount Float @default(0)
+  refundedAmount Float     @default(0)
   refundedAt     DateTime?
 
   // Failure
@@ -775,10 +777,10 @@ model Payment {
 // ============================================================================
 
 model Cart {
-  id        String   @id @default(uuid())
-  userId    String?  @unique
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessionId String?  @unique // For guest carts
+  id        String  @id @default(uuid())
+  userId    String? @unique
+  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String? @unique // For guest carts
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -794,15 +796,15 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cart      Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 
-  quantity  Int      @default(1)
+  quantity Int @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -812,11 +814,11 @@ model CartItem {
 }
 
 model WishlistItem {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -831,33 +833,33 @@ model WishlistItem {
 // ============================================================================
 
 model Review {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id         String    @id @default(uuid())
+  storeId    String
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   customerId String?
-  customer  Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
   // Review content
-  rating    Int      // 1-5 stars
-  title     String?
-  comment   String
-  
+  rating  Int // 1-5 stars
+  title   String?
+  comment String
+
   // Media
-  images    String   // JSON array of Vercel Blob URLs
+  images String // JSON array of Vercel Blob URLs
 
   // Moderation
-  isApproved Boolean @default(false)
+  isApproved Boolean   @default(false)
   approvedAt DateTime?
-  
+
   // Verification
   isVerifiedPurchase Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@index([storeId, productId])
@@ -874,22 +876,22 @@ model Review {
 // ============================================================================
 
 model InventoryLog {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   // Change details
   previousQty Int
   newQty      Int
-  changeQty   Int      // Positive = addition, Negative = subtraction
-  reason      String   // e.g., "Sale", "Restock", "Adjustment", "Damaged"
+  changeQty   Int // Positive = addition, Negative = subtraction
+  reason      String // e.g., "Sale", "Restock", "Adjustment", "Damaged"
   note        String?
 
   // User tracking
-  userId    String?
-  
+  userId String?
+
   createdAt DateTime @default(now())
 
   @@index([storeId, productId])
@@ -903,27 +905,27 @@ model InventoryLog {
 // ============================================================================
 
 model Discount {
-  id        String       @id @default(uuid())
-  storeId   String
-  store     Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  code      String       // Coupon code (e.g., "SUMMER20")
-  type      DiscountType
-  value     Float        // Percentage or fixed amount
+  code  String // Coupon code (e.g., "SUMMER20")
+  type  DiscountType
+  value Float // Percentage or fixed amount
 
   // Conditions
-  minimumPurchase Float?
-  usageLimit      Int?     // Total usage limit (null = unlimited)
-  usageCount      Int      @default(0)
-  perCustomerLimit Int?    // Per-customer usage limit
+  minimumPurchase  Float?
+  usageLimit       Int? // Total usage limit (null = unlimited)
+  usageCount       Int    @default(0)
+  perCustomerLimit Int? // Per-customer usage limit
 
   // Validity
-  startsAt  DateTime?
-  endsAt    DateTime?
-  isActive  Boolean @default(true)
+  startsAt DateTime?
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@unique([storeId, code])
@@ -935,17 +937,17 @@ model Discount {
 }
 
 model FlashSale {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  name      String
+  name        String
   description String?
-  
+
   // Validity
-  startsAt  DateTime
-  endsAt    DateTime
-  isActive  Boolean @default(true)
+  startsAt DateTime
+  endsAt   DateTime
+  isActive Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -960,17 +962,17 @@ model FlashSale {
 }
 
 model FlashSaleItem {
-  id          String     @id @default(uuid())
+  id          String    @id @default(uuid())
   flashSaleId String
-  flashSale   FlashSale  @relation(fields: [flashSaleId], references: [id], onDelete: Cascade)
+  flashSale   FlashSale @relation(fields: [flashSaleId], references: [id], onDelete: Cascade)
   productId   String
-  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   discountType  DiscountType
   discountValue Float
-  
-  stockLimit    Int?    // Limited stock for flash sale
-  soldCount     Int     @default(0)
+
+  stockLimit Int? // Limited stock for flash sale
+  soldCount  Int  @default(0)
 
   @@index([flashSaleId])
   @@index([productId])
@@ -983,12 +985,12 @@ model FlashSaleItem {
 // ============================================================================
 
 model ShippingZone {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   name      String
-  countries String   // JSON array of ISO country codes (e.g., ["US", "CA"])
+  countries String // JSON array of ISO country codes (e.g., ["US", "CA"])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1004,15 +1006,15 @@ model ShippingRate {
   shippingZoneId String
   shippingZone   ShippingZone @relation(fields: [shippingZoneId], references: [id], onDelete: Cascade)
 
-  name           String       // e.g., "Standard Shipping", "Express"
-  price          Float
-  
+  name  String // e.g., "Standard Shipping", "Express"
+  price Float
+
   // Conditions
-  minOrderValue  Float?
-  maxOrderValue  Float?
-  minWeight      Float?
-  maxWeight      Float?
-  
+  minOrderValue Float?
+  maxOrderValue Float?
+  minWeight     Float?
+  maxWeight     Float?
+
   // Delivery estimate
   estimatedDaysMin Int?
   estimatedDaysMax Int?
@@ -1027,20 +1029,20 @@ model ShippingRate {
 }
 
 model TaxRate {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  name      String   // e.g., "CA Sales Tax"
-  rate      Float    // e.g., 0.0825 for 8.25%
-  
+  name String // e.g., "CA Sales Tax"
+  rate Float // e.g., 0.0825 for 8.25%
+
   // Geographic scope
-  country   String
-  state     String?
-  city      String?
+  country    String
+  state      String?
+  city       String?
   postalCode String?
 
-  isActive  Boolean @default(true)
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1056,24 +1058,24 @@ model TaxRate {
 // ============================================================================
 
 model Page {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  title     String
-  slug      String   // URL-safe (e.g., "about-us")
-  content   String   // HTML content
-  
+  title   String
+  slug    String // URL-safe (e.g., "about-us")
+  content String // HTML content
+
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String   // JSON array
+  metaKeywords    String // JSON array
 
-  isPublished Boolean @default(false)
+  isPublished Boolean   @default(false)
   publishedAt DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   @@unique([storeId, slug])
@@ -1083,14 +1085,14 @@ model Page {
 }
 
 model Menu {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  name      String   // e.g., "Main Menu", "Footer Menu"
-  handle    String   // Unique identifier (e.g., "main", "footer")
+  name   String // e.g., "Main Menu", "Footer Menu"
+  handle String // Unique identifier (e.g., "main", "footer")
 
-  items     MenuItem[]
+  items MenuItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1101,20 +1103,20 @@ model Menu {
 }
 
 model MenuItem {
-  id        String   @id @default(uuid())
-  menuId    String
-  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  menuId String
+  menu   Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
 
-  label     String
-  url       String
-  target    String   @default("_self") // "_self" or "_blank"
-  
+  label  String
+  url    String
+  target String @default("_self") // "_self" or "_blank"
+
   // Hierarchy
-  parentId  String?
-  parent    MenuItem?  @relation("MenuItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  children  MenuItem[] @relation("MenuItemHierarchy")
+  parentId String?
+  parent   MenuItem?  @relation("MenuItemHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children MenuItem[] @relation("MenuItemHierarchy")
 
-  sortOrder Int      @default(0)
+  sortOrder Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1128,20 +1130,20 @@ model MenuItem {
 // ============================================================================
 
 model EmailTemplate {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  name      String   // e.g., "Order Confirmation"
-  handle    String   // Unique identifier (e.g., "order_confirmation")
-  subject   String
-  htmlBody  String
-  textBody  String?
+  name     String // e.g., "Order Confirmation"
+  handle   String // Unique identifier (e.g., "order_confirmation")
+  subject  String
+  htmlBody String
+  textBody String?
 
   // Variables (e.g., ["{{customerName}}", "{{orderNumber}}"])
-  variables String   // JSON array
+  variables String // JSON array
 
-  isActive  Boolean @default(true)
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1152,19 +1154,19 @@ model EmailTemplate {
 }
 
 model Newsletter {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  email     String
-  
+  email String
+
   // Subscription status
-  isSubscribed Boolean @default(true)
-  subscribedAt DateTime @default(now())
+  isSubscribed   Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
   unsubscribedAt DateTime?
 
   // Source tracking
-  source    String?  // e.g., "checkout", "footer", "popup"
+  source String? // e.g., "checkout", "footer", "popup"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1176,20 +1178,20 @@ model Newsletter {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title     String
-  message   String
-  type      String   // e.g., "order_update", "low_stock", "system"
-  
+  title   String
+  message String
+  type    String // e.g., "order_update", "low_stock", "system"
+
   // Link
-  linkUrl   String?
-  linkText  String?
+  linkUrl  String?
+  linkText String?
 
-  isRead    Boolean @default(false)
-  readAt    DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
   createdAt DateTime @default(now())
 
@@ -1202,31 +1204,31 @@ model Notification {
 // ============================================================================
 
 model Theme {
-  id        String    @id @default(uuid())
-  storeId   String    @unique
-  store     Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   // Color scheme
-  primaryColor    String @default("#3B82F6")   // Tailwind blue-500
-  secondaryColor  String @default("#10B981")   // Tailwind green-500
-  accentColor     String @default("#F59E0B")   // Tailwind amber-500
+  primaryColor    String @default("#3B82F6") // Tailwind blue-500
+  secondaryColor  String @default("#10B981") // Tailwind green-500
+  accentColor     String @default("#F59E0B") // Tailwind amber-500
   backgroundColor String @default("#FFFFFF")
-  textColor       String @default("#1F2937")   // Tailwind gray-800
-  
+  textColor       String @default("#1F2937") // Tailwind gray-800
+
   // Typography
-  fontFamily      String @default("Inter")
-  headingFont     String @default("Inter")
-  fontSize        String @default("16px")
+  fontFamily  String @default("Inter")
+  headingFont String @default("Inter")
+  fontSize    String @default("16px")
 
   // Layout
-  layoutWidth     String @default("1280px")
-  borderRadius    String @default("0.5rem")
-  
+  layoutWidth  String @default("1280px")
+  borderRadius String @default("0.5rem")
+
   // Mode
-  mode            ThemeMode @default(LIGHT)
+  mode ThemeMode @default(LIGHT)
 
   // Custom CSS
-  customCss       String?
+  customCss String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1239,14 +1241,14 @@ model Theme {
 // ============================================================================
 
 model ExternalPlatformConfig {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  platform  String   // "woocommerce", "shopify"
+  platform  String // "woocommerce", "shopify"
   apiUrl    String
-  apiKey    String   // Encrypted
-  apiSecret String?  // Encrypted
+  apiKey    String // Encrypted
+  apiSecret String? // Encrypted
 
   // Sync settings
   syncProducts  Boolean @default(true)
@@ -1255,7 +1257,7 @@ model ExternalPlatformConfig {
   syncInterval  Int     @default(60) // minutes
 
   lastSyncAt DateTime?
-  isActive   Boolean @default(true)
+  isActive   Boolean   @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1269,19 +1271,19 @@ model ExternalPlatformConfig {
 }
 
 model SyncLog {
-  id        String   @id @default(uuid())
-  configId  String
-  config    ExternalPlatformConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  id       String                 @id @default(uuid())
+  configId String
+  config   ExternalPlatformConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
 
-  entityType String  // "product", "order", "customer"
-  action     String  // "import", "export", "update"
-  status     String  // "success", "failed", "partial"
-  
+  entityType String // "product", "order", "customer"
+  action     String // "import", "export", "update"
+  status     String // "success", "failed", "partial"
+
   recordsProcessed Int @default(0)
   recordsFailed    Int @default(0)
-  
+
   errorMessage String?
-  metadata     String?  // JSON
+  metadata     String? // JSON
 
   createdAt DateTime @default(now())
 
@@ -1291,15 +1293,15 @@ model SyncLog {
 }
 
 model Webhook {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  url       String
-  events    String   // JSON array e.g., ["order.created", "product.updated"]
-  secret    String   // For HMAC signature verification
+  url    String
+  events String // JSON array e.g., ["order.created", "product.updated"]
+  secret String // For HMAC signature verification
 
-  isActive  Boolean @default(true)
+  isActive Boolean @default(true)
 
   // Delivery tracking
   lastDeliveryAt     DateTime?
@@ -1318,20 +1320,20 @@ model Webhook {
 // ============================================================================
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String  @id @default(uuid())
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  action    String   // e.g., "CREATE", "UPDATE", "DELETE"
-  entityType String  // e.g., "Product", "Order", "User"
-  entityId  String
-  
+  action     String // e.g., "CREATE", "UPDATE", "DELETE"
+  entityType String // e.g., "Product", "Order", "User"
+  entityId   String
+
   // Change tracking
-  changes   String?  // JSON { "field": { "old": "value", "new": "value" } }
-  
+  changes String? // JSON { "field": { "old": "value", "new": "value" } }
+
   // Request metadata
   ipAddress String?
   userAgent String?
@@ -1349,40 +1351,40 @@ model AuditLog {
 // ============================================================================
 
 enum GdprRequestType {
-  EXPORT    // Data export request
-  DELETE    // Account deletion request
+  EXPORT // Data export request
+  DELETE // Account deletion request
 }
 
 enum GdprRequestStatus {
-  PENDING       // Request submitted, awaiting processing
-  PROCESSING    // Currently being processed
-  COMPLETED     // Successfully completed
-  FAILED        // Processing failed
+  PENDING // Request submitted, awaiting processing
+  PROCESSING // Currently being processed
+  COMPLETED // Successfully completed
+  FAILED // Processing failed
 }
 
 enum ConsentType {
-  ESSENTIAL     // Essential cookies (required for site functionality)
-  ANALYTICS     // Analytics and performance tracking
-  MARKETING     // Marketing and advertising
-  PREFERENCES   // User preferences and personalization
+  ESSENTIAL // Essential cookies (required for site functionality)
+  ANALYTICS // Analytics and performance tracking
+  MARKETING // Marketing and advertising
+  PREFERENCES // User preferences and personalization
 }
 
 model GdprRequest {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String  @id @default(uuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  type      GdprRequestType
-  status    GdprRequestStatus @default(PENDING)
+  type   GdprRequestType
+  status GdprRequestStatus @default(PENDING)
 
   // Export-specific fields
-  exportUrl String?  // Download URL for exported data (expires after 7 days)
+  exportUrl String? // Download URL for exported data (expires after 7 days)
   expiresAt DateTime? // Export link expiration
 
   // Processing metadata
-  processedAt DateTime?
+  processedAt  DateTime?
   errorMessage String?
 
   // Request tracking
@@ -1400,22 +1402,22 @@ model GdprRequest {
 }
 
 model ConsentRecord {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id      String  @id @default(uuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   consentType ConsentType
-  granted     Boolean @default(false)
+  granted     Boolean     @default(false)
 
   // Consent metadata
-  grantedAt   DateTime?
-  revokedAt   DateTime?
-  
+  grantedAt DateTime?
+  revokedAt DateTime?
+
   // Tracking
-  ipAddress   String?
-  userAgent   String?
+  ipAddress String?
+  userAgent String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1431,21 +1433,21 @@ model ConsentRecord {
 // ============================================================================
 
 model ExportJob {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id      String @id @default(uuid())
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Export configuration
-  type      String   // "orders", "customers", "products"
-  status    String   // "pending", "processing", "completed", "failed"
-  filters   String   // JSON string of export filters
+  type      String // "orders", "customers", "products"
+  status    String // "pending", "processing", "completed", "failed"
+  filters   String // JSON string of export filters
   totalRows Int
 
   // Export result
-  fileUrl   String?  // Vercel Blob Storage URL
-  error     String?  // Error message if failed
+  fileUrl String? // Vercel Blob Storage URL
+  error   String? // Error message if failed
 
   // Timestamps
   createdAt   DateTime  @default(now())
@@ -1456,4 +1458,3 @@ model ExportJob {
   @@index([userId, createdAt])
   @@map("export_jobs")
 }
-
