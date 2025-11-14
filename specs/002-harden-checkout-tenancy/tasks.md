@@ -68,13 +68,13 @@ Total tasks: 42 (grouped by phase and user story)
   - [X] T038d Migrate `ProductVariant.options` from `String` JSON object to `Json` type.
   - [X] T038e Migrate `ProductAttribute.values` from `String` JSON array to `Json` type.
   - [X] T038f Migrate `Review.images` from `String` JSON array to `Json` type.
-  - [ ] T038g Migrate `ShippingZone.countries` from `String` JSON array to `Json` type.
-  - [ ] T038h Migrate `Page.metaKeywords` from `String` JSON array to `Json` type.
-  - [ ] T038i Migrate `EmailTemplate.variables` from `String` JSON array to `Json` type.
-  - [ ] T038j Migrate `Webhook.events` from `String` JSON array to `Json` type.
-  - [ ] T038k Migrate optional `Payment.metadata` from `String?` to `Json?` with validation of malformed rows.
-  - [ ] T038l Migrate optional `SyncLog.metadata` from `String?` to `Json?`.
-  - [ ] T038m Migrate optional `AuditLog.changes` from `String?` to `Json?` and ensure diff object preserved.
+  - [X] T038g Migrate `ShippingZone.countries` from `String` JSON array to `Json` type.
+  - [X] T038h Migrate `Page.metaKeywords` from `String` JSON array to `Json` type.
+  - [X] T038i Migrate `EmailTemplate.variables` from `String` JSON array to `Json` type.
+  - [X] T038j Migrate `Webhook.events` from `String` JSON array to `Json` type.
+  - [X] T038k Migrate optional `Payment.metadata` from `String?` to `Json?` with validation of malformed rows.
+  - [X] T038l Migrate optional `SyncLog.metadata` from `String?` to `Json?`.
+  - [X] T038m Migrate optional `AuditLog.changes` from `String?` to `Json?` and ensure diff object preserved.
 
 ## Additional Tasks (Governance & CI)
 - [ ] T043 Percy + Visual Regression: Integrate Percy visual regression for critical pages and UI components (dashboard, checkout, product list). Add Percy job to feature CI and create snapshot baselines. Map to constitution visual regression requirements.
