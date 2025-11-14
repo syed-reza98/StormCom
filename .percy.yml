@@ -1,0 +1,115 @@
+# Percy Visual Regression Testing Configuration
+# StormCom Multi-tenant E-commerce Platform
+# Created for T043: Percy + Visual Regression Integration
+# Constitution requirement: 0.1% difference threshold
+
+version: 2
+
+# Percy project configuration
+# PERCY_TOKEN must be set in environment variables (CI/CD secrets)
+# Get token from: https://percy.io/settings
+
+# Snapshot configuration
+snapshot:
+  # Viewports to capture (mobile, tablet, desktop)
+  # Constitution requirement: Test on mobile (375px), tablet (768px), desktop (1280px)
+  widths:
+    - 375   # Mobile portrait (iPhone SE, older Android)
+    - 768   # Tablet portrait (iPad, Android tablets)
+    - 1280  # Desktop (standard laptop/desktop)
+
+  # Minimum height for snapshots (allows scrolling pages to be captured)
+  min-height: 1024
+
+  # Percy rendering engine
+  # Use Chromium for consistent cross-browser rendering
+  percy-css: ''
+  enable-javascript: true
+
+  # Discovery configuration
+  # Percy auto-discovers pages via sitemap or manual snapshot calls
+  discovery:
+    # Disable auto-discovery; we'll use explicit snapshots in Playwright tests
+    disable-cache: false
+    allowed-hostnames:
+      - localhost
+      - 127.0.0.1
+
+# Visual comparison configuration
+# Constitution requirement: 0.1% difference threshold (blocking deployment if exceeded)
+visual-review:
+  # Threshold for visual differences (0.1% = 0.001)
+  # Any pixel difference > 0.1% will flag the snapshot for manual review
+  threshold: 0.001
+
+  # Baseline branch for comparisons
+  # Visual changes are compared against snapshots from main branch
+  baseline-branch: main
+
+  # Auto-approve unchanged snapshots
+  auto-approve-unchanged: true
+
+# Parallel processing
+# Speed up snapshot uploads by processing multiple snapshots concurrently
+parallel:
+  # Number of parallel workers (default: 5)
+  total: 5
+
+# Static asset configuration
+# Skip static assets to speed up snapshot capture
+static:
+  # Don't capture these asset types
+  exclude:
+    - '**/*.woff'
+    - '**/*.woff2'
+    - '**/*.ttf'
+    - '**/*.eot'
+    - '**/*.map'
+
+# Debugging options (enable if snapshots aren't working)
+debug: false
+
+# CI/CD integration
+# Percy automatically detects CI environment variables
+# Supports: GitHub Actions, GitLab CI, CircleCI, Travis CI, etc.
+# See: https://docs.percy.io/docs/ci-setup
+
+# GitHub Actions specific configuration
+# Required environment variables (set in GitHub Secrets):
+# - PERCY_TOKEN: Percy project token from percy.io
+# - PERCY_BRANCH: Git branch name (auto-detected by Percy)
+# - PERCY_COMMIT: Git commit SHA (auto-detected by Percy)
+# - PERCY_PULL_REQUEST: PR number (auto-detected by Percy)
+
+# Approval workflow
+# 1. Percy captures snapshots on every PR
+# 2. Compares against baseline (main branch)
+# 3. If differences > 0.1% threshold:
+#    - Flags snapshots for manual review in Percy dashboard
+#    - Blocks PR merge via GitHub status check
+# 4. Developer reviews differences in Percy UI
+# 5. Approves or rejects visual changes
+# 6. Once approved, status check passes and PR can merge
+# 7. Approved snapshots become new baseline for future comparisons
+
+# Critical pages for visual regression testing (from constitution):
+# - Dashboard (admin overview, analytics)
+# - Product list (catalog, filters, search)
+# - Checkout flow (cart, shipping, payment, confirmation)
+# - Admin settings (store config, user management)
+
+# Mobile-specific considerations:
+# - Test touch interactions (buttons, forms)
+# - Verify responsive layouts (grid, flex)
+# - Check mobile navigation (hamburger menu, drawers)
+# - Validate viewport meta tag rendering
+
+# Tablet-specific considerations:
+# - Test hybrid layouts (between mobile and desktop)
+# - Verify sidebar/navigation placement
+# - Check table/grid responsiveness
+
+# Desktop-specific considerations:
+# - Test full-width layouts
+# - Verify multi-column layouts
+# - Check hover states (if captured via JavaScript)
