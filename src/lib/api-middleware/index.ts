@@ -174,13 +174,20 @@ export function authMiddleware(options?: {
     }
 
     // Populate context
-    context.session = session;
+    context.session = {
+      user: {
+        id: session.user.id,
+        email: session.user.email || '',
+        storeId: session.user.storeId || undefined,
+        role: session.user.role || undefined,
+      },
+    };
 
     // Update request context with user info
     updateContext({
       userId: session.user.id,
       userRole: session.user.role,
-      storeId: session.user.storeId,
+      storeId: session.user.storeId || undefined,
     });
 
     return next();
@@ -190,23 +197,11 @@ export function authMiddleware(options?: {
 /**
  * Rate limiting middleware
  * Uses simple in-memory rate limiter (100 req/min per IP)
- * 
- * @param options - Configuration options
  */
-export function rateLimitMiddleware(options?: {
-  /** Requests per minute (default: 100) */
-  limit?: number;
-}): Middleware {
+export function rateLimitMiddleware(): Middleware {
   return async (context, next) => {
-    const ip = context.request.ip || 
-               context.request.headers.get('x-forwarded-for')?.split(',')[0] || 
-               'unknown';
-    
-    const identifier = context.session?.user?.id 
-      ? `user:${context.session.user.id}` 
-      : `ip:${ip}`;
-
-    const result = await checkSimpleRateLimit(identifier);
+    // Pass the actual Request object to checkSimpleRateLimit
+    const result = await checkSimpleRateLimit(context.request);
 
     if (!result.success) {
       return errorResponse('Too many requests', 429, {
@@ -352,7 +347,7 @@ export function corsMiddleware(options?: {
   /** Allow credentials (default: true) */
   credentials?: boolean;
 }): Middleware {
-  return async (context, next) => {
+  return async (_context, next) => {
     const response = await next();
 
     // Set CORS headers

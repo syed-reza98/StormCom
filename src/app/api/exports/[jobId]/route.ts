@@ -16,7 +16,6 @@ import { createApiHandler, middlewareStacks } from '@/lib/api-middleware';
 import { 
   successResponse,
   notFoundResponse,
-  forbiddenResponse,
 } from '@/lib/api-response';
 import { getExportJobStatus } from '@/services/export-service';
 

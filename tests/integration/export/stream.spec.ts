@@ -11,7 +11,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { db } from '@/lib/db';
-import { createMockSession } from '@/tests/support/session-helpers';
+import { createMockSession } from '../../support/session-helpers';
 
 describe('CSV Export Streaming', () => {
   let testStoreId: string;
@@ -252,22 +252,28 @@ describe('CSV Export Streaming', () => {
           data: {
             storeId: testStoreId,
             orderNumber: 'PENDING-001',
-            customerEmail: 'pending@test.com',
             status: 'PENDING',
             totalAmount: 100,
-            currency: 'USD',
+            subtotal: 85,
+            taxAmount: 10,
+            shippingAmount: 5,
+            discountAmount: 0,
             paymentMethod: 'CREDIT_CARD',
+            paymentStatus: 'PENDING',
           },
         }),
         db.order.create({
           data: {
             storeId: testStoreId,
             orderNumber: 'PAID-001',
-            customerEmail: 'paid@test.com',
             status: 'PAID',
             totalAmount: 200,
-            currency: 'USD',
+            subtotal: 170,
+            taxAmount: 20,
+            shippingAmount: 10,
+            discountAmount: 0,
             paymentMethod: 'CREDIT_CARD',
+            paymentStatus: 'PAID',
           },
         }),
       ]);
@@ -282,7 +288,7 @@ describe('CSV Export Streaming', () => {
         'http://localhost:3000/api/orders/export?status=PENDING',
         {
           headers: {
-            cookie: `next-auth.session-token=${session.sessionToken}`,
+            cookie: `next-auth.session-token=${session.id}`,
           },
         }
       );
