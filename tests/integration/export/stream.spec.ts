@@ -122,11 +122,14 @@ describe('CSV Export Streaming', () => {
         data: {
           storeId: otherStore.id,
           orderNumber: 'OTHER-00001',
-          customerEmail: 'other@test.com',
           status: 'PENDING',
+          subtotal: 100,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
           totalAmount: 100,
-          currency: 'USD',
           paymentMethod: 'CREDIT_CARD',
+          paymentStatus: 'PENDING',
         },
       });
 
@@ -153,7 +156,7 @@ describe('CSV Export Streaming', () => {
     });
 
     it('should handle CSV field escaping', async () => {
-      await db.order.create({
+      const order = await db.order.create({
         data: {
           storeId: testStoreId,
           orderNumber: 'TEST-ESCAPE',
@@ -198,12 +201,6 @@ describe('CSV Export Streaming', () => {
       // Mock the count to return >10k
       // In real implementation, this would trigger async job service (T029)
       
-      const session = createMockSession({
-        userId: adminUserId,
-        storeId: testStoreId,
-        role: 'STORE_ADMIN',
-      });
-
       // This test is placeholder until T029 is implemented
       // TODO: Update when export-service.ts is available
       
