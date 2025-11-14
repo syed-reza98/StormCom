@@ -302,7 +302,7 @@ export function errorResponse(
     error: {
       code: normalizedError.code,
       message: normalizedError.message,
-      ...(normalizedError.details && { details: normalizedError.details }),
+      ...(normalizedError.details ? { details: normalizedError.details } : {}),
     },
   };
 

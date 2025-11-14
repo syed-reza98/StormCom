@@ -10,7 +10,7 @@
  * - Atomic transaction wrapper (T013)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
@@ -54,7 +54,7 @@ const CompleteCheckoutSchema = z.object({
   // SECURITY: Removed client-submitted monetary values
   // Server recalculates: subtotal, taxAmount, shippingCost, discountAmount
   shippingMethod: z.string().min(1),
-  paymentMethod: z.enum(['CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL', 'BANK_TRANSFER']),
+  paymentMethod: z.enum(['CREDIT_CARD', 'DEBIT_CARD', 'MOBILE_BANKING', 'BANK_TRANSFER', 'CASH_ON_DELIVERY']),
   discountCode: z.string().optional(),
   paymentIntentId: z.string().min(1), // Required for pre-validation (T012)
   notes: z.string().optional(),
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     const pricing = await calculateCheckoutPricing(
       storeId,
       input.items,
-      input.shippingMethod,
+      { name: input.shippingMethod, cost: 0 }, // Shipping method details will be resolved server-side
       input.discountCode
     );
 
@@ -119,14 +119,14 @@ export async function POST(request: NextRequest) {
         shippingAddress: input.shippingAddress,
         billingAddress: input.billingAddress,
         shippingMethod: input.shippingMethod,
-        shippingCost: pricing.shippingCost,
+        shippingCost: pricing.shippingTotal,
         discountCode: input.discountCode,
         customerNote: input.notes,
         ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined,
         // Pass server-calculated totals
         subtotal: pricing.subtotal,
-        taxAmount: pricing.taxAmount,
-        discountAmount: pricing.discountAmount,
+        taxAmount: pricing.taxTotal,
+        discountAmount: pricing.discountTotal,
         paymentMethod: input.paymentMethod,
       };
 
@@ -159,8 +159,7 @@ export async function POST(request: NextRequest) {
     // Return standardized success response (FR-008)
     return successResponse(
       order,
-      { message: 'Order created successfully' },
-      201
+      { message: 'Order created successfully', statusCode: 201 }
     );
   } catch (error) {
     // Standardized error handling (FR-008)

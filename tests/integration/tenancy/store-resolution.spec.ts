@@ -184,22 +184,22 @@ describe('Store Resolution Integration Tests', () => {
   describe('buildCanonicalUrl()', () => {
     it('should build canonical URL in production', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true });
 
       const url = buildCanonicalUrl('custom.example.com', '/products/123');
       expect(url).toBe('https://custom.example.com/products/123');
 
-      process.env.NODE_ENV = originalEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, writable: true });
     });
 
     it('should build canonical URL in development', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true });
 
       const url = buildCanonicalUrl('custom.example.com', '/products/123');
       expect(url).toBe('http://custom.example.com/products/123');
 
-      process.env.NODE_ENV = originalEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, writable: true });
     });
 
     it('should handle root path', () => {
