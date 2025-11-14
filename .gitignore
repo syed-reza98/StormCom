@@ -19,6 +19,10 @@
 /coverage
 *.lcov
 
+# Percy Visual Regression
+.percy/
+percy-debug.log
+
 # Vercel
 .vercel
 .vercel/
