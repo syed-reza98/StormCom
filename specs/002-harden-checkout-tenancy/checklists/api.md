@@ -15,16 +15,24 @@ Author: automated speckit.checklist run
 Notes: This checklist tests the *requirements text* (not the implementation). Each item references the spec where relevant (e.g., FR identifiers). If a requirement is missing or ambiguous, mark the item and update spec/plan/tasks accordingly.
 
 ## Requirement Completeness
-- [ ] CHK001 - Are authentication requirements for checkout fully specified, including which endpoints require a session and exact auth failure responses? [Completeness, Spec §FR-001]
-- [ ] CHK002 - Is the server-side pricing recalculation scope fully enumerated (line items, discounts, shipping, taxes, rounding rules, currency behavior)? [Completeness, Spec §FR-002]
-- [ ] CHK003 - Are all API endpoints that must include `X-Request-Id` and correlation propagation identified in the spec/plan? [Completeness, Spec §FR-021]
-- [ ] CHK004 - Are CSV export behaviors fully specified (stream threshold, async enqueue conditions, notification channels) and linked to an export failure/retry policy? [Completeness, Spec §FR-016]
+- [X] CHK001 - Are authentication requirements for checkout fully specified, including which endpoints require a session and exact auth failure responses? [Completeness, Spec §FR-001]
+  - ✅ PASS: FR-001 requires valid signed-in session; contracts/openapi.yaml defines 401 Unauthorized response; tasks T1.1 specifies getServerSession() usage
+- [X] CHK002 - Is the server-side pricing recalculation scope fully enumerated (line items, discounts, shipping, taxes, rounding rules, currency behavior)? [Completeness, Spec §FR-002]
+  - ✅ PASS: FR-002 explicitly lists "all line items, discounts, shipping, and taxes"; data-model.md shows Order.totals structure; tasks T1.2 references validateCart and total calculation
+- [X] CHK003 - Are all API endpoints that must include `X-Request-Id` and correlation propagation identified in the spec/plan? [Completeness, Spec §FR-021]
+  - ✅ PASS: FR-021 mandates unique request/correlation ID in all API responses; plan T0.1-T0.2 creates request-context.ts; tasks T4.2 adds requestId seeding in proxy
+- [X] CHK004 - Are CSV export behaviors fully specified (stream threshold, async enqueue conditions, notification channels) and linked to an export failure/retry policy? [Completeness, Spec §FR-016]
+  - ✅ PASS: FR-016 specifies ≤10k rows streaming with memory/time caps, >10k async job with email + in-app notification; clarifications specify 200MB heap/120s timeout; contracts/openapi.yaml shows 200 vs 202 responses
 
 ## Requirement Clarity
-- [ ] CHK005 - Is the payment pre-validation requirement precise about what constitutes a valid intent/token (authorization vs capture) and when validation occurs? [Clarity, Spec §FR-003]
-- [ ] CHK006 - Are error response shapes and HTTP status mappings explicitly defined for common failures (validation, auth, rate-limit, conflict, internal)? [Clarity, Spec §FR-008]
-- [ ] CHK007 - Is the canonical redirect behavior specified with HTTP status code, canonical link header conventions, and SEO considerations (308 vs 301, rel=canonical)? [Clarity, Spec §FR-005]
-- [ ] CHK008 - Are rate-limiting thresholds for newsletter and checkout clearly quantified (requests/min per IP/store) and behavior on exceed (Retry-After header) defined? [Clarity, Spec §FR-019, assumption in spec]
+- [X] CHK005 - Is the payment pre-validation requirement precise about what constitutes a valid intent/token (authorization vs capture) and when validation occurs? [Clarity, Spec §FR-003]
+  - ✅ PASS: FR-003 clarification states "verify payment intent exists, amount/currency match server totals, accept AUTHORIZED states for later capture, document which states are validated vs captured"; clarifications add idempotency key handling and retry semantics
+- [X] CHK006 - Are error response shapes and HTTP status mappings explicitly defined for common failures (validation, auth, rate-limit, conflict, internal)? [Clarity, Spec §FR-008]
+  - ✅ PASS: FR-008 standardizes success `{data, meta?, message?}` and error `{error: {code, message, details?}}`; contracts/openapi.yaml defines 400/401/409/429/500 responses with Error schema; plan T0.3 creates error class hierarchy with httpStatus
+- [X] CHK007 - Is the canonical redirect behavior specified with HTTP status code, canonical link header conventions, and SEO considerations (308 vs 301, rel=canonical)? [Clarity, Spec §FR-005]
+  - ✅ PASS: FR-005 clarification specifies HTTP 301 for GET requests with `Link: <https://{primary-domain}{path}>; rel="canonical"` header; for non-GET returns 4xx with explanatory body; tasks T2.1 implements in proxy.ts
+- [X] CHK008 - Are rate-limiting thresholds for newsletter and checkout clearly quantified (requests/min per IP/store) and behavior on exceed (Retry-After header) defined? [Clarity, Spec §FR-019, assumption in spec]
+  - ✅ PASS: Assumptions section states "100 requests per minute per IP"; contracts/openapi.yaml shows 429 RateLimited response; tasks T3.1 calls simple limiter (100 rpm/IP); constitution references rate-limit.ts implementation
 
 ## Requirement Consistency
 - [ ] CHK009 - Do authentication requirements align across spec/plan/tasks (no conflicting statements about anonymous checkout or default store fallbacks)? [Consistency, Spec §FR-001/FR-006]

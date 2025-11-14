@@ -32,13 +32,10 @@ import { NewsletterService } from '@/services/newsletter-service';
 import { checkSimpleRateLimit } from '@/lib/simple-rate-limit';
 import { headers } from 'next/headers';
 
-// Mock simple rate limit types
-type SimpleRateLimitResult = {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  reset: number;
-} | null;
+// Mock external dependencies
+vi.mock('@/services/newsletter-service');
+vi.mock('@/lib/simple-rate-limit');
+vi.mock('next/headers');
 
 describe('Newsletter Server Actions', () => {
   beforeEach(() => {
@@ -66,7 +63,7 @@ describe('Newsletter Server Actions', () => {
       };
 
       // Mock rate limit check (not exceeded)
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       // Mock successful subscription
       vi.mocked(NewsletterService.subscribe).mockResolvedValue({
@@ -79,7 +76,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result).toEqual({
         success: true,
@@ -110,7 +107,7 @@ describe('Newsletter Server Actions', () => {
         updatedAt: new Date(),
       };
 
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.subscribe).mockResolvedValue({
         subscription: mockNewsletter,
@@ -122,7 +119,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result).toEqual({
         success: true,
@@ -132,18 +129,18 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should enforce rate limiting', async () => {
-      const mockRateLimitResponse = new Response(
-        JSON.stringify({ error: 'Too many requests' }),
-        { status: 429 }
-      );
-
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(mockRateLimitResponse);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({
+        success: false,
+        limit: 100,
+        remaining: 0,
+        reset: Date.now() + 60000,
+      });
 
       const formData = new FormData();
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result).toEqual({
         success: false,
@@ -154,13 +151,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should validate email format with Zod', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('email', 'invalid-email'); // Invalid format
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid email');
@@ -168,13 +165,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should validate email length (min 3 chars)', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('email', 'ab'); // Too short
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -182,7 +179,7 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should validate email length (max 255 chars)', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const longEmail = 'a'.repeat(250) + '@example.com'; // > 255 chars
 
@@ -190,7 +187,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', longEmail);
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -198,13 +195,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should require email field', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('storeId', 'store-123');
       // Missing email
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -212,13 +209,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should require storeId field', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('email', 'user@example.com');
       // Missing storeId
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -233,7 +230,7 @@ describe('Newsletter Server Actions', () => {
       });
 
       vi.mocked(headers).mockResolvedValue(headersWithDNT);
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.subscribe).mockResolvedValue({
         subscription: {} as Newsletter,
@@ -245,7 +242,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      await subscribeToNewsletter(formData);
+      await subscribeToNewsletter(null, formData);
 
       expect(NewsletterService.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -257,7 +254,7 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should handle service errors gracefully', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.subscribe).mockRejectedValue(
         new Error('Database connection failed')
@@ -267,7 +264,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await subscribeToNewsletter(formData);
+      const result = await subscribeToNewsletter(null, formData);
 
       expect(result).toEqual({
         success: false,
@@ -290,7 +287,7 @@ describe('Newsletter Server Actions', () => {
         updatedAt: new Date(),
       };
 
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.unsubscribe).mockResolvedValue(mockUnsubscribed);
 
@@ -298,7 +295,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result).toEqual({
         success: true,
@@ -315,7 +312,7 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should handle non-existent subscription', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.unsubscribe).mockResolvedValue(null);
 
@@ -323,7 +320,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'nonexistent@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result).toEqual({
         success: true,
@@ -332,18 +329,18 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should enforce rate limiting', async () => {
-      const mockRateLimitResponse = new Response(
-        JSON.stringify({ error: 'Too many requests' }),
-        { status: 429 }
-      );
-
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(mockRateLimitResponse);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({
+        success: false,
+        limit: 100,
+        remaining: 0,
+        reset: Date.now() + 60000,
+      });
 
       const formData = new FormData();
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result).toEqual({
         success: false,
@@ -354,13 +351,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should require email field', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('storeId', 'store-123');
       // Missing email
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('Email is required');
@@ -368,13 +365,13 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should require storeId field', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       const formData = new FormData();
       formData.append('email', 'user@example.com');
       // Missing storeId
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('Store ID is required');
@@ -382,7 +379,7 @@ describe('Newsletter Server Actions', () => {
     });
 
     it('should handle service errors gracefully', async () => {
-      vi.mocked(checkSimpleRateLimit).mockResolvedValue(null);
+      vi.mocked(checkSimpleRateLimit).mockResolvedValue({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 });
 
       vi.mocked(NewsletterService.unsubscribe).mockRejectedValue(
         new Error('Database connection failed')
@@ -392,7 +389,7 @@ describe('Newsletter Server Actions', () => {
       formData.append('email', 'user@example.com');
       formData.append('storeId', 'store-123');
 
-      const result = await unsubscribeFromNewsletter(formData);
+      const result = await unsubscribeFromNewsletter(null, formData);
 
       expect(result).toEqual({
         success: false,
