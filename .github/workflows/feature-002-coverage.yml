@@ -25,6 +25,85 @@ env:
   COVERAGE_THRESHOLD_UTILITIES: 100
 
 jobs:
+  api-test-coverage:
+    name: API Integration Test Coverage (100%)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Check API integration test coverage (T037)
+        id: api_coverage_check
+        shell: pwsh
+        run: |
+          $result = & .\scripts\audit-api-test-coverage.ps1 -OutputJson | ConvertFrom-Json
+          
+          if ($result.UntestedRoutes -gt 0) {
+            Write-Host "::error::$($result.UntestedRoutes) API routes are missing integration tests"
+            Write-Host "::error::Coverage: $($result.CoveragePercent)% (required: 100%)"
+            
+            foreach ($route in $result.RouteDetails) {
+              if (-not $route.HasTest) {
+                Write-Host "::error file=$($route.FilePath)::Missing integration test for $($route.Route)"
+              }
+            }
+            
+            exit 1
+          }
+          
+          Write-Host "::notice::✅ All $($result.TotalRoutes) API routes have integration tests (100% coverage)"
+
+      - name: 💬 Comment PR with API coverage
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            
+            const output = execSync('pwsh -Command "& .\\scripts\\audit-api-test-coverage.ps1 -OutputJson"', {
+              encoding: 'utf-8',
+              cwd: process.env.GITHUB_WORKSPACE
+            });
+            
+            const result = JSON.parse(output);
+            
+            let comment = `### 🔌 API Integration Test Coverage\n\n`;
+            comment += `- **Total API Routes**: ${result.TotalRoutes}\n`;
+            comment += `- **Tested Routes**: ${result.TestedRoutes}\n`;
+            comment += `- **Coverage**: ${result.CoveragePercent}% (required: 100%)\n\n`;
+            
+            if (result.UntestedRoutes > 0) {
+              comment += `#### ❌ ${result.UntestedRoutes} Routes Missing Tests\n\n`;
+              comment += `| Route | File Path |\n`;
+              comment += `|-------|----------|\n`;
+              
+              for (const route of result.RouteDetails) {
+                if (!route.HasTest) {
+                  comment += `| \`${route.Route}\` | \`${route.FilePath}\` |\n`;
+                }
+              }
+            } else {
+              comment += `#### ✅ All API routes have integration tests!\n`;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
   unit-tests:
     name: Unit Tests with Coverage
     runs-on: ubuntu-latest
@@ -281,12 +360,16 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, e2e-critical-paths]
+    needs: [api-test-coverage, unit-tests, integration-tests, e2e-critical-paths]
     if: always()
 
     steps:
       - name: ✅ Check all jobs status
         run: |
+          if [ "${{ needs.api-test-coverage.result }}" != "success" ]; then
+            echo "❌ API integration test coverage check failed"
+            exit 1
+          fi
           if [ "${{ needs.unit-tests.result }}" != "success" ]; then
             echo "❌ Unit tests failed"
             exit 1

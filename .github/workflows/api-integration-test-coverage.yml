@@ -1,0 +1,108 @@
+name: API Integration Test Coverage Enforcement
+
+on:
+  pull_request:
+    paths:
+      - 'src/app/api/**/route.ts'
+      - 'tests/integration/**/*.spec.ts'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'src/app/api/**/route.ts'
+      - 'tests/integration/**/*.spec.ts'
+
+jobs:
+  api-test-coverage:
+    name: Enforce 100% API Route Test Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check API integration test coverage
+        id: coverage_check
+        shell: pwsh
+        run: |
+          $result = & .\scripts\audit-api-test-coverage.ps1 -OutputJson | ConvertFrom-Json
+          
+          if ($result.UntestedRoutes -gt 0) {
+            Write-Host "::error::$($result.UntestedRoutes) API routes are missing integration tests"
+            Write-Host "::error::Coverage: $($result.CoveragePercent)% (required: 100%)"
+            
+            foreach ($route in $result.RouteDetails) {
+              if (-not $route.HasTest) {
+                Write-Host "::error file=$($route.FilePath)::Missing integration test for $($route.Route)"
+              }
+            }
+            
+            exit 1
+          }
+          
+          Write-Host "::notice::All $($result.TotalRoutes) API routes have integration tests"
+          Write-Host "Coverage: $($result.CoveragePercent)%"
+
+      - name: Comment PR with coverage results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            
+            // Run audit script and get JSON output
+            const output = execSync('pwsh -Command "& .\\scripts\\audit-api-test-coverage.ps1 -OutputJson"', {
+              encoding: 'utf-8',
+              cwd: process.env.GITHUB_WORKSPACE
+            });
+            
+            const result = JSON.parse(output);
+            
+            let comment = `## 🧪 API Integration Test Coverage\n\n`;
+            comment += `- **Total API Routes**: ${result.TotalRoutes}\n`;
+            comment += `- **Tested Routes**: ${result.TestedRoutes}\n`;
+            comment += `- **Coverage**: ${result.CoveragePercent}%\n\n`;
+            
+            if (result.UntestedRoutes > 0) {
+              comment += `### ❌ ${result.UntestedRoutes} Routes Missing Tests\n\n`;
+              comment += `| Route | File Path | Recommended Test Path |\n`;
+              comment += `|-------|-----------|----------------------|\n`;
+              
+              for (const route of result.RouteDetails) {
+                if (!route.HasTest) {
+                  const testPath = `tests/integration/${route.Route}/route.spec.ts`;
+                  comment += `| \`${route.Route}\` | ${route.FilePath} | ${testPath} |\n`;
+                }
+              }
+              
+              comment += `\n⚠️ **Action Required**: Add integration tests for all API routes before merging.\n`;
+            } else {
+              comment += `### ✅ All API routes have integration tests!\n`;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-coverage-report
+          path: |
+            scripts/audit-api-test-coverage.ps1
+          retention-days: 30
