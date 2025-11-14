@@ -57,11 +57,14 @@ describe('CSV Export Streaming', () => {
             data: {
               storeId: testStoreId,
               orderNumber: `TEST-${i.toString().padStart(5, '0')}`,
-              customerEmail: `customer${i}@test.com`,
               status: 'PENDING',
+              subtotal: (i + 1) * 10,
+              taxAmount: 0,
+              shippingAmount: 0,
+              discountAmount: 0,
               totalAmount: (i + 1) * 10,
-              currency: 'USD',
               paymentMethod: 'CREDIT_CARD',
+              paymentStatus: 'PENDING',
             },
           })
         )
@@ -150,15 +153,18 @@ describe('CSV Export Streaming', () => {
     });
 
     it('should handle CSV field escaping', async () => {
-      const order = await db.order.create({
+      await db.order.create({
         data: {
           storeId: testStoreId,
           orderNumber: 'TEST-ESCAPE',
-          customerEmail: 'test"comma,newline\nuser@test.com',
           status: 'PENDING',
+          subtotal: 100,
+          taxAmount: 0,
+          shippingAmount: 0,
+          discountAmount: 0,
           totalAmount: 100,
-          currency: 'USD',
           paymentMethod: 'CREDIT_CARD',
+          paymentStatus: 'PENDING',
         },
       });
 
