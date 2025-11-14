@@ -42,9 +42,9 @@ Total tasks: 42 (grouped by phase and user story)
 - [X] T025 [US3] Add consent banner component skeleton `src/components/ConsentBanner.tsx` and wire to Server Action
 
 ### User Story 4 (US4) — Consistent APIs & CSV exports (Priority: P3)
-- [ ] T026 [US4] Implement API middleware pipeline skeleton `src/lib/api-middleware/index.ts` (auth, rateLimit, validation, logging, requestId)
-- [ ] T027 [US4] Migrate representative route `src/app/api/orders/route.ts` to use standardized API response format (`src/lib/api-response.ts`) and include `X-Request-Id` header
-- [ ] T028 [US4] Implement efficient CSV streaming for ≤10k rows in `src/app/api/orders/export/route.ts` and tests `tests/integration/export/stream.spec.ts`
+- [X] T026 [US4] Implement API middleware pipeline skeleton `src/lib/api-middleware/index.ts` (auth, rateLimit, validation, logging, requestId)
+- [X] T027 [US4] Migrate representative route `src/app/api/orders/route.ts` to use standardized API response format (`src/lib/api-response.ts`) and include `X-Request-Id` header
+- [X] T028 [US4] Implement efficient CSV streaming for ≤10k rows in `src/app/api/orders/export/route.ts` and tests `tests/integration/export/stream.spec.ts`
 - [ ] T029 [US4] Implement async export job enqueue path for >10k rows and notification (email + in-app) wiring `src/services/export-service.ts`
 
 ## Final Phase: Polish & Cross-Cutting Concerns

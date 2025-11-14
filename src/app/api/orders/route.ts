@@ -4,21 +4,28 @@
  * Lists orders with filtering, pagination, and search capabilities.
  * Enforces multi-tenant isolation and role-based access control.
  * 
+ * Migrated to use API middleware pipeline (T027)
+ * - Request ID propagation via X-Request-Id header
+ * - Authentication via authMiddleware
+ * - Rate limiting via rateLimitMiddleware
+ * - Standardized response format via apiResponse
+ * 
  * @requires Authentication (Store Admin, Staff with orders:read permission)
  * @returns {OrderListResponse} Paginated list of orders
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-// This route calls authentication helpers which in turn access request
-// headers/cookies. Ensure the route is always dynamic so Next.js does not
-// attempt to prerender it and cause `headers()`/`request.cookies` to fail
-// during the build step.
 export const dynamic = 'force-dynamic';
-import { getServerSession } from 'next-auth/next';
+
 import { z } from 'zod';
-import { authOptions } from '@/lib/auth';
+import { createApiHandler, middlewareStacks } from '@/lib/api-middleware';
 import { listOrders, exportOrdersToCSV } from '@/services/order-service';
-import { apiResponse } from '@/lib/api-response';
+import { 
+  successResponse, 
+  validationErrorResponse,
+  forbiddenResponse,
+  internalServerErrorResponse,
+} from '@/lib/api-response';
 import { OrderStatus } from '@prisma/client';
 
 // Validation schema
@@ -34,72 +41,73 @@ const querySchema = z.object({
   export: z.enum(['csv']).optional(), // Export format
 });
 
-export async function GET(request: NextRequest) {
-  try {
-    // Authentication check
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return apiResponse.unauthorized();
-    }
+export const GET = createApiHandler(
+  middlewareStacks.authenticated, // Uses: requestId + auth + tenant + rateLimit + logging
+  async (request: NextRequest, context) => {
+    try {
+      // Role-based access control (session already validated by authMiddleware)
+      const userRole = context.session?.user?.role;
+      if (!userRole || !['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(userRole)) {
+        return forbiddenResponse('Insufficient permissions');
+      }
 
-    // Role-based access control
-    if (!session.user.role || !['SUPER_ADMIN', 'STORE_ADMIN', 'STAFF'].includes(session.user.role)) {
-      return apiResponse.forbidden('Insufficient permissions');
-    }
+      // storeId already extracted by tenantMiddleware
+      const storeId = context.storeId;
+      if (!storeId && userRole !== 'SUPER_ADMIN') {
+        return forbiddenResponse('No store assigned');
+      }
 
-    // Multi-tenant isolation
-    const storeId = session.user.storeId;
-    if (!storeId && session.user.role !== 'SUPER_ADMIN') {
-      return apiResponse.forbidden('No store assigned');
-    }
+      // Parse and validate query parameters
+      const { searchParams } = new URL(request.url);
+      const params = querySchema.parse(Object.fromEntries(searchParams));
 
-    // Parse and validate query parameters
-    const { searchParams } = new URL(request.url);
-    const params = querySchema.parse(Object.fromEntries(searchParams));
+      // Convert date strings to Date objects
+      const queryParams = {
+        storeId: storeId ?? undefined,
+        page: params.page,
+        perPage: params.perPage,
+        status: params.status,
+        search: params.search,
+        dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
+        dateTo: params.dateTo ? new Date(params.dateTo) : undefined,
+        sortBy: params.sortBy,
+        sortOrder: params.sortOrder,
+      };
 
-    // Convert date strings to Date objects
-    const queryParams = {
-      storeId: storeId ?? undefined,
-      page: params.page,
-      perPage: params.perPage,
-      status: params.status,
-      search: params.search,
-      dateFrom: params.dateFrom ? new Date(params.dateFrom) : undefined,
-      dateTo: params.dateTo ? new Date(params.dateTo) : undefined,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
-    };
+      // Handle CSV export (streaming implementation in T028)
+      if (params.export === 'csv') {
+        const csv = await exportOrdersToCSV(queryParams);
+        
+        return new NextResponse(csv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="orders-${new Date().toISOString().split('T')[0]}.csv"`,
+            'X-Request-Id': context.request.headers.get('x-request-id') || '',
+          },
+        });
+      }
 
-    // Handle CSV export
-    if (params.export === 'csv') {
-      const csv = await exportOrdersToCSV(queryParams);
-      
-      return new NextResponse(csv, {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="orders-${new Date().toISOString().split('T')[0]}.csv"`,
-        },
+      // Fetch orders
+      const result = await listOrders(queryParams);
+
+      // Return standardized response with X-Request-Id header (handled by middleware)
+      return successResponse(result.orders, {
+        message: 'Orders retrieved successfully',
+        meta: result.pagination,
       });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return validationErrorResponse('Validation error', {
+          errors: error.errors,
+        });
+      }
+
+      console.error('[GET /api/orders] Error:', error);
+      return internalServerErrorResponse(
+        error instanceof Error ? error.message : 'Failed to fetch orders'
+      );
     }
-
-    // Fetch orders
-    const result = await listOrders(queryParams);
-
-    return apiResponse.success(result.orders, {
-      message: 'Orders retrieved successfully',
-      meta: result.pagination,
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return apiResponse.validationError('Validation error', {
-        errors: error.errors,
-      });
-    }
-
-    console.error('[GET /api/orders] Error:', error);
-    return apiResponse.internalServerError(
-      error instanceof Error ? error.message : 'Failed to fetch orders'
-    );
   }
-}
+);
+
