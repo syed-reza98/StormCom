@@ -79,7 +79,7 @@ describe('CSV Export Streaming', () => {
 
       const response = await fetch('http://localhost:3000/api/orders/export', {
         headers: {
-          cookie: `next-auth.session-token=${session.sessionToken}`,
+          cookie: `next-auth.session-token=${session.id}`,
         },
       });
 
@@ -141,7 +141,7 @@ describe('CSV Export Streaming', () => {
 
       const response = await fetch('http://localhost:3000/api/orders/export', {
         headers: {
-          cookie: `next-auth.session-token=${session.sessionToken}`,
+          cookie: `next-auth.session-token=${session.id}`,
         },
       });
 
@@ -179,7 +179,7 @@ describe('CSV Export Streaming', () => {
 
       const response = await fetch('http://localhost:3000/api/orders/export', {
         headers: {
-          cookie: `next-auth.session-token=${session.sessionToken}`,
+          cookie: `next-auth.session-token=${session.id}`,
         },
       });
 
@@ -234,7 +234,7 @@ describe('CSV Export Streaming', () => {
 
       const response = await fetch('http://localhost:3000/api/orders/export', {
         headers: {
-          cookie: `next-auth.session-token=${session.sessionToken}`,
+          cookie: `next-auth.session-token=${session.id}`,
         },
       });
 
