@@ -122,13 +122,13 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       // Mock database to fail first 2 attempts with timeout
       let attempts = 0;
       const originalFindFirst = db.payment.findFirst;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         if (attempts <= 2) {
           throw new Error('ETIMEDOUT: Connection timed out');
         }
-        return originalFindFirst.call(db.payment, { where: {} }) as Promise<null>;
-      });
+        return originalFindFirst.call(db.payment, { where: {} }) as any;
+      }) as any);
 
       const result = await validatePaymentIntent(paymentIntentId, 1000, storeId);
 
@@ -140,13 +140,13 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_rate_limit';
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         if (attempts === 1) {
           throw new Error('rate_limit: Too many requests');
         }
-        return null;
-      });
+        return null as any;
+      }) as any);
 
       const result = await validatePaymentIntent(paymentIntentId, 1000, storeId);
 
@@ -158,13 +158,13 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_503';
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         if (attempts === 1) {
           throw new Error('HTTP 503: Service temporarily unavailable');
         }
-        return null;
-      });
+        return null as any;
+      }) as any);
 
       const result = await validatePaymentIntent(paymentIntentId, 1000, storeId);
 
@@ -176,10 +176,10 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_permanent';
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         throw new Error('Permanent error: Invalid API key');
-      });
+      }) as any);
 
       await expect(
         validatePaymentIntent(paymentIntentId, 1000, storeId)
@@ -192,10 +192,10 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_max_retries';
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         throw new Error('ETIMEDOUT: Always fails');
-      });
+      }) as any);
 
       await expect(
         validatePaymentIntent(paymentIntentId, 1000, storeId)
@@ -210,7 +210,7 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       let lastTime = Date.now();
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         const now = Date.now();
         if (attempts > 0) {
           delays.push(now - lastTime);
@@ -222,7 +222,7 @@ describe('Payment Intent Validator Robustness (T041)', () => {
           throw new Error('ETIMEDOUT');
         }
         return null;
-      });
+      }) as any);
 
       await validatePaymentIntent(paymentIntentId, 1000, storeId);
 
@@ -239,7 +239,7 @@ describe('Payment Intent Validator Robustness (T041)', () => {
 
       // Mock slow database query (35 seconds)
       vi.spyOn(db.payment, 'findFirst').mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(null), 35000))
+        (() => new Promise((resolve) => setTimeout(() => resolve(null), 35000))) as any
       );
 
       const startTime = Date.now();
@@ -259,11 +259,11 @@ describe('Payment Intent Validator Robustness (T041)', () => {
 
       let attempts = 0;
       vi.spyOn(db.payment, 'findFirst').mockImplementation(
-        () => new Promise((resolve) => {
+        (() => new Promise((resolve) => {
           attempts++;
           // Each attempt takes 31 seconds (exceeds timeout)
           setTimeout(() => resolve(null), 31000);
-        })
+        })) as any
       );
 
       const startTime = Date.now();
@@ -298,7 +298,7 @@ describe('Payment Intent Validator Robustness (T041)', () => {
       const paymentIntentId = 'pi_test_temp_outage';
 
       let attempts = 0;
-      vi.spyOn(db.payment, 'findFirst').mockImplementation(async () => {
+      vi.spyOn(db.payment, 'findFirst').mockImplementation((async () => {
         attempts++;
         if (attempts === 1) {
           throw new Error('ECONNRESET: Provider connection reset');
@@ -307,7 +307,7 @@ describe('Payment Intent Validator Robustness (T041)', () => {
           throw new Error('503: Service temporarily unavailable');
         }
         return null; // Provider recovered
-      });
+      }) as any);
 
       const result = await validatePaymentIntent(paymentIntentId, 1000, storeId);
 
