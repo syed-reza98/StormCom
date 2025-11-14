@@ -126,7 +126,7 @@ describe('GET /api/orders/export', () => {
       const { createApiHandler } = await import('@/lib/api-middleware');
       const originalHandler = createApiHandler;
       
-      vi.mocked(createApiHandler).mockImplementation((middlewares, handler) => {
+      vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
         return async (request, context) => {
           context = context || {};
           context.session = {
