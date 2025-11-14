@@ -51,10 +51,10 @@ Total tasks: 42 (grouped by phase and user story)
 - [ ] T030 [P] [US1] Add audit log entries for checkout actions in `src/services/audit-service.ts`
 - [ ] T031 [P] [US1] Ensure checkout responses include standardized error shapes and `X-Request-Id` header (update route & tests)
 - [ ] T032 [P] Add cache invalidation calls `revalidateTag(tag, 'max')` on product/category mutations (update services in `src/services/product-service.ts` and `src/services/category-service.ts`)
-- [ ] T033 [P] Add migration test harness `scripts/migration-test.sh` and `tests/integration/migrations/migration.spec.ts`
-- [ ] T034 [P] Update docs: `specs/002-harden-checkout-tenancy/quickstart.md` and `docs/testing-strategy.md` with new test instructions
-- [ ] T035 [P] Add accessibility checks to E2E flows for checkout and newsletter (axe assertions in `tests/e2e/*`)
-- [ ] T036 [P] Final audit: run grep for hardcoded `storeId`, run coverage, Lighthouse, and axe and store artifacts in `specs/002-harden-checkout-tenancy/artifacts/`
+- [X] T033 [P] Add migration test harness `scripts/migration-test.sh` and `tests/integration/migrations/migration.spec.ts`
+- [X] T034 [P] Update docs: `specs/002-harden-checkout-tenancy/quickstart.md` and `docs/testing-strategy.md` with new test instructions
+- [X] T035 [P] Add accessibility checks to E2E flows for checkout and newsletter (axe assertions in `tests/e2e/*`)
+- [X] T036 [P] Final audit: run grep for hardcoded `storeId`, run coverage, Lighthouse, and axe and store artifacts in `specs/002-harden-checkout-tenancy/artifacts/`
 
 ## Remediation & Constitution Tasks (critical follow-ups)
 - [ ] T037 Add integration tests for every API route under `src/app/api/**/route.ts`; ensure each route (not only modified ones) has a corresponding integration test in `tests/integration/`. Add a CI check that fails pre-merge if any API route lacks an integration test. (maps to FR-013 and constitution MUST)

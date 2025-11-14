@@ -10,9 +10,11 @@
  * - FR-002: Server-side price recalculation
  * - Never trust client-submitted monetary values
  * - Prevent fraudulent checkouts
+ * - WCAG 2.1 AA accessibility compliance
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Checkout Security - Price Tampering Prevention', () => {
   test.beforeEach(async ({ page }) => {
@@ -57,6 +59,12 @@ test.describe('Checkout Security - Price Tampering Prevention', () => {
     await page.click('[data-testid="cart-icon"]');
     await page.click('[data-testid="checkout-button"]');
 
+    // Accessibility check on checkout page
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
+
     // Fill shipping form
     await page.fill('[name="email"]', 'tamper-test@example.com');
     await page.fill('[name="fullName"]', 'Tamper Test');
@@ -73,6 +81,12 @@ test.describe('Checkout Security - Price Tampering Prevention', () => {
     // Server should recalculate prices and create order with CORRECT total
     // NOT the tampered $1.00 price
     await expect(page.locator('[data-testid="order-success"]')).toBeVisible();
+
+    // Accessibility check on order confirmation page
+    const confirmationScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(confirmationScanResults.violations).toEqual([]);
 
     // Verify order total is NOT $1.00
     const orderTotal = await page.locator('[data-testid="order-total"]').textContent();

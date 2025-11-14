@@ -785,6 +785,260 @@ npm run test:integration -- products.test.ts
 
 ---
 
+## Migration Testing
+
+### Overview
+
+Database migrations are critical infrastructure that must be validated for integrity, idempotency, and rollback safety. StormCom uses Prisma ORM for schema management and includes comprehensive migration testing.
+
+### Technology Stack
+
+- **ORM**: Prisma 6.x
+- **Migration Tool**: Prisma Migrate
+- **Test Harness**: Shell scripts + Vitest integration tests
+- **Database**: SQLite (dev), PostgreSQL (prod)
+
+### Migration Test Harness
+
+**Scripts**:
+- `scripts/migration-test.sh` (Linux/Mac)
+- `scripts/migration-test.ps1` (Windows)
+
+**Test Coverage**:
+1. Fresh migration (apply all migrations to empty database)
+2. Idempotency (re-run migrations without errors)
+3. Schema validation (`prisma validate`)
+4. Prisma Client generation
+5. Database introspection (verify structure matches schema)
+6. Seed data application
+7. Backup/restore workflow
+8. Migration history consistency
+9. Foreign key constraint validation
+10. Index existence validation
+
+**Usage**:
+```bash
+# Windows
+.\scripts\migration-test.ps1
+
+# Linux/Mac
+./scripts/migration-test.sh
+
+# Cleanup test database
+.\scripts\migration-test.ps1 -Cleanup
+./scripts/migration-test.sh --cleanup
+```
+
+**Integration Tests**: `tests/integration/migrations/migration.spec.ts`
+
+```typescript
+describe('Prisma Migration Tests', () => {
+  it('should apply all migrations to a fresh database', () => {
+    // Validates migration deployment
+  });
+
+  it('should be idempotent (safe to run multiple times)', () => {
+    // Ensures re-running migrations doesn't cause errors
+  });
+
+  it('should create all expected tables', async () => {
+    // Verifies schema structure
+  });
+
+  it('should create indexes on critical columns', async () => {
+    // Ensures performance indexes exist
+  });
+
+  it('should enforce foreign key constraints', async () => {
+    // Validates referential integrity
+  });
+
+  it('should preserve data after re-running migrations', async () => {
+    // Tests data persistence
+  });
+
+  it('should handle reset without errors', () => {
+    // Validates rollback safety
+  });
+});
+```
+
+**Migration Best Practices**:
+- Always test migrations before deploying to production
+- Use `prisma migrate deploy` in production (never `db push`)
+- Run migration tests in CI/CD pipeline
+- Validate foreign keys and indexes after each migration
+- Test rollback scenarios with `prisma migrate reset`
+- Seed data should be idempotent and versioned
+
+---
+
+## Audit Logging Testing
+
+### Overview
+
+Audit logging is critical for compliance, security, and debugging. All audit log functionality must be thoroughly tested to ensure accurate tracking of critical events.
+
+### Audit Service Coverage
+
+**File**: `src/services/audit-service.ts`
+
+**Required Coverage**: 80% minimum (business logic standard)
+
+**Functions to Test**:
+- `createAuditLog()` - Core logging function with context capture
+- `createAuditLogBatch()` - Transactional batch operations
+- `getAuditLogsForEntity()` - Entity history queries
+- `getAuditLogsForStore()` - Store-scoped audit trails
+- `auditCheckoutCompleted()` - Checkout event helper
+- `auditPaymentValidated()` - Payment validation helper
+- `auditOrderCreated()` - Order creation helper
+
+**Test Coverage Areas**:
+
+1. **Context Integration**:
+   ```typescript
+   it('should capture storeId from request context', async () => {
+     mockRequestContext({ storeId: 'test-store-123', userId: 'user-456' });
+     await createAuditLog({
+       action: 'order.created',
+       entityType: 'Order',
+       entityId: 'order-789',
+     });
+     expect(db.auditLog.create).toHaveBeenCalledWith({
+       data: expect.objectContaining({
+         storeId: 'test-store-123',
+         userId: 'user-456',
+       }),
+     });
+   });
+   ```
+
+2. **Override Behavior**:
+   ```typescript
+   it('should allow explicit storeId override', async () => {
+     mockRequestContext({ storeId: 'context-store' });
+     await createAuditLog({
+       action: 'test.action',
+       storeId: 'override-store', // Explicit override
+     });
+     expect(db.auditLog.create).toHaveBeenCalledWith({
+       data: expect.objectContaining({ storeId: 'override-store' }),
+     });
+   });
+   ```
+
+3. **JSON Serialization**:
+   ```typescript
+   it('should serialize changes object to JSON', async () => {
+     await createAuditLog({
+       action: 'product.updated',
+       changes: {
+         before: { price: 1000 },
+         after: { price: 1200 },
+         requestId: 'req-123',
+       },
+     });
+     expect(db.auditLog.create).toHaveBeenCalledWith({
+       data: expect.objectContaining({
+         changes: JSON.stringify({
+           before: { price: 1000 },
+           after: { price: 1200 },
+           requestId: 'req-123',
+         }),
+       }),
+     });
+   });
+   ```
+
+4. **Batch Operations**:
+   ```typescript
+   it('should create multiple audit logs in transaction', async () => {
+     await createAuditLogBatch([
+       { action: 'order.created', entityId: 'order-1' },
+       { action: 'payment.validated', entityId: 'payment-1' },
+     ]);
+     expect(db.$transaction).toHaveBeenCalled();
+   });
+   ```
+
+5. **Query Helpers**:
+   ```typescript
+   it('should filter audit logs by entity', async () => {
+     await getAuditLogsForEntity('Order', 'order-123');
+     expect(db.auditLog.findMany).toHaveBeenCalledWith({
+       where: { entityType: 'Order', entityId: 'order-123' },
+       orderBy: { createdAt: 'desc' },
+     });
+   });
+
+   it('should filter audit logs by store with pagination', async () => {
+     await getAuditLogsForStore('store-123', { limit: 50, offset: 100 });
+     expect(db.auditLog.findMany).toHaveBeenCalledWith({
+       where: { storeId: 'store-123' },
+       skip: 100,
+       take: 50,
+     });
+   });
+   ```
+
+**Integration Testing**:
+
+Test audit logging in real scenarios:
+
+```typescript
+describe('Checkout Audit Trail', () => {
+  it('should create audit logs for complete checkout flow', async () => {
+    // Create order
+    const order = await createOrder(checkoutInput);
+
+    // Verify audit logs
+    const logs = await getAuditLogsForEntity('Order', order.id);
+    
+    expect(logs).toHaveLength(3);
+    expect(logs[0].action).toBe('checkout.completed');
+    expect(logs[1].action).toBe('order.created');
+    expect(logs[2].action).toBe('payment.validated');
+  });
+});
+```
+
+**E2E Audit Verification**:
+
+```typescript
+test('checkout flow creates complete audit trail', async ({ page }) => {
+  // Complete checkout
+  await page.goto('/checkout');
+  await fillCheckoutForm(page);
+  await page.click('[data-testid="submit-order"]');
+  
+  // Verify audit logs in database
+  const orderId = await getOrderIdFromPage(page);
+  const auditLogs = await prisma.auditLog.findMany({
+    where: { entityType: 'Order', entityId: orderId },
+  });
+  
+  expect(auditLogs).toHaveLength(3);
+  expect(auditLogs.some(log => log.action === 'payment.validated')).toBe(true);
+});
+```
+
+**Audit Log Schema Validation**:
+
+All audit logs must include:
+- `id` (CUID)
+- `storeId` (tenant isolation)
+- `userId` (who performed the action)
+- `action` (semantic action name, e.g., 'order.created')
+- `entityType` (e.g., 'Order', 'Product', 'Payment')
+- `entityId` (resource identifier)
+- `changes` (JSON with before/after state, requestId)
+- `ipAddress` (client IP for security)
+- `userAgent` (client info for debugging)
+- `createdAt` (timestamp)
+
+---
+
 ## End-to-End Testing
 
 ### Technology Stack
@@ -1058,13 +1312,132 @@ lhci autorun
 
 ## Accessibility Testing
 
-See `design-system.md` for complete accessibility testing setup.
+### Technology Stack
 
-**Key Tools**:
-- axe-core/playwright for automated scans
-- BrowserStack Accessibility Testing for cross-browser validation
-- Manual keyboard navigation testing
-- Screen reader testing (NVDA, JAWS, VoiceOver)
+- **Framework**: axe-core + @axe-core/playwright
+- **Standard**: WCAG 2.1 Level AA compliance
+- **Manual Testing**: Keyboard navigation, screen readers (NVDA, JAWS, VoiceOver)
+- **CI Integration**: Automated axe assertions in E2E tests
+
+### Automated Accessibility Testing
+
+**Installation**:
+```bash
+npm install -D @axe-core/playwright
+```
+
+**Integration with Playwright**:
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { injectAxe, checkA11y } from 'axe-playwright';
+
+test.describe('Checkout Flow Accessibility', () => {
+  test('checkout page should have no accessibility violations', async ({ page }) => {
+    await page.goto('/checkout');
+    
+    // Inject axe-core into the page
+    await injectAxe(page);
+    
+    // Run accessibility checks
+    await checkA11y(page, null, {
+      detailedReport: true,
+      detailedReportOptions: { html: true }
+    });
+  });
+
+  test('checkout form should be keyboard navigable', async ({ page }) => {
+    await page.goto('/checkout');
+    await injectAxe(page);
+    
+    // Tab through form fields
+    await page.keyboard.press('Tab');
+    await expect(page.locator('[name="email"]')).toBeFocused();
+    
+    await page.keyboard.press('Tab');
+    await expect(page.locator('[name="firstName"]')).toBeFocused();
+    
+    // Verify no violations after keyboard navigation
+    await checkA11y(page);
+  });
+
+  test('newsletter signup should meet WCAG 2.1 AA', async ({ page }) => {
+    await page.goto('/newsletter');
+    await injectAxe(page);
+    
+    // Check with specific WCAG 2.1 AA rules
+    await checkA11y(page, null, {
+      axeOptions: {
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+        }
+      }
+    });
+  });
+});
+```
+
+**Common Accessibility Patterns**:
+
+1. **Form Labels**:
+   ```tsx
+   <label htmlFor="email">Email Address</label>
+   <input id="email" name="email" type="email" required />
+   ```
+
+2. **ARIA Labels**:
+   ```tsx
+   <button aria-label="Add to cart">
+     <ShoppingCartIcon />
+   </button>
+   ```
+
+3. **Live Regions**:
+   ```tsx
+   <div role="status" aria-live="polite" aria-atomic="true">
+     {loading ? 'Loading...' : `${products.length} products found`}
+   </div>
+   ```
+
+4. **Keyboard Navigation**:
+   ```tsx
+   <div 
+     role="button" 
+     tabIndex={0}
+     onClick={handleClick}
+     onKeyDown={(e) => {
+       if (e.key === 'Enter' || e.key === ' ') {
+         handleClick();
+       }
+     }}
+   >
+     Click me
+   </div>
+   ```
+
+### Accessibility Checklist
+
+**Required for all components**:
+- [ ] Color contrast ratio ≥ 4.5:1 for normal text (WCAG AA)
+- [ ] Color contrast ratio ≥ 3:1 for large text (WCAG AA)
+- [ ] All interactive elements keyboard accessible (Tab, Enter, Escape)
+- [ ] Focus indicators visible (2px ring with offset)
+- [ ] Touch targets ≥ 44×44px (mobile)
+- [ ] Semantic HTML (headings, landmarks, lists)
+- [ ] Form labels for all inputs
+- [ ] ARIA labels for icon-only buttons
+- [ ] Error messages associated with form fields
+- [ ] Loading states announced to screen readers (aria-live)
+
+**Testing Workflow**:
+1. Run automated axe checks in E2E tests
+2. Manual keyboard navigation testing
+3. Screen reader testing (NVDA on Windows, VoiceOver on Mac)
+4. BrowserStack Accessibility Testing for cross-browser validation
+5. Review axe results in CI/CD pipeline
+
+See `design-system.md` for complete accessibility guidelines and component library patterns.
 
 ---
 
