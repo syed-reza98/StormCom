@@ -63,11 +63,11 @@ Total tasks: 42 (grouped by phase and user story)
 - [X] T040 Background job infra validation: confirm existing job processing infra (worker/queue); if missing, add lightweight dev stub and update `src/services/export-service.ts` to support stub in dev/test
 - [X] T041 Payment pre-validation robustness: add idempotency key handling, retry/backoff policy, and tests for provider outages (update `src/services/payments/intent-validator.ts` and tests)
 - [X] T042 REST audit: scan `src/app/api/**/route.ts` for REST violations (PUT/PATCH misuse, stray `success` flags). Produce per-endpoint remediation tasks with deadlines and CI gating to ensure fixes are applied before merge.
-  - [ ] T038b Migrate `Product.images` from `String` JSON array to `Json` type; write migration + backfill parser.
-  - [ ] T038c Migrate `Product.metaKeywords` from `String` JSON array to `Json` type.
-  - [ ] T038d Migrate `ProductVariant.options` from `String` JSON object to `Json` type.
-  - [ ] T038e Migrate `ProductAttribute.values` from `String` JSON array to `Json` type.
-  - [ ] T038f Migrate `Review.images` from `String` JSON array to `Json` type.
+  - [X] T038b Migrate `Product.images` from `String` JSON array to `Json` type; write migration + backfill parser.
+  - [X] T038c Migrate `Product.metaKeywords` from `String` JSON array to `Json` type.
+  - [X] T038d Migrate `ProductVariant.options` from `String` JSON object to `Json` type.
+  - [X] T038e Migrate `ProductAttribute.values` from `String` JSON array to `Json` type.
+  - [X] T038f Migrate `Review.images` from `String` JSON array to `Json` type.
   - [ ] T038g Migrate `ShippingZone.countries` from `String` JSON array to `Json` type.
   - [ ] T038h Migrate `Page.metaKeywords` from `String` JSON array to `Json` type.
   - [ ] T038i Migrate `EmailTemplate.variables` from `String` JSON array to `Json` type.
