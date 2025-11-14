@@ -13,6 +13,8 @@ import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { getStoreTheme } from '@/services/theme-service';
 import { getThemeCSSString } from '@/lib/theme-utils';
+import { StorefrontHeader } from '@/components/storefront/storefront-header';
+import { StorefrontFooter } from '@/components/storefront/storefront-footer';
 
 interface StorefrontLayoutProps {
   children: React.ReactNode;
@@ -57,6 +59,9 @@ export default async function StorefrontLayout({ children }: StorefrontLayoutPro
     themeCSS = getThemeCSSString(theme);
   }
 
+  // TODO: Get actual cart item count from session/database
+  const cartItemCount = 0;
+
   return (
     <>
       {/* Inject theme CSS as inline styles */}
@@ -64,9 +69,13 @@ export default async function StorefrontLayout({ children }: StorefrontLayoutPro
         <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
       )}
 
-      {/* Storefront content */}
-      <div className="min-h-screen" style={{ backgroundColor: 'var(--background-color, #FFFFFF)', color: 'var(--text-color, #1F2937)' }}>
-        {children}
+      {/* Storefront structure with header/footer */}
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--background-color, #FFFFFF)', color: 'var(--text-color, #1F2937)' }}>
+        <StorefrontHeader cartItemCount={cartItemCount} />
+        <main id="main-content" className="flex-1">
+          {children}
+        </main>
+        <StorefrontFooter />
       </div>
     </>
   );
