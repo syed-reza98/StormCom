@@ -750,7 +750,7 @@ model Payment {
   gatewayChargeId   String? // Stripe charge_id
 
   // Metadata
-  metadata String? // JSON gateway-specific data
+  metadata Json? // Gateway-specific data object - migrated from String? in T038k
 
   // Refund
   refundedAmount Float     @default(0)
@@ -990,7 +990,7 @@ model ShippingZone {
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   name      String
-  countries String // JSON array of ISO country codes (e.g., ["US", "CA"])
+  countries Json // Array of ISO country codes (e.g., ["US", "CA"]) - migrated from String in T038g
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1069,7 +1069,7 @@ model Page {
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String // JSON array
+  metaKeywords    Json // Array of keywords - migrated from String in T038h
 
   isPublished Boolean   @default(false)
   publishedAt DateTime?
@@ -1141,7 +1141,7 @@ model EmailTemplate {
   textBody String?
 
   // Variables (e.g., ["{{customerName}}", "{{orderNumber}}"])
-  variables String // JSON array
+  variables Json // Array of template variables - migrated from String in T038i
 
   isActive Boolean @default(true)
 
@@ -1283,7 +1283,7 @@ model SyncLog {
   recordsFailed    Int @default(0)
 
   errorMessage String?
-  metadata     String? // JSON
+  metadata     Json? // Sync processing metadata - migrated from String? in T038l
 
   createdAt DateTime @default(now())
 
@@ -1298,7 +1298,7 @@ model Webhook {
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   url    String
-  events String // JSON array e.g., ["order.created", "product.updated"]
+  events Json // Array of event names e.g., ["order.created", "product.updated"] - migrated from String in T038j
   secret String // For HMAC signature verification
 
   isActive Boolean @default(true)
@@ -1332,7 +1332,7 @@ model AuditLog {
   entityId   String
 
   // Change tracking
-  changes String? // JSON { "field": { "old": "value", "new": "value" } }
+  changes Json? // Object with field diffs: { "field": { "old": "value", "new": "value" } } - migrated from String? in T038m
 
   // Request metadata
   ipAddress String?
