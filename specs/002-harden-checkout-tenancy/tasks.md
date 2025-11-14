@@ -77,7 +77,7 @@ Total tasks: 42 (grouped by phase and user story)
   - [X] T038m Migrate optional `AuditLog.changes` from `String?` to `Json?` and ensure diff object preserved.
 
 ## Additional Tasks (Governance & CI)
-- [ ] T043 Percy + Visual Regression: Integrate Percy visual regression for critical pages and UI components (dashboard, checkout, product list). Add Percy job to feature CI and create snapshot baselines. Map to constitution visual regression requirements.
+- [X] T043 Percy + Visual Regression: Integrate Percy visual regression for critical pages and UI components (dashboard, checkout, product list). Add Percy job to feature CI and create snapshot baselines. Map to constitution visual regression requirements.
 - [ ] T044 CI k6 & Lighthouse gating: Add CI jobs to run k6 (load) and Lighthouse CI with defined thresholds; fail PRs or block merge if thresholds are not met for PRs touching critical paths.
 
 ---
