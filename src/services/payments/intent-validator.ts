@@ -57,7 +57,7 @@ export async function validatePaymentIntent(
     // Look up payment intent in database (temporary implementation)
     const existingPayment = await db.payment.findFirst({
       where: {
-        paymentIntentId,
+        gatewayPaymentId: paymentIntentId,
         order: {
           storeId, // Multi-tenant isolation
         },
@@ -73,7 +73,7 @@ export async function validatePaymentIntent(
 
     // If payment already exists and is completed, prevent duplicate order creation
     if (existingPayment) {
-      if (existingPayment.status === 'COMPLETED') {
+      if (existingPayment.status === 'PAID') {
         return {
           isValid: false,
           reason: 'Payment intent already used for a completed order',
@@ -84,7 +84,7 @@ export async function validatePaymentIntent(
         };
       }
 
-      if (existingPayment.status === 'FAILED' || existingPayment.status === 'CANCELLED') {
+      if (existingPayment.status === 'REFUNDED' || existingPayment.status === 'DISPUTED') {
         return {
           isValid: false,
           reason: `Payment intent has status: ${existingPayment.status}`,
@@ -144,13 +144,13 @@ export async function validatePaymentIntent(
  * Prevents tampering where client submits payment intent with lower amount
  * than actual order total.
  * 
- * @param paymentIntentId - Stripe payment intent ID
- * @param expectedAmount - Server-calculated order total (in cents)
+ * @param _paymentIntentId - Stripe payment intent ID (unused in mock)
+ * @param _expectedAmount - Server-calculated order total in cents (unused in mock)
  * @returns True if amounts match within 1 cent tolerance
  */
 export async function verifyPaymentIntentAmount(
-  paymentIntentId: string,
-  expectedAmount: number
+  _paymentIntentId: string,
+  _expectedAmount: number
 ): Promise<boolean> {
   // TODO: Implement Stripe API call to retrieve payment intent amount
   // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -185,7 +185,7 @@ export async function verifyPaymentIntentStore(
   // For now, check database payment records
   const payment = await db.payment.findFirst({
     where: {
-      paymentIntentId,
+      gatewayPaymentId: paymentIntentId,
       order: {
         storeId,
       },
@@ -203,9 +203,8 @@ export async function verifyPaymentIntentStore(
  */
 export function getValidCheckoutStatuses(): string[] {
   return [
-    'requires_confirmation',
-    'requires_action',
-    'processing',
-    'succeeded',
+    'PENDING',     // Payment initiated
+    'AUTHORIZED',  // Payment authorized (not captured)
+    // Note: 'PAID' is excluded - if payment is already PAID, order likely exists
   ];
 }

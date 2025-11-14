@@ -138,16 +138,18 @@ export async function POST(request: NextRequest) {
       // Create payment record linked to validated intent
       await tx.payment.create({
         data: {
+          storeId,
           orderId: createdOrder.id,
           amount: pricing.grandTotal,
           currency: pricing.currency,
-          paymentMethod: input.paymentMethod,
+          method: input.paymentMethod,
+          gateway: 'STRIPE', // TODO: Make dynamic based on payment method
           status: 'PENDING',
-          paymentIntentId: input.paymentIntentId,
-          metadata: {
+          gatewayPaymentId: input.paymentIntentId, // Stripe payment_intent_id
+          metadata: JSON.stringify({
             validatedAt: new Date().toISOString(),
             ipAddress: orderInput.ipAddress,
-          },
+          }),
         },
       });
 
