@@ -361,13 +361,13 @@ model Product {
   brand      Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
 
   // Media
-  images       String // JSON array of Vercel Blob URLs
+  images       Json // Array of Vercel Blob URLs (migrated from String in T038b)
   thumbnailUrl String?
 
   // SEO
   metaTitle       String?
   metaDescription String?
-  metaKeywords    String // JSON array
+  metaKeywords    Json // Array of keywords (migrated from String in T038c)
 
   // Visibility
   isPublished Boolean   @default(false)
@@ -427,7 +427,7 @@ model ProductVariant {
   image String? // Vercel Blob URL
 
   // Options (e.g., { "Size": "Small", "Color": "Red" })
-  options String // JSON object
+  options Json // Object e.g., { "Size": "Small", "Color": "Red" } (migrated from String in T038d)
 
   isDefault Boolean @default(false)
 
@@ -512,7 +512,7 @@ model Brand {
 model ProductAttribute {
   id     String @id @default(uuid())
   name   String // e.g., "Color", "Size"
-  values String // JSON array e.g., ["Red", "Blue", "Green"]
+  values Json // Array e.g., ["Red", "Blue", "Green"] (migrated from String in T038e)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -849,7 +849,7 @@ model Review {
   comment String
 
   // Media
-  images String // JSON array of Vercel Blob URLs
+  images Json // Array of Vercel Blob URLs (migrated from String in T038f)
 
   // Moderation
   isApproved Boolean   @default(false)
