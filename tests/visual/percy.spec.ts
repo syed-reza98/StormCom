@@ -40,7 +40,7 @@ import percySnapshot from '@percy/playwright';
  */
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-  const _TEST_STORE_SUBDOMAIN = 'test-store';/**
+/**
  * Percy snapshot options
  * - widths: Defined in .percy.yml (375px, 768px, 1280px)
  * - minHeight: Defined in .percy.yml (1024px)

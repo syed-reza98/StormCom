@@ -130,8 +130,8 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
           shippingAmount: 0,
           discountAmount: 0,
           totalAmount: 5000,
-          shippingAddress: { connect: { id: shippingAddr.id } },
-          billingAddress: { connect: { id: billingAddr.id } },
+          shippingAddressId: shippingAddr.id,
+          billingAddressId: billingAddr.id,
         },
       });
 
@@ -212,8 +212,8 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
           shippingAmount: 0,
           discountAmount: 0,
           totalAmount: 15000,
-          shippingAddress: { connect: { id: otherShippingAddr.id } },
-          billingAddress: { connect: { id: otherBillingAddr.id } },
+          shippingAddressId: otherShippingAddr.id,
+          billingAddressId: otherBillingAddr.id,
         },
       });
 
@@ -360,15 +360,15 @@ describe('Payment Validator Provider Outage Resilience (T041)', () => {
         data: {
           storeId,
           userId,
-          orderNumber: 'ORD-FULL-FLOW',
+          orderNumber: 'ORD-CHECKOUT',
           status: 'PENDING',
           subtotal: 12000,
           taxAmount: 0,
           shippingAmount: 0,
           discountAmount: 0,
           totalAmount: 12000,
-          shippingAddress: { connect: { id: checkoutShippingAddr.id } },
-          billingAddress: { connect: { id: checkoutBillingAddr.id } },
+          shippingAddressId: checkoutShippingAddr.id,
+          billingAddressId: checkoutBillingAddr.id,
         },
       });
 

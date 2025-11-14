@@ -87,7 +87,7 @@ test.describe('Login Errors', () => {
       expect(auditLog?.action).toBe('LOGIN_FAILED');
       
       // Parse changes JSON to verify it contains the expected data
-      const changes = auditLog?.changes ? JSON.parse(auditLog.changes) : null;
+      const changes = auditLog?.changes ? JSON.parse(auditLog.changes as string) : null;
       expect(changes).toMatchObject({
         email: user.email,
         reason: expect.stringMatching(/password|credentials/i),

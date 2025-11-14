@@ -200,12 +200,12 @@ describe('JobQueueStub', () => {
 
     it('should auto-start in development mode', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true, configurable: true });
 
       const devQueue = new JobQueueStub();
       expect(devQueue).toBeDefined(); // Auto-started
 
-      process.env.NODE_ENV = originalEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, writable: true, configurable: true });
     });
   });
 

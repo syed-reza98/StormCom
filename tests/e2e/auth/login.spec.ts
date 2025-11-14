@@ -76,7 +76,7 @@ test.describe('User Login', () => {
       expect(auditLog?.action).toBe('LOGIN');
       
       // Parse changes JSON to verify it contains the expected data
-      const changes = auditLog?.changes ? JSON.parse(auditLog.changes) : null;
+      const changes = auditLog?.changes ? JSON.parse(auditLog.changes as string) : null;
       expect(changes).toMatchObject({
         email: admin.email,
         role: 'SUPER_ADMIN',

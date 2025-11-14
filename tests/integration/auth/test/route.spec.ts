@@ -66,7 +66,7 @@ describe('GET /api/auth/test', () => {
 
       process.env.NEXTAUTH_SECRET = 'test-secret';
       process.env.NEXTAUTH_URL = 'http://localhost:3000';
-      process.env.NODE_ENV = 'test';
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', writable: true, configurable: true });
 
       const response = await GET();
 
@@ -81,7 +81,7 @@ describe('GET /api/auth/test', () => {
       // Restore original env vars
       process.env.NEXTAUTH_SECRET = originalSecret;
       process.env.NEXTAUTH_URL = originalUrl;
-      process.env.NODE_ENV = originalNodeEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalNodeEnv, writable: true, configurable: true });
     });
 
     it('should detect missing environment variables', async () => {

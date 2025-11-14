@@ -348,7 +348,7 @@ export async function getResourceAuditLogs(
       id: log.id,
       userId: log.userId,
       action: log.action,
-      changes: log.changes,
+      changes: log.changes as string | null,
       ipAddress: log.ipAddress,
       createdAt: log.createdAt,
     })),

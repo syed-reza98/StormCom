@@ -64,7 +64,7 @@ describe('GET /api/orders/export', () => {
       const originalHandler = createApiHandler;
       
       vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
-        return async (request, context) => {
+        return async (request, context: any) => {
           context = context || {};
           context.session = {
             user: { id: 'user-1', email: 'user@example.com', role: 'CUSTOMER' },
@@ -90,7 +90,7 @@ describe('GET /api/orders/export', () => {
       const originalHandler = createApiHandler;
       
       vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
-        return async (request, context) => {
+        return async (request, context: any) => {
           context = context || {};
           context.session = {
             user: { id: 'admin-1', email: 'admin@example.com', role: 'SUPER_ADMIN' },
@@ -122,12 +122,12 @@ describe('GET /api/orders/export', () => {
       vi.mocked(createApiHandler).mockImplementation(originalHandler as any);
     });
 
-    it('should return 403 for non-super-admin without storeId', async () => {
+    it('should allow STAFF to export store orders', async () => {
       const { createApiHandler } = await import('@/lib/api-middleware');
       const originalHandler = createApiHandler;
       
       vi.mocked(createApiHandler).mockImplementation((_middlewares, handler) => {
-        return async (request, context) => {
+        return async (request, context: any) => {
           context = context || {};
           context.session = {
             user: { id: 'staff-1', email: 'staff@example.com', role: 'STAFF' },
