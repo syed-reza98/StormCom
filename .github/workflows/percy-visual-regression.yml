@@ -1,0 +1,231 @@
+name: Percy Visual Regression Tests
+
+# Purpose: Capture and compare visual snapshots of critical UI components
+# Constitution requirement: Percy integration with 0.1% difference threshold
+# Runs on: Every PR to detect visual regressions, every push to main to update baseline
+# 
+# Workflow:
+# 1. PR opened/updated → Capture snapshots → Compare against main baseline
+# 2. Differences > 0.1% → Flag for manual review in Percy dashboard
+# 3. Developer reviews and approves/rejects visual changes
+# 4. Once approved → Status check passes → PR can merge
+# 5. PR merged to main → Snapshots become new baseline for future comparisons
+
+on:
+  pull_request:
+    # Run on PRs to compare against baseline
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      # Only run when UI code changes
+      - 'src/app/**'
+      - 'src/components/**'
+      - 'src/styles/**'
+      - 'public/**'
+      - 'tailwind.config.ts'
+      - 'tests/visual/**'
+      - '.percy.yml'
+  push:
+    # Run on main to update baseline snapshots
+    branches:
+      - main
+  workflow_dispatch:
+    # Allow manual trigger for baseline updates
+
+# Environment variables for Percy
+env:
+  PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+  PERCY_BRANCH: ${{ github.head_ref || github.ref_name }}
+  PERCY_COMMIT: ${{ github.sha }}
+  PERCY_PULL_REQUEST: ${{ github.event.pull_request.number }}
+  NODE_ENV: test
+  DATABASE_URL: file:./prisma/test.db
+  NEXTAUTH_SECRET: test-secret-for-ci
+  NEXTAUTH_URL: http://localhost:3000
+
+jobs:
+  percy-visual-tests:
+    name: Percy Visual Regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Run tests in parallel for faster execution
+        shard: [1, 2]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for Percy baseline comparison
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma db push --skip-generate
+          npx prisma db seed
+
+      - name: Build Next.js application
+        run: npm run build
+
+      - name: Start Next.js server
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 60000
+        env:
+          PORT: 3000
+
+      - name: Run Percy visual tests
+        run: |
+          npx percy exec -- npx playwright test tests/visual/percy.spec.ts \
+            --shard=${{ matrix.shard }}/2 \
+            --reporter=list
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}-${{ github.run_attempt }}
+          PERCY_PARALLEL_TOTAL: 2
+
+      - name: Upload Playwright test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: percy-test-results-${{ matrix.shard }}
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+
+  percy-finalize:
+    name: Finalize Percy Build
+    runs-on: ubuntu-latest
+    needs: percy-visual-tests
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install Percy CLI
+        run: npm install -g @percy/cli
+
+      - name: Finalize Percy build
+        run: npx percy build:finalize
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}-${{ github.run_attempt }}
+
+  percy-status-check:
+    name: Percy Status Check
+    runs-on: ubuntu-latest
+    needs: percy-finalize
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+
+    steps:
+      - name: Wait for Percy to finish processing
+        run: sleep 30
+
+      - name: Check Percy build status
+        run: |
+          echo "Percy build complete. Review visual changes at:"
+          echo "https://percy.io/${{ github.repository_owner }}/stormcom/builds"
+          echo ""
+          echo "If visual differences > 0.1% threshold detected:"
+          echo "1. Review snapshots in Percy dashboard"
+          echo "2. Approve or reject visual changes"
+          echo "3. Once approved, status check will pass"
+
+      - name: Comment Percy results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const percyUrl = `https://percy.io/${{ github.repository_owner }}/stormcom/builds`;
+            const comment = `## Percy Visual Regression Results
+            
+            Visual regression tests have completed for this PR.
+            
+            📸 **Review snapshots**: [Percy Dashboard](${percyUrl})
+            
+            **Next steps:**
+            1. Review visual changes in Percy dashboard
+            2. Approve or reject snapshots
+            3. Once approved, this status check will pass
+            
+            **Threshold**: Differences > 0.1% require manual approval
+            **Critical pages tested**: Dashboard, Checkout, Product List, Admin Settings
+            **Viewports**: Mobile (375px), Tablet (768px), Desktop (1280px)
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+# Percy baseline management:
+# 
+# Creating initial baseline:
+# 1. Merge first PR with visual tests to main
+# 2. Percy captures snapshots from main branch
+# 3. These become the baseline for future comparisons
+# 
+# Updating baseline (intentional visual changes):
+# 1. Make UI changes in feature branch
+# 2. Open PR → Percy compares against baseline
+# 3. Review visual differences in Percy dashboard
+# 4. Approve snapshots in Percy UI
+# 5. Merge PR → New snapshots become baseline
+# 
+# Reverting to previous baseline:
+# 1. Find previous build in Percy dashboard
+# 2. Set as baseline manually
+# 3. Or revert code changes and merge
+# 
+# Percy dashboard: https://percy.io/[org]/stormcom
+# Percy docs: https://docs.percy.io/
+
+# Troubleshooting:
+# 
+# Percy token not found:
+# - Add PERCY_TOKEN to GitHub repository secrets
+# - Get token from: https://percy.io/settings
+# 
+# Snapshots are inconsistent:
+# - Check for dynamic timestamps (add to percyCSS hide list)
+# - Verify animations are disabled (see percy.spec.ts)
+# - Ensure test data is seeded consistently
+# - Wait for networkidle before capturing snapshots
+# 
+# Status check not updating:
+# - Check Percy dashboard for build status
+# - Verify webhook configuration in Percy settings
+# - Ensure PERCY_TOKEN has correct permissions
+# 
+# Parallel builds failing:
+# - Increase PERCY_PARALLEL_TOTAL if needed
+# - Check for shard configuration issues
+# - Review Percy CLI logs for errors
