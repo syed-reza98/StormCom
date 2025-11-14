@@ -31,6 +31,7 @@ describe('Atomic Checkout Transactions', () => {
         name: 'Test Store - Atomic Checkout',
         slug: 'test-atomic-checkout',
         description: 'Test store for atomic checkout tests',
+        email: 'atomic-test@stormcom.test',
       },
     });
     testStoreId = store.id;
@@ -46,6 +47,8 @@ describe('Atomic Checkout Transactions', () => {
         inventoryQty: initialStock,
         trackInventory: true,
         isPublished: true,
+        images: '[]',
+        metaKeywords: '[]',
       },
     });
     testProductId = product.id;
@@ -130,6 +133,8 @@ describe('Atomic Checkout Transactions', () => {
           inventoryQty: 50,
           trackInventory: true,
           isPublished: true,
+          images: '[]',
+          metaKeywords: '[]',
         },
       });
 

@@ -49,7 +49,7 @@ export class BaseError extends Error {
       error: {
         code: this.code,
         message: this.message,
-        ...(this.details && { details: this.details }),
+        ...(this.details ? { details: this.details } : {}),
       },
     };
   }

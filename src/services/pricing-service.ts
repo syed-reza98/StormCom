@@ -89,24 +89,13 @@ export async function calculateCheckoutPricing(
       id: { in: productIds },
       storeId,
       deletedAt: null,
-      status: 'active',
     },
     select: {
       id: true,
       name: true,
       price: true,
-      currency: true,
       sku: true,
       inventoryQty: true,
-      variants: {
-        where: { deletedAt: null },
-        select: {
-          id: true,
-          price: true,
-          sku: true,
-          inventoryQty: true,
-        },
-      },
     },
   });
 
@@ -120,17 +109,13 @@ export async function calculateCheckoutPricing(
   // Calculate line items
   const lineItems: LineItemCalculation[] = [];
   let subtotal = 0;
-  const currency = products[0]?.currency || 'USD';
+  // Currency is stored at store level, not product level
+  const currency = 'USD'; // TODO: Get from store settings
 
   for (const item of items) {
     const product = products.find(p => p.id === item.productId);
     if (!product) {
       throw new NotFoundError('Product', item.productId);
-    }
-
-    // Check currency consistency
-    if (product.currency !== currency) {
-      throw new ValidationError('All products must use the same currency');
     }
 
     let unitPrice = product.price;
@@ -139,13 +124,8 @@ export async function calculateCheckoutPricing(
 
     // Handle variant pricing if variant selected
     if (item.variantId) {
-      const variant = product.variants.find(v => v.id === item.variantId);
-      if (!variant) {
-        throw new NotFoundError('Product variant', item.variantId);
-      }
-      unitPrice = variant.price;
-      sku = variant.sku;
-      inventoryQty = variant.inventoryQty;
+      // TODO: Add variant support - query ProductVariant table separately
+      throw new ValidationError('Product variants not yet supported');
     }
 
     // Validate inventory
@@ -208,9 +188,9 @@ export async function calculateCheckoutPricing(
  * @returns Total discount amount
  */
 async function calculateDiscounts(
-  storeId: string,
-  subtotal: number,
-  lineItems: LineItemCalculation[],
+  _storeId: string,
+  _subtotal: number,
+  _lineItems: LineItemCalculation[],
   discountCode?: string
 ): Promise<number> {
   if (!discountCode) {
@@ -231,9 +211,9 @@ async function calculateDiscounts(
  * @returns Tax amount
  */
 async function calculateTax(
-  storeId: string,
-  subtotalAfterDiscount: number,
-  shippingTotal: number
+  _storeId: string,
+  _subtotalAfterDiscount: number,
+  _shippingTotal: number
 ): Promise<number> {
   // TODO: Implement tax calculation based on store settings and shipping address
   // For now, return 0 (will be implemented with tax service)
@@ -265,13 +245,6 @@ export async function validateInventoryAvailability(
       id: true,
       name: true,
       inventoryQty: true,
-      variants: {
-        where: { deletedAt: null },
-        select: {
-          id: true,
-          inventoryQty: true,
-        },
-      },
     },
   });
 
@@ -284,11 +257,8 @@ export async function validateInventoryAvailability(
     let availableQty = product.inventoryQty;
     
     if (item.variantId) {
-      const variant = product.variants.find(v => v.id === item.variantId);
-      if (!variant) {
-        throw new NotFoundError('Product variant', item.variantId);
-      }
-      availableQty = variant.inventoryQty;
+      // TODO: Add variant support - query ProductVariant table separately
+      throw new ValidationError('Product variants not yet supported');
     }
 
     if (availableQty < item.quantity) {

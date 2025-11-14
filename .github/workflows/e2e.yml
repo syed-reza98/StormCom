@@ -113,10 +113,9 @@ jobs:
 
     steps:
       - name: 📢 Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
           payload: |
             {
               "text": "❌ E2E Tests Failed",
