@@ -13,7 +13,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 import { NewsletterService } from '@/services/newsletter-service';
-import type { Newsletter } from '@prisma/client';
 
 const prisma = new PrismaClient({
   datasources: {

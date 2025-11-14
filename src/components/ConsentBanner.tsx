@@ -88,6 +88,7 @@ export function ConsentBanner({
       const timer = setTimeout(() => setIsVisible(true), 2000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [storeId]);
 
   // Handle successful subscription
@@ -107,6 +108,7 @@ export function ConsentBanner({
       
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [state, storeId, onDismiss]);
 
   const handleDismiss = () => {
@@ -189,7 +191,9 @@ export function ConsentBanner({
                       role="alert"
                       aria-live="assertive"
                     >
-                      <AlertDescription>{state.error}</AlertDescription>
+                      <AlertDescription>
+                        {typeof state.error === 'string' ? state.error : state.error.message}
+                      </AlertDescription>
                     </Alert>
                   )}
 
@@ -289,7 +293,7 @@ export function NewsletterForm({ storeId }: { storeId: string }) {
       {state?.error && (
         <Alert className="bg-destructive/10 border-destructive">
           <AlertDescription className="text-destructive">
-            {state.error}
+            {typeof state.error === 'string' ? state.error : state.error.message}
           </AlertDescription>
         </Alert>
       )}

@@ -32,6 +32,14 @@ import { NewsletterService } from '@/services/newsletter-service';
 import { checkSimpleRateLimit } from '@/lib/simple-rate-limit';
 import { headers } from 'next/headers';
 
+// Mock simple rate limit types
+type SimpleRateLimitResult = {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+} | null;
+
 describe('Newsletter Server Actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();

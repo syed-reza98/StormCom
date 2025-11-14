@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NewsletterService } from '@/services/newsletter-service';
-import type { Newsletter, ConsentRecord } from '@prisma/client';
+import type { Newsletter } from '@prisma/client';
 
 // Mock Prisma
 vi.mock('@/lib/db', () => ({

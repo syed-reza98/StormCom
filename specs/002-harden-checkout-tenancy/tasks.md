@@ -35,11 +35,11 @@ Total tasks: 42 (grouped by phase and user story)
 - [X] T020 [US2] Add integration tests `tests/integration/tenancy/store-resolution.spec.ts` (mapped domain -> storeId; unmapped -> 404)
 
 ### User Story 3 (US3) — Newsletter subscription (Priority: P2)
-- [ ] T021 [US3] Implement Server Action at `app/(storefront)/newsletter/actions.ts` with Zod schema to validate email and record consent
-- [ ] T022 [US3] Implement `ConsentRecord` create logic in `src/services/newsletter-service.ts` and audit logs in `src/services/audit-service.ts`
-- [ ] T023 [US3] Enforce rate limiting for newsletter submissions via `src/lib/rate-limit.ts` integration and add unit tests `tests/unit/newsletter/*.spec.ts`
-- [ ] T024 [US3] Implement deduplication by `(storeId,email)` in DB and server logic; add integration test `tests/integration/newsletter/dedupe.spec.ts`
-- [ ] T025 [US3] Add consent banner component skeleton `src/components/ConsentBanner.tsx` and wire to Server Action
+- [X] T021 [US3] Implement Server Action at `app/(storefront)/newsletter/actions.ts` with Zod schema to validate email and record consent
+- [X] T022 [US3] Implement `ConsentRecord` create logic in `src/services/newsletter-service.ts` and audit logs in `src/services/audit-service.ts`
+- [X] T023 [US3] Enforce rate limiting for newsletter submissions via `src/lib/rate-limit.ts` integration and add unit tests `tests/unit/newsletter/*.spec.ts`
+- [X] T024 [US3] Implement deduplication by `(storeId,email)` in DB and server logic; add integration test `tests/integration/newsletter/dedupe.spec.ts`
+- [X] T025 [US3] Add consent banner component skeleton `src/components/ConsentBanner.tsx` and wire to Server Action
 
 ### User Story 4 (US4) — Consistent APIs & CSV exports (Priority: P3)
 - [ ] T026 [US4] Implement API middleware pipeline skeleton `src/lib/api-middleware/index.ts` (auth, rateLimit, validation, logging, requestId)
