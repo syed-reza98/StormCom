@@ -84,7 +84,7 @@ test.describe('Checkout Security - Price Tampering Prevention', () => {
     expect(orderTotal).toMatch(/\\$[2-9]\\d+\\.\\d{2}/); // At least $20+
   });
 
-  test('should ignore client-submitted subtotal/tax/shipping', async ({ page, request }) => {
+  test('should ignore client-submitted subtotal/tax/shipping', async ({ page }) => {
     // Get actual product price from product page
     await page.goto('/products/test-product');
     const actualPriceText = await page.locator('[data-testid="product-price"]').textContent();
@@ -211,12 +211,12 @@ test.describe('Checkout Security - Price Tampering Prevention', () => {
     expect(errorText).toMatch(/payment/i);
   });
 
-  test('should use atomic transactions for checkout', async ({ page, request }) => {
+  test('should use atomic transactions for checkout', async ({ page }) => {
     // This test verifies that if payment validation fails,
     // the entire checkout is rolled back (no order created, no inventory decremented)
 
     // Get initial product stock
-    const productPage = await page.goto('/products/test-product');
+    await page.goto('/products/test-product');
     const initialStockText = await page.locator('[data-testid="stock-quantity"]').textContent();
     const initialStock = parseInt(initialStockText?.replace(/[^0-9]/g, '') || '0');
 
@@ -274,7 +274,7 @@ test.describe('Checkout Security - Price Tampering Prevention', () => {
 });
 
 test.describe('Checkout Security - Multi-Tenant Isolation', () => {
-  test('should prevent checkout with products from different store', async ({ page, request }) => {
+  test('should prevent checkout with products from different store', async ({ page }) => {
     // Login to Store A
     await page.goto('/');
     await page.click('[data-testid="login-link"]');
