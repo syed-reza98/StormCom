@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     const pricing = await calculateCheckoutPricing(
       storeId,
       input.items,
-      { name: input.shippingMethod, cost: 0 }, // Shipping method details will be resolved server-side
+      { id: input.shippingMethod, cost: 0 }, // Shipping method details will be resolved server-side
       input.discountCode
     );
 
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     // Return standardized success response (FR-008)
     return successResponse(
       order,
-      { message: 'Order created successfully', statusCode: 201 }
+      { message: 'Order created successfully', status: 201 }
     );
   } catch (error) {
     // Standardized error handling (FR-008)
