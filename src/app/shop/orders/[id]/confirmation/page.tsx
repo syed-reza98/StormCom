@@ -123,7 +123,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
               <Flex direction="column" gap="4">
                 {order.items.map((item) => (
                   <Flex key={item.id} align="center" gap="4" style={{ paddingBottom: '16px', borderBottom: '1px solid var(--gray-6)' }}>
-                    <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 relative">
+                    <div className="w-16 h-16 bg-gray-200 rounded-md shrink-0 relative">
                       {(item.product?.images as string[] | null)?.[0] ? (
                         <Image
                           src={(item.product!.images as string[])[0]}

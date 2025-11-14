@@ -98,7 +98,7 @@ if ($OutputJson) {
     Write-Host "Untested Routes: $($results.UntestedRoutes)" -ForegroundColor Red
     Write-Host "Coverage: $($results.CoveragePercent)%" -ForegroundColor $(if ($results.CoveragePercent -ge 100) { "Green" } else { "Yellow" })
     
-    if ($results.UntestedRoutes -gt 0) {
+    if ($null -ne $results.UntestedRoutes -and $results.UntestedRoutes -gt 0) {
         Write-TestHeader "Routes Missing Tests"
         $results.RouteDetails | Where-Object { -not $_.HasTest } | ForEach-Object {
             Write-TestWarning "$($_.Route) ($($_.FilePath))"

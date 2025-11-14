@@ -221,7 +221,7 @@ export function ConsentBanner({
                 size="icon"
                 onClick={handleDismiss}
                 aria-label="Dismiss newsletter banner"
-                className="flex-shrink-0 text-primary-foreground hover:bg-primary-foreground/10"
+                className="shrink-0 text-primary-foreground hover:bg-primary-foreground/10"
               >
                 <X className="h-5 w-5" />
               </Button>
