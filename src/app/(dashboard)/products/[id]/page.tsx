@@ -197,11 +197,11 @@ async function getProduct(id: string): Promise<Product | null> {
     // Transform Prisma result to match Product interface
     return {
       ...product,
-      images: JSON.parse(product.images) as string[],
-      metaKeywords: product.metaKeywords ? (JSON.parse(product.metaKeywords) as string[]) : undefined,
+      images: JSON.parse(product.images as string) as string[],
+      metaKeywords: product.metaKeywords ? (JSON.parse(product.metaKeywords as string) as string[]) : undefined,
       variants: product.variants.map(v => ({
         ...v,
-        options: JSON.parse(v.options) as Record<string, string>,
+        options: JSON.parse(v.options as string) as Record<string, string>,
       })),
       createdAt: product.createdAt.toISOString(),
       updatedAt: product.updatedAt.toISOString(),

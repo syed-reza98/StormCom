@@ -108,6 +108,8 @@ export class AuditLogService {
       throw new Error(`Invalid action: ${action}. Must be one of: ${validActions.join(', ')}`);
     }
 
+    const changesJson = changes ? JSON.stringify(changes) : undefined;
+
     const auditLog = await prisma.auditLog.create({
       data: {
         action: action.toUpperCase(),
@@ -115,7 +117,7 @@ export class AuditLogService {
         entityId,
         storeId: storeId || null,
         userId: userId || null,
-        changes: changes ? JSON.stringify(changes) : null,
+        ...(changesJson !== undefined && { changes: changesJson }),
         ipAddress: metadata?.ipAddress || null,
         userAgent: metadata?.userAgent || null,
       },

@@ -126,7 +126,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
                     <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 relative">
                       {item.product?.images?.[0] ? (
                         <Image
-                          src={item.product.images[0]}
+                          src={(item.product.images as string[])[0]}
                           alt={item.productName}
                           fill
                           className="object-cover rounded-md"

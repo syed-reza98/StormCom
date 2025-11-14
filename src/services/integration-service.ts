@@ -492,6 +492,8 @@ export class IntegrationService {
    * Log sync operation result
    */
   static async logSync(configId: string, log: SyncLogInput) {
+    const metadataJson = log.metadata || undefined;
+    
     return db.syncLog.create({
       data: {
         configId,
@@ -501,7 +503,7 @@ export class IntegrationService {
         recordsProcessed: log.recordsProcessed,
         recordsFailed: log.recordsFailed,
         errorMessage: log.errorMessage || null,
-        metadata: log.metadata || null,
+        ...(metadataJson !== undefined && { metadata: metadataJson }),
       },
     });
   }

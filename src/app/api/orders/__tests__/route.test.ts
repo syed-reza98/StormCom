@@ -149,7 +149,7 @@ describe('GET /api/orders', () => {
       vi.mocked(getServerSession).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -161,7 +161,7 @@ describe('GET /api/orders', () => {
       vi.mocked(getServerSession).mockResolvedValue({ user: null } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -179,7 +179,7 @@ describe('GET /api/orders', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -197,7 +197,7 @@ describe('GET /api/orders', () => {
       } as any);
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(403);
@@ -220,7 +220,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -235,7 +235,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -256,7 +256,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -275,7 +275,7 @@ describe('GET /api/orders', () => {
 
     it('should use default pagination if not specified', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders');
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -286,10 +286,8 @@ describe('GET /api/orders', () => {
     });
 
     it('should accept custom pagination parameters', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?page=2&perPage=50'
-      );
-      await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?page=2&perPage=50', {});
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -300,10 +298,8 @@ describe('GET /api/orders', () => {
     });
 
     it('should enforce max perPage limit of 100', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?perPage=150'
-      );
-      const response = await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?perPage=150', {});
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -315,7 +311,7 @@ describe('GET /api/orders', () => {
       const request = new NextRequest(
         `http://localhost:3000/api/orders?status=${OrderStatus.PENDING}`
       );
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -325,10 +321,8 @@ describe('GET /api/orders', () => {
     });
 
     it('should accept search query', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?search=ORD-001'
-      );
-      await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?search=ORD-001', {});
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -343,7 +337,7 @@ describe('GET /api/orders', () => {
       const request = new NextRequest(
         `http://localhost:3000/api/orders?dateFrom=${dateFrom}&dateTo=${dateTo}`
       );
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -354,10 +348,8 @@ describe('GET /api/orders', () => {
     });
 
     it('should accept custom sorting', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?sortBy=totalAmount&sortOrder=asc'
-      );
-      await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?sortBy=totalAmount&sortOrder=asc', {});
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -369,7 +361,7 @@ describe('GET /api/orders', () => {
 
     it('should use default sorting if not specified', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders');
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -380,10 +372,8 @@ describe('GET /api/orders', () => {
     });
 
     it('should return 400 for invalid sortBy value', async () => {
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?sortBy=invalidField'
-      );
-      const response = await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?sortBy=invalidField', {});
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -401,10 +391,8 @@ describe('GET /api/orders', () => {
       const mockCSV = 'Order Number,Customer Name,Total\nORD-001,John Doe,100.00';
       vi.mocked(orderService.exportOrdersToCSV).mockResolvedValue(mockCSV);
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?export=csv'
-      );
-      const response = await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?export=csv', {});
+      const response = await GET(request, {} as any);
       const csvData = await response.text();
 
       expect(response.status).toBe(200);
@@ -423,7 +411,7 @@ describe('GET /api/orders', () => {
       const request = new NextRequest(
         `http://localhost:3000/api/orders?export=csv&status=${OrderStatus.PENDING}&search=ORD`
       );
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.exportOrdersToCSV).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -437,10 +425,8 @@ describe('GET /api/orders', () => {
       const mockCSV = 'Order Number,Customer Name,Total\nORD-001,John Doe,100.00';
       vi.mocked(orderService.exportOrdersToCSV).mockResolvedValue(mockCSV);
 
-      const request = new NextRequest(
-        'http://localhost:3000/api/orders?export=csv'
-      );
-      await GET(request);
+      const request = new NextRequest('http://localhost:3000/api/orders?export=csv', {});
+      await GET(request, {} as any);
 
       expect(orderService.exportOrdersToCSV).toHaveBeenCalled();
       expect(orderService.listOrders).not.toHaveBeenCalled();
@@ -458,7 +444,7 @@ describe('GET /api/orders', () => {
 
     it('should return orders with success response', async () => {
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -485,7 +471,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -505,7 +491,7 @@ describe('GET /api/orders', () => {
       const request = new NextRequest(
         'http://localhost:3000/api/orders?page=0' // Invalid: page must be positive
       );
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -520,7 +506,7 @@ describe('GET /api/orders', () => {
       );
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -532,7 +518,7 @@ describe('GET /api/orders', () => {
       vi.mocked(orderService.listOrders).mockRejectedValue('Unknown error');
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      const response = await GET(request);
+      const response = await GET(request, {} as any);
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -550,7 +536,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -574,7 +560,7 @@ describe('GET /api/orders', () => {
       });
 
       const request = new NextRequest('http://localhost:3000/api/orders');
-      await GET(request);
+      await GET(request, {} as any);
 
       expect(orderService.listOrders).toHaveBeenCalledWith(
         expect.objectContaining({

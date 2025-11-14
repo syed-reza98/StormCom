@@ -31,7 +31,6 @@ describe('T038b-T038f: JSON Migration Tests', () => {
         email: 'test@json-migration.com',
         currency: 'USD',
         timezone: 'UTC',
-        isActive: true,
       },
     });
     testStoreId = store.id;

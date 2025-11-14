@@ -579,10 +579,13 @@ export class AttributeService {
   /**
    * Parse JSON attribute values safely
    */
-  private parseAttributeValues(values: string): string[] {
+  private parseAttributeValues(values: Prisma.JsonValue): string[] {
     try {
-      const parsed = JSON.parse(values);
-      return Array.isArray(parsed) ? parsed : [];
+      if (typeof values === 'string') {
+        const parsed = JSON.parse(values);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+      return Array.isArray(values) ? values.map(String) : [];
     } catch {
       return [];
     }

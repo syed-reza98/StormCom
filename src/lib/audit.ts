@@ -4,6 +4,7 @@
 
 import { NextRequest } from 'next/server';
 import { db } from './db';
+import type { Prisma } from '@prisma/client';
 
 /**
  * Audit action types (security-critical operations)
@@ -147,6 +148,8 @@ export async function createAuditLog(params: {
       });
     }
 
+    const changesJson = Object.keys(changes).length > 0 ? JSON.stringify(changes) : undefined;
+
     await db.auditLog.create({
       data: {
         userId: params.userId,
@@ -154,7 +157,7 @@ export async function createAuditLog(params: {
         action: params.action,
         entityType: params.resource,
         entityId: params.resourceId || '',
-        changes: Object.keys(changes).length > 0 ? JSON.stringify(changes) : null,
+        ...(changesJson !== undefined && { changes: changesJson }),
         ipAddress: params.ipAddress,
         userAgent: params.userAgent,
       },
@@ -210,7 +213,7 @@ export async function queryAuditLogs(params: {
     action: string;
     entityType: string;
     entityId: string;
-    changes: string | null;
+    changes: Prisma.JsonValue;
     ipAddress: string | null;
     userAgent: string | null;
     createdAt: Date;
