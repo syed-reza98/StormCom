@@ -8,6 +8,11 @@ import { logger } from '@/lib/logger';
 import { productService } from '@/services/product-service';
 import { createProductSchema } from '@/services/product-service';
 import { z } from 'zod';
+import {
+  requireIdempotencyKey,
+  getCachedIdempotentResult,
+  cacheIdempotentResult,
+} from '@/lib/idempotency';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -48,6 +53,32 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
+
+    // Idempotency check (CRITICAL: Prevents duplicate cache invalidation/webhooks)
+    let idempotencyKey: string;
+    try {
+      idempotencyKey = requireIdempotencyKey(request);
+    } catch (error) {
+      return NextResponse.json(
+        { 
+          error: { 
+            code: 'IDEMPOTENCY_REQUIRED', 
+            message: error instanceof Error ? error.message : 'Invalid idempotency key' 
+          } 
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check cache for duplicate request
+    const cachedResult = await getCachedIdempotentResult<unknown>(idempotencyKey);
+    if (cachedResult) {
+      return NextResponse.json({ 
+        data: cachedResult, 
+        message: 'Product already updated (idempotent response)' 
+      });
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
@@ -67,6 +98,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       session.user.storeId,
       validatedData
     );
+
+    // Cache idempotent result (24 hour TTL)
+    await cacheIdempotentResult(idempotencyKey, product);
 
     return NextResponse.json({ data: product, message: 'Product updated successfully' });
   } catch (error) {

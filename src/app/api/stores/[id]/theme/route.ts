@@ -14,6 +14,11 @@ import { updateStoreTheme, resetStoreTheme } from '@/services/theme-service';
 import { validateTheme } from '@/lib/theme-utils';
 import { z } from 'zod';
 import { ThemeMode } from '@prisma/client';
+import {
+  requireIdempotencyKey,
+  getCachedIdempotentResult,
+  cacheIdempotentResult,
+} from '@/lib/idempotency';
 
 /**
  * Zod schema for theme update validation
@@ -43,6 +48,31 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Idempotency check (CRITICAL: Prevents CDN cache thrashing)
+    let idempotencyKey: string;
+    try {
+      idempotencyKey = requireIdempotencyKey(request);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'IDEMPOTENCY_REQUIRED',
+            message: error instanceof Error ? error.message : 'Invalid idempotency key',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check cache for duplicate request
+    const cachedResult = await getCachedIdempotentResult<unknown>(idempotencyKey);
+    if (cachedResult) {
+      return NextResponse.json({
+        data: cachedResult,
+        message: 'Theme already updated (idempotent response)',
+      });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -90,6 +120,9 @@ export async function PUT(
 
     // Update theme
     const theme = await updateStoreTheme(storeId, data);
+
+    // Cache idempotent result (24 hour TTL)
+    await cacheIdempotentResult(idempotencyKey, theme);
 
     return NextResponse.json({
       data: theme,

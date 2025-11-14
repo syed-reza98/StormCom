@@ -16,6 +16,11 @@ import { authOptions } from '@/lib/auth';
 import { updateOrderStatus } from '@/services/order-service';
 import { apiResponse } from '@/lib/api-response';
 import { OrderStatus } from '@prisma/client';
+import {
+  requireIdempotencyKey,
+  getCachedIdempotentResult,
+  cacheIdempotentResult,
+} from '@/lib/idempotency';
 
 // Validation schema
 const updateStatusSchema = z.object({
@@ -32,6 +37,24 @@ export async function PUT(
   try {
     // Extract params
     const { id: orderId } = await context.params;
+
+    // Idempotency check (CRITICAL: Prevents duplicate status updates)
+    let idempotencyKey: string;
+    try {
+      idempotencyKey = requireIdempotencyKey(request);
+    } catch (error) {
+      return apiResponse.badRequest(
+        error instanceof Error ? error.message : 'Invalid idempotency key'
+      );
+    }
+
+    // Check cache for duplicate request
+    const cachedResult = await getCachedIdempotentResult<unknown>(idempotencyKey);
+    if (cachedResult) {
+      return apiResponse.success(cachedResult, {
+        message: 'Order status already updated (idempotent response)',
+      });
+    }
 
     // Authentication check
     const session = await getServerSession(authOptions);
@@ -64,6 +87,9 @@ export async function PUT(
       trackingUrl: validatedData.trackingUrl,
       adminNote: validatedData.adminNote,
     });
+
+    // Cache idempotent result (24 hour TTL)
+    await cacheIdempotentResult(idempotencyKey, updatedOrder);
 
     // TODO: Send notification email (US9 - Email Notifications)
     // await sendOrderStatusEmail(updatedOrder);

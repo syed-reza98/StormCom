@@ -1,0 +1,1132 @@
+[
+  {
+    "file": "src\\app\\api\\analytics\\customers\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\analytics\\dashboard\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\analytics\\products\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\analytics\\revenue\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\analytics\\sales\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\attributes\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\attributes\\[id]\\products\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "PATCH"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\attributes\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\audit-logs\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\forgot-password\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\mfa\\backup-codes\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\mfa\\enroll\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\mfa\\verify\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\register\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\reset-password\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\session\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\test\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "SUCCESS_FLAG",
+        "severity": "MEDIUM",
+        "line": 11,
+        "message": "Use standardized response format ({ data, error, meta }) instead of success flag",
+        "code": "success: true,"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\auth\\[...nextauth]\\route.ts",
+    "violations": [],
+    "methods": []
+  },
+  {
+    "file": "src\\app\\api\\brands\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\brands\\[id]\\products\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\brands\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\bulk\\categories\\export\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\bulk\\categories\\import\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\bulk\\products\\export\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\bulk\\products\\import\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\categories\\reorder\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "PATCH"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\categories\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\categories\\[id]\\move\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "PATCH"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\categories\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "PATCH",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\checkout\\complete\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\checkout\\payment-intent\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\checkout\\shipping\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\checkout\\validate\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\csrf-token\\route.ts",
+    "violations": [],
+    "methods": [
+      "GET",
+      "OPTIONS"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\dev\\echo-cookies\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\docs\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\emails\\send\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "SUCCESS_FLAG",
+        "severity": "MEDIUM",
+        "line": 268,
+        "message": "Use standardized response format ({ data, error, meta }) instead of success flag",
+        "code": "success: true,"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\exports\\[jobId]\\route.ts",
+    "violations": [],
+    "methods": []
+  },
+  {
+    "file": "src\\app\\api\\gdpr\\consent\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\gdpr\\delete\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\gdpr\\export\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\integrations\\mailchimp\\connect\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\integrations\\mailchimp\\sync\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\integrations\\shopify\\connect\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\integrations\\shopify\\export\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "SUCCESS_FLAG",
+        "severity": "MEDIUM",
+        "line": 113,
+        "message": "Use standardized response format ({ data, error, meta }) instead of success flag",
+        "code": "success: true,"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\integrations\\[platform]\\disconnect\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\inventory\\adjust\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\inventory\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\notifications\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\notifications\\[id]\\read\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "PUT_NO_IDEMPOTENCY",
+        "severity": "HIGH",
+        "line": 42,
+        "message": "PUT method should handle idempotency (check request headers or body for idempotency key)",
+        "code": "const idempotencyKey = request.headers.get(\"idempotency-key\");"
+      }
+    ],
+    "methods": [
+      "PUT"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\orders\\export\\route.ts",
+    "violations": [],
+    "methods": []
+  },
+  {
+    "file": "src\\app\\api\\orders\\route.ts",
+    "violations": [],
+    "methods": []
+  },
+  {
+    "file": "src\\app\\api\\orders\\[id]\\invoice\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\orders\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\orders\\[id]\\status\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "PUT_NO_IDEMPOTENCY",
+        "severity": "HIGH",
+        "line": 28,
+        "message": "PUT method should handle idempotency (check request headers or body for idempotency key)",
+        "code": "const idempotencyKey = request.headers.get(\"idempotency-key\");"
+      }
+    ],
+    "methods": [
+      "PUT"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\export\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "GET",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\import\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "GET",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET",
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "PUT_NO_IDEMPOTENCY",
+        "severity": "HIGH",
+        "line": 48,
+        "message": "PUT method should handle idempotency (check request headers or body for idempotency key)",
+        "code": "const idempotencyKey = request.headers.get(\"idempotency-key\");"
+      }
+    ],
+    "methods": [
+      "GET",
+      "PUT",
+      "PATCH",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\[id]\\stock\\check\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "SUCCESS_FLAG",
+        "severity": "MEDIUM",
+        "line": 43,
+        "message": "Use standardized response format ({ data, error, meta }) instead of success flag",
+        "code": "success: true,"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\[id]\\stock\\decrease\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "SUCCESS_FLAG",
+        "severity": "MEDIUM",
+        "line": 34,
+        "message": "Use standardized response format ({ data, error, meta }) instead of success flag",
+        "code": "return NextResponse.json({ success: true, data: updated });"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\products\\[id]\\stock\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\stores\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\stores\\[id]\\admins\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "DELETE",
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\stores\\[id]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "PUT_NO_IDEMPOTENCY",
+        "severity": "HIGH",
+        "line": 226,
+        "message": "PUT method should handle idempotency (check request headers or body for idempotency key)",
+        "code": "const idempotencyKey = request.headers.get(\"idempotency-key\");"
+      }
+    ],
+    "methods": [
+      "GET",
+      "PUT",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\stores\\[id]\\theme\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      },
+      {
+        "type": "PUT_NO_IDEMPOTENCY",
+        "severity": "HIGH",
+        "line": 41,
+        "message": "PUT method should handle idempotency (check request headers or body for idempotency key)",
+        "code": "const idempotencyKey = request.headers.get(\"idempotency-key\");"
+      }
+    ],
+    "methods": [
+      "PUT",
+      "DELETE"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\subscriptions\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\subscriptions\\[storeId]\\cancel\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\subscriptions\\[storeId]\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\themes\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "GET"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\webhooks\\stripe\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "file": "src\\app\\api\\webhooks\\stripe\\subscription\\route.ts",
+    "violations": [
+      {
+        "type": "MISSING_OPTIONS",
+        "severity": "LOW",
+        "line": 1,
+        "message": "Missing OPTIONS handler for CORS (optional but recommended for public APIs)",
+        "code": "export async function OPTIONS() { ... }"
+      }
+    ],
+    "methods": [
+      "POST",
+      "GET"
+    ]
+  }
+]

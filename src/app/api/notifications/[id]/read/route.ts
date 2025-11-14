@@ -10,6 +10,11 @@ import {
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { notificationService } from '@/services/notification-service';
+import {
+  getIdempotencyKey,
+  getCachedIdempotentResult,
+  cacheIdempotentResult,
+} from '@/lib/idempotency';
 
 /**
  * PUT /api/notifications/[id]/read
@@ -40,7 +45,7 @@ import { notificationService } from '@/services/notification-service';
  * ```
  */
 export async function PUT(
-  _request: NextRequest,  // Prefix with underscore to indicate intentionally unused
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -52,6 +57,17 @@ export async function PUT(
 
     const { id } = await params;
 
+    // Idempotency check (optional for backward compatibility)
+    const idempotencyKey = getIdempotencyKey(request);
+    if (idempotencyKey) {
+      const cachedResult = await getCachedIdempotentResult<unknown>(idempotencyKey);
+      if (cachedResult) {
+        return successResponse(cachedResult, {
+          message: 'Notification already marked as read (idempotent response)',
+        });
+      }
+    }
+
     // Mark notification as read
     const notification = await notificationService.markAsRead(id, session.user.id);
 
@@ -59,6 +75,11 @@ export async function PUT(
       return errorResponse('Notification not found or unauthorized', 404, {
         code: 'NOT_FOUND',
       });
+    }
+
+    // Cache idempotent result if key provided
+    if (idempotencyKey) {
+      await cacheIdempotentResult(idempotencyKey, notification);
     }
 
     return successResponse(notification, {

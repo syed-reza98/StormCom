@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storeService, StoreServiceError, UpdateStoreSchema } from '@/services/store-service';
+import {
+  requireIdempotencyKey,
+  getCachedIdempotentResult,
+  cacheIdempotentResult,
+} from '@/lib/idempotency';
 
 /**
  * API Routes: Store Management by ID
@@ -228,6 +233,31 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
+    // Idempotency check (CRITICAL: Prevents store settings corruption)
+    let idempotencyKey: string;
+    try {
+      idempotencyKey = requireIdempotencyKey(request);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: {
+            code: 'IDEMPOTENCY_REQUIRED',
+            message: error instanceof Error ? error.message : 'Invalid idempotency key',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check cache for duplicate request
+    const cachedResult = await getCachedIdempotentResult<unknown>(idempotencyKey);
+    if (cachedResult) {
+      return NextResponse.json({
+        data: cachedResult,
+        message: 'Store already updated (idempotent response)',
+      });
+    }
+
     // Extract authenticated user
     const authenticatedUser = await getAuthenticatedUser(request);
     
@@ -318,6 +348,9 @@ export async function PUT(
       createdAt: updatedStore.createdAt,
       updatedAt: updatedStore.updatedAt,
     };
+
+    // Cache idempotent result (24 hour TTL)
+    await cacheIdempotentResult(idempotencyKey, transformedStore);
 
     // Return success response
     return NextResponse.json(
