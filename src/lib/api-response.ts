@@ -1,8 +1,11 @@
 // src/lib/api-response.ts
 // Standardized API Response Formatting for StormCom
 // Ensures consistent response structure across all API routes
+// Updated for FR-008, FR-021: Standardized responses with X-Request-Id header
 
 import { NextResponse } from 'next/server';
+import { getRequestId } from './request-context';
+import { BaseError, isBaseError, normalizeError } from './errors';
 
 /**
  * Pagination metadata
@@ -17,28 +20,40 @@ export interface PaginationMeta {
 }
 
 /**
- * Success response format
+ * Success response format (FR-008)
+ * Format: { data, meta?, message? }
+ * NO success: true flag
  */
 export interface SuccessResponse<T = unknown> {
-  success: true;
   data: T;
   message?: string;
-  meta?: PaginationMeta;
+  meta?: PaginationMeta | Record<string, unknown>;
 }
 
 /**
- * Create a success response
+ * Error response format (FR-008)
+ * Format: { error: { code, message, details? } }
+ */
+export interface ErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+}
+
+/**
+ * Create a success response with X-Request-Id header (FR-021)
  */
 export function successResponse<T>(
   data: T,
   options?: {
     message?: string;
-    meta?: PaginationMeta;
+    meta?: PaginationMeta | Record<string, unknown>;
     status?: number;
   }
 ): NextResponse<SuccessResponse<T>> {
   const response: SuccessResponse<T> = {
-    success: true,
     data,
     ...(options?.message && { message: options.message }),
     ...(options?.meta && { meta: options.meta }),
@@ -46,6 +61,9 @@ export function successResponse<T>(
 
   return NextResponse.json(response, {
     status: options?.status || 200,
+    headers: {
+      'X-Request-Id': getRequestId(),
+    },
   });
 }
 
@@ -96,10 +114,15 @@ export function createdResponse<T>(
 }
 
 /**
- * Create a no content (204) response
+ * Create a no content (204) response with X-Request-Id header
  */
 export function noContentResponse(): NextResponse {
-  return new NextResponse(null, { status: 204 });
+  return new NextResponse(null, { 
+    status: 204,
+    headers: {
+      'X-Request-Id': getRequestId(),
+    },
+  });
 }
 
 /**
@@ -237,7 +260,6 @@ export function calculatePaginationMeta(
  * Error response format
  */
 export interface ErrorResponse {
-  success: false;
   error: {
     code: string;
     message: string;
@@ -246,31 +268,60 @@ export interface ErrorResponse {
 }
 
 /**
- * Create an error response
+ * Create an error response with X-Request-Id header (FR-008, FR-021)
+ * Integrates with typed error classes from ./errors.ts
  */
 export function errorResponse(
-  message: string,
-  statusCode: number,
+  error: unknown | string,
+  statusCode?: number,
   options?: {
     code?: string;
     details?: unknown;
   }
 ): NextResponse<ErrorResponse> {
-  const error: ErrorResponse['error'] = {
-    code: options?.code || getErrorCodeFromStatus(statusCode),
-    message,
-  };
-
-  if (options?.details !== undefined) {
-    error.details = options.details;
+  // Handle different error input types
+  let normalizedError: BaseError;
+  
+  if (typeof error === 'string') {
+    // String message with optional status code
+    normalizedError = {
+      code: options?.code || getErrorCodeFromStatus(statusCode || 500),
+      message: error,
+      httpStatus: statusCode || 500,
+      details: options?.details,
+    } as BaseError;
+  } else if (isBaseError(error)) {
+    // Already a BaseError instance
+    normalizedError = error;
+  } else {
+    // Unknown error type - normalize it
+    normalizedError = normalizeError(error);
   }
 
-  const response: ErrorResponse = {
-    success: false,
-    error,
+  const responseBody: ErrorResponse = {
+    error: {
+      code: normalizedError.code,
+      message: normalizedError.message,
+      ...(normalizedError.details && { details: normalizedError.details }),
+    },
   };
 
-  return NextResponse.json(response, { status: statusCode });
+  const headers: HeadersInit = {
+    'X-Request-Id': getRequestId(),
+  };
+
+  // Add Retry-After header for rate limit errors
+  if (normalizedError.code === 'RATE_LIMIT_EXCEEDED' && normalizedError.details) {
+    const details = normalizedError.details as { retryAfter?: number };
+    if (details.retryAfter) {
+      headers['Retry-After'] = String(details.retryAfter);
+    }
+  }
+
+  return NextResponse.json(responseBody, { 
+    status: normalizedError.httpStatus,
+    headers,
+  });
 }
 
 /**
