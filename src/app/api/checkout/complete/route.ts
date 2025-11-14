@@ -20,6 +20,7 @@ import { validatePaymentIntent } from '@/services/payments/intent-validator';
 import { withTransaction } from '@/services/transaction';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { AuthenticationError, ValidationError, PaymentError } from '@/lib/errors';
+import { auditCheckoutCompleted, auditPaymentValidated, auditOrderCreated } from '@/services/audit-service';
 
 const CompleteCheckoutSchema = z.object({
   // Removed storeId - derived from session (multi-tenant isolation)
@@ -103,6 +104,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // T030: Audit payment validation success
+    await auditPaymentValidated(input.paymentIntentId, {
+      amount: pricing.grandTotal,
+      currency: pricing.currency,
+      intentId: input.paymentIntentId,
+      status: 'validated',
+    });
+
     // T013: Use atomic transaction wrapper
     const order = await withTransaction(async (tx) => {
       // Prepare order input with server-calculated prices
@@ -153,7 +162,23 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // T030: Audit order creation
+      await auditOrderCreated(createdOrder.id, {
+        totalAmount: pricing.grandTotal,
+        status: createdOrder.status,
+        itemsCount: input.items.length,
+        orderNumber: createdOrder.orderNumber,
+      });
+
       return createdOrder;
+    });
+
+    // T030: Audit checkout completion
+    await auditCheckoutCompleted(order.id, {
+      totalAmount: pricing.grandTotal,
+      itemsCount: input.items.length,
+      paymentMethod: input.paymentMethod,
+      shippingMethod: input.shippingMethod,
     });
 
     // Return standardized success response (FR-008)

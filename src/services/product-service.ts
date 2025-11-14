@@ -5,6 +5,7 @@
 import { prisma } from '@/lib/db';
 import { InventoryStatus, Product, ProductVariant, Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { revalidateTag } from 'next/cache';
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -350,6 +351,9 @@ export class ProductService {
       },
     });
 
+    // T032: Invalidate product list cache for this store
+    revalidateTag(`products:list:store:${storeId}`, 'max');
+
     return this.normalizeProductFields(product) as unknown as ProductWithRelations;
   }
 
@@ -451,6 +455,10 @@ export class ProductService {
       },
     });
 
+    // T032: Invalidate cache for this product and product list
+    revalidateTag(`product:${productId}`, 'max');
+    revalidateTag(`products:list:store:${storeId}`, 'max');
+
     return this.normalizeProductFields(product) as unknown as ProductWithRelations;
   }
 
@@ -467,6 +475,10 @@ export class ProductService {
       where: { id: productId },
       data: { deletedAt: new Date() },
     });
+
+    // T032: Invalidate cache for this product and product list
+    revalidateTag(`product:${productId}`, 'max');
+    revalidateTag(`products:list:store:${storeId}`, 'max');
   }
 
   /**
@@ -481,6 +493,10 @@ export class ProductService {
     await prisma.product.delete({
       where: { id: productId },
     });
+
+    // T032: Invalidate cache for this product and product list
+    revalidateTag(`product:${productId}`, 'max');
+    revalidateTag(`products:list:store:${storeId}`, 'max');
   }
 
   // --------------------------------------------------------------------------

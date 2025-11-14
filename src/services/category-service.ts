@@ -5,6 +5,7 @@
 import { prisma } from '@/lib/db';
 import { Category, Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { revalidateTag } from 'next/cache';
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -342,6 +343,9 @@ export class CategoryService {
       },
     });
 
+    // T032: Invalidate category list cache for this store
+    revalidateTag(`categories:list:store:${storeId}`, 'max');
+
     return category as unknown as CategoryWithRelations;
   }
 
@@ -398,6 +402,10 @@ export class CategoryService {
       },
     });
 
+    // T032: Invalidate cache for this category and category list
+    revalidateTag(`category:${categoryId}`, 'max');
+    revalidateTag(`categories:list:store:${storeId}`, 'max');
+
     return category as unknown as CategoryWithRelations;
   }
 
@@ -424,6 +432,10 @@ export class CategoryService {
       where: { id: categoryId },
       data: { deletedAt: new Date() },
     });
+
+    // T032: Invalidate cache for this category and category list
+    revalidateTag(`category:${categoryId}`, 'max');
+    revalidateTag(`categories:list:store:${storeId}`, 'max');
   }
 
   /**
