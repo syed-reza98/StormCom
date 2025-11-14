@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const quantity = parseInt(searchParams.get('quantity') || '0', 10);
     if (!Number.isFinite(quantity) || quantity <= 0) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'quantity must be a positive integer' } },
+        { error: { code: 'VALIDATION_ERROR', message: 'quantity must be a positive integer' } },
         { status: 400 }
       );
     }
@@ -33,14 +33,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const product = await productService.getProductById(id, session.user.storeId);
     if (!product) {
       return NextResponse.json(
-        { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
+        { error: { code: 'PRODUCT_NOT_FOUND', message: 'Product not found' } },
         { status: 404 }
       );
     }
 
     const available = await productService.isInStock(session.user.storeId, id, quantity);
     return NextResponse.json({
-      success: true,
       data: {
         available,
         requestedQuantity: quantity,
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // eslint-disable-next-line no-console
     console.error('Error checking stock:', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to check stock' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to check stock' } },
       { status: 500 }
     );
   }

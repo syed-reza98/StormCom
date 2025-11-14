@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.storeId) {
       return NextResponse.json(
-        { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+        { error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
         { status: 401 }
       );
     }
@@ -25,24 +25,24 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const qty = typeof body?.quantity === 'number' ? body.quantity : NaN;
     if (!Number.isFinite(qty) || qty <= 0) {
       return NextResponse.json(
-        { success: false, error: { code: 'VALIDATION_ERROR', message: 'quantity must be a positive number' } },
+        { error: { code: 'VALIDATION_ERROR', message: 'quantity must be a positive number' } },
         { status: 400 }
       );
     }
 
     const updated = await productService.decreaseStock(session.user.storeId, id, qty);
-    return NextResponse.json({ success: true, data: updated });
+    return NextResponse.json({ data: updated });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === 'Product not found') {
         return NextResponse.json(
-          { success: false, error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
+          { error: { code: 'PRODUCT_NOT_FOUND', message: error.message } },
           { status: 404 }
         );
       }
       if (error.message.includes('Insufficient stock')) {
         return NextResponse.json(
-          { success: false, error: { code: 'INSUFFICIENT_STOCK', message: error.message } },
+          { error: { code: 'INSUFFICIENT_STOCK', message: error.message } },
           { status: 400 }
         );
       }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // eslint-disable-next-line no-console
     console.error('Error decreasing stock:', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to decrease stock' } },
+      { error: { code: 'INTERNAL_ERROR', message: 'Failed to decrease stock' } },
       { status: 500 }
     );
   }

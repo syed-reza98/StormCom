@@ -265,7 +265,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         data: {
-          success: true,
           messageId: result.messageId,
           remaining: rateLimitResult.remaining,
         },

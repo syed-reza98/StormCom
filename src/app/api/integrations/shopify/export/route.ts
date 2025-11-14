@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
         results.push({
           productId: product.id,
           productName: product.name,
-          success: true,
+          status: 'exported',
           externalId: result.externalId,
         });
       } else {
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         results.push({
           productId: product.id,
           productName: product.name,
-          success: false,
+          status: 'failed',
           error: result.error,
         });
       }
